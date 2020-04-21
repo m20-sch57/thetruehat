@@ -17,25 +17,29 @@
 </head>
 <body>
     <div class="container">
-        <div class="window">
-            <div id="hat-info">
+        <div class="window" id="mainPage">
+            <div id="hatInfo">
                 <h1 class="title">Игра в шляпу онлайн</h1>
                 <p class="text">
                     Играйте в шляпу отовсюду, где есть интернет!<br>
                     Вы также можете ознакомиться с 
-                    <a href="#rules-window" data-toggle="modal">правилами</a>.
+                    <a href="#rulesWindow" data-toggle="modal">правилами</a>.
                 </p>
             </div>
-            <div id="main-actions">
-                <button class="bg-green" data-toggle="modal" data-target="#new-game-window">Создать игру</button>
-                <button class="bg-blue" data-toggle="modal" data-target="#existing-game-window">Подключиться к игре</button>
+            <div id="mainActions">
+                <button class="bg-green" data-toggle="modal" data-target="#newGameWindow">Создать игру</button>
+                <button class="bg-blue" data-toggle="modal" data-target="#existingGameWindow">Подключиться к игре</button>
             </div>
-            <div id="recent-games">
+            <div id="recentGames">
                 <h1 class="title">Последние игры</h1>
+                <p class="text">Здесь пока ничего нет</p>
             </div>
         </div>
+        <div class="window" id="gamePage">
+            Это страница комнаты
+        </div>
     </div>
-    <div class="modal fade" id="rules-window">
+    <div class="modal fade" id="rulesWindow">
         <div class="modal-dialog modal-lg">
             <div class="modal-content popup-window">
                 <div class="modal-header">
@@ -48,20 +52,20 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="new-game-window">
-        <div class="modal-dialog modal-md">
+    <div class="modal fade" id="newGameWindow">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content popup-window">
                 <div class="modal-header">
                     <h5 class="modal-title">Создать игру</h5>
                     <button class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="modal-body" id="new-game-body">
+                <div class="modal-body" id="newGameBody">
                     <h1 class="title">Ключ игры: <span id="gameKey">КОКОС</span></h1>
                     <p class="text">
                         Используйте этот ключ для присоединения к игре.<br>
                         Не забудьте поделиться этим ключом с остальными игроками.
                     </p>
-                    <div id="new-game-actions">
+                    <div id="newGameActions">
                         <button class="bg-green" id="createGame">Создать игру</button>
                         <button class="bg-blue" id="generateKey">Сгенерировать другой ключ</button>
                     </div>
@@ -69,18 +73,18 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="existing-game-window">
-        <div class="modal-dialog modal-md">
+    <div class="modal fade" id="existingGameWindow">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content popup-window">
                 <div class="modal-header">
                     <h5 class="modal-title">Подключиться к игре</h5>
                     <button class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="modal-body" id="existing-game-body">
+                <div class="modal-body" id="existingGameBody">
                     <h1 class="title">Введите ключ игры</h1>
                     <input placeholder="Ключ игры" id="gameKeyInput">
                     <h6 class="text" id="joinStatus">Этот ключ имеется у создателя игры</h6>
-                    <div id="existing-game-actions">
+                    <div id="existingGameActions">
                         <button class="bg-blue" id="joinGame">Подключиться</button>
                     </div>
                 </div>
