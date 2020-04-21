@@ -16,7 +16,7 @@ function playerLeftCallback(name) {
 }
 
 function failureCallback(req, msg) {
-    console.log("Failed to do " + req + ", occured error: " + msg);
+    console.log("Failed to do " + req + ", occurred error: " + msg);
 }
 
 function newHostCallback(newHostName) {
@@ -24,7 +24,7 @@ function newHostCallback(newHostName) {
 }
 
 window.onload = function() {
-    // scokets
+    // sockets
 
     socket = io.connect("http://localhost:5000");
     socket.on("playerJoined", function(ev) {
