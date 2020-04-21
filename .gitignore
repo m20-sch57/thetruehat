@@ -285,3 +285,6 @@ tags
 *.iml
 out
 gen
+
+# node.js packages
+node_modules/*
