@@ -1,10 +1,10 @@
 body {
-    background-color: gray;
+    background-color: rgb(134, 168, 161);
 }
 
 .window {
     padding: 40px 30px 40px 30px;
-    background-color: lightgray;
+    background-color: rgb(220, 221, 158);
 }
 
 .title {
