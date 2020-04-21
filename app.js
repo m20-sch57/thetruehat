@@ -18,7 +18,7 @@ app.get("/getFreeKey", function(req, res) {
 });
 
 app.get("/:key/getRoomInfo", function(req, res) {
-    var key = req.params.key;
+    var key = "room_" + req.params.key;
     if (!(key in rooms)) {
         res.json({"status": "wait", "playerList": []});
         return;
@@ -61,7 +61,11 @@ io.on("connection", function(socket) {
             socket.emit("failure", {"req": "joinRoom", "msg": "you are in the room"});
             return;
         }
-        var key = ev.key;
+        if (ev.key == "") {
+            socket.emit("failure", {"req": "joinRoom", "msg": "invalid key"});
+            return;
+        }
+        var key = "room_" + ev.key;
         var name = ev.username;
         socket.join(key, function(err) {
             if (!err) {
