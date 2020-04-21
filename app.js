@@ -18,7 +18,7 @@ app.get("/getFreeKey", function(req, res) {
 });
 
 app.get("/:key/getRoomInfo", function(req, res) {
-    var key = "room_" + req.params.key;
+    var key = req.params.key;
     if (!(key in rooms)) {
         res.json({"status": "wait", "playerList": []});
         return;
@@ -47,7 +47,12 @@ app.get("/:key/getRoomInfo", function(req, res) {
 
 function getRoom(socket) {
     var rooms = Object.keys(socket.rooms);
-    return rooms[rooms.length - 1];
+    for (var i = 0; i < rooms.length; ++i) {
+        if (rooms[i] != socket.id) {
+            return rooms[i];
+        }
+    }
+    return socket.id;
 }
 
 players = {};
@@ -65,7 +70,7 @@ io.on("connection", function(socket) {
             socket.emit("failure", {"req": "joinRoom", "msg": "invalid key"});
             return;
         }
-        var key = "room_" + ev.key;
+        var key = ev.key;
         var name = ev.username;
         socket.join(key, function(err) {
             if (!err) {
@@ -87,6 +92,7 @@ io.on("connection", function(socket) {
                 }
                 rooms[key].users.push(socket.id);
             } else {
+                console.log(err);
                 socket.emit("failure", {"req": "joinRoom", "msg": "failed to join the room"});
             }
         });
