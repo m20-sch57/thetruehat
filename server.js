@@ -26,29 +26,40 @@ app.get("/getFreeKey", function(req, res) {
 
 // Realisation of getRoomInfo request (see in client_server_interaction.md)
 app.get("/:key/getRoomInfo", function(req, res) {
-    const key = req.params.key;
+    const key = req.params.key; // The key of the room
+
+    // Case of nonexistent room
     if (!(key in rooms)) {
         res.json({"status": "wait", "playerList": []});
         return;
     }
-    const room = rooms[key];
-    if (room.status === "wait") {
-        const users = [];
-        for (let i = 0; i < room.users.length; ++i) {
-            users.push(players[room.users[i]]);
-        }
-        res.json({"status": "wait", "playerList": users});
-    } else if (room.status === "play") {
-        const users = [];
-        for (let i = 0; i < room.users.length; ++i) {
-            users.push(players[room.users[i]]);
-        }
-        res.json({"status": "play", "playerList": users, "roomState": room.roomState})
-    } else if (room.status === "end") {
-        res.json({"status": "end"});
-    } else {
-        console.log(room);
+
+    const room = rooms[key]; // The room
+    const users = []; // Users of the room
+
+    switch (room.status) {
+        case "wait":
+            room.users.forEach(id => users.push(players[id]))
+            res.json({"status": "wait",
+                      "playerList": users});
+            break;
+
+        case "play":
+            room.users.forEach(id => users.push(players[id]))
+            res.json({"status": "play",
+                      "playerList": users,
+                      "roomState": room.roomState})
+            break;
+
+        case "end":
+            res.json({"status": "end"});
+            break;
+
+        default:
+            console.log(room);
+            break;
     }
+
 });
 
 //----------------------------------------------------------
