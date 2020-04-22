@@ -35,19 +35,15 @@ app.get("/:key/getRoomInfo", function(req, res) {
     }
 
     const room = rooms[key]; // The room
-    const users = []; // Users of the room
-
     switch (room.status) {
         case "wait":
-            room.users.forEach(id => users.push(players[id]))
             res.json({"status": "wait",
-                      "playerList": users});
+                      "playerList": room.users.map(id => players[id])});
             break;
 
         case "play":
-            room.users.forEach(id => users.push(players[id]))
             res.json({"status": "play",
-                      "playerList": users,
+                      "playerList": room.users.map(id => players[id]),
                       "roomState": room.roomState})
             break;
 
@@ -59,19 +55,25 @@ app.get("/:key/getRoomInfo", function(req, res) {
             console.log(room);
             break;
     }
-
 });
 
 //----------------------------------------------------------
 
+/**
+ * Return current player's room.
+ *
+ * @param socket The socket of the player
+ * @return id of current player's room: his own socket room or game room with him
+ */
 function getRoom(socket) {
     const rooms = Object.keys(socket.rooms);
+    // Searching for the game room with the player
     for (let i = 0; i < rooms.length; ++i) {
         if (rooms[i] !== socket.id) {
-            return rooms[i];
+            return rooms[i]; // It's found and is returning
         }
     }
-    return socket.id;
+    return socket.id; // Nothing found. Player's own room is returning
 }
 
 players = {};
