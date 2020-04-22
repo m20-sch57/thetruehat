@@ -10,17 +10,21 @@ const io = require("socket.io")(server);
 server.listen(PORT);
 console.log("Listening on port " + PORT);
 
+// Serving static css and js files
 app.use(express.static("css"));
 app.use(express.static("js"));
 
+// Serving page of the game by default address
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/index.html");
 });
 
+// Realisation of getFreeKey request (see in client_server_interaction.md)
 app.get("/getFreeKey", function(req, res) {
     res.json({"key": Math.floor(Math.random() * 899999999 + 100000000).toString()});
 });
 
+// Realisation of getRoomInfo request (see in client_server_interaction.md)
 app.get("/:key/getRoomInfo", function(req, res) {
     var key = req.params.key;
     if (!(key in rooms)) {
@@ -51,7 +55,7 @@ app.get("/:key/getRoomInfo", function(req, res) {
 
 function getRoom(socket) {
     var rooms = Object.keys(socket.rooms);
-    for (var i = 0; i < rooms.length; ++i) {
+    for (let i = 0; i < rooms.length; ++i) {
         if (rooms[i] !== socket.id) {
             return rooms[i];
         }
@@ -65,6 +69,8 @@ rooms = {};
 //----------------------------------------------------------
 
 io.on("connection", function(socket) {
+
+    // Realisation of joinRoom request (see in client_server_interaction.md)
     socket.on("joinRoom", function(ev) {
         if (getRoom(socket) !== socket.id) {
             socket.emit("failure", {"req": "joinRoom", "msg": "you are in the room"});
@@ -101,6 +107,8 @@ io.on("connection", function(socket) {
             }
         });
     });
+
+    // Realisation of leaveRoom request (see in client_server_interaction.md)
     socket.on("leaveRoom", function() {
         key = getRoom(socket);
         if (key === socket.id) {
@@ -123,4 +131,5 @@ io.on("connection", function(socket) {
             }
         });
     });
+
 });
