@@ -52,12 +52,12 @@ app.get("/:key/getRoomInfo", function(req, res) {
     switch (room.status) {
         case "wait":
             res.json({"status": "wait",
-                      "playerList": room.users.map(id => players[id])});
+                      "playerList": room.players.map(id => players[id])});
             break;
 
         case "play":
             res.json({"status": "play",
-                      "playerList": room.users.map(id => players[id]),
+                      "playerList": room.players.map(id => players[id]),
                       "roomState": room.roomState})
             break;
 
@@ -84,7 +84,7 @@ function getRoom(socket) {
     // Searching for the game room with the user
     for (let i = 0; i < rooms.length; ++i) {
         if (rooms[i] !== socket.id) {
-            return rooms[i]; // It's found and is returning
+            return rooms[i]; // It's found and  returning
         }
     }
     return socket.id; // Nothing found. User's own room is returning
@@ -99,7 +99,7 @@ players = {};
  * Dictionary of game rooms.
  * Its keys - rooms (Socket) IDs, its values - rooms' infos.
  *
- * Room's info is an object that stores list of players in the room in field "users"
+ * Room's info is an object that stores list of players in the room in field "players"
  * and string with status of the room in field "status".
  */
 rooms = {};
@@ -155,16 +155,16 @@ io.on("connection", function(socket) {
             // If room isn't saved in main dictionary, let's save it and create info about it
             if (!(key in rooms)) {
                 rooms[key] = {};
-                rooms[key].users = [];
+                rooms[key].players = [];
                 rooms[key].status = "wait";
                 // may be something else
             }
             // If there is no other players in the room, the user will be the host of the room
-            if (rooms[key].users.length === 0) {
+            if (rooms[key].players.length === 0) {
                 io.sockets.to(key).emit("newHost", {"username": name});
             }
             // Adding the user to the room info
-            rooms[key].users.push(socket.id);
+            rooms[key].players.push(socket.id);
         });
     });
 
@@ -203,16 +203,16 @@ io.on("connection", function(socket) {
             delete players[socket.id];
 
             // Removing the user from the room info
-            const pos = rooms[key].users.indexOf(socket.id);
-            rooms[key].users.splice(pos, 1);
+            const pos = rooms[key].players.indexOf(socket.id);
+            rooms[key].players.splice(pos, 1);
 
             // If the user was the first player in the room, host will be changed
-            if (pos === 0 && rooms[key].users.length > 0) {
-                io.sockets.to(key).emit("newHost", {"username": players[rooms[key].users[0]]});
+            if (pos === 0 && rooms[key].players.length > 0) {
+                io.sockets.to(key).emit("newHost", {"username": players[rooms[key].players[0]]});
             }
 
             // If the room is empty, it will be deleted
-            if (rooms[key].users.length === 0) {
+            if (rooms[key].players.length === 0) {
                 delete rooms[key]
             }
         });
