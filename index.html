@@ -1,77 +1,31 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<title>Test Socket IO</title>
-<script src="main.js"></script>
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
-<script>
-var name="abc";
-var key="bhfvhbjfvbhjd";
-function playerJoinedCallback(name) {
-    document.querySelector("#log").innerHTML += name + " joined.</br>";
-}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-function playerLeftCallback(name) {
-    document.querySelector("#log").innerHTML += name + " left.</br>";
-}
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"> -->
+    <link rel="stylesheet" href="/main.css">
 
-function failureCallback(req, msg) {
-    console.log("Failed to do " + req + ", occurred error: " + msg);
-}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
 
-function newHostCallback(newHostName) {
-    document.querySelector("#log").innerHTML += "New host " + newHostName + ".<br>";
-}
-
-window.onload = function() {
-    // sockets
-
-    socket = io.connect("http://localhost:5000");
-    socket.on("playerJoined", function(ev) {
-        playerJoinedCallback(ev.username);
-    });
-    socket.on("playerLeft", function(ev) {
-        playerLeftCallback(ev.username);
-    });
-    socket.on("failure", function(ev) {
-        failureCallback(ev.req, ev.msg);
-    });
-    socket.on("newHost", function(ev) {
-        newHostCallback(ev.username);
-    });
-
-    // end of sockets
-    
-    document.querySelector("#setKey").onclick = function() {
-        key = document.querySelector("#key").value;
-        document.querySelector("#setKey").disabled = true;
-        document.querySelector("#key").disabled = true;
-    };
-
-    document.querySelector("#setName").onclick = function() {
-        name = document.querySelector("#name").value;
-        document.querySelector("#setName").disabled = true;
-        document.querySelector("#name").disabled = true;
-        socket.emit("joinRoom", {"username": name, "key": key});
-    };
-
-    document.querySelector("#leave").onclick = function() {
-        if (!document.querySelector("#name").disabled) {
-            return;
-        }
-        document.querySelector("#leave").disabled = true;
-        socket.emit("leaveRoom");
-    };
-};
-</script>
+    <title>Шляпа</title>
 </head>
 <body>
-    <div id="log"></div><br>
-    <input type="text" id="key" value="bhfvhbjfvbhjd" autofocus>
-    <input type="submit" id="setKey" value="Set Key"><br>
-    <input type="text" id="name" value="abc">
-    <input type="submit" id="setName" value="Join">
-    <input type="submit" id="leave" value="Leave">
+    <div id="mainPage">
+        <button class="bg-green" id="mainCreate">
+            Создать
+        </button><button class="bg-blue" id="mainJoin">
+            Подключиться
+        </button><button id="mainRules">
+
+        </button>
+    </div>
+    <script src="/main.js"></script>
 </body>
+
 </html>

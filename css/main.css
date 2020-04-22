@@ -1,0 +1,54 @@
+*::after, *::before {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+}
+
+button {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+button:hover {
+    border: none;
+}
+
+.bg-blue {
+    background-color: rgb(138, 189, 219);
+}
+
+.bg-green {
+    background-color: rgb(144, 199, 158);
+}
+
+#mainPage {
+    min-height: 100vh;
+    text-align: center;
+}
+
+#mainCreate {
+    width: 50%;
+    height: 100vh;
+    border: 1px solid grey;
+}
+
+#mainJoin {
+    width: 50%;
+    height: 100vh;
+    border: 1px solid grey;
+}
+
+#mainRules {
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+    height: 200px;
+    width: 200px;
+    background-color: white;
+    border-radius: 50%;
+    border: 2px solid grey;
+}
