@@ -2,12 +2,16 @@
 
 var PORT = 5000;
 
-var app = require("express")();
+var express = require("express");
+var app = express();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
 server.listen(PORT);
 console.log("Listening on port " + PORT);
+
+app.use(express.static("css"));
+app.use(express.static("js"));
 
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/index.html");
