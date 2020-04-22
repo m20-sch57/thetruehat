@@ -19,18 +19,32 @@ app.get("/", function(req, res) {
     res.sendFile(__dirname + "/index.html");
 });
 
-// Realisation of getFreeKey request (see in client_server_interaction.md)
+//----------------------------------------------------------
+// HTTP functions
+
+/**
+ * Implementation of getFreeKey function
+ * @see client_server_interaction.md
+ */
 app.get("/getFreeKey", function(req, res) {
+    /*
+    Temporary measures.
+    TODO: qualitative key generator
+     */
     res.json({"key": Math.floor(Math.random() * 899999999 + 100000000).toString()});
 });
 
-// Realisation of getRoomInfo request (see in client_server_interaction.md)
+/**
+ * Implementation of getRoomInfo function
+ * @see client_server_interaction.md
+ */
 app.get("/:key/getRoomInfo", function(req, res) {
     const key = req.params.key; // The key of the room
 
     // Case of nonexistent room
     if (!(key in rooms)) {
-        res.json({"status": "wait", "playerList": []});
+        res.json({"status": "wait",
+                  "playerList": []});
         return;
     }
 
@@ -67,80 +81,139 @@ app.get("/:key/getRoomInfo", function(req, res) {
  */
 function getRoom(socket) {
     const rooms = Object.keys(socket.rooms);
-    // Searching for the game room with the player
+    // Searching for the game room with the user
     for (let i = 0; i < rooms.length; ++i) {
         if (rooms[i] !== socket.id) {
             return rooms[i]; // It's found and is returning
         }
     }
-    return socket.id; // Nothing found. Player's own room is returning
+    return socket.id; // Nothing found. User's own room is returning
 }
 
+/**
+ * Dictionary of active players (users that are in some game rooms)
+ * Its keys - socket IDs, its values - usernames.
+ */
 players = {};
+/**
+ * Dictionary of game rooms.
+ * Its keys - rooms (Socket) IDs, its values - rooms' infos.
+ *
+ * Room's info is an object that stores list of players in the room in field "users"
+ * and string with status of the room in field "status".
+ */
 rooms = {};
 
 //----------------------------------------------------------
+// Socket.IO functions
 
 io.on("connection", function(socket) {
 
-    // Realisation of joinRoom request (see in client_server_interaction.md)
+    /**
+     * Implementation of joinRoom function
+     * @see client_server_interaction.md
+     */
     socket.on("joinRoom", function(ev) {
+        // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
-            socket.emit("failure", {"req": "joinRoom", "msg": "you are in the room"});
+            socket.emit("failure", {"req": "joinRoom", "msg": "You are in room now"});
             return;
         }
+        // If key is "", it will be an error
         if (ev.key === "") {
-            socket.emit("failure", {"req": "joinRoom", "msg": "invalid key"});
+            socket.emit("failure", {"req": "joinRoom", "msg": "Invalid key of room"});
             return;
         }
-        var key = ev.key;
-        var name = ev.username;
+
+        const key = ev.key; // key of the room
+        const name = ev.username; // name of the user
+        // Adding the user to the room
         socket.join(key, function(err) {
-            if (!err) {
-                if (getRoom(socket) !== key) {
-                    socket.emit("failure", {"req": "joinRoom", "msg": "failed to join the room"});
-                    return;
-                }
-                console.log("Player", name, "joined to", key);
-                io.sockets.to(key).emit("playerJoined", {"username": name});
-                players[socket.id] = name;
-                if (!(key in rooms)) {
-                    rooms[key] = {};
-                    rooms[key].users = [];
-                    rooms[key].status = "wait";
-                    // may be something else
-                }
-                if (rooms[key].users.length === 0) {
-                    io.sockets.to(key).emit("newHost", {"username": name});
-                }
-                rooms[key].users.push(socket.id);
-            } else {
+            // If any error happened
+            if (err) {
                 console.log(err);
-                socket.emit("failure", {"req": "joinRoom", "msg": "failed to join the room"});
+                socket.emit("failure", {"req": "joinRoom", "msg": "Failed to join the room"});
+                return;
             }
+            // If user haven't joined the room
+            if (getRoom(socket) !== key) {
+                socket.emit("failure", {"req": "joinRoom", "msg": "Failed to join the room"});
+                return;
+            }
+
+            // Logging the joining
+            console.log("Player", name, "joined to", key);
+
+            /**
+             * Implementation of playerJoined signal
+             * @see client_server_interaction.md
+             */
+            io.sockets.to(key).emit("playerJoined", {"username": name});
+
+            // Adding the user to players
+            players[socket.id] = name;
+            // If room isn't saved in main dictionary, let's save it and create info about it
+            if (!(key in rooms)) {
+                rooms[key] = {};
+                rooms[key].users = [];
+                rooms[key].status = "wait";
+                // may be something else
+            }
+            // If there is no other players in the room, the user will be the host of the room
+            if (rooms[key].users.length === 0) {
+                io.sockets.to(key).emit("newHost", {"username": name});
+            }
+            // Adding the user to the room info
+            rooms[key].users.push(socket.id);
         });
     });
 
-    // Realisation of leaveRoom request (see in client_server_interaction.md)
+    /**
+     * Implementation of leaveRoom function
+     * @see client_server_interaction.md
+     */
     socket.on("leaveRoom", function() {
-        key = getRoom(socket);
+        const key = getRoom(socket); // Key of user's current room
+
+        // If user is in his own room
         if (key === socket.id) {
             socket.emit("failure", {"req": "leaveRoom", "msg": "you aren't in the room"});
             return;
         }
+
+        // Removing the user from the room
         socket.leave(key, function(err) {
-            if (!err) {
-                console.log("Player", players[socket.id], "left", key);
-                io.sockets.to(key).emit("playerLeft", {"username": players[socket.id]});
-                socket.emit("playerLeft", {"username": players[socket.id]});
-                delete players[socket.id];
-                var pos = rooms[key].users.indexOf(socket.id);
-                rooms[key].users.splice(pos, 1);
-                if (pos === 0 && rooms[key].users.length > 0) {
-                    io.sockets.to(key).emit("newHost", {"username": players[rooms[key].users[0]]});
-                }
-            } else {
+            // If any error happened
+            if (err) {
                 socket.emit("failure", {"req": "leaveRoom", "msg": "failed to leave the room"});
+                return
+            }
+
+            // Logging the leaving
+            console.log("Player", players[socket.id], "left", key);
+
+            /**
+             * Implementation of playerLeft signal
+             * @see client_server_interaction.md
+             */
+            io.sockets.to(key).emit("playerLeft", {"username": players[socket.id]});
+            socket.emit("playerLeft", {"username": players[socket.id]});
+
+            // Removing the user from the players
+            delete players[socket.id];
+
+            // Removing the user from the room info
+            const pos = rooms[key].users.indexOf(socket.id);
+            rooms[key].users.splice(pos, 1);
+
+            // If the user was the first player in the room, host will be changed
+            if (pos === 0 && rooms[key].users.length > 0) {
+                io.sockets.to(key).emit("newHost", {"username": players[rooms[key].users[0]]});
+            }
+
+            // If the room is empty, it will be deleted
+            if (rooms[key].users.length === 0) {
+                delete rooms[key]
             }
         });
     });
