@@ -26,21 +26,21 @@ app.get("/getFreeKey", function(req, res) {
 
 // Realisation of getRoomInfo request (see in client_server_interaction.md)
 app.get("/:key/getRoomInfo", function(req, res) {
-    var key = req.params.key;
+    const key = req.params.key;
     if (!(key in rooms)) {
         res.json({"status": "wait", "playerList": []});
         return;
     }
-    var room = rooms[key];
+    const room = rooms[key];
     if (room.status === "wait") {
-        var users = [];
-        for (var i = 0; i < room.users.length; ++i) {
+        const users = [];
+        for (let i = 0; i < room.users.length; ++i) {
             users.push(players[room.users[i]]);
         }
         res.json({"status": "wait", "playerList": users});
     } else if (room.status === "play") {
-        var users = [];
-        for (var i = 0; i < room.users.length; ++i) {
+        const users = [];
+        for (let i = 0; i < room.users.length; ++i) {
             users.push(players[room.users[i]]);
         }
         res.json({"status": "play", "playerList": users, "roomState": room.roomState})
@@ -54,7 +54,7 @@ app.get("/:key/getRoomInfo", function(req, res) {
 //----------------------------------------------------------
 
 function getRoom(socket) {
-    var rooms = Object.keys(socket.rooms);
+    const rooms = Object.keys(socket.rooms);
     for (let i = 0; i < rooms.length; ++i) {
         if (rooms[i] !== socket.id) {
             return rooms[i];
