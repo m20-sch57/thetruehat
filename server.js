@@ -1,11 +1,11 @@
 #!/usr/bin/node
 
-var PORT = 5000;
+const PORT = 5000;
 
-var express = require("express");
-var app = express();
-var server = require("http").Server(app);
-var io = require("socket.io")(server);
+const express = require("express");
+const app = express();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 
 server.listen(PORT);
 console.log("Listening on port " + PORT);
@@ -28,19 +28,19 @@ app.get("/:key/getRoomInfo", function(req, res) {
         return;
     }
     var room = rooms[key];
-    if (room.status == "wait") {
+    if (room.status === "wait") {
         var users = [];
         for (var i = 0; i < room.users.length; ++i) {
             users.push(players[room.users[i]]);
         }
         res.json({"status": "wait", "playerList": users});
-    } else if (room.status == "play") {
+    } else if (room.status === "play") {
         var users = [];
         for (var i = 0; i < room.users.length; ++i) {
             users.push(players[room.users[i]]);
         }
         res.json({"status": "play", "playerList": users, "roomState": room.roomState})
-    } else if (room.status == "end") {
+    } else if (room.status === "end") {
         res.json({"status": "end"});
     } else {
         console.log(room);
@@ -52,7 +52,7 @@ app.get("/:key/getRoomInfo", function(req, res) {
 function getRoom(socket) {
     var rooms = Object.keys(socket.rooms);
     for (var i = 0; i < rooms.length; ++i) {
-        if (rooms[i] != socket.id) {
+        if (rooms[i] !== socket.id) {
             return rooms[i];
         }
     }
@@ -66,11 +66,11 @@ rooms = {};
 
 io.on("connection", function(socket) {
     socket.on("joinRoom", function(ev) {
-        if (getRoom(socket) != socket.id) {
+        if (getRoom(socket) !== socket.id) {
             socket.emit("failure", {"req": "joinRoom", "msg": "you are in the room"});
             return;
         }
-        if (ev.key == "") {
+        if (ev.key === "") {
             socket.emit("failure", {"req": "joinRoom", "msg": "invalid key"});
             return;
         }
@@ -78,7 +78,7 @@ io.on("connection", function(socket) {
         var name = ev.username;
         socket.join(key, function(err) {
             if (!err) {
-                if (getRoom(socket) != key) {
+                if (getRoom(socket) !== key) {
                     socket.emit("failure", {"req": "joinRoom", "msg": "failed to join the room"});
                     return;
                 }
@@ -87,11 +87,11 @@ io.on("connection", function(socket) {
                 players[socket.id] = name;
                 if (!(key in rooms)) {
                     rooms[key] = {};
-                    rooms[key].users = new Array();
+                    rooms[key].users = [];
                     rooms[key].status = "wait";
                     // may be something else
                 }
-                if (rooms[key].users.length == 0) {
+                if (rooms[key].users.length === 0) {
                     io.sockets.to(key).emit("newHost", {"username": name});
                 }
                 rooms[key].users.push(socket.id);
@@ -103,7 +103,7 @@ io.on("connection", function(socket) {
     });
     socket.on("leaveRoom", function() {
         key = getRoom(socket);
-        if (key == socket.id) {
+        if (key === socket.id) {
             socket.emit("failure", {"req": "leaveRoom", "msg": "you aren't in the room"});
             return;
         }
@@ -115,7 +115,7 @@ io.on("connection", function(socket) {
                 delete players[socket.id];
                 var pos = rooms[key].users.indexOf(socket.id);
                 rooms[key].users.splice(pos, 1);
-                if (pos == 0 && rooms[key].users.length > 0) {
+                if (pos === 0 && rooms[key].users.length > 0) {
                     io.sockets.to(key).emit("newHost", {"username": players[rooms[key].users[0]]});
                 }
             } else {

@@ -2,4 +2,4 @@
 
 - Run command `npm install` in console to install all packages.
 
-- Run command `node app.js` in console to run server.
+- Run command `node server.js` in console to run server.
