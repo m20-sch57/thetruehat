@@ -3,43 +3,92 @@
 }
 
 body {
-    min-height: 100vh;
+    height: 100vh;
     margin: 0;
+    font-family: 'Open Sans', sans-serif;
 }
 
 button {
-    border: none;
-    padding: 0;
-    margin: 0;
+    border-width: 0;
+    outline: 0;
+    font-family: inherit;
 }
 
-button:hover {
-    border: none;
+.white-bubble {
+    color: rgb(100, 100, 100);
+    background-color: whitesmoke;
+    border-radius: 50%;
+    border: 1px solid grey;
+    box-shadow: 0 0 3px grey;
 }
 
-.bg-blue {
-    background-color: rgb(138, 189, 219);
+.white-bubble:hover {
+    background-color: rgb(233, 233, 233);
+    box-shadow: 0 0 5px grey;
 }
 
-.bg-green {
-    background-color: rgb(144, 199, 158);
+#createBack, #joinBack, #rulesBack {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    height: 70px;
+    width: 70px;
+    font-size: 20px;
+    padding-left: 2px;
+}
+
+#createRules, #joinRules {
+    position: absolute;
+    top: -75px;
+    left: calc(50% - 75px);
+    height: 150px;
+    width: 150px;
+    font-size: 20px;
+    padding-top: 50px;
 }
 
 #mainPage {
-    min-height: 100vh;
-    text-align: center;
+    /* display: none; */
+    height: 100%;
+    line-height: 0;
+}
+
+#mainCreate, #mainJoin {
+    position: relative;
+    height: calc(50% - 0.5px);
+    width: 100%;
+    padding: 30px;
+    font-size: 40px;
+    font-weight: lighter;
 }
 
 #mainCreate {
-    width: 50%;
-    height: 100vh;
-    border: 1px solid grey;
+    background-color: rgb(149, 235, 115);
 }
 
 #mainJoin {
-    width: 50%;
-    height: 100vh;
-    border: 1px solid grey;
+    background-color: rgb(134, 181, 202);
+}
+
+#mainCreate:hover {
+    background-color: rgb(113, 196, 134);
+    box-shadow: 0 0 10px seagreen;
+    z-index: 10;
+}
+
+#mainJoin:hover {
+    background-color: rgb(108, 163, 199);
+    box-shadow: 0 0 10px royalblue;
+    z-index: 10;
+}
+
+#mainSpacer {
+    display: inline-block;
+    vertical-align: top;
+    border-right: 1px solid grey;
+    border-bottom: 1px solid grey;
+    height: 0;
+    width: 100%;
 }
 
 #mainRules {
@@ -48,7 +97,22 @@ button:hover {
     left: calc(50% - 100px);
     height: 200px;
     width: 200px;
-    background-color: white;
-    border-radius: 50%;
-    border: 2px solid grey;
+    font-size: 25px;
+    z-index: 20;
+}
+
+@media (min-width: 1000px) {
+    #mainCreate, #mainJoin {
+        height: 100%;
+        width: calc(50% - 0.5px);
+    }
+    #mainSpacer {
+        width: 0;
+        height: 100%;
+    }
+}
+
+#createPage {
+    display: none;
+    height: 100%;
 }

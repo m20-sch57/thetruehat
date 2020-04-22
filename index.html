@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
-    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/main.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
     <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
 
@@ -17,12 +18,20 @@
 </head>
 <body>
     <div id="mainPage">
-        <button class="bg-green" id="mainCreate">
-            Создать
-        </button><button class="bg-blue" id="mainJoin">
+        <button id="mainCreate">
+            Создать игру
+        </button><span id="mainSpacer">
+        </span><button id="mainJoin">
             Подключиться
-        </button><button id="mainRules">
-
+        </button><button class="white-bubble" id="mainRules">
+            Правила
+        </button>
+    </div>
+    <div id="createPage">
+        <button class="white-bubble" id="createBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble" id="createRules">
+            Правила
         </button>
     </div>
     <script src="/main.js"></script>
