@@ -64,20 +64,22 @@ button {
 
 #mainCreate {
     background-color: rgb(149, 235, 115);
+    color: #00000066;
 }
 
 #mainJoin {
     background-color: rgb(134, 181, 202);
+    color: #00000066;
 }
 
 #mainCreate:hover {
-    background-color: rgb(113, 196, 134);
+    background-color: rgb(162, 236, 87);
     box-shadow: 0 0 10px seagreen;
     z-index: 10;
 }
 
 #mainJoin:hover {
-    background-color: rgb(108, 163, 199);
+    background-color: rgb(116, 181, 224);
     box-shadow: 0 0 10px royalblue;
     z-index: 10;
 }
