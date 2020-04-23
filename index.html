@@ -21,11 +21,11 @@
     <div id="mainPage">
         <div id="mainActions">
             <button id="mainCreate" onclick="showPage('createPage')">
-                Создать игру
+                Создать
             </button><button id="mainJoin" onclick="showPage('joinPage')">
-                Подключиться
+                Войти
             </button>
-            <button class="white-bubble" id="mainRules" onclick="showPage('rulesPage')"></button>
+            <button id="mainRules" onclick="showPage('rulesPage')"></button>
         </div>
     </div>
     <div id="createPage" style="display: none;">
@@ -34,10 +34,17 @@
         </button><button class="white-bubble" id="createRules" onclick="showPage('rulesPage')">
             Правила
         </button>
-        <span id="createKey">Key</span>
-        <button id="createCopy" onclick="copyKey()">Copy</button>
-        <input id="createName">
-        <button id="createGo">Go</button>
+        <div class="content-small">
+            <div id="createHeader">
+                <h1 id="createKey">Джомолунгма</h1>
+                <p>Это ключ комнаты. Отправьте его друзьям.</p>
+                <button class="small-button bg-blue" id="createCopy" onclick="copyKey()">Скопировать ключ</button>
+            </div>
+            <div id="createBody">
+                <input id="createName" placeholder="Введи имя">
+                <button class="medium-button bg-green" id="createGo">Поехали!</button>
+            </div>
+        </div>
     </div>
     <div id="joinPage" style="display: none;">
         <button id="joinRules" onclick="showPage('rulesPage')">Rules</button>
