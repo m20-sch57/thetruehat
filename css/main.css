@@ -48,15 +48,25 @@ button {
 }
 
 #mainPage {
+    display: flex;
     /* display: none; */
     height: 100%;
-    line-height: 0;
+    background-color: whitesmoke;
+}
+
+#mainActions {
+    height: 100%;
+    width: 100%;
+    max-height: 1200px;
+    max-width: 500px;
+    margin: auto;
 }
 
 #mainCreate, #mainJoin {
     position: relative;
-    height: calc(50% - 0.5px);
+    height: calc(50% + 0.5px);
     width: 100%;
+    border: 1px solid grey;
     padding: 30px;
     font-size: 40px;
     font-weight: lighter;
@@ -64,12 +74,15 @@ button {
 
 #mainCreate {
     background-color: rgb(149, 235, 115);
-    color: #00000066;
+    color: rgba(0, 0, 0, 0.767);
+    border-radius: 50% 50% 0 0;
 }
 
 #mainJoin {
     background-color: rgb(134, 181, 202);
-    color: #00000066;
+    color: rgba(0, 0, 0, 0.767);
+    border-radius: 0 0 50% 50%;
+    margin: -1px 0 0 0;
 }
 
 #mainCreate:hover {
@@ -84,15 +97,6 @@ button {
     z-index: 10;
 }
 
-#mainSpacer {
-    display: inline-block;
-    vertical-align: top;
-    border-right: 1px solid grey;
-    border-bottom: 1px solid grey;
-    height: 0;
-    width: 100%;
-}
-
 #mainRules {
     position: absolute;
     top: calc(50% - 100px);
@@ -101,20 +105,32 @@ button {
     width: 200px;
     font-size: 25px;
     z-index: 20;
+    background-color: rgb(240, 234, 154);
     background-image: url(\hat.png);
-    background-size: 80%;
+    background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
 }
 
+#mainRules:hover {
+    background-color: rgb(223, 216, 128);
+}
+
 @media (min-width: 1000px) {
+    #mainActions {
+        max-height: 500px;
+        max-width: 1200px;
+    }
     #mainCreate, #mainJoin {
         height: 100%;
-        width: calc(50% - 0.5px);
+        width: calc(50% + 0.5px);
     }
-    #mainSpacer {
-        width: 0;
-        height: 100%;
+    #mainCreate {
+        border-radius: 50% 0 0 50%;
+    }
+    #mainJoin {
+        border-radius: 0 50% 50% 0;
+        margin: 0 0 0 -1px;
     }
 }
 

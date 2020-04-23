@@ -19,18 +19,20 @@
 </head>
 <body>
     <div id="mainPage">
-        <button id="mainCreate" onclick="showPage('createPage')">
-            Создать игру
-        </button><span id="mainSpacer">
-        </span><button id="mainJoin" onclick="showPage('joinPage')">
-            Подключиться
-        </button><button class="white-bubble" id="mainRules" onclick="showPage('rulesPage')">
-        </button>
+        <div id="mainActions">
+            <button id="mainCreate" onclick="showPage('createPage')">
+                Создать игру
+            </button><button id="mainJoin" onclick="showPage('joinPage')">
+                Подключиться
+            </button>
+            <button class="white-bubble" id="mainRules" onclick="showPage('rulesPage')"></button>
+        </div>
     </div>
     <div id="createPage" style="display: none;">
         <button class="white-bubble" id="createBack" onclick="showPage('mainPage')">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble" id="createRules" onclick="showPage('rulesPage')">
+            Правила
         </button>
         <span id="createKey">Key</span>
         <button id="createCopy" onclick="copyKey()">Copy</button>
