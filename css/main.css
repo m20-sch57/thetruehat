@@ -1,4 +1,4 @@
-*::after, *::before {
+*, *::after, *::before {
     box-sizing: border-box;
 }
 
@@ -9,14 +9,50 @@ body {
 }
 
 button {
-    border-width: 0;
-    outline: 0;
     font-family: inherit;
+    outline: 0;
+}
+
+input {
+    padding: 15px 20px 15px 20px;
+    border: 1px solid grey;
+    border-radius: 25px;
+    font-size: 18px;
+    line-height: 20px;
+    outline: 0;
+}
+
+.content-small {
+    margin: 100px auto 50px auto;
+    width: 100%;
+    max-width: 500px;
+}
+
+.small-button {
+    padding: 10px 15px 10px 15px;
+    border: 1px solid grey;
+    border-radius: 22px;
+    font-size: 15px;
+    margin: 5px;
+}
+
+.medium-button {
+    padding: 15px 20px 15px 20px;
+    border: 1px solid grey;
+    border-radius: 25px;
+    font-size: 20px;
+    line-height: 20px;
+}
+
+.small-button:hover, .medium-button:hover {
+    background-color: rgb(36, 52, 77);
+    color: whitesmoke;
+    box-shadow: 1px 1px 5px grey;
 }
 
 .white-bubble {
     color: rgb(100, 100, 100);
-    background-color: whitesmoke;
+    background-color: white;
     border-radius: 50%;
     border: 1px solid grey;
     box-shadow: 0 0 3px grey;
@@ -25,6 +61,14 @@ button {
 .white-bubble:hover {
     background-color: rgb(233, 233, 233);
     box-shadow: 0 0 5px grey;
+}
+
+.bg-blue {
+    background-color: lightblue;
+}
+
+.bg-green {
+    background-color: lightgreen;
 }
 
 #createBack, #joinBack, #rulesBack {
@@ -49,7 +93,6 @@ button {
 
 #mainPage {
     display: flex;
-    /* display: none; */
     height: 100%;
     background-color: whitesmoke;
 }
@@ -58,7 +101,7 @@ button {
     height: 100%;
     width: 100%;
     max-height: 1200px;
-    max-width: 500px;
+    max-width: 400px;
     margin: auto;
 }
 
@@ -68,7 +111,7 @@ button {
     width: 100%;
     border: 1px solid grey;
     padding: 30px;
-    font-size: 40px;
+    font-size: 50px;
     font-weight: lighter;
 }
 
@@ -103,7 +146,9 @@ button {
     left: calc(50% - 100px);
     height: 200px;
     width: 200px;
-    font-size: 25px;
+    border-radius: 50%;
+    border: 1px solid grey;
+    box-shadow: 0 0 3px grey;
     z-index: 20;
     background-color: rgb(240, 234, 154);
     background-image: url(\hat.png);
@@ -119,7 +164,7 @@ button {
 @media (min-width: 1000px) {
     #mainActions {
         max-height: 500px;
-        max-width: 1200px;
+        max-width: 1000px;
     }
     #mainCreate, #mainJoin {
         height: 100%;
@@ -135,6 +180,32 @@ button {
 }
 
 #createPage {
-    display: none;
+    display: flex;
     height: 100%;
+    background-color: whitesmoke;
+}
+
+#createHeader {
+    width: 100%;
+    text-align: center;
+    padding: 50px 30px 50px 30px;
+}
+
+#createKey {
+    font-size: 40px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+#createBody {
+    padding: 0 30px 0 30px;
+}
+
+#createName {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#createGo {
+    width: 100%;
 }

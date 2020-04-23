@@ -17,26 +17,33 @@
     <title>Шляпа</title>
 </head>
 <body>
-    <div id="mainPage">
+    <!-- <div id="mainPage">
         <div id="mainActions">
             <button id="mainCreate">
-                Создать игру
+                Создать
             </button><button id="mainJoin">
-                Подключиться
+                Войти
             </button>
-            <button class="white-bubble" id="mainRules"></button>
+            <button id="mainRules"></button>
         </div>
-    </div>
+    </div> -->
     <div id="createPage">
         <button class="white-bubble" id="createBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble" id="createRules">
             Правила
         </button>
-        <!-- <span id="createKey">Key</span>
-        <button id="createCopy">Copy</button>
-        <input id="createName">
-        <button id="createGo">Go</button> -->
+        <div class="content-small">
+            <div id="createHeader">
+                <h1 id="createKey">Джомолунгма</h1>
+                <p>Это ключ комнаты. Отправьте его друзьям.</p>
+                <button class="small-button bg-blue" id="createCopy">Скопировать ключ</button>
+            </div>
+            <div id="createBody">
+                <input id="createName" placeholder="Введи имя">
+                <button class="medium-button bg-green" id="createGo">Поехали!</button>
+            </div>
+        </div>
     </div>
     <!-- <div id="joinPage">
         <button id="joinRules">Rules</button>
