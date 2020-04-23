@@ -101,6 +101,10 @@ button {
     width: 200px;
     font-size: 25px;
     z-index: 20;
+    background-image: url(\hat.png);
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 @media (min-width: 1000px) {
