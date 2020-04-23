@@ -25,10 +25,10 @@
             </button><button id="mainPage_joinRoom" onclick="showPage('joinPage')">
                 Войти
             </button>
-            <button id="mainPage_viewRules"></button>
+            <button id="mainPage_viewRules" onclick="showPage('rulesPage')"></button>
         </div>
     </div>
-    <div class="page" id="createPage">
+    <div class="page" id="createPage" style="display: none;">
         <button class="white-bubble go-back" id="createPage_goBack" onclick="showPage('mainPage')">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="createPage_viewRules" onclick="showPage('rulesPage')">
@@ -46,27 +46,19 @@
             </div>
         </div>
     </div>
-    <div class="page" id="joinPage">
-        <button class="white-bubble go-back" id="joinPage_goBack"  onclick="showPage('mainPage')">
+    <div class="page" id="joinPage" style="display: none;">
+        <button class="white-bubble go-back" id="joinPage_goBack" onclick="showPage('mainPage')">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="joinPage_viewRules" onclick="showPage('rulesPage')">
             Правила
         </button>
-
     </div>
-    <div id="joinPage">
-        <button id="joinPage_viewRules">Rules</button>
-        <button class="white-bubble" id="joinPage_goBack" onclick="showPage('mainPage')">Back</button>
-        <input id="joinPage_inputKey">
-        <input id="joinPage_inputName">
-        <button id="joinPage_go">Go</button>
-    </div> 
     <div id="rulesPage" style="display: none;">
-        <button class="white-bubble" id="rulesPage_goBack">Back</button>
+        <button class="white-bubble go-back" id="rulesPage_goBack" onclick="showPage('mainPage')"><span class="fa fa-chevron-left"></button>
     </div>
     <div id="waitPage" style="display: none;">
-        <button id="waitRules" onclick="showPage('rulesPage')">Rules</button>
-        <div id="waitUsers"></div>
+        <button id="waitPage_viewRules" onclick="showPage('rulesPage')">Rules</button>
+        <div id="waitPage_users"></div>
     </div>
     <script src="/main.js"></script>
 </body>

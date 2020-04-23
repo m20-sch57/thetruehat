@@ -12,7 +12,7 @@ function addUsers(users) {
 
 function addUser(username) {
     console.log('add user', username)
-    document.querySelector("#waitUsers").appendChild(createUserHTML(username));
+    document.querySelector("#waitPage_users").appendChild(createUserHTML(username));
 }
 
 function createUserHTML(username) {
@@ -24,7 +24,7 @@ function createUserHTML(username) {
 function getKey() {
     fetch("/getFreeKey")
         .then(response => response.json())
-        .then(result => document.querySelector("#createKey").innerHTML = result.key)
+        .then(result => document.querySelector("#createPage_key").innerHTML = result.key)
 }
 
 function enterRoom(socket, key, username) {
@@ -54,17 +54,17 @@ function leaveRoom() {
 }
 
 function copyKey() {
-    navigator.clipboard.writeText(document.querySelector("#createKey").innerText);
+    navigator.clipboard.writeText(document.querySelector("#createPage_key").innerText);
 }
 
 window.onload = function() {
     getKey();
     socket = io.connect(`http://${document.domain}:5000`);
-    document.querySelector("#joinGo").onclick = function() {
-        enterRoom(socket, document.querySelector("#joinKey").value, document.querySelector("#joinName").value);
+    document.querySelector("#joinPage_go").onclick = function() {
+        enterRoom(socket, document.querySelector("#joinPage_inputKey").value, document.querySelector("#joinPage_name").value);
     }
-    document.querySelector("#createGo").onclick = function() {
+    document.querySelector("#createPage_go").onclick = function() {
         console.log(document.querySelector("#createKey").innerText);
-        enterRoom(socket, document.querySelector("#createKey").innerText, document.querySelector("#createName").value);
+        enterRoom(socket, document.querySelector("#createPage_key").innerText, document.querySelector("#createPage_name").value);
     }
 }
