@@ -61,10 +61,10 @@ window.onload = function() {
     getKey();
     socket = io.connect(`http://${document.domain}:5000`);
     document.querySelector("#joinPage_go").onclick = function() {
-        enterRoom(socket, document.querySelector("#joinPage_inputKey").value, document.querySelector("#joinPage_name").value);
+        enterRoom(socket, document.querySelector("#joinPage_inputKey").value, document.querySelector("#joinPage_inputName").value);
     }
     document.querySelector("#createPage_go").onclick = function() {
-        console.log(document.querySelector("#createKey").innerText);
-        enterRoom(socket, document.querySelector("#createPage_key").innerText, document.querySelector("#createPage_name").value);
+        console.log(document.querySelector("#createPage_key").innerText);
+        enterRoom(socket, document.querySelector("#createPage_key").innerText, document.querySelector("#createPage_inputName").value);
     }
 }
