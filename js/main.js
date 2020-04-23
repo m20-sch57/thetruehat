@@ -6,6 +6,21 @@ function showPage(pageName) {
     document.querySelector('#'+activePage).style.display = "";
 }
 
+function addUsers(users) {
+    users.forEach(addUser);
+}
+
+function addUser(username) {
+    console.log('add user', username)
+    document.querySelector("#waitUsers").appendChild(createUserHTML(username));
+}
+
+function createUserHTML(username) {
+    let div = document.createElement("div");
+    div.innerHTML = username;
+    return div
+}
+
 function getKey() {
     fetch("/getFreeKey")
         .then(response => response.json())
@@ -21,7 +36,7 @@ function enterRoom(socket, key, username) {
                 case "wait":
                     socket.emit("joinRoom", {"username": username, "key": key});
                     showPage("waitPage");
-                    showUsers(result.playerList)
+                    addUsers(result.playerList)
                     break; 
                 case "play":
                     console.log("Ouups. It's taken.")
@@ -49,6 +64,7 @@ window.onload = function() {
         enterRoom(socket, document.querySelector("#joinKey").value, document.querySelector("#joinName").value);
     }
     document.querySelector("#createGo").onclick = function() {
-        enterRoom(socket, document.querySelector("#createKey").value, document.querySelector("#createName").value);
+        console.log(document.querySelector("#createKey").innerText);
+        enterRoom(socket, document.querySelector("#createKey").innerText, document.querySelector("#createName").value);
     }
 }
