@@ -22,6 +22,12 @@ input {
     outline: 0;
 }
 
+.page {
+    display: flex;
+    height: 100%;
+    background-color: whitesmoke;
+}
+
 .content-small {
     margin: 100px auto 50px auto;
     width: 100%;
@@ -45,9 +51,13 @@ input {
 }
 
 .small-button:hover, .medium-button:hover {
-    background-color: rgb(36, 52, 77);
+    background-color: rgb(44, 98, 185);
     color: whitesmoke;
     box-shadow: 1px 1px 5px grey;
+}
+
+.small-button:active, .medium-button:active {
+    background-color: rgb(36, 52, 77);
 }
 
 .white-bubble {
@@ -63,15 +73,11 @@ input {
     box-shadow: 0 0 5px grey;
 }
 
-.bg-blue {
-    background-color: lightblue;
+.white-bubble:active {
+    background-color: lightgrey;
 }
 
-.bg-green {
-    background-color: lightgreen;
-}
-
-#createBack, #joinBack, #rulesBack {
+.go-back {
     position: absolute;
     top: 30px;
     left: 30px;
@@ -81,7 +87,7 @@ input {
     padding-left: 2px;
 }
 
-#createRules, #joinRules {
+.view-rules {
     position: absolute;
     top: -75px;
     left: calc(50% - 75px);
@@ -91,13 +97,15 @@ input {
     padding-top: 50px;
 }
 
-#mainPage {
-    display: flex;
-    height: 100%;
-    background-color: whitesmoke;
+.bg-blue {
+    background-color: lightblue;
 }
 
-#mainActions {
+.bg-green {
+    background-color: lightgreen;
+}
+
+#mainPage_actions {
     height: 100%;
     width: 100%;
     max-height: 1200px;
@@ -105,7 +113,7 @@ input {
     margin: auto;
 }
 
-#mainCreate, #mainJoin {
+#mainPage_createRoom, #mainPage_joinRoom {
     position: relative;
     height: calc(50% + 0.5px);
     width: 100%;
@@ -115,32 +123,32 @@ input {
     font-weight: lighter;
 }
 
-#mainCreate {
+#mainPage_createRoom {
     background-color: rgb(149, 235, 115);
     color: rgba(0, 0, 0, 0.767);
     border-radius: 50% 50% 0 0;
 }
 
-#mainJoin {
+#mainPage_joinRoom {
     background-color: rgb(134, 181, 202);
     color: rgba(0, 0, 0, 0.767);
     border-radius: 0 0 50% 50%;
     margin: -1px 0 0 0;
 }
 
-#mainCreate:hover {
+#mainPage_createRoom:hover {
     background-color: rgb(162, 236, 87);
     box-shadow: 0 0 10px seagreen;
     z-index: 10;
 }
 
-#mainJoin:hover {
+#mainPage_joinRoom:hover {
     background-color: rgb(116, 181, 224);
     box-shadow: 0 0 10px royalblue;
     z-index: 10;
 }
 
-#mainRules {
+#mainPage_viewRules {
     position: absolute;
     top: calc(50% - 100px);
     left: calc(50% - 100px);
@@ -157,55 +165,49 @@ input {
     background-repeat: no-repeat;
 }
 
-#mainRules:hover {
+#mainPage_viewRules:hover {
     background-color: rgb(223, 216, 128);
 }
 
 @media (min-width: 1000px) {
-    #mainActions {
+    #mainPage_actions {
         max-height: 500px;
         max-width: 1000px;
     }
-    #mainCreate, #mainJoin {
+    #mainPage_createRoom, #mainPage_joinRoom {
         height: 100%;
         width: calc(50% + 0.5px);
     }
-    #mainCreate {
+    #mainPage_createRoom {
         border-radius: 50% 0 0 50%;
     }
-    #mainJoin {
+    #mainPage_joinRoom {
         border-radius: 0 50% 50% 0;
         margin: 0 0 0 -1px;
     }
 }
 
-#createPage {
-    display: flex;
-    height: 100%;
-    background-color: whitesmoke;
-}
-
-#createHeader {
+#createPage_header {
     width: 100%;
     text-align: center;
     padding: 50px 30px 50px 30px;
 }
 
-#createKey {
+#createPage_key {
     font-size: 40px;
     text-transform: uppercase;
     margin-bottom: 0;
 }
 
-#createBody {
+#createPage_body {
     padding: 0 30px 0 30px;
 }
 
-#createName {
+#createPage_inputName {
     width: 100%;
     margin-bottom: 15px;
 }
 
-#createGo {
+#createPage_go {
     width: 100%;
 }
