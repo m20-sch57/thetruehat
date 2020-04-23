@@ -67,14 +67,14 @@ window.onload = function() {
         console.log(document.querySelector("#createPage_key").innerText);
         enterRoom(socket, document.querySelector("#createPage_key").innerText, document.querySelector("#createPage_inputName").value);
     }
-    document.querySelector("mainPage_createRoom").onclick = () => showPage('createPage');
-    document.querySelector("mainPage_joinRoom").onclick = () => showPage('joinPage');
-    document.querySelector("mainPage_viewRules").onclick = () => showPage('rulesPage');
-    document.querySelector("createPage_goBack").onclick = () => showPage('mainPage');
-    document.querySelector("createPage_viewRules").onclick = () => showPage('rulesPage');
-    document.querySelector("createPage_copyKey").onclick = () => copyKey();
-    document.querySelector("joinPage_goBack").onclick = () => showPage('mainPage');
-    document.querySelector("joinPage_viewRules").onclick = () => showPage('rulesPage');
-    document.querySelector("rulesPage_goBack").onclick = () => showPage('mainPage');
-    document.querySelector("waitPage_viewRules").onclick = () => showPage('rulesPage');
+    document.querySelector("#mainPage_createRoom").onclick = () => showPage('createPage');
+    document.querySelector("#mainPage_joinRoom").onclick = () => showPage('joinPage');
+    document.querySelector("#mainPage_viewRules").onclick = () => showPage('rulesPage');
+    document.querySelector("#createPage_goBack").onclick = () => showPage('mainPage');
+    document.querySelector("#createPage_viewRules").onclick = () => showPage('rulesPage');
+    document.querySelector("#createPage_copyKey").onclick = () => copyKey();
+    document.querySelector("#joinPage_goBack").onclick = () => showPage('mainPage');
+    document.querySelector("#joinPage_viewRules").onclick = () => showPage('rulesPage');
+    document.querySelector("#rulesPage_goBack").onclick = () => showPage('mainPage');
+    document.querySelector("#waitPage_viewRules").onclick = () => showPage('rulesPage');
 }
