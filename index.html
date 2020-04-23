@@ -27,7 +27,7 @@
             <button id="mainPage_viewRules"></button>
         </div>
     </div> -->
-    <div class="page" id="createPage">
+    <!-- <div class="page" id="createPage">
         <button class="white-bubble go-back" id="createPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="createPage_viewRules">
@@ -36,31 +36,33 @@
         <div class="content-small">
             <div id="createPage_header">
                 <h1 id="createPage_key">Джомолунгма</h1>
-                <p>Это ключ комнаты. Отправьте его друзьям.</p>
+                <p class="hint">Это ключ комнаты. Отправьте его друзьям.</p>
                 <button class="small-button bg-blue" id="createPage_copyKey">Скопировать ключ</button>
             </div>
             <div id="createPage_body">
-                <input id="createPage_inputName" placeholder="Введи имя">
+                <input class="medium-input" id="createPage_inputName" placeholder="Введи своё имя">
+                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
                 <button class="medium-button bg-green" id="createPage_go">Поехали!</button>
             </div>
         </div>
-    </div>
-    <!-- <div class="page" id="joinPage">
+    </div> -->
+    <div class="page" id="joinPage">
         <button class="white-bubble go-back" id="joinPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="joinPage_viewRules">
             Правила
         </button>
-
-    </div> -->
-    <!-- <div id="joinPage">
-        <button id="joinPage_viewRules">Rules</button>
-        <button class="white-bubble" id="joinPage_goBack">Back</button>
-        <input id="joinPage_inputKey">
-        <input id="joinPage_inputName">
-        <button id="joinPage_go">Go</button>
-    </div> 
-    <div id="rulesPage" style="display: none;">
+        <div class="content-small">
+            <div id="joinPage_body">
+                <input class="medium-input" id="joinPage_inputKey" placeholder="Ключ комнаты">
+                <p class="hint">Введите ключ, который тебе прислал товарищ</p>
+                <input class="medium-input" id="joinPage_inputName" placeholder="Введи своё имя">
+                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
+                <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+            </div>
+        </div>
+    </div>
+    <!-- <div id="rulesPage" style="display: none;">
         <button class="white-bubble" id="rulesPage_goBack">Back</button>
     </div>
     <div id="waitPage">

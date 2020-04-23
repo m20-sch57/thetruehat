@@ -13,15 +13,6 @@ button {
     outline: 0;
 }
 
-input {
-    padding: 15px 20px 15px 20px;
-    border: 1px solid grey;
-    border-radius: 25px;
-    font-size: 18px;
-    line-height: 20px;
-    outline: 0;
-}
-
 .page {
     display: flex;
     height: 100%;
@@ -58,6 +49,19 @@ input {
 
 .small-button:active, .medium-button:active {
     background-color: rgb(36, 52, 77);
+}
+
+.medium-input {
+    padding: 15px 20px 15px 20px;
+    border: 1px solid grey;
+    border-radius: 25px;
+    font-size: 18px;
+    line-height: 20px;
+    outline: 0;
+}
+
+.hint {
+    margin: 5px 20px 15px 20px;
 }
 
 .white-bubble {
@@ -205,9 +209,27 @@ input {
 
 #createPage_inputName {
     width: 100%;
-    margin-bottom: 15px;
 }
 
 #createPage_go {
     width: 100%;
+    margin-top: 10px;
+}
+
+#joinPage_body {
+    padding: 70px 30px 0 30px;
+}
+
+#joinPage_inputKey {
+    width: 100%;
+    text-transform: uppercase;
+}
+
+#joinPage_inputName {
+    width: 100%;
+}
+
+#joinPage_go {
+    width: 100%;
+    margin-top: 20px;
 }
