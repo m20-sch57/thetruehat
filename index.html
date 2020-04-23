@@ -18,36 +18,36 @@
 </head>
 <body>
     <div id="mainPage">
-        <button id="mainCreate">
+        <button id="mainCreate" onclick="showPage('createPage')">
             Создать игру
         </button><span id="mainSpacer">
-        </span><button id="mainJoin">
+        </span><button id="mainJoin" onclick="showPage('joinPage')">
             Подключиться
-        </button><button class="white-bubble" id="mainRules">
+        </button><button class="white-bubble" id="mainRules" onclick="showPage('rulesPage')">
         </button>
     </div>
     <div id="createPage" style="display: none;">
-        <button class="white-bubble" id="createBack">
+        <button class="white-bubble" id="createBack" onclick="showPage('mainPage')">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble" id="createRules">
+        </button><button class="white-bubble" id="createRules" onclick="showPage('rulesPage')">
         </button>
         <span id="createKey">Key</span>
-        <button id="createCopy">Copy</button>
+        <button id="createCopy" onclick="copyKey()">Copy</button>
         <input id="createName">
         <button id="createGo">Go</button>
     </div>
     <div id="joinPage" style="display: none;">
-        <button id="joinRules">Rules</button>
-        <button id="joinBack">Back</button>
+        <button id="joinRules" onclick="showPage('rulesPage')">Rules</button>
+        <button id="joinBack" onclick="showPage('mainPage')">Back</button>
         <input id="joinKey">
         <input id="joinName">
         <button id="joinGo">Go</button>
     </div> 
     <div id="rulesPage" style="display: none;">
-        <button id="rulesBack">Back</button>
+        <button id="rulesBack" onclick="showPage('mainPage')">Back</button>
     </div>
     <div id="waitPage">
-        <button id="waitRules">Rules</button>
+        <button id="waitRules" onclick="showPage('rulesPage')">Rules</button>
         <div id="waitUsers"></div>
     </div>
     <script src="/main.js"></script>
