@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/main.css">
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
 
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
@@ -38,13 +39,15 @@
     </div>
     <div id="joinPage" style="display: none;">
         <button id="joinRules" onclick="showPage('rulesPage')">Rules</button>
-        <button class="white-bubble" id="joinBack" onclick="showPage('mainPage')">Back</button>
+        <button class="white-bubble" id="joinBack" onclick="showPage('mainPage')">
+            <span class="fa fa-chevron-left"></button>
         <input id="joinKey">
         <input id="joinName">
         <button id="joinGo">Go</button>
     </div> 
     <div id="rulesPage" style="display: none;">
-        <button class="white-bubble" id="rulesBack" onclick="showPage('mainPage')">Back</button>
+        <button class="white-bubble" id="rulesBack" onclick="showPage('mainPage')">
+            <span class="fa fa-chevron-left"></button>
     </div>
     <div id="waitPage" style="display: none;">
         <button id="waitRules" onclick="showPage('rulesPage')">Rules</button>
