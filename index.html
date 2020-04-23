@@ -20,47 +20,58 @@
 <body>
     <div class="page" id="mainPage">
         <div id="mainPage_actions">
-            <button id="mainPage_createRoom" onclick="showPage('createPage')">
+            <button id="mainPage_createRoom">
                 Создать
-            </button><button id="mainPage_joinRoom" onclick="showPage('joinPage')">
+            </button><button id="mainPage_joinRoom">
                 Войти
             </button>
-            <button id="mainPage_viewRules" onclick="showPage('rulesPage')"></button>
+            <button id="mainPage_viewRules"></button>
         </div>
     </div>
     <div class="page" id="createPage" style="display: none;">
-        <button class="white-bubble go-back" id="createPage_goBack" onclick="showPage('mainPage')">
+        <button class="white-bubble go-back" id="createPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="createPage_viewRules" onclick="showPage('rulesPage')">
+        </button><button class="white-bubble view-rules" id="createPage_viewRules">
             Правила
         </button>
         <div class="content-small">
             <div id="createPage_header">
                 <h1 id="createPage_key">Джомолунгма</h1>
-                <p>Это ключ комнаты. Отправьте его друзьям.</p>
-                <button class="small-button bg-blue" id="createPage_copyKey" onclick="copyKey()">Скопировать ключ</button>
+                <p class="hint">Это ключ комнаты. Отправьте его друзьям.</p>
+                <button class="small-button bg-blue" id="createPage_copyKey">Скопировать ключ</button>
             </div>
             <div id="createPage_body">
-                <input id="createPage_inputName" placeholder="Введи имя">
+                <input class="medium-input" id="createPage_inputName" placeholder="Введи своё имя">
+                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
                 <button class="medium-button bg-green" id="createPage_go">Поехали!</button>
             </div>
         </div>
     </div>
     <div class="page" id="joinPage" style="display: none;">
-        <button class="white-bubble go-back" id="joinPage_goBack" onclick="showPage('mainPage')">
+        <button class="white-bubble go-back" id="joinPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="joinPage_viewRules" onclick="showPage('rulesPage')">
+        </button><button class="white-bubble view-rules" id="joinPage_viewRules">
             Правила
         </button>
-        <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+        <div class="content-small">
+            <div id="joinPage_header">
+                <input class="large-input" id="joinPage_inputKey" placeholder="Ключ игры">
+                <p class="hint">Введите ключ, который тебе прислал товарищ</p>
+                <button class="small-button bg-blue" id="joinPage_pasteKey">Вставить ключ</button>
+            </div>
+            <div id="joinPage_body">
+                <input class="medium-input" id="joinPage_inputName" placeholder="Введи своё имя">
+                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
+                <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+            </div>
+        </div>
     </div>
     <div id="rulesPage" style="display: none;">
-        <button class="white-bubble go-back" id="rulesPage_goBack" onclick="showPage('mainPage')"><span class="fa fa-chevron-left"></button>
+        <button class="white-bubble go-back" id="rulesPage_goBack"><span class="fa fa-chevron-left"></button>
     </div>
     <div id="waitPage" style="display: none;">
         <button id="waitPage_viewRules" onclick="showPage('rulesPage')">Rules</button>
         <div id="waitPage_users"></div>
-    </div>
     <script src="/main.js"></script>
 </body>
 
