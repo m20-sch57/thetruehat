@@ -8,7 +8,7 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
-button {
+button, input {
     font-family: inherit;
     outline: 0;
 }
@@ -57,7 +57,23 @@ button {
     border-radius: 25px;
     font-size: 18px;
     line-height: 20px;
-    outline: 0;
+}
+
+.large-input {
+    padding: 10px 20px 10px 20px;
+    background-color: transparent;
+    border-width: 0 0 1px 0;
+    border-color: grey;
+    font-size: 38px;
+    line-height: 40px;
+}
+
+.medium-input:focus, .large-input:focus {
+    border-color: skyblue;
+}
+
+.large-input:focus::placeholder {
+    color: transparent;
 }
 
 .hint {
@@ -216,13 +232,20 @@ button {
     margin-top: 10px;
 }
 
+#joinPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 50px 30px 50px 30px;
+}
+
 #joinPage_body {
-    padding: 70px 30px 0 30px;
+    padding: 0px 30px 0 30px;
 }
 
 #joinPage_inputKey {
     width: 100%;
     text-transform: uppercase;
+    text-align: center;
 }
 
 #joinPage_inputName {
@@ -231,5 +254,5 @@ button {
 
 #joinPage_go {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
 }
