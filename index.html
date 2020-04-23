@@ -18,25 +18,27 @@
 </head>
 <body>
     <div id="mainPage">
-        <button id="mainCreate">
-            Создать игру
-        </button><span id="mainSpacer">
-        </span><button id="mainJoin">
-            Подключиться
-        </button><button class="white-bubble" id="mainRules">
-        </button>
+        <div id="mainActions">
+            <button id="mainCreate">
+                Создать игру
+            </button><button id="mainJoin">
+                Подключиться
+            </button>
+            <button class="white-bubble" id="mainRules"></button>
+        </div>
     </div>
-    <div id="createPage" style="display: none;">
+    <div id="createPage">
         <button class="white-bubble" id="createBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble" id="createRules">
+            Правила
         </button>
-        <span id="createKey">Key</span>
+        <!-- <span id="createKey">Key</span>
         <button id="createCopy">Copy</button>
         <input id="createName">
-        <button id="createGo">Go</button>
+        <button id="createGo">Go</button> -->
     </div>
-    <div id="joinPage" style="display: none;">
+    <!-- <div id="joinPage">
         <button id="joinRules">Rules</button>
         <button class="white-bubble" id="joinBack">Back</button>
         <input id="joinKey">
@@ -49,7 +51,7 @@
     <div id="waitPage">
         <button id="waitRules">Rules</button>
         <div id="waitUsers"></div>
-    </div>
+    </div> -->
     <script src="/main.js"></script>
 </body>
 
