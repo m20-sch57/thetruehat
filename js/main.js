@@ -27,6 +27,8 @@ function addUser(username) {
 function createUserHTML(username) {
     let div = document.createElement("div");
     div.innerHTML = username;
+    div.classList.add("user-item");
+    div.setAttribute("id", `user_${username}`)
     return div
 }
 
@@ -102,6 +104,7 @@ window.onload = function() {
     }
     document.getElementById("createPage_go").onclick = function() {
         key = document.getElementById("createPage_key").innerText;
+        location.hash = key;
         username = document.getElementById("createPage_inputName").value;
         enterRoom(socket, key, username);
     }
