@@ -269,7 +269,7 @@ button, input {
 }
 
 #joinPage_body {
-    padding: 0px 30px 0 30px;
+    padding: 0 30px 0 30px;
 }
 
 #joinPage_inputKey {
@@ -286,4 +286,66 @@ button, input {
 #joinPage_go {
     width: 100%;
     margin-top: 10px;
+}
+
+#rulesPage_header {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+#rulesPage_hatPicture {
+    display: inline-block;
+    height: 200px;
+    width: 200px;
+    margin-top: -75px;
+    background-image: url(\hat.png);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#rulesPage_body {
+    padding: 0 30px 0 30px;
+}
+
+#waitPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 30px 30px;
+}
+
+#waitPage_title {
+    margin-bottom: 0;
+}
+
+#waitPage_body {
+    padding: 0 30px 0 30px;
+}
+
+#waitPage_users {
+    margin-bottom: 30px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+#waitPage_users .user-item {
+    padding: 10px;
+    text-align: center;
+}
+
+#waitPage_users .active {
+    font-weight: bold;
+}
+
+#waitPage_users div:nth-child(odd) {
+    background-image: linear-gradient(90deg, transparent, whitesmoke, transparent);
+}
+
+#waitPage_users div:nth-child(even) {
+    background-image: linear-gradient(90deg, transparent, #ddd, transparent);
+}
+
+#waitPage_start {
+    width: 100%;
 }
