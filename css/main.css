@@ -324,15 +324,26 @@ button, input {
 }
 
 #waitPage_users {
-    padding-bottom: 30px;
+    margin-bottom: 30px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 #waitPage_users .user-item {
     padding: 10px;
+    text-align: center;
 }
 
 #waitPage_users .active {
     font-weight: bold;
+}
+
+#waitPage_users div:nth-child(odd) {
+    background-image: linear-gradient(90deg, transparent, whitesmoke, transparent);
+}
+
+#waitPage_users div:nth-child(even) {
+    background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 
 #waitPage_start {
