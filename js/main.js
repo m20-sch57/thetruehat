@@ -100,6 +100,9 @@ window.onload = function() {
         username = document.getElementById("createPage_inputName").value;
         enterRoom(socket, key, username);
     }
+    document.getElementById("joinPage_inputKey").onkeyup = () => {
+        location.hash = '#' + document.getElementById("joinPage_inputKey").value.toUpperCase();
+    }
     document.getElementById("mainPage_createRoom").onclick = () => showPage('createPage');
     document.getElementById("mainPage_joinRoom").onclick = () => showPage('joinPage');
     document.getElementById("mainPage_viewRules").onclick = () => showPage('rulesPage');
@@ -111,4 +114,5 @@ window.onload = function() {
     document.getElementById("joinPage_pasteKey").onclick = () => pasteKey();
     document.getElementById("rulesPage_goBack").onclick = () => goBack();
     document.getElementById("waitPage_viewRules").onclick = () => showPage('rulesPage');
+
 }
