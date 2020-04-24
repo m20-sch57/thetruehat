@@ -3,6 +3,7 @@ Array.prototype.last = function() {
 }
 
 pageLog = ["mainPage"]
+playersCounter = 0;
 
 function showPage(page) {
     document.getElementById(pageLog.last()).style.display = "none";
@@ -22,6 +23,8 @@ function addUsers(users) {
 
 function addUser(username) {
     document.getElementById("waitPage_users").appendChild(createUserHTML(username));
+    playersCounter += 1;
+    updatePlayersCnt();
 }
 
 function createUserHTML(username) {
@@ -30,6 +33,20 @@ function createUserHTML(username) {
     div.classList.add("user-item");
     div.setAttribute("id", `user_${username}`)
     return div
+}
+
+function updatePlayersCnt() {
+    console.log(playersCounter) 
+    if ([12, 13, 14].indexOf(playersCounter % 100) != -1) {
+        wordPlayers = "игроков";
+    } else if (playersCounter % 10 == 1) {
+        wordPlayers = "игрок";
+    } else if ([2, 3, 4].indexOf(playersCounter % 10) != -1) {
+        wordPlayers = "игрока";
+    } else {
+        wordPlayers = "игроков";
+    }
+    document.getElementById("waitPage_playersCnt").innerText = `${playersCounter} ${wordPlayers}`;
 }
 
 function getKey() {
@@ -48,7 +65,6 @@ function copyLink() {
 }
 
 function pasteKey() {
-
     navigator.clipboard.readText().then(clipText => {
         document.getElementById("joinPage_inputKey").value = clipText;
         location.hash = clipText;
