@@ -73,6 +73,13 @@ function leaveRoom() {
 }
 
 window.onload = function() {
+    if (location.hash != "") {
+        showPage('joinPage');
+        document.getElementById("joinPage_inputKey").value = decodeURIComponent(location.hash.slice(1));
+    } else {
+        showPage('mainPage');
+    }
+
     getKey();
 
     socket = io.connect(`http://${document.domain}:5000`);
