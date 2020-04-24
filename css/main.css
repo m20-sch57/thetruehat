@@ -246,6 +246,7 @@ button, input {
     width: 100%;
     text-transform: uppercase;
     text-align: center;
+    font-weight: bold;
 }
 
 #joinPage_inputName {
