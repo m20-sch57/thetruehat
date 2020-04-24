@@ -7,7 +7,7 @@ pageLog = ["mainPage"]
 function showPage(page) {
     document.getElementById(pageLog.last()).style.display = "none";
     document.getElementById(page).style.display = "";
-    pageLog.push(page)
+    pageLog.push(page);
 }
 
 function goBack() {
@@ -21,7 +21,6 @@ function addUsers(users) {
 }
 
 function addUser(username) {
-    console.log('add user', username)
     document.getElementById("waitPage_users").appendChild(createUserHTML(username));
 }
 
@@ -37,11 +36,21 @@ function getKey() {
         .then(result => document.getElementById("createPage_key").innerHTML = result.key)
 }
 
+function copyKey() {
+    navigator.clipboard.writeText(document.getElementById("createPage_key").innerText);
+}
+
+function pasteKey() {
+    console.log("kek")
+    navigator.clipboard.readText().then(
+        clipText => document.getElementById("joinPage_inputKey").value = clipText)
+}
+
+
 function enterRoom(socket, key, username) {
     fetch(`/${key}/getRoomInfo`)
         .then(response => {console.log(response);return response.json()})
         .then(result => {
-            console.log(result)
             switch(result.status) {
                 case "wait":
                     socket.emit("joinRoom", {"username": username, "key": key});
@@ -63,26 +72,26 @@ function leaveRoom() {
     socket.emit("leaveRoom");
 }
 
-function copyKey() {
-    navigator.clipboard.writeText(document.getElementById("createPage_key").innerText);
-}
-
-function pasteKey() {
-    navigator.clipboard.readText().then(
-        clipText => document.getElementById("joinPage_inputKey").innerText = clipText
-    )
-}
-
 window.onload = function() {
     getKey();
+
     socket = io.connect(`http://${document.domain}:5000`);
+    socket.on("playerJoined", function(data){
+        addUser(data.username);
+    })
+    socket.on("playerLeft", function(data){
+        // removeUser(data.username);
+    })
+
     document.getElementById("joinPage_go").onclick = function() {
-        enterRoom(socket, document.getElementById("joinPage_inputKey").value, 
-                document.getElementById("joinPage_inputName").value);
+        key = document.getElementById("joinPage_inputKey").value;
+        username = document.getElementById("joinPage_inputName").value;
+        enterRoom(socket, key, username);
     }
     document.getElementById("createPage_go").onclick = function() {
-        enterRoom(socket, document.getElementById("createPage_key").innerText, 
-            document.getElementById("createPage_inputName").value);
+        key = document.getElementById("createPage_key").innerText;
+        username = document.getElementById("createPage_inputName").value;
+        enterRoom(socket, key, username);
     }
     document.getElementById("mainPage_createRoom").onclick = () => showPage('createPage');
     document.getElementById("mainPage_joinRoom").onclick = () => showPage('joinPage');
@@ -92,6 +101,7 @@ window.onload = function() {
     document.getElementById("createPage_copyKey").onclick = () => copyKey();
     document.getElementById("joinPage_goBack").onclick = () => goBack();
     document.getElementById("joinPage_viewRules").onclick = () => showPage('rulesPage');
+    document.getElementById("joinPage_pasteKey").onclick = () => pasteKey();
     document.getElementById("rulesPage_goBack").onclick = () => goBack();
     document.getElementById("waitPage_viewRules").onclick = () => showPage('rulesPage');
 }
