@@ -1,9 +1,19 @@
-activePage = "mainPage"
+Array.prototype.last = function() {
+    return this[this.length - 1];
+}
 
-function showPage(pageName) {
-    document.querySelector('#'+activePage).style.display = "none";
-    activePage = pageName;
-    document.querySelector('#'+activePage).style.display = "";
+pageLog = ["mainPage"]
+
+function showPage(page) {
+    document.getElementById(pageLog.last()).style.display = "none";
+    document.getElementById(page).style.display = "";
+    pageLog.push(page)
+}
+
+function goBack() {
+    document.getElementById(pageLog.pop()).style.display = "none";
+    if (pageLog.length == 1) pageLog = ["mainPage"];
+    document.getElementById(pageLog.last()).style.display = "";
 }
 
 function addUsers(users) {
@@ -12,7 +22,7 @@ function addUsers(users) {
 
 function addUser(username) {
     console.log('add user', username)
-    document.querySelector("#waitPage_users").appendChild(createUserHTML(username));
+    document.getElementById("waitPage_users").appendChild(createUserHTML(username));
 }
 
 function createUserHTML(username) {
@@ -24,7 +34,7 @@ function createUserHTML(username) {
 function getKey() {
     fetch("/getFreeKey")
         .then(response => response.json())
-        .then(result => document.querySelector("#createPage_key").innerHTML = result.key)
+        .then(result => document.getElementById("createPage_key").innerHTML = result.key)
 }
 
 function enterRoom(socket, key, username) {
@@ -54,27 +64,34 @@ function leaveRoom() {
 }
 
 function copyKey() {
-    navigator.clipboard.writeText(document.querySelector("#createPage_key").innerText);
+    navigator.clipboard.writeText(document.getElementById("createPage_key").innerText);
+}
+
+function pasteKey() {
+    navigator.clipboard.readText().then(
+        clipText => document.getElementById("joinPage_inputKey").innerText = clipText
+    )
 }
 
 window.onload = function() {
     getKey();
     socket = io.connect(`http://${document.domain}:5000`);
-    document.querySelector("#joinPage_go").onclick = function() {
-        enterRoom(socket, document.querySelector("#joinPage_inputKey").value, document.querySelector("#joinPage_inputName").value);
+    document.getElementById("joinPage_go").onclick = function() {
+        enterRoom(socket, document.getElementById("joinPage_inputKey").value, 
+                document.getElementById("joinPage_inputName").value);
     }
-    document.querySelector("#createPage_go").onclick = function() {
-        console.log(document.querySelector("#createPage_key").innerText);
-        enterRoom(socket, document.querySelector("#createPage_key").innerText, document.querySelector("#createPage_inputName").value);
+    document.getElementById("createPage_go").onclick = function() {
+        enterRoom(socket, document.getElementById("createPage_key").innerText, 
+            document.getElementById("createPage_inputName").value);
     }
-    document.querySelector("#mainPage_createRoom").onclick = () => showPage('createPage');
-    document.querySelector("#mainPage_joinRoom").onclick = () => showPage('joinPage');
-    document.querySelector("#mainPage_viewRules").onclick = () => showPage('rulesPage');
-    document.querySelector("#createPage_goBack").onclick = () => showPage('mainPage');
-    document.querySelector("#createPage_viewRules").onclick = () => showPage('rulesPage');
-    document.querySelector("#createPage_copyKey").onclick = () => copyKey();
-    document.querySelector("#joinPage_goBack").onclick = () => showPage('mainPage');
-    document.querySelector("#joinPage_viewRules").onclick = () => showPage('rulesPage');
-    document.querySelector("#rulesPage_goBack").onclick = () => showPage('mainPage');
-    document.querySelector("#waitPage_viewRules").onclick = () => showPage('rulesPage');
+    document.getElementById("mainPage_createRoom").onclick = () => showPage('createPage');
+    document.getElementById("mainPage_joinRoom").onclick = () => showPage('joinPage');
+    document.getElementById("mainPage_viewRules").onclick = () => showPage('rulesPage');
+    document.getElementById("createPage_goBack").onclick = () => goBack();
+    document.getElementById("createPage_viewRules").onclick = () => showPage('rulesPage');
+    document.getElementById("createPage_copyKey").onclick = () => copyKey();
+    document.getElementById("joinPage_goBack").onclick = () => goBack();
+    document.getElementById("joinPage_viewRules").onclick = () => showPage('rulesPage');
+    document.getElementById("rulesPage_goBack").onclick = () => goBack();
+    document.getElementById("waitPage_viewRules").onclick = () => showPage('rulesPage');
 }
