@@ -219,6 +219,26 @@ button, input {
     margin-bottom: 0;
 }
 
+#createPage_copyKey {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin: 5px 0 0 0;
+}
+
+#createPage_copyKey::after {
+    content: 'Копир. ключ';
+}
+
+#createPage_copyLink {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin: 5px 0 0 -1px;
+}
+
+#createPage_copyLink::after {
+    content: 'Копир. ссылку';
+}
+
 #createPage_body {
     padding: 0 30px 0 30px;
 }
@@ -230,6 +250,16 @@ button, input {
 #createPage_go {
     width: 100%;
     margin-top: 10px;
+}
+
+@media (min-width: 500px) {
+    #createPage_copyKey::after {
+        content: 'Копировать ключ';
+    }
+
+    #createPage_copyLink::after {
+        content: 'Копировать ссылку';
+    }
 }
 
 #joinPage_header {
