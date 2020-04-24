@@ -48,9 +48,11 @@ function copyLink() {
 }
 
 function pasteKey() {
-    console.log("kek")
-    navigator.clipboard.readText().then(
-        clipText => document.getElementById("joinPage_inputKey").value = clipText)
+
+    navigator.clipboard.readText().then(clipText => {
+        document.getElementById("joinPage_inputKey").value = clipText;
+        location.hash = clipText;
+    })
 }
 
 
