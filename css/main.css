@@ -335,7 +335,7 @@ button, input {
 }
 
 #waitPage_users .active {
-    font-weight: bold;
+    text-decoration: underline;
 }
 
 #waitPage_users div:nth-child(odd) {
