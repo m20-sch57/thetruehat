@@ -37,7 +37,7 @@ function createUserHTML(username) {
 
 function updatePlayersCnt() {
     console.log(playersCounter) 
-    if ([12, 13, 14].indexOf(playersCounter % 100) != -1) {
+    if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
         wordPlayers = "игроков";
     } else if (playersCounter % 10 == 1) {
         wordPlayers = "игрок";
