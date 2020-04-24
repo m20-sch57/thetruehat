@@ -40,6 +40,11 @@ function copyKey() {
     navigator.clipboard.writeText(document.getElementById("createPage_key").innerText);
 }
 
+function copyLink() {
+    navigator.clipboard.writeText(`http://${document.domain}:5000/#${
+        document.getElementById("createPage_key").innerText}`)
+}
+
 function pasteKey() {
     console.log("kek")
     navigator.clipboard.readText().then(
@@ -109,6 +114,7 @@ window.onload = function() {
     document.getElementById("createPage_goBack").onclick = () => goBack();
     document.getElementById("createPage_viewRules").onclick = () => showPage('rulesPage');
     document.getElementById("createPage_copyKey").onclick = () => copyKey();
+    document.getElementById("createPage_copyLink").onclick = () => copyLink();
     document.getElementById("joinPage_goBack").onclick = () => goBack();
     document.getElementById("joinPage_viewRules").onclick = () => showPage('rulesPage');
     document.getElementById("joinPage_pasteKey").onclick = () => pasteKey();
