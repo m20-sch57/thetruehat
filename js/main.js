@@ -26,10 +26,12 @@ function leaveRoom(socket) {
 
 function setUsers(users) {
     document.getElementById("waitPage_users").innerHTML = "";
+    playersCounter = 0;
     users.forEach(addUser);
 }
 
 function addUser(username) {
+    console.log(playersCounter, username)
     document.getElementById("waitPage_users").appendChild(createUserHTML(username));
     playersCounter += 1;
     updatePlayersCnt();
@@ -39,6 +41,8 @@ function addUser(username) {
 }
 
 function removeUser(username) {
+    playersCounter -= 1;
+    updatePlayersCnt();
     el = document.getElementById(`user_${username}`);
     el.parentNode.removeChild(el);
 }
@@ -65,7 +69,9 @@ function updatePlayersCnt() {
 }
 
 function newHost(username) {
-    document.getElementById(`user_${username}`).classList.add("host")
+    if (username) {
+        document.getElementById(`user_${username}`).classList.add("host");
+    }
 }
 
 function getKey() {
