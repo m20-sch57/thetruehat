@@ -18,7 +18,14 @@ function goBack() {
     document.getElementById(pageLog.last()).style.display = "";
 }
 
-function addUsers(users) {
+function leaveRoom(socket) {
+    showPage("mainPage");
+    pageLog = ["mainPage"];
+    socket.emit("leaveRoom");
+}
+
+function setUsers(users) {
+    document.getElementById("waitPage_users").innerHTML = "";
     users.forEach(addUser);
 }
 
@@ -93,7 +100,7 @@ function enterRoom(socket, key, username) {
                 case "wait":
                     socket.emit("joinRoom", {"username": username, "key": key});
                     showPage("waitPage");
-                    addUsers(result.playerList);
+                    setUsers(result.playerList);
                     newHost(result.playerList[0]);
                     break; 
                 case "play":
@@ -105,10 +112,6 @@ function enterRoom(socket, key, username) {
                     break;
             }
         })
-}
-
-function leaveRoom() {
-    socket.emit("leaveRoom");
 }
 
 window.onload = function() {
@@ -158,5 +161,5 @@ window.onload = function() {
     document.getElementById("joinPage_pasteKey").onclick = () => pasteKey();
     document.getElementById("rulesPage_goBack").onclick = () => goBack();
     document.getElementById("waitPage_viewRules").onclick = () => showPage('rulesPage');
-
+    document.getElementById("waitPage_goBack").onclick = () => leaveRoom(socket);
 }
