@@ -31,6 +31,11 @@ function addUser(username) {
     }
 }
 
+function removeUser(username) {
+    el = document.getElementById(`user_${username}`);
+    el.parentNode.removeChild(el);
+}
+
 function createUserHTML(username) {
     let div = document.createElement("div");
     div.innerHTML = username;
@@ -121,7 +126,7 @@ window.onload = function() {
         addUser(data.username);
     })
     socket.on("playerLeft", function(data){
-        // removeUser(data.username);
+        removeUser(data.username);
     })
     socket.on("newHost", function(data){
         newHost(data.username);
