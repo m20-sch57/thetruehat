@@ -1,17 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Test Socket IO</title>
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
-<script src="main.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="/main.css">
+
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+
+    <title>Шляпа</title>
 </head>
 <body>
-    <div id="log"></div><br>
-    <input type="text" id="key" value="bhfvhbjfvbhjd" autofocus>
-    <input type="submit" id="setKey" value="Set Key"><br>
-    <input type="text" id="name" value="abc">
-    <input type="submit" id="setName" value="Join">
-    <input type="submit" id="leave" value="Leave">
+    <div class="page" id="mainPage" style="display: none;">
+        <div id="mainPage_actions">
+            <button id="mainPage_createRoom">
+                Создать
+            </button><button id="mainPage_joinRoom">
+                Войти
+            </button>
+            <button id="mainPage_viewRules"></button>
+        </div>
+    </div>
+    <div class="page" id="createPage" style="display: none;">
+        <button class="white-bubble go-back" id="createPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="createPage_viewRules">
+            Правила
+        </button>
+        <div class="content-small">
+            <div id="createPage_header">
+                <h1 id="createPage_key">Джомолунгма</h1>
+                <p class="hint">Это ключ комнаты. Отправь его друзьям.</p>
+                <button class="small-button bg-blue" id="createPage_copyKey">
+                </button><button class="small-button bg-blue" id="createPage_copyLink">
+                </button>
+            </div>
+            <div id="createPage_body">
+                <input class="medium-input" id="createPage_inputName" placeholder="Введи своё имя">
+                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
+                <button class="medium-button bg-green" id="createPage_go">Поехали!</button>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="joinPage" style="display: none;">
+        <button class="white-bubble go-back" id="joinPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="joinPage_viewRules">
+            Правила
+        </button>
+        <div class="content-small">
+            <div id="joinPage_header">
+                <input class="large-input" id="joinPage_inputKey" spellcheck="false" placeholder="Ключ игры">
+                <p class="hint">Введи ключ, который тебе прислал товарищ</p>
+                <button class="small-button bg-blue" id="joinPage_pasteKey">Вставить ключ</button>
+            </div>
+            <div id="joinPage_body">
+                <input class="medium-input" id="joinPage_inputName" placeholder="Введи своё имя">
+                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
+                <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="rulesPage" style="display: none;">
+        <button class="white-bubble go-back" id="rulesPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button>
+        <div class="content-small">
+            <div id="rulesPage_header">
+                <span id="rulesPage_hatPicture"></span>
+            </div>
+            <div id="rulesPage_body">
+                Здесь будут располагаться правила игры "Шляпа"
+            </div>
+        </div>
+    </div>
+    <div class="page" id="waitPage" style="display: none;">
+        <button class="white-bubble go-back" id="waitPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="waitPage_viewRules">
+            Правила
+        </button>
+        <div class="content-small">
+            <div id="waitPage_header">
+                <h1 id="waitPage_title">ФЕДРО</h1>
+                <p class="hint"><span id="waitPage_playersCnt">0</span></p>
+            </div>
+            <div id="waitPage_body">
+                <div id="waitPage_users">
+                </div>
+                <button class="small-button bg-green" id="waitPage_start">Начать игру</button>
+            </div>
+        </div>
+    </div>
+    <script src="/main.js"></script>
 </body>
+
 </html>

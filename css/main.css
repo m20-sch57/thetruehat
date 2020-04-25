@@ -1,47 +1,359 @@
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: rgb(134, 168, 161);
+    height: 100vh;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
 }
 
-.window {
-    padding: 40px 30px 40px 30px;
-    background-color: rgb(220, 221, 158);
+button, input {
+    font-family: inherit;
+    outline: 0;
 }
 
-.title {
-    font-size: 45px;
-    font-weight: lighter;
-    margin-bottom: 0.5em;
+.page {
+    display: flex;
+    height: 100%;
+    background-color: whitesmoke;
 }
 
-.text {
-    font-size: 20px;
-    line-height: 30px;
-    font-weight: lighter;
+.content-small {
+    margin: 100px auto 50px auto;
+    width: 100%;
+    max-width: 500px;
 }
 
-#hat-info {
-    padding: 30px 0 30px 0;
-    text-align: center;
-}
-
-#main-actions {
-    padding: 30px 0 30px 0;
-    text-align: center;
-}
-
-#main-actions button {
+.small-button {
+    padding: 10px 15px 10px 15px;
+    border: 1px solid grey;
+    border-radius: 22px;
+    font-size: 15px;
     margin: 5px;
-    padding: 20px;
-    font-size: 30px;
-    height: 130px;
-    width: 250px;
 }
 
-#main-actions button:hover {
-    box-shadow: 0 0 5px black;
+.medium-button {
+    padding: 15px 20px 15px 20px;
+    border: 1px solid grey;
+    border-radius: 25px;
+    font-size: 20px;
+    line-height: 20px;
 }
 
-#recent-games {
-    padding: 40px 0 20px 0;
+.small-button:hover, .medium-button:hover {
+    background-color: rgb(44, 98, 185);
+    color: whitesmoke;
+    box-shadow: 1px 1px 5px grey;
+}
+
+.small-button:active, .medium-button:active {
+    background-color: rgb(36, 52, 77);
+}
+
+.medium-input {
+    padding: 15px 20px 15px 20px;
+    border: 1px solid grey;
+    border-radius: 25px;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.large-input {
+    padding: 10px 20px 10px 20px;
+    background-color: transparent;
+    border-width: 0 0 1px 0;
+    border-color: grey;
+    font-size: 38px;
+    line-height: 40px;
+}
+
+.medium-input:focus, .large-input:focus {
+    border-color: skyblue;
+}
+
+.large-input:focus::placeholder {
+    color: transparent;
+}
+
+.hint {
+    margin: 5px 20px 15px 20px;
+}
+
+.white-bubble {
+    color: rgb(100, 100, 100);
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid grey;
+    box-shadow: 0 0 3px grey;
+}
+
+.white-bubble:hover {
+    background-color: rgb(233, 233, 233);
+    box-shadow: 0 0 5px grey;
+}
+
+.white-bubble:active {
+    background-color: lightgrey;
+}
+
+.go-back {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    height: 60px;
+    width: 60px;
+    font-size: 20px;
+    padding-left: 2px;
+}
+
+.view-rules {
+    position: absolute;
+    top: -75px;
+    left: calc(50% - 75px);
+    height: 150px;
+    width: 150px;
+    font-size: 20px;
+    padding-top: 50px;
+}
+
+.bg-blue {
+    background-color: lightblue;
+}
+
+.bg-green {
+    background-color: lightgreen;
+}
+
+#mainPage_actions {
+    height: 100%;
+    width: 100%;
+    max-height: 800px;
+    max-width: 400px;
+    margin: auto;
+}
+
+#mainPage_createRoom, #mainPage_joinRoom {
+    position: relative;
+    height: calc(50% + 0.5px);
+    width: 100%;
+    border: 1px solid grey;
+    padding: 30px;
+    font-size: 50px;
+    font-weight: lighter;
+}
+
+#mainPage_createRoom {
+    background-color: rgb(149, 235, 115);
+    color: rgba(0, 0, 0, 0.767);
+    border-radius: 50% 50% 0 0;
+}
+
+#mainPage_joinRoom {
+    background-color: rgb(134, 181, 202);
+    color: rgba(0, 0, 0, 0.767);
+    border-radius: 0 0 50% 50%;
+    margin: -1px 0 0 0;
+}
+
+#mainPage_createRoom:hover {
+    background-color: rgb(162, 236, 87);
+    box-shadow: 0 0 10px seagreen;
+    z-index: 10;
+}
+
+#mainPage_joinRoom:hover {
+    background-color: rgb(116, 181, 224);
+    box-shadow: 0 0 10px royalblue;
+    z-index: 10;
+}
+
+#mainPage_viewRules {
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    border: 1px solid grey;
+    box-shadow: 0 0 3px grey;
+    z-index: 20;
+    background-color: rgb(240, 234, 154);
+    background-image: url(\hat.png);
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#mainPage_viewRules:hover {
+    background-color: rgb(223, 216, 128);
+}
+
+@media (min-width: 1000px) {
+    #mainPage_actions {
+        max-height: 500px;
+        max-width: 1000px;
+    }
+    #mainPage_createRoom, #mainPage_joinRoom {
+        height: 100%;
+        width: calc(50% + 0.5px);
+    }
+    #mainPage_createRoom {
+        border-radius: 50% 0 0 50%;
+    }
+    #mainPage_joinRoom {
+        border-radius: 0 50% 50% 0;
+        margin: 0 0 0 -1px;
+    }
+}
+
+#createPage_header {
+    width: 100%;
     text-align: center;
+    padding: 50px 30px 50px 30px;
+}
+
+#createPage_key {
+    font-size: 40px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+#createPage_copyKey {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin: 5px 0 0 0;
+}
+
+#createPage_copyKey::after {
+    content: 'Копир. ключ';
+}
+
+#createPage_copyLink {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin: 5px 0 0 -1px;
+}
+
+#createPage_copyLink::after {
+    content: 'Копир. ссылку';
+}
+
+#createPage_body {
+    padding: 0 30px 0 30px;
+}
+
+#createPage_inputName {
+    width: 100%;
+}
+
+#createPage_go {
+    width: 100%;
+    margin-top: 10px;
+}
+
+@media (min-width: 500px) {
+    #createPage_copyKey::after {
+        content: 'Копировать ключ';
+    }
+
+    #createPage_copyLink::after {
+        content: 'Копировать ссылку';
+    }
+}
+
+#joinPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 50px 30px 50px 30px;
+}
+
+#joinPage_body {
+    padding: 0 30px 0 30px;
+}
+
+#joinPage_inputKey {
+    width: 100%;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: bold;
+}
+
+#joinPage_inputName {
+    width: 100%;
+}
+
+#joinPage_go {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#rulesPage_header {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+#rulesPage_hatPicture {
+    display: inline-block;
+    height: 200px;
+    width: 200px;
+    margin-top: -75px;
+    background-image: url(\hat.png);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#rulesPage_body {
+    padding: 0 30px 0 30px;
+}
+
+#waitPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 30px 30px;
+}
+
+#waitPage_title {
+    margin-bottom: 0;
+}
+
+#waitPage_body {
+    padding: 0 30px 0 30px;
+}
+
+#waitPage_users {
+    margin-bottom: 30px;
+}
+
+#waitPage_users .spacer {
+    height: 1px;
+}
+
+#waitPage_users .user-item {
+    padding: 10px;
+    text-align: center;
+}
+
+#waitPage_users .host::before {
+    content: '';
+    float: left;
+    height: 25px;
+    width: 25px;
+    background-image: url(\hat.png);
+    background-size: 100%;
+}
+
+#waitPage_users .you::after {
+    content: ' (Ты)';
+    font-weight: bold;
+}
+
+#waitPage_users div:nth-child(odd) {
+    background-image: linear-gradient(90deg, transparent, #ddd, transparent);
+}
+
+#waitPage_start {
+    width: 100%;
 }
