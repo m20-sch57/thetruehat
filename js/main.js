@@ -40,7 +40,6 @@ function createUserHTML(username) {
 }
 
 function updatePlayersCnt() {
-    console.log(playersCounter) 
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
         wordPlayers = "игроков";
     } else if (playersCounter % 10 == 1) {
@@ -51,6 +50,10 @@ function updatePlayersCnt() {
         wordPlayers = "игроков";
     }
     document.getElementById("waitPage_playersCnt").innerText = `${playersCounter} ${wordPlayers}`;
+}
+
+function newHost(username) {
+    document.getElementById(`user_${username}`).classList.add("host")
 }
 
 function getKey() {
@@ -85,7 +88,8 @@ function enterRoom(socket, key, username) {
                 case "wait":
                     socket.emit("joinRoom", {"username": username, "key": key});
                     showPage("waitPage");
-                    addUsers(result.playerList)
+                    addUsers(result.playerList);
+                    newHost(result.playerList[0]);
                     break; 
                 case "play":
                     console.log("Ouups. It's taken.")
@@ -118,6 +122,9 @@ window.onload = function() {
     })
     socket.on("playerLeft", function(data){
         // removeUser(data.username);
+    })
+    socket.on("newHost", function(data){
+        newHost(data.username);
     })
 
     document.getElementById("joinPage_go").onclick = function() {
