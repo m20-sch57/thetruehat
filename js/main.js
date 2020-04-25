@@ -2,8 +2,9 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-pageLog = ["mainPage"]
-playersCounter = 0;
+let pageLog = ["mainPage"];
+let playersCounter = 0;
+let myUsername;
 
 function showPage(page) {
     document.getElementById(pageLog.last()).style.display = "none";
@@ -25,6 +26,9 @@ function addUser(username) {
     document.getElementById("waitPage_users").appendChild(createUserHTML(username));
     playersCounter += 1;
     updatePlayersCnt();
+    if (username == myUsername) {
+        document.getElementById(`user_${username}`).classList.add("you")
+    }
 }
 
 function createUserHTML(username) {
@@ -117,15 +121,15 @@ window.onload = function() {
     })
 
     document.getElementById("joinPage_go").onclick = function() {
-        key = document.getElementById("joinPage_inputKey").value;
-        username = document.getElementById("joinPage_inputName").value;
-        enterRoom(socket, key, username);
+        let key = document.getElementById("joinPage_inputKey").value;
+        myUsername = document.getElementById("joinPage_inputName").value;
+        enterRoom(socket, key, myUsername);
     }
     document.getElementById("createPage_go").onclick = function() {
-        key = document.getElementById("createPage_key").innerText;
+        let key = document.getElementById("createPage_key").innerText;
+        myUsername = document.getElementById("createPage_inputName").value;
         location.hash = key;
-        username = document.getElementById("createPage_inputName").value;
-        enterRoom(socket, key, username);
+        enterRoom(socket, key, myUsername);
     }
     document.getElementById("joinPage_inputKey").onkeyup = () => {
         location.hash = '#' + document.getElementById("joinPage_inputKey").value.toUpperCase();
