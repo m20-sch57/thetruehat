@@ -73,6 +73,7 @@ function pasteKey() {
 
 
 function enterRoom(socket, key, username) {
+    document.getElementById("waitPage_title").innerText = key;
     fetch(`/${key}/getRoomInfo`)
         .then(response => {console.log(response);return response.json()})
         .then(result => {
