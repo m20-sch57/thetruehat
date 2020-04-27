@@ -49,7 +49,7 @@ function removeUser(username) {
 
 function createUserHTML(username) {
     let div = document.createElement("div");
-    div.innerHTML = username;
+    div.innerText = username;
     div.classList.add("user-item");
     div.setAttribute("id", `user_${username}`)
     return div
@@ -77,7 +77,7 @@ function newHost(username) {
 function getKey() {
     fetch("/getFreeKey")
         .then(response => response.json())
-        .then(result => document.getElementById("createPage_key").innerHTML = result.key)
+        .then(result => document.getElementById("createPage_key").innerText = result.key)
 }
 
 function copyKey() {
@@ -121,6 +121,14 @@ function enterRoom(socket, key, username) {
 }
 
 window.onload = function() {
+    if (!(navigator.clipboard && navigator.clipboard.writeText)) {
+        document.getElementById("createPage_copyKey").style.display = "none";
+        document.getElementById("createPage_copyLink").style.display = "none";
+    }
+    if (!(navigator.clipboard && navigator.clipboard.readText && navigator.clipboard.writeText)) {
+        document.getElementById("joinPage_pasteKey").style.display = "none";
+    }
+
     if (location.hash != "") {
         showPage('joinPage');
         document.getElementById("joinPage_inputKey").value = decodeURIComponent(location.hash.slice(1));
