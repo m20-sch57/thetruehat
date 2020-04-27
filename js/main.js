@@ -49,7 +49,7 @@ function removeUser(username) {
 
 function createUserHTML(username) {
     let div = document.createElement("div");
-    div.innerHTML = username;
+    div.innerText = username;
     div.classList.add("user-item");
     div.setAttribute("id", `user_${username}`)
     return div
@@ -77,7 +77,7 @@ function newHost(username) {
 function getKey() {
     fetch("/getFreeKey")
         .then(response => response.json())
-        .then(result => document.getElementById("createPage_key").innerHTML = result.key)
+        .then(result => document.getElementById("createPage_key").innerText = result.key)
 }
 
 function copyKey() {
