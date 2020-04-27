@@ -121,6 +121,12 @@ function enterRoom(socket, key, username) {
 }
 
 window.onload = function() {
+    if (!(navigator.clipboard && navigator.clipboard.readText && navigator.clipboard.writeText)) {
+        document.getElementById("createPage_copyKey").style.display = "none";
+        document.getElementById("createPage_copyLink").style.display = "none";
+        document.getElementById("joinPage_pasteKey").style.display = "none";
+    }
+
     if (location.hash != "") {
         showPage('joinPage');
         document.getElementById("joinPage_inputKey").value = decodeURIComponent(location.hash.slice(1));
