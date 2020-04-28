@@ -1,10 +1,11 @@
 #!/usr/bin/node
+"use strict"
 
 const PORT = 5000;
 
 const express = require("express");
 const app = express();
-const server = require("http").Server(app);
+const server = new (require("http").Server)(app);
 const io = require("socket.io")(server);
 
 server.listen(PORT);
@@ -94,7 +95,7 @@ function getRoom(socket) {
  * Dictionary of active players (users that are in some game rooms)
  * Its keys - socket IDs, its values - usernames.
  */
-players = {};
+const players = {};
 /**
  * Dictionary of game rooms.
  * Its keys - rooms (Socket) IDs, its values - rooms' infos.
@@ -102,7 +103,7 @@ players = {};
  * Room's info is an object that stores list of players in the room in field "players"
  * and string with status of the room in field "status".
  */
-rooms = {};
+const rooms = {};
 
 //----------------------------------------------------------
 // Socket.IO functions
