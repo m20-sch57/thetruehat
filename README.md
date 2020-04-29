@@ -10,7 +10,7 @@ This project supports a web-interface for the game, and a server that will took 
 * Good performance: this project is written on Node.js - one of the fastest frameworks.
 
 ## Installation
-1. Install [Node.js](https://nodejs.org/).
+1. Install [Node.js](https://nodejs.org/)
 1. Download the repo.
 1. Run in a console in the repo directory:
     ```shell script
@@ -18,10 +18,13 @@ This project supports a web-interface for the game, and a server that will took 
     ```
 
 ## Quick start
-Run in a console:
-```shell script
-node server.js
-```
+1. Run in a console:
+    ```shell script
+    node server.js
+    ```
+1. Go by the link [http://localhost:5000](http://localhost:5000)
+1. You can use [site map](docs/site_map.md) to play the game.
+1. Have fun!
 
 ## Documentation
 You can see the documentation [here](docs/main.md).
