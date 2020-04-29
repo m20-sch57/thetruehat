@@ -20,7 +20,9 @@ button, input {
 }
 
 .content-small {
-    margin: 100px auto 50px auto;
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
     width: 100%;
     max-width: 500px;
 }
@@ -30,7 +32,6 @@ button, input {
     border: 1px solid grey;
     border-radius: 22px;
     font-size: 15px;
-    margin: 5px;
 }
 
 .medium-button {
@@ -123,6 +124,10 @@ button, input {
 
 .bg-green {
     background-color: lightgreen;
+}
+
+.bg-red {
+    background-color: lightcoral;
 }
 
 #mainPage_actions {
@@ -356,4 +361,136 @@ button, input {
 
 #waitPage_start {
     width: 100%;
+}
+
+#gamePage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#gamePage_title {
+    margin-bottom: 15px;
+}
+
+#gamePage_wordsCnt {
+    font-style: italic;
+    font-weight: bold;
+}
+
+#gamePage_body {
+    flex-grow: 1;
+    width: 100%;
+    padding: 0 30px 0 30px;
+}
+
+#gamePage_fromTo {
+    display: flex;
+    flex-flow: column;
+    height: 50%;
+}
+
+#gamePage_fromLabel {
+    padding: 10px;
+    margin-top: auto;
+    font-size: large;
+}
+
+#gamePage_from {
+    font-style: italic;
+    font-weight: bold;
+    color: darkgreen;
+}
+
+#gamePage_toLabel {
+    padding: 10px;
+    margin-bottom: auto;
+    font-size: large;
+    text-align: right;
+}
+
+#gamePage_to {
+    font-style: italic;
+    font-weight: bold;
+    color: darkred;
+}
+
+#gamePage_speakerReadyBox, #gamePage_listenerReadyBox {
+    top: 50%;
+    height: 50%;
+}
+
+#gamePage_speakerReadyTitle, #gamePage_listenerReadyTitle {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#gamePage_speakerReadyButton, #gamePage_listenerReadyButton {
+    width: 100%;
+}
+
+#gamePage_observerReadyBox, #gamePage_observerBox {
+    top: 50%;
+    height: 50%;
+    display: flex;
+}
+
+#gamePage_observerReadyTitle, #gamePage_observerTimer {
+    margin: auto;
+}
+
+#gamePage_explanationBox {
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+#gamePage_explanationWord {
+    width: 100%;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 40px;
+    font-weight: lighter;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+#gamePage_explanationTimer {
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: lighter;
+    margin-top: 0;
+    margin-bottom: auto;
+}
+
+#gamePage_explanationActions {
+    width: 100%;
+}
+
+#gamePage_explanationSuccess {
+    width: 100%;
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#gamePage_explanationFailed {
+    width: calc(50% + 0.5px);
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-top: -1px;
+}
+
+#gamePage_explanationMistake {
+    width: calc(50% + 0.5px);
+    border-radius: 10px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-top: -1px;
+    margin-left: -1px;
 }
