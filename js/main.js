@@ -14,7 +14,7 @@ function showPage(page) {
 
 function goBack() {
     document.getElementById(pageLog.pop()).style.display = "none";
-    if (pageLog.length == 1) pageLog = ["mainPage"];
+    if (pageLog.length === 1) pageLog = ["mainPage"];
     document.getElementById(pageLog.last()).style.display = "";
 }
 
@@ -35,7 +35,7 @@ function addUser(username) {
     document.getElementById("waitPage_users").appendChild(createUserHTML(username));
     playersCounter += 1;
     updatePlayersCnt();
-    if (username == myUsername) {
+    if (username === myUsername) {
         document.getElementById(`user_${username}`).classList.add("you")
     }
 }
@@ -43,7 +43,7 @@ function addUser(username) {
 function removeUser(username) {
     playersCounter -= 1;
     updatePlayersCnt();
-    el = document.getElementById(`user_${username}`);
+    const el = document.getElementById(`user_${username}`);
     el.parentNode.removeChild(el);
 }
 
@@ -56,11 +56,12 @@ function createUserHTML(username) {
 }
 
 function updatePlayersCnt() {
-    if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
+    let wordPlayers;
+    if (playersCounter % 100 in [11, 12, 13, 14]) {
         wordPlayers = "игроков";
-    } else if (playersCounter % 10 == 1) {
+    } else if (playersCounter % 10 === 1) {
         wordPlayers = "игрок";
-    } else if ([2, 3, 4].indexOf(playersCounter % 10) != -1) {
+    } else if (playersCounter % 10 in [2, 3, 4]) {
         wordPlayers = "игрока";
     } else {
         wordPlayers = "игроков";
@@ -110,7 +111,7 @@ function enterRoom(socket, key, username) {
                     newHost(result.playerList[0]);
                     break; 
                 case "play":
-                    console.log("Ouups. It's taken.")
+                    console.log("Oops. It's taken.")
                     break;
                 case "end":
                     console.log("Results in MVP-next.")
@@ -129,7 +130,7 @@ window.onload = function() {
         document.getElementById("joinPage_pasteKey").style.display = "none";
     }
 
-    if (location.hash != "") {
+    if (location.hash !== "") {
         showPage('joinPage');
         document.getElementById("joinPage_inputKey").value = decodeURIComponent(location.hash.slice(1));
     } else {
@@ -138,7 +139,7 @@ window.onload = function() {
 
     getKey();
 
-    socket = io.connect(`http://${document.domain}:5000`);
+    const socket = io.connect(`http://${document.domain}:5000`);
     socket.on("playerJoined", function(data){
         addUser(data.username);
     })
