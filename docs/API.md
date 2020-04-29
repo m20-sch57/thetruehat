@@ -124,6 +124,8 @@ __9.__ `io` <a name="sFailure">`sFailure`</a> - сообщение об ошиб
 - `request (string)` - какой запрос не получилось выполнить. (Например `cJoinRoom`).
 - `msg (string)` - причина.
 
+---
+
 #### Игра
 
 __10.__ `io` <a name="cStartGame">`cStartGame`</a> - функция, начинающая игру.
