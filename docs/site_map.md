@@ -50,7 +50,7 @@ Under it you can find a list of players in the room.
 One of them that is marked by an image of a hat, is "host".
 "Host" is only administrator of the room.
 
-Under the list of players there is a button "Start the game" that starts the game.
+Under the list of players host (and only) can see a button "Start the game" that starts the game.
 Pressing it every player in the room goes to the game page.
 
 In the upper left corner you can see button for going to the previous page.
