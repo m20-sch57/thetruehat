@@ -166,7 +166,7 @@ class App {
 
     pasteKey() {
         navigator.clipboard.readText().then(clipText => {
-            setKey(clipText);
+            el("joinPage_inputKey").value = clipText;
         })
     }
 
