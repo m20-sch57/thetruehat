@@ -131,6 +131,7 @@ app.get("/getRoomInfo", function(req, res) {
             break;
 
         case "end":
+            // TODO Implement
             res.json({"success": true, "state": "end"});
             console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
             break;
@@ -258,6 +259,7 @@ io.on("connection", function(socket) {
              * Implementation of sYouJoined signal
              * @see API.md
              */
+            // TODO Implement
             if (rooms[key].state === "wait") {
                 socket.emit("sYouJoined", {"key": key, "state": "wait", "playerList": getPlayerList(rooms[key])});
             } else {
