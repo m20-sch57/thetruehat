@@ -233,6 +233,7 @@ io.on("connection", function(socket) {
                 rooms[key].users.push({"username": name, "sids": [socket.id], "online": true});
             } else {
                 rooms[key].users[pos].sids = [socket.id];
+                rooms[key].users[pos].online = true;
             }
 
             // If this user is the first online user, the user will be the host of the room
