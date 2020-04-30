@@ -26,7 +26,7 @@ app.get("/", function(req, res) {
 
 /**
  * Return playerList structure,
- * @see client_server_interaction.md
+ * @see API.md
  *
  * @param room room object
  * @return list of players
@@ -91,7 +91,7 @@ function getRoom(socket) {
 
 /**
  * Implementation of getFreeKey function
- * @see client_server_interaction.md
+ * @see API.md
  */
 app.get("/getFreeKey", function(req, res) {
     /*
@@ -103,7 +103,7 @@ app.get("/getFreeKey", function(req, res) {
 
 /**
  * Implementation of getRoomInfo function
- * @see client_server_interaction.md
+ * @see API.md
  */
 app.get("/getRoomInfo", function(req, res) {
     const key = req.query.key; // The key of the room
@@ -172,7 +172,7 @@ io.on("connection", function(socket) {
 
     /**
      * Implementation of cJoinRoom function
-     * @see client_server_interaction.md
+     * @see API.md
      */
     socket.on("cJoinRoom", function(ev) {
         // If user is not in his own room, it will be an error
@@ -242,13 +242,13 @@ io.on("connection", function(socket) {
 
             /**
              * Implementation of sPlayerJoined signal
-             * @see client_server_interaction.md
+             * @see API.md
              */
             io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
 
             /**
              * Implementation of sNewHost signal
-             * @see client_server_interaction.md
+             * @see API.md
              */
             if (hostChanged) {
                 io.sockets.to(key).emit("sNewHost", {"username": name});
@@ -256,7 +256,7 @@ io.on("connection", function(socket) {
 
             /**
              * Implementation of sYouJoined signal
-             * @see client_server_interaction.md
+             * @see API.md
              */
             if (rooms[key].state === "wait") {
                 socket.emit("sYouJoined", {"key": key, "state": "wait", "playerList": getPlayerList(rooms[key])});
@@ -268,7 +268,7 @@ io.on("connection", function(socket) {
 
     /**
      * Implementation of cLeaveRoom function
-     * @see client_server_interaction.md
+     * @see API.md
      */
     socket.on("cLeaveRoom", function() {
         const key = getRoom(socket); // Key of user's current room
@@ -302,7 +302,7 @@ io.on("connection", function(socket) {
 
             /**
              * Implementation of sPlayerLeft signal
-             * @see client_server_interaction.md
+             * @see API.md
              */
             io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
             socket.emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
