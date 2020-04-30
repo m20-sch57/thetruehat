@@ -147,6 +147,7 @@ window.onload = function() {
         removeUser(data.username);
     })
     socket.on("sNewHost", function(data){
+        console.log("New host:", data.username);
         newHost(data.username);
     })
     socket.on("sFailure", function(data){
