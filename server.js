@@ -24,10 +24,25 @@ app.get("/", function(req, res) {
 //----------------------------------------------------------
 // Handy functions
 
+/**
+ * Return playerList structure,
+ * @see client_server_interaction.md
+ *
+ * @param room room object
+ * @return list of players
+ */
 function getPlayerList(room) {
     return room.users.map(el => {return {"username": el.username, "online": el.online};});
 }
 
+/**
+ * Finds first position in users array where element has attribute with given value
+ *
+ * @param users users array
+ * @param field attribute
+ * @param val value
+ * @return position if exists else -1
+ */
 function findFirstPos(users, field, val) {
     for (let i = 0; i < users.length; ++i) {
         if (users[i][field] === val) {
@@ -37,6 +52,13 @@ function findFirstPos(users, field, val) {
     return -1;
 }
 
+/**
+ * Finds first position in users array where given socket id is in list of socket ids
+ *
+ * @param users users array
+ * @param sid socket id
+ * @return position if exists else -1
+ */
 function findFirstSidPos(users, sid) {
     for (let i = 0; i < users.length; ++i) {
         if (users[i]["sids"][0] === sid) {
@@ -46,6 +68,12 @@ function findFirstSidPos(users, sid) {
     return -1;
 }
 
+/**
+ * Return current player's room.
+ *
+ * @param socket The socket of the player
+ * @return id of current player's room: his own socket room or game room with him
+ */
 function getRoom(socket) {
     const sid = socket.id;
     const roomsList = Object.keys(socket.rooms);
