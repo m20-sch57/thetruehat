@@ -37,6 +37,15 @@ function findFirstPos(users, field, val) {
     return -1;
 }
 
+function findFirstSidPos(users, sid) {
+    for (let i = 0; i < users.length; ++i) {
+        if (users[i]["sids"][0] === sid) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 function getRoom(socket) {
     const sid = socket.id;
     const roomsList = Object.keys(socket.rooms);
@@ -155,9 +164,12 @@ io.on("connection", function(socket) {
         const name = ev.username; // name of the user
 
         // If username is used, it will be an error
-        if (rooms[key] !== undefined && findFirstPos(rooms[key].users, "username", name) !== -1) {
-            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Username is already used"});
-            return;
+        if (rooms[key] !== undefined) {
+            const pos = findFirstPos(rooms[key].users, "username", name);
+            if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
+                socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Username is already used"});
+                return;
+            }
         }
 
         // Adding the user to the room
@@ -184,13 +196,19 @@ io.on("connection", function(socket) {
                 rooms[key].users = [];
             }
 
-            // If there is no other players in the room, the user will be the host of the room
+            // Adding the user to the room info
+            const pos = findFirstPos(rooms[key].users, "username", name);
+            if (pos === -1) {
+                rooms[key].users.push({"username": name, "sids": [socket.id], "online": true});
+            } else {
+                rooms[key].users[pos].sids = [socket.id];
+            }
+
+            // If this user is the first online user, the user will be the host of the room
             let hostChanged = false;
-            if (findFirstPos(rooms[key].users, "online", true) === -1) {
+            if (findFirstPos(rooms[key].users, "online", true) === findFirstPos(rooms[key].users, "username", name)) {
                 hostChanged = true;
             }
-            // Adding the user to the room info
-            rooms[key].users.push({"username": name, "sids": [socket.id], "online": true});
 
             /**
              * Implementation of sPlayerJoined signal
@@ -206,7 +224,15 @@ io.on("connection", function(socket) {
                 io.sockets.to(key).emit("sNewHost", {"username": name});
             }
 
-            // TODO sYouJoined
+            /**
+             * Implementation of sYouJoined signal
+             * @see client_server_interaction.md
+             */
+            if (rooms[key].state === "wait") {
+                socket.emit("sYouJoined", {"key": key, "state": "wait", "playerList": getPlayerList(rooms[key])});
+            } else {
+                console.log("ERR: cJoinRoom: Not implemented: sYouJoined for states !== 'wait'");
+            }
         });
     });
 
@@ -224,8 +250,8 @@ io.on("connection", function(socket) {
         }
 
         // getting username
-        const usernamePos = findFirstPos(room.users, "sids", [socket.id]);
-        const username = room.users[usernamePos];
+        const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
+        const username = rooms[key].users[usernamePos].username;
 
         // if username is ""
         if (username === "") {
@@ -251,13 +277,16 @@ io.on("connection", function(socket) {
             io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
             socket.emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
 
+            // Saving the position of the current host
+            const pos = findFirstPos(rooms[key].users, "online", true)
+
             // Removing the user from the room info
             rooms[key].users[usernamePos].online = false;
             rooms[key].users[usernamePos].sids = [];
 
             // If the user was the first player in the room, host will be changed
-            if (usernamePos === 0 && findFirstPos(rooms[key].users, "online", true) !== -1) {
-                io.sockets.to(key).emit("sNewHost", {"username": findFirstPos(rooms[key].users, "online", true)});
+            if (findFirstPos(rooms[key].users, "online", true) !== -1 && pos === usernamePos) {
+                io.sockets.to(key).emit("sNewHost", {"username": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
             }
         });
     });

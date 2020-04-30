@@ -21,7 +21,7 @@ function goBack() {
 function leaveRoom(socket) {
     showPage("mainPage");
     pageLog = ["mainPage"];
-    socket.emit("leaveRoom");
+    socket.emit("cLeaveRoom");
 }
 
 function setUsers(users) {
@@ -105,7 +105,7 @@ function enterRoom(socket, key, username) {
         .then(result => {
             switch(result.status) {
                 case "wait":
-                    socket.emit("joinRoom", {"username": username, "key": key});
+                    socket.emit("cJoinRoom", {"username": username, "key": key});
                     showPage("waitPage");
                     setUsers(result.playerList);
                     newHost(result.playerList[0]);
@@ -140,14 +140,21 @@ window.onload = function() {
     getKey();
 
     const socket = io.connect(`http://${document.domain}:5000`);
-    socket.on("playerJoined", function(data){
+    socket.on("sPlayerJoined", function(data){
         addUser(data.username);
     })
-    socket.on("playerLeft", function(data){
+    socket.on("sPlayerLeft", function(data){
         removeUser(data.username);
     })
-    socket.on("newHost", function(data){
+    socket.on("sNewHost", function(data){
+        console.log("New host:", data.username);
         newHost(data.username);
+    })
+    socket.on("sFailure", function(data){
+        console.log(data.request, data.msg);
+    })
+    socket.on("sYouJoined", function(data){
+        console.log(data);
     })
 
     document.getElementById("joinPage_go").onclick = function() {
