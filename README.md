@@ -11,8 +11,8 @@ This project supports a web-interface for the game, and a server that will took 
 
 ## Installation
 1. Install [Node.js](https://nodejs.org/)
-1. Download the repo.
-1. Run in a console in the repo directory:
+1. Download the repository.
+1. Run in a console in the repository directory:
     ```shell script
     npm install
     ```
