@@ -1,4 +1,5 @@
 #!/usr/bin/node
+
 "use strict"
 
 const PORT = 5000;
@@ -50,20 +51,23 @@ app.get("/:key/getRoomInfo", function(req, res) {
     }
 
     const room = rooms[key]; // The room
-    switch (room.status) {
+    switch (room.state) {
         case "wait":
             res.json({"status": "wait",
-                      "playerList": room.players.map(id => players[id])});
+                      "playerList": Object.keys(room.users).map(function(username, ) {
+                          return {"username": username, "online": room.users[username].online}
+                      })});
             break;
 
         case "play":
             res.json({"status": "play",
                       "playerList": room.players.map(id => players[id]),
-                      "roomState": room.roomState})
+                      "roomState": room.roomState});
             break;
 
         case "end":
             res.json({"status": "end"});
+            console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
             break;
 
         default:
@@ -75,33 +79,23 @@ app.get("/:key/getRoomInfo", function(req, res) {
 //----------------------------------------------------------
 
 /**
- * Return current player's room.
- *
- * @param socket The socket of the player
- * @return id of current player's room: his own socket room or game room with him
- */
-function getRoom(socket) {
-    const rooms = Object.keys(socket.rooms);
-    // Searching for the game room with the user
-    for (let i = 0; i < rooms.length; ++i) {
-        if (rooms[i] !== socket.id) {
-            return rooms[i]; // It's found and  returning
-        }
-    }
-    return socket.id; // Nothing found. User's own room is returning
-}
-
-/**
- * Dictionary of active players (users that are in some game rooms)
- * Its keys - socket IDs, its values - usernames.
- */
-const players = {};
-/**
  * Dictionary of game rooms.
- * Its keys - rooms (Socket) IDs, its values - rooms' infos.
+ * Its keys --- keys of rooms, its values --- rooms' infos.
  *
- * Room's info is an object that stores list of players in the room in field "players"
- * and string with status of the room in field "status".
+ * Room's info is an object that has fields:
+ *     - state --- state of the room,
+ *     - users --- dictionary of users, its keys --- usernames, each user has:
+ *         - sids --- socket ids,
+ *         - online --- whether the player is online,
+ * if state === "play":
+ *         - scoreExplained --- no comments,
+ *         - scoreGuessed --- no comments,
+ *     - substate --- substate of the room,
+ *     - words --- list of words in hat,
+ *     - wordState --- dictionsry of words, that aren't in hat, its keys --- words, each has:
+ *         - status --- word status,
+ *     - from --- username of speaker,
+ *     - to --- username of listener.
  */
 const rooms = {};
 
