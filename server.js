@@ -138,16 +138,16 @@ io.on("connection", function(socket) {
     socket.on("cJoinRoom", function(ev) {
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
-            socket.emit("sFailure", {"req": "cJoinRoom", "msg": "You are in room now"});
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "You are in room now"});
             return;
         }
         // If key is "" or name is "", it will be an error
         if (ev.key === "") {
-            socket.emit("sFailure", {"req": "cJoinRoom", "msg": "Invalid key of room"});
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Invalid key of room"});
             return;
         }
         if (ev.username === "") {
-            socket.emit("sFailure", {"req": "cJoinRoom", "msg": "Invalid username"});
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Invalid username"});
             return;
         }
 
@@ -156,7 +156,7 @@ io.on("connection", function(socket) {
 
         // If username is used, it will be an error
         if (rooms[key] !== undefined && findFirstPos(rooms[key].users, "username", name) !== -1) {
-            socket.emit("sFailure", {"req": "cJoinRoom", "msg": "Username is already used"});
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Username is already used"});
             return;
         }
 
@@ -165,12 +165,12 @@ io.on("connection", function(socket) {
             // If any error happened
             if (err) {
                 console.log(err);
-                socket.emit("sFailure", {"req": "joinRoom", "msg": "Failed to join the room"});
+                socket.emit("sFailure", {"request": "joinRoom", "msg": "Failed to join the room"});
                 return;
             }
             // If user haven't joined the room
             if (getRoom(socket) !== key) {
-                socket.emit("sFailure", {"req": "joinRoom", "msg": "Failed to join the room"});
+                socket.emit("sFailure", {"request": "joinRoom", "msg": "Failed to join the room"});
                 return;
             }
 
@@ -219,7 +219,7 @@ io.on("connection", function(socket) {
 
         // If user is only in his own room
         if (key === socket.id) {
-            socket.emit("sFailure", {"req": "cLeaveRoom", "msg": "you aren't in the room"});
+            socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
             return;
         }
 
@@ -229,7 +229,7 @@ io.on("connection", function(socket) {
 
         // if username is ""
         if (username === "") {
-            socket.emit("sFailure", {"req": "cLeaveRoom", "msg": "you aren't in the room"});
+            socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
             return;
         }
 
@@ -237,7 +237,7 @@ io.on("connection", function(socket) {
         socket.leave(key, function(err) {
             // If any error happened
             if (err) {
-                socket.emit("sFailure", {"req": "cLeaveRoom", "msg": "failed to leave the room"});
+                socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "failed to leave the room"});
                 return;
             }
 
