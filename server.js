@@ -22,6 +22,15 @@ app.get("/", function(req, res) {
 });
 
 //----------------------------------------------------------
+// Handy functions
+
+function getPlayerList() {
+    return Object.keys(room.users).map(function(username) {
+        return {"username": username, "online": room.users[username].online}
+    })
+}
+
+//----------------------------------------------------------
 // HTTP functions
 
 /**
@@ -54,14 +63,12 @@ app.get("/:key/getRoomInfo", function(req, res) {
     switch (room.state) {
         case "wait":
             res.json({"status": "wait",
-                      "playerList": Object.keys(room.users).map(function(username, ) {
-                          return {"username": username, "online": room.users[username].online}
-                      })});
+                      "playerList": getPlayerList()});
             break;
 
         case "play":
             res.json({"status": "play",
-                      "playerList": room.players.map(id => players[id]),
+                      "playerList": getPlayerList(),
                       "roomState": room.roomState});
             break;
 
