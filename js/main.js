@@ -100,10 +100,10 @@ function pasteKey() {
 
 function enterRoom(socket, key, username) {
     document.getElementById("waitPage_title").innerText = key;
-    fetch(`/${key}/getRoomInfo`)
+    fetch(`/getRoomInfo?key=${key}`)
         .then(response => {console.log(response);return response.json()})
         .then(result => {
-            switch(result.status) {
+            switch(result.state) {
                 case "wait":
                     socket.emit("cJoinRoom", {"username": username, "key": key});
                     showPage("waitPage");

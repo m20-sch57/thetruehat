@@ -105,12 +105,18 @@ app.get("/getFreeKey", function(req, res) {
  * Implementation of getRoomInfo function
  * @see client_server_interaction.md
  */
-app.get("/:key/getRoomInfo", function(req, res) {
-    const key = req.params.key; // The key of the room
+app.get("/getRoomInfo", function(req, res) {
+    const key = req.query.key; // The key of the room
+
+    if (key === "") {
+        res.json({"success": false});
+        return;
+    }
 
     // Case of nonexistent room
     if (!(key in rooms)) {
-        res.json({"status": "wait",
+        res.json({"success": true,
+                  "state": "wait",
                   "playerList": []});
         return;
     }
@@ -118,18 +124,14 @@ app.get("/:key/getRoomInfo", function(req, res) {
     const room = rooms[key]; // The room
     switch (room.state) {
         case "wait":
-            res.json({"status": "wait",
+        case "play":
+            res.json({"success": true,
+                      "state": "wait",
                       "playerList": getPlayerList(room)});
             break;
 
-        case "play":
-            res.json({"status": "play",
-                      "playerList": getPlayerList(room),
-                      "roomState": room.roomState});
-            break;
-
         case "end":
-            res.json({"status": "end"});
+            res.json({"success": true, "state": "end"});
             console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
             break;
 
@@ -155,8 +157,8 @@ app.get("/:key/getRoomInfo", function(req, res) {
  *         - scoreExplained --- no comments,
  *         - scoreGuessed --- no comments,
  *     - substate --- substate of the room,
- *     - words --- list of words in hat,
- *     - wordState --- dictionsry of words, that aren't in hat, its keys --- words, each has:
+ *     - freshWords --- list of words in hat,
+ *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
  *     - from --- username of speaker,
  *     - to --- username of listener.
