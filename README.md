@@ -23,7 +23,7 @@ This project supports a web-interface for the game, and a server that will took 
     node server.js
     ```
 1. Go by the link [http://localhost:5000](http://localhost:5000)
-1. You can use [site map](docs/site_map.md) to play the game.
+1. If you need some help with our site, you can use [site map](docs/site_map.md) to play the game.
 1. Have fun!
 
 ## Documentation
