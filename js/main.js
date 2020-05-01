@@ -39,11 +39,14 @@ function template(templateName, arg) {
             div.classList.add("user-item");
             div.setAttribute("id", `user_${arg.username}`);
             return div;
+            break;
     }
 }
 
 class App {
     constructor() {
+        this.debug = true;
+
         this.socket = io.connect(`http://${document.domain}:5000`);
 
         this.pageLog = [];
@@ -63,22 +66,21 @@ class App {
     }
 
     enterRoom() {
-        fetch(`/${this.myRoomKey}/getRoomInfo`)
+        if (this.myRoomKey == "") {
+            console.log("Empty room key");
+            return;
+        }
+        fetch(`/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(result => {
-            console.log(result);
-            if (!result.success) {
+;            if (!result.success) {
                 console.log("Invalid room key");
+                return;
             };
-            switch(result.status) {
+            switch(result.state) {
                 case "wait":
-                    this.socket.emit("joinRoom", 
-                        {"username": this.myUsername, 
-                         "key": this.myRoomKey
-                    });
-                    break; 
                 case "play":
-                    this.socket.emit("joinRoom", 
+                    this.socket.emit("cJoinRoom", 
                         {"username": this.myUsername, 
                          "key": this.myRoomKey
                     });
@@ -90,13 +92,11 @@ class App {
         })
     }
 
-
-
     setKey(value) {
         this.myRoomKey = value;
         location.hash = value;
         el("joinPage_inputKey").value = this.myRoomKey;
-        el("waitPage_title").value = this.myRoomKey;
+        el("waitPage_title").innerText = this.myRoomKey;
     }
 
     showPage(page) {
@@ -118,15 +118,17 @@ class App {
     }
 
     leaveRoom() {
-        this.socket.emit("leaveRoom");
+        this.socket.emit("cLeaveRoom");
         this.goBack();
+        this.roomHost = "";
     }
 
     setPlayers(usernames) {
         el("waitPage_users").innerHTML = "";
         el("waitPage_playersCnt").innerText = 
             `${usernames.length} ${wordPlayers(usernames.length)}`;
-        usernames.forEach(addPlayer);
+        let _this = this;
+        usernames.forEach(username => _this.addPlayer(username))
     }
 
     addPlayer(username) {
@@ -142,7 +144,7 @@ class App {
     // }
 
     setRoomHost(username) {
-        if (this.roomHost) {
+        if (this.roomHost && el(`user_${this.roomHost}`)) {
             el(`user_${this.roomHost}`).classList.remove("host");
         }
         this.roomHost = username;
@@ -188,36 +190,69 @@ class App {
         el("createPage_viewRules").onclick = () => this.showPage('rulesPage');
         el("createPage_copyKey").onclick = () => this.copyKey();
         el("createPage_copyLink").onclick = () => this.copyLink();
+        el("createPage_go").onclick = () => {
+            this.setKey(el("createPage_key").innerText);
+            this.myUsername = el("createPage_inputName").value;
+            this.enterRoom();
+        };
         el("joinPage_goBack").onclick = () => this.goBack();
         el("joinPage_viewRules").onclick = () => this.showPage('rulesPage');
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
+        el("joinPage_go").onclick = () => {
+            this.setKey(el("joinPage_inputKey").value);
+            this.myUsername = el("joinPage_inputName").value;
+            this.enterRoom();
+        }
         el("rulesPage_goBack").onclick = () => this.goBack();
         el("waitPage_viewRules").onclick = () => this.showPage('rulesPage');
         el("waitPage_goBack").onclick = () => this.leaveRoom();
-        el("joinPage_go").onclick = () => {
-            this.setKey(el("joinPage_inputKey").value);
-            this.enterRoom();
-        }
-        el("createPage_go").onclick = () => {
-            this.setKey(el("createPage_key").innerText);
-            this.enterRoom();
-        };
+        el("waitPage_start").onclick = () => this.socket.emit("cStartGame");
     }
 
     setSocketioEventListeners() {
         let _this = this;
-        this.socket.on("playerJoined", function(data) {
-            _this.setPlayers(data.playerList);
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username));
+            if (data.playerList.filter(user => user.online)) {
+                _this.setRoomHost(data.playerList.filter(user => user.online)[0].username);
+            }
         })
-        this.socket.on("playerLeft", function(data) {
-            _this.setPlayers(data.playerList);
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username));
+            if (data.playerList.filter(user => user.online)) {
+                _this.setRoomHost(data.playerList.filter(user => user.online)[0].username);
+            }
         })
-        this.socket.on("newHost", function(data) {
+        this.socket.on("sNewHost", function(data) {
             _this.setRoomHost(data.username);
         })
-        this.socket.on("failure", function(data) {
-            console.log(data);
+        this.socket.on("sYouJoined", function(data) {
+            switch (data.state) {
+                case "wait":
+                    _this.showPage("waitPage");
+                    break;
+            }
         })
+
+        if (this.debug) {
+            this.socket.on("sPlayerJoined", function(data) {
+                console.log("sPlayerJoined", data);
+            })
+            this.socket.on("sPlayerLeft", function(data) {
+                console.log("sPlayerLeft", data);
+            })
+            this.socket.on("sNewHost", function(data) {
+                console.log("sNewHost", data);
+            })
+            this.socket.on("sFailure", function(data) {
+                console.log("sFailure", data);
+            })
+            this.socket.on("sYouJoined", function(data) {
+                console.log("sYouJoined", data);
+            })
+        }
     }
 }
 
