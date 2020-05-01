@@ -141,20 +141,22 @@ window.onload = function() {
 
     const socket = io.connect(`http://${document.domain}:5000`);
     socket.on("sPlayerJoined", function(data){
+        console.log("sPlayerJoined", data);
         addUser(data.username);
     })
     socket.on("sPlayerLeft", function(data){
+        console.log("sPlayerLeft", data);
         removeUser(data.username);
     })
     socket.on("sNewHost", function(data){
-        console.log("New host:", data.username);
+        console.log("sNewHost", data);
         newHost(data.username);
     })
     socket.on("sFailure", function(data){
-        console.log(data.request, data.msg);
+        console.log("sFailurei", data);
     })
     socket.on("sYouJoined", function(data){
-        console.log(data);
+        console.log("sYouJoined", data);
     })
 
     document.getElementById("joinPage_go").onclick = function() {
