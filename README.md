@@ -1,2 +1,2 @@
-# thehat
-Lockdown TheHat project to a well known socializing game web-playable
+# thetruehat
+Lockdown TheTrueHat project to a well known socializing game web-playable

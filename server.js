@@ -1,10 +1,12 @@
 #!/usr/bin/node
 
+"use strict"
+
 const PORT = 5000;
 
 const express = require("express");
 const app = express();
-const server = require("http").Server(app);
+const server = new (require("http").Server)(app);
 const io = require("socket.io")(server);
 
 server.listen(PORT);
@@ -20,11 +22,76 @@ app.get("/", function(req, res) {
 });
 
 //----------------------------------------------------------
+// Handy functions
+
+/**
+ * Return playerList structure,
+ * @see API.md
+ *
+ * @param room room object
+ * @return list of players
+ */
+function getPlayerList(room) {
+    return room.users.map(el => {return {"username": el.username, "online": el.online};});
+}
+
+/**
+ * Finds first position in users array where element has attribute with given value
+ *
+ * @param users users array
+ * @param field attribute
+ * @param val value
+ * @return position if exists else -1
+ */
+function findFirstPos(users, field, val) {
+    for (let i = 0; i < users.length; ++i) {
+        if (users[i][field] === val) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/**
+ * Finds first position in users array where given socket id is in list of socket ids
+ *
+ * @param users users array
+ * @param sid socket id
+ * @return position if exists else -1
+ */
+function findFirstSidPos(users, sid) {
+    for (let i = 0; i < users.length; ++i) {
+        if (users[i]["sids"][0] === sid) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/**
+ * Return current player's room.
+ *
+ * @param socket The socket of the player
+ * @return id of current player's room: his own socket room or game room with him
+ */
+function getRoom(socket) {
+    const sid = socket.id;
+    const roomsList = Object.keys(socket.rooms);
+    // Searching for the game room with the user
+    for (let i = 0; i < roomsList.length; ++i) {
+        if (roomsList[i] !== sid) {
+            return roomsList[i]; // It's found and  returning
+        }
+    }
+    return socket.id; // Nothing found. User's own room is returning
+}
+
+//----------------------------------------------------------
 // HTTP functions
 
 /**
  * Implementation of getFreeKey function
- * @see client_server_interaction.md
+ * @see API.md
  */
 app.get("/getFreeKey", function(req, res) {
     /*
@@ -36,33 +103,37 @@ app.get("/getFreeKey", function(req, res) {
 
 /**
  * Implementation of getRoomInfo function
- * @see client_server_interaction.md
+ * @see API.md
  */
-app.get("/:key/getRoomInfo", function(req, res) {
-    const key = req.params.key; // The key of the room
+app.get("/getRoomInfo", function(req, res) {
+    const key = req.query.key; // The key of the room
+
+    if (key === "") {
+        res.json({"success": false});
+        return;
+    }
 
     // Case of nonexistent room
     if (!(key in rooms)) {
-        res.json({"status": "wait",
+        res.json({"success": true,
+                  "state": "wait",
                   "playerList": []});
         return;
     }
 
     const room = rooms[key]; // The room
-    switch (room.status) {
+    switch (room.state) {
         case "wait":
-            res.json({"status": "wait",
-                      "playerList": room.players.map(id => players[id])});
-            break;
-
         case "play":
-            res.json({"status": "play",
-                      "playerList": room.players.map(id => players[id]),
-                      "roomState": room.roomState})
+            res.json({"success": true,
+                      "state": "wait",
+                      "playerList": getPlayerList(room)});
             break;
 
         case "end":
-            res.json({"status": "end"});
+            // TODO Implement
+            res.json({"success": true, "state": "end"});
+            console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
             break;
 
         default:
@@ -74,35 +145,26 @@ app.get("/:key/getRoomInfo", function(req, res) {
 //----------------------------------------------------------
 
 /**
- * Return current player's room.
- *
- * @param socket The socket of the player
- * @return id of current player's room: his own socket room or game room with him
- */
-function getRoom(socket) {
-    const rooms = Object.keys(socket.rooms);
-    // Searching for the game room with the user
-    for (let i = 0; i < rooms.length; ++i) {
-        if (rooms[i] !== socket.id) {
-            return rooms[i]; // It's found and  returning
-        }
-    }
-    return socket.id; // Nothing found. User's own room is returning
-}
-
-/**
- * Dictionary of active players (users that are in some game rooms)
- * Its keys - socket IDs, its values - usernames.
- */
-players = {};
-/**
  * Dictionary of game rooms.
- * Its keys - rooms (Socket) IDs, its values - rooms' infos.
+ * Its keys --- keys of rooms, its values --- rooms' infos.
  *
- * Room's info is an object that stores list of players in the room in field "players"
- * and string with status of the room in field "status".
+ * Room's info is an object that has fields:
+ *     - state --- state of the room,
+ *     - users --- list of users, each user has:
+ *         - username --- no comments,
+ *         - sids --- socket ids,
+ *         - online --- whether the player is online,
+ * if state === "play":
+ *         - scoreExplained --- no comments,
+ *         - scoreGuessed --- no comments,
+ *     - substate --- substate of the room,
+ *     - freshWords --- list of words in hat,
+ *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
+ *         - status --- word status,
+ *     - from --- username of speaker,
+ *     - to --- username of listener.
  */
-rooms = {};
+const rooms = {};
 
 //----------------------------------------------------------
 // Socket.IO functions
@@ -110,74 +172,123 @@ rooms = {};
 io.on("connection", function(socket) {
 
     /**
-     * Implementation of joinRoom function
-     * @see client_server_interaction.md
+     * Implementation of cJoinRoom function
+     * @see API.md
      */
-    socket.on("joinRoom", function(ev) {
+    socket.on("cJoinRoom", function(ev) {
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
-            socket.emit("failure", {"req": "joinRoom", "msg": "You are in room now"});
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "You are in room now"});
             return;
         }
-        // If key is "", it will be an error
+        // If key is "" or name is "", it will be an error
         if (ev.key === "") {
-            socket.emit("failure", {"req": "joinRoom", "msg": "Invalid key of room"});
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Invalid key of room"});
+            return;
+        }
+        if (ev.username === "") {
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Invalid username"});
             return;
         }
 
         const key = ev.key; // key of the room
         const name = ev.username; // name of the user
+
+        // If username is used, it will be an error
+        if (rooms[key] !== undefined) {
+            const pos = findFirstPos(rooms[key].users, "username", name);
+            if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
+                socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Username is already used"});
+                return;
+            }
+        }
+
         // Adding the user to the room
         socket.join(key, function(err) {
             // If any error happened
             if (err) {
                 console.log(err);
-                socket.emit("failure", {"req": "joinRoom", "msg": "Failed to join the room"});
+                socket.emit("sFailure", {"request": "joinRoom", "msg": "Failed to join the room"});
                 return;
             }
             // If user haven't joined the room
             if (getRoom(socket) !== key) {
-                socket.emit("failure", {"req": "joinRoom", "msg": "Failed to join the room"});
+                socket.emit("sFailure", {"request": "joinRoom", "msg": "Failed to join the room"});
                 return;
             }
 
             // Logging the joining
             console.log("Player", name, "joined to", key);
 
-            /**
-             * Implementation of playerJoined signal
-             * @see client_server_interaction.md
-             */
-            io.sockets.to(key).emit("playerJoined", {"username": name});
-
-            // Adding the user to players
-            players[socket.id] = name;
             // If room isn't saved in main dictionary, let's save it and create info about it
             if (!(key in rooms)) {
                 rooms[key] = {};
-                rooms[key].players = [];
-                rooms[key].status = "wait";
-                // may be something else
+                rooms[key].state = "wait";
+                rooms[key].users = [];
             }
-            // If there is no other players in the room, the user will be the host of the room
-            if (rooms[key].players.length === 0) {
-                io.sockets.to(key).emit("newHost", {"username": name});
-            }
+
             // Adding the user to the room info
-            rooms[key].players.push(socket.id);
+            const pos = findFirstPos(rooms[key].users, "username", name);
+            if (pos === -1) {
+                rooms[key].users.push({"username": name, "sids": [socket.id], "online": true});
+            } else {
+                rooms[key].users[pos].sids = [socket.id];
+                rooms[key].users[pos].online = true;
+            }
+
+            // If this user is the first online user, the user will be the host of the room
+            let hostChanged = false;
+            if (findFirstPos(rooms[key].users, "online", true) === findFirstPos(rooms[key].users, "username", name)) {
+                hostChanged = true;
+            }
+
+            /**
+             * Implementation of sPlayerJoined signal
+             * @see API.md
+             */
+            io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
+
+            /**
+             * Implementation of sNewHost signal
+             * @see API.md
+             */
+            if (hostChanged) {
+                io.sockets.to(key).emit("sNewHost", {"username": name});
+            }
+
+            /**
+             * Implementation of sYouJoined signal
+             * @see API.md
+             */
+            // TODO Implement
+            if (rooms[key].state === "wait") {
+                socket.emit("sYouJoined", {"key": key, "state": "wait", "playerList": getPlayerList(rooms[key])});
+            } else {
+                console.log("ERR: cJoinRoom: Not implemented: sYouJoined for states !== 'wait'");
+            }
         });
     });
 
     /**
-     * Implementation of leaveRoom function
-     * @see client_server_interaction.md
+     * Implementation of cLeaveRoom function
+     * @see API.md
      */
-    socket.on("leaveRoom", function() {
+    socket.on("cLeaveRoom", function() {
         const key = getRoom(socket); // Key of user's current room
 
-        // If user is in his own room
+        // If user is only in his own room
         if (key === socket.id) {
-            socket.emit("failure", {"req": "leaveRoom", "msg": "you aren't in the room"});
+            socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
+            return;
+        }
+
+        // getting username
+        const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
+        const username = rooms[key].users[usernamePos].username;
+
+        // if username is ""
+        if (username === "") {
+            socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
             return;
         }
 
@@ -185,37 +296,31 @@ io.on("connection", function(socket) {
         socket.leave(key, function(err) {
             // If any error happened
             if (err) {
-                socket.emit("failure", {"req": "leaveRoom", "msg": "failed to leave the room"});
-                return
+                socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "failed to leave the room"});
+                return;
             }
 
             // Logging the leaving
-            console.log("Player", players[socket.id], "left", key);
+            console.log("Player", username, "left", key);
 
             /**
-             * Implementation of playerLeft signal
-             * @see client_server_interaction.md
+             * Implementation of sPlayerLeft signal
+             * @see API.md
              */
-            io.sockets.to(key).emit("playerLeft", {"username": players[socket.id]});
-            socket.emit("playerLeft", {"username": players[socket.id]});
+            io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
+            socket.emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
 
-            // Removing the user from the players
-            delete players[socket.id];
+            // Saving the position of the current host
+            const pos = findFirstPos(rooms[key].users, "online", true)
 
             // Removing the user from the room info
-            const pos = rooms[key].players.indexOf(socket.id);
-            rooms[key].players.splice(pos, 1);
+            rooms[key].users[usernamePos].online = false;
+            rooms[key].users[usernamePos].sids = [];
 
             // If the user was the first player in the room, host will be changed
-            if (pos === 0 && rooms[key].players.length > 0) {
-                io.sockets.to(key).emit("newHost", {"username": players[rooms[key].players[0]]});
-            }
-
-            // If the room is empty, it will be deleted
-            if (rooms[key].players.length === 0) {
-                delete rooms[key]
+            if (findFirstPos(rooms[key].users, "online", true) !== -1 && pos === usernamePos) {
+                io.sockets.to(key).emit("sNewHost", {"username": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
             }
         });
     });
-
 });
