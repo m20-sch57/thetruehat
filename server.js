@@ -303,13 +303,6 @@ io.on("connection", function(socket) {
             // Logging the leaving
             console.log("Player", username, "left", key);
 
-            /**
-             * Implementation of sPlayerLeft signal
-             * @see API.md
-             */
-            io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
-            socket.emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
-
             // Saving the position of the current host
             const pos = findFirstPos(rooms[key].users, "online", true)
 
@@ -321,6 +314,14 @@ io.on("connection", function(socket) {
             if (findFirstPos(rooms[key].users, "online", true) !== -1 && pos === usernamePos) {
                 io.sockets.to(key).emit("sNewHost", {"username": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
             }
+
+            /**
+             * Implementation of sPlayerLeft signal
+             * @see API.md
+             */
+            // Sending new state of the room.
+            io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
+            socket.emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
         });
     });
 });
