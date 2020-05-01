@@ -118,6 +118,10 @@ button, input {
     width: 150px;
     font-size: 20px;
     padding-top: 50px;
+    background-image: url(\hat.png);
+    background-size: 35%;
+    background-position: center 85px;
+    background-repeat: no-repeat;
 }
 
 .bg-blue {
