@@ -153,7 +153,7 @@ window.onload = function() {
         newHost(data.username);
     })
     socket.on("sFailure", function(data){
-        console.log("sFailurei", data);
+        console.log("sFailure", data);
     })
     socket.on("sYouJoined", function(data){
         console.log("sYouJoined", data);
