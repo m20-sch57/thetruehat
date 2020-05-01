@@ -454,6 +454,7 @@ button, input {
     height: 177px;
     width: 177px;
     color: whitesmoke;
+    user-select: none;
 }
 
 #gamePage_explanationWord {
