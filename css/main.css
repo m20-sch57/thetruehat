@@ -132,6 +132,18 @@ button, input {
     background-color: lightcoral;
 }
 
+.timer-green {
+    background-color: forestgreen;
+}
+
+.timer-yellow {
+    background-color: goldenrod;
+}
+
+.timer-red {
+    background-color: red;
+}
+
 /* Main page */
 
 #mainPage_actions {
@@ -427,6 +439,17 @@ button, input {
     height: 100%;
     display: flex;
     flex-flow: column;
+}
+
+#gamePage_explanationPreviewTimer {
+    text-align: center;
+    font-size: 130px;
+    font-weight: lighter;
+    margin: auto;
+    border-radius: 50%;
+    height: 177px;
+    width: 177px;
+    color: whitesmoke;
 }
 
 #gamePage_explanationWord {
