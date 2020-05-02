@@ -5,7 +5,7 @@
 const PORT = 5000;
 const WORD_NUMBER = 40;
 const DELAY = 3;
-const EXPLANATION_LENGTH = 5;
+const EXPLANATION_LENGTH = 20;
 
 const express = require("express");
 const app = express();
@@ -124,6 +124,24 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
         }
     }
     return {"from": speaker, "to": listener};
+}
+
+/**
+ * start an explanation
+ *
+ * @param key --- key of the room
+ * @return null
+ */
+function startExplanation(key) {
+    rooms[key].substate = "explanation";
+    const date = new Date();
+    const currentTime = date.getTime();
+    rooms[key].startTime = currentTime + DELAY * 1000;
+    setTimeout(function() {
+        io.sockets.to(key).emit("sExplanationEnded", {
+            "wordsCount": rooms[key].freshWords.length});
+    }, (DELAY + EXPLANATION_LENGTH) * 1000);
+    io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
 }
 
 //----------------------------------------------------------
@@ -520,19 +538,36 @@ io.on("connection", function(socket) {
     socket.on("cSpeakerReady", function() {
         const key = getRoom(socket); // key of room
 
+        // the game substate must be 'wait'
+        if (rooms[key].substate !== "wait") {
+            socket.emit("sFailure", {
+                "request": "cSpeakerReady",
+                "msg": "game substate isn't 'wait'"});
+            return;
+        }
+
+        // check whether the client is speaker
+        if (rooms[key].users[rooms[key].from].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cSpeakerReady",
+                "msg": "you aren't a speaker"});
+            return;
+        }
+
+        // check if speaker isn't already ready
+        if (rooms[key].speakerReady) {
+            socket.emit("sFailure", {
+                "request": "cSpeakerReady",
+                "msg": "speaker is already ready"});
+            return;
+        }
+
         // setting flag for speaker
         rooms[key].speakerReady = true;
 
         // if listener is ready --- let's start!
         if (rooms[key].listenerReady) {
-            const date = new Date();
-            const currentTime = date.getTime();
-            rooms[key].startTime = currentTime + DELAY * 1000;
-            setTimeout(function() {
-                io.sockets.to(key).emit("sExplanationEnded", {
-                    "wordsCount": rooms[key].freshWords.length});
-            }, (DELAY + EXPLANATION_LENGTH) * 1000);
-            io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+            startExplanation(key);
         }
     });
 
@@ -543,19 +578,36 @@ io.on("connection", function(socket) {
     socket.on("cListenerReady", function() {
         const key = getRoom(socket); // key of room
 
+        // the game substate must be 'wait'
+        if (rooms[key].substate !== "wait") {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "game substate isn't 'wait'"});
+            return;
+        }
+
+        // check whether the client is listener
+        if (rooms[key].users[rooms[key].to].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "you aren't a listener"});
+            return;
+        }
+
+        // check if listener isn't already ready
+        if (rooms[key].listenerReady) {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "listener is already ready"});
+            return;
+        }
+
         // setting flag for speaker
         rooms[key].listenerReady = true;
 
         // if listener is ready --- let's start!
         if (rooms[key].speakerReady) {
-            const date = new Date();
-            const currentTime = date.getTime();
-            rooms[key].startTime = currentTime + DELAY * 1000;
-            setTimeout(function() {
-                io.sockets.to(key).emit("sExplanationEnded", {
-                    "wordsCount": rooms[key].freshWords.length});
-            }, (DELAY + EXPLANATION_LENGTH) * 1000);
-            io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+            startExplanation(key);
         }
     });
 });
