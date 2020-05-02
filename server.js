@@ -400,9 +400,13 @@ io.on("connection", function(socket) {
              * @see API.md
              */
             // Sending new state of the room.
+            let host = "";
+            if (findFirstPos(rooms[key].users, "online", true) !== -1) {
+                host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username;
+            }
             io.sockets.to(key).emit("sPlayerLeft", {
                 "username": username, "playerList": getPlayerList(rooms[key]),
-                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
+                "host": host});
         });
     });
 
