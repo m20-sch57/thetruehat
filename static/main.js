@@ -260,6 +260,40 @@ class App {
             this.socket.on("sExplanationStarted", function(data) {
                 console.log("sExplanationStarted", data);
             })
+            this.socket.on("sGameStarted", function(data) {
+                console.log("sGameStarted", data);
+            })
+            this.socket.on("sNewWord", function(data) {
+                console.log("sNewWord", data);
+            })
+        }
+
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
+        this.socket.on("sYouJoined", function(data) {
+            switch (data.state) {
+                case "wait":
+                    _this.setPlayers(data.playerList.filter(user => user.online)
+                        .map(user => user.username), data.host);
+                    _this.showStartAction(data.host);
+                    _this.showPage("preparationPage");
+                    break;
+            }
+        })
+    }
+
+    setDOMEventListeners() {
+        el("mainPage_createRoom").onclick = () => {
+            this.generateKey();
+            this.showPage('joinPage');
         }
     }
 }
