@@ -73,7 +73,7 @@ class App {
         fetch(`/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(result => {
-;            if (!result.success) {
+             if (!result.success) {
                 console.log("Invalid room key");
                 return;
             };
@@ -152,6 +152,10 @@ class App {
         el(`user_${this.roomHost}`).classList.add("host");
     }
 
+    setMyUsername(username) {
+        this.myUsername = username;
+    }
+
     getKey() {
         fetch("/getFreeKey")
             .then(response => response.json())
@@ -193,7 +197,7 @@ class App {
         el("createPage_copyLink").onclick = () => this.copyLink();
         el("createPage_go").onclick = () => {
             this.setKey(el("createPage_key").innerText);
-            this.myUsername = el("createPage_inputName").value;
+            this.setMyUsername(el("createPage_inputName").value);
             this.enterRoom();
         };
         el("joinPage_goBack").onclick = () => this.goBack();
@@ -201,7 +205,7 @@ class App {
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
         el("joinPage_go").onclick = () => {
             this.setKey(el("joinPage_inputKey").value);
-            this.myUsername = el("joinPage_inputName").value;
+            this.setMyUsername(el("joinPage_inputName").value);
             this.enterRoom();
         }
         el("rulesPage_goBack").onclick = () => this.goBack();
