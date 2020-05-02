@@ -33,7 +33,7 @@ function wordPlayers(playersCounter) {
 
 function template(templateName, arg) {
     switch (templateName) {
-        case "waitPage_user":
+        case "preparationPage_user":
             let div = document.createElement("div");
             div.innerText = arg.username;
             div.classList.add("user-item");
@@ -85,8 +85,8 @@ class App {
     }
 
     setPlayers(usernames, host) {
-        el("waitPage_users").innerHTML = "";
-        el("waitPage_playersCnt").innerText = 
+        el("preparationPage_users").innerHTML = "";
+        el("preparationPage_playersCnt").innerText = 
             `${usernames.length} ${wordPlayers(usernames.length)}`;
         let _this = this;
         usernames.forEach(username => _this.addPlayer(username))
@@ -96,8 +96,8 @@ class App {
     }
 
     addPlayer(username) {
-        el("waitPage_users").appendChild(
-            template("waitPage_user", {"username": username}));
+        el("preparationPage_users").appendChild(
+            template("preparationPage_user", {"username": username}));
         if (username == this.myUsername) {
             el(`user_${username}`).classList.add("you");
         }
@@ -115,7 +115,7 @@ class App {
         this.myRoomKey = value.toUpperCase();
         location.hash = value;
         el("joinPage_inputKey").value = this.myRoomKey;
-        el("waitPage_title").innerText = this.myRoomKey;
+        el("preparationPage_title").innerText = this.myRoomKey;
     }
 
     generateKey() {
@@ -207,7 +207,7 @@ class App {
                 case "wait":
                     _this.setPlayers(data.playerList.filter(user => user.online)
                         .map(user => user.username), data.host);
-                    _this.showPage("waitPage");
+                    _this.showPage("preparationPage");
                     break;
             }
         })
@@ -233,11 +233,11 @@ class App {
             this.enterRoom();
         }
         el("rulesPage_goBack").onclick = () => this.goBack();
-        el("waitPage_viewRules").onclick = () => this.showPage('rulesPage');
-        el("waitPage_goBack").onclick = () => this.leaveRoom();
-        el("waitPage_start").onclick = () => this.socket.emit("cStartGame");
-        el("waitPage_copyKey").onclick = () => this.copyKey();
-        el("waitPage_copyLink").onclick = () => this.copyLink();
+        el("preparationPage_viewRules").onclick = () => this.showPage('rulesPage');
+        el("preparationPage_goBack").onclick = () => this.leaveRoom();
+        el("preparationPage_start").onclick = () => this.socket.emit("cStartGame");
+        el("preparationPage_copyKey").onclick = () => this.copyKey();
+        el("preparationPage_copyLink").onclick = () => this.copyLink();
     }
 }
 
