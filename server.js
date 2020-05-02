@@ -615,4 +615,61 @@ io.on("connection", function(socket) {
             startExplanation(key);
         }
     });
+    
+    socket.on("disconnect", function() {
+        /**
+         * room key can't be acceessed via getRoom(socket)
+         * findFirstSidPos must be used intead
+         */
+
+        let key = [];
+        let username = [];
+        let usernamePos = [];
+        let keys = Object.keys(rooms);
+        // searching for given sid within all rooms
+        for (let i = 0; i < keys.length; ++i) {
+            const users = rooms[keys[i]].users;
+
+            const pos = findFirstSidPos(users, socket.id);
+            if (pos !== -1) {
+                key.push(keys[i]);
+                usernamePos.push(pos);
+                username.push(users[usernamePos].username);
+            }
+        }
+
+        // users wasn't logged in
+        if (key.length === 0) {
+            return;
+        }
+
+        for (let i = 0; i < key.length; ++i) {
+            let _key = key[i];
+            let _username = username[i];
+            let _usernamePos = usernamePos[i];
+            
+            // Logging the disconnection
+            console.log("Player", _username, "disconnected", _key);
+
+            // Saving the position of the current host
+            const pos = findFirstPos(rooms[_key].users, "online", true)
+
+            // Removing the user from the room info
+            rooms[_key].users[_usernamePos].online = false;
+            rooms[_key].users[_usernamePos].sids = [];
+
+            /**
+             * Implementation of sPlayerLeft signal
+             * @see API.md
+             */
+            // Sending new state of the room.
+            let host = "";
+            if (findFirstPos(rooms[_key].users, "online", true) !== -1) {
+                host = rooms[_key].users[findFirstPos(rooms[_key].users, "online", true)].username;
+            }
+            io.sockets.to(_key).emit("sPlayerLeft", {
+                "username": username, "playerList": getPlayerList(rooms[_key]),
+                "host": host});
+        }
+    });
 });
