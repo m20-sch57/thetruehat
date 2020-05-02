@@ -121,7 +121,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
             listener++;
         }
     }
-    return {"from": speaker, "listener": listener};
+    return {"from": speaker, "to": listener};
 }
 
 //----------------------------------------------------------
