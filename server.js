@@ -144,8 +144,8 @@ function startExplanation(key) {
     }, (DELAY + EXPLANATION_LENGTH) * 1000);
     setTimeout(function() {
         io.sockets.to(rooms[key].users[rooms[key].from].sids[0]).emit(
-            "sNewtWord", {"word": rooms[key].word});
-    });
+            "sNewWord", {"word": rooms[key].word});
+    }, DELAY * 1000);
     io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
 }
 
