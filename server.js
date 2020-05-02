@@ -437,6 +437,20 @@ io.on("connection", function(socket) {
             return;
         }
 
+        // Fail if only one user is online
+        let cnt = 0
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                cnt++;
+            }
+        }
+        if (cnt < 2) {
+            socket.emit("sFailure", {
+                "request": "cStartGame", 
+                "msg": "Not enough online users to start the game (at least two required)"});
+            return;
+        }
+
         /**
          * kicking off offline users
          */
