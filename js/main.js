@@ -73,7 +73,7 @@ class App {
         fetch(`/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(result => {
-             if (!result.success) {
+            if (!result.success) {
                 console.log("Invalid room key");
                 return;
             };
