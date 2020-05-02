@@ -3,6 +3,7 @@
 "use strict"
 
 const PORT = 5000;
+const WORD_NUMBER = 40;
 
 const express = require("express");
 const app = express();
@@ -86,6 +87,43 @@ function getRoom(socket) {
     return socket.id; // Nothing found. User's own room is returning
 }
 
+/**
+ * Generate word list by key
+ *
+ * @param key key of the room
+ * @return list of words
+ */
+function generateWords(key) {
+    /*
+    Temporary measures.
+    TODO: proper word generation
+    */
+    let words = [];
+    for (let i = 0; i < WORD_NUMBER; ++i) {
+        words.push(i);
+    }
+    return words;
+}
+
+/**
+ * get next pair of players
+ * @param numberOfPlayers number of players
+ * @param lastSpeaker index of previous speaker
+ * @param lastListener index of precious listener
+ * @return object with fields: from and to --- indices of speaker and listener
+ */
+function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
+    let speaker = (lastSpeaker + 1) % numberOfPlayers;
+    let listener = (lastListener + 1) % numberOfPlayers;
+    if (speaker === 0) {
+        listener = (listener + 1) % numberOfPlayers;
+        if (listener === speaker) {
+            listener++;
+        }
+    }
+    return {"from": speaker, "listener": listener};
+}
+
 //----------------------------------------------------------
 // HTTP functions
 
@@ -117,7 +155,8 @@ app.get("/getRoomInfo", function(req, res) {
     if (!(key in rooms)) {
         res.json({"success": true,
                   "state": "wait",
-                  "playerList": []});
+                  "playerList": [],
+                  "host": ""});
         return;
     }
 
@@ -127,7 +166,8 @@ app.get("/getRoomInfo", function(req, res) {
         case "play":
             res.json({"success": true,
                       "state": "wait",
-                      "playerList": getPlayerList(room)});
+                      "playerList": getPlayerList(room),
+                      "host": room.users[findFirstPos(room.users, "online", true)]});
             break;
 
         case "end":
@@ -154,9 +194,9 @@ app.get("/getRoomInfo", function(req, res) {
  *         - username --- no comments,
  *         - sids --- socket ids,
  *         - online --- whether the player is online,
- * if state === "play":
  *         - scoreExplained --- no comments,
  *         - scoreGuessed --- no comments,
+ * if state === "play":
  *     - substate --- substate of the room,
  *     - freshWords --- list of words in hat,
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
@@ -194,14 +234,23 @@ io.on("connection", function(socket) {
         const key = ev.key; // key of the room
         const name = ev.username; // name of the user
 
-        // If username is used, it will be an error
+        // if room and usrs exist, we should check the user
         if (rooms[key] !== undefined) {
             const pos = findFirstPos(rooms[key].users, "username", name);
+
+            // If username is used, it will be an error
             if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
                 socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Username is already used"});
                 return;
             }
+
+            // If game has started, only logging in can be perfomed
+            if (rooms[key].state === "play" && pos === -1) {
+                socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Game have started, only logging in can be perfomed"});
+                return;
+            }
         }
+
 
         // Adding the user to the room
         socket.join(key, function(err) {
@@ -230,8 +279,10 @@ io.on("connection", function(socket) {
             // Adding the user to the room info
             const pos = findFirstPos(rooms[key].users, "username", name);
             if (pos === -1) {
-                rooms[key].users.push({"username": name, "sids": [socket.id], "online": true});
+                // creating new one
+                rooms[key].users.push({"username": name, "sids": [socket.id], "online": true, "scoreExplained": 0, "scoreGuessed": 0});
             } else {
+                // logging in user
                 rooms[key].users[pos].sids = [socket.id];
                 rooms[key].users[pos].online = true;
             }
@@ -262,7 +313,11 @@ io.on("connection", function(socket) {
              */
             // TODO Implement
             if (rooms[key].state === "wait") {
-                socket.emit("sYouJoined", {"key": key, "state": "wait", "playerList": getPlayerList(rooms[key])});
+                socket.emit("sYouJoined", {"key": key,
+                                           "state": "wait",
+                                           "playerList": getPlayerList(rooms[key]),
+                                           "host": rooms[key].users[findFirstPos(rooms[key].users],
+                                           "online", true)});
             } else {
                 console.log("ERR: cJoinRoom: Not implemented: sYouJoined for states !== 'wait'");
             }
@@ -321,7 +376,77 @@ io.on("connection", function(socket) {
              */
             // Sending new state of the room.
             io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
-            socket.emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
         });
+    });
+
+    /**
+     * Implementation of cStartGame function
+     * @see API.md
+     */
+    socket.on("cStartGame", function() {
+        // acquiring the key
+        const key = getRoom(socket);
+
+        // checking whether siganl owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            console.log("cStartGame: Everyone is offline");
+            socket.emit("sFailure", {"request": "cStartGame", "mgs": "Everyone is offline"});
+            return;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "Only host can start the game"});
+            return;
+        }
+        
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "wait") {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "Game have already started"});
+            return;
+        }
+
+        /**
+         * kicking off offline users
+         */
+        // preparing containers
+        let onlineUsers = [];
+
+        // copying each user in proper container
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                onlineUsers.push(rooms[key].users[i]);
+            }
+        }
+
+        // removing offline users
+        rooms[key].users = onlineUsers;
+
+        /**
+         * preparing room object for the game
+         */
+        // changing state to 'play'
+        rooms[key].state = "play";
+
+        // setting substate to 'wait'
+        rooms[key].substate = "wait";
+
+        // generating word list (later key can affect word list)
+        rooms[key].freshWords = generateWords(key);
+
+        // preparing storage for explained words
+        rooms[key].usedWords = {};
+
+        // preparing 'from' and 'to'
+        const numberOfPlayers = rooms[key].users.length;
+        const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
+        rooms[key].from = nextPair.from;
+        rooms[key].to = nextPair.to;
+
+        /**
+         * Implementation of sGameStarted signal
+         * @see API.md
+         */
+        io.sockets.to(key).emit("sGameStarted", {"from": rooms[key].users[rooms[key].from], "to": rooms[key].users[rooms[key].to]});
     });
 });
