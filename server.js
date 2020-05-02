@@ -246,7 +246,9 @@ io.on("connection", function(socket) {
 
             // If game has started, only logging in can be perfomed
             if (rooms[key].state === "play" && pos === -1) {
-                socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Game have started, only logging in can be perfomed"});
+                socket.emit("sFailure", {
+                    "request": "cJoinRoom",
+                    "msg": "Game have started, only logging in can be perfomed"});
                 return;
             }
         }
@@ -280,7 +282,12 @@ io.on("connection", function(socket) {
             const pos = findFirstPos(rooms[key].users, "username", name);
             if (pos === -1) {
                 // creating new one
-                rooms[key].users.push({"username": name, "sids": [socket.id], "online": true, "scoreExplained": 0, "scoreGuessed": 0});
+                rooms[key].users.push({
+                    "username": name,
+                    "sids": [socket.id],
+                    "online": true,
+                    "scoreExplained": 0,
+                    "scoreGuessed": 0});
             } else {
                 // logging in user
                 rooms[key].users[pos].sids = [socket.id];
@@ -297,14 +304,18 @@ io.on("connection", function(socket) {
              * Implementation of sPlayerJoined signal
              * @see API.md
              */
-            io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key]),
-                                                      "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
+            io.sockets.to(key).emit(
+                "sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key]),
+                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
 
             /**
              * Implementation of sYouJoined signal
              * @see API.md
              */
-            let joinObj = {"key": key, "playerList": getPlayerList(rooms[key]), "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username};
+            let joinObj = {
+                "key": key,
+                "playerList": getPlayerList(rooms[key]),
+                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username};
             switch (rooms[key].state) {
                 case "wait":
                     joinObj.state = "wait";
@@ -389,8 +400,9 @@ io.on("connection", function(socket) {
              * @see API.md
              */
             // Sending new state of the room.
-            io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key]),
-                                                    "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
+            io.sockets.to(key).emit("sPlayerLeft", {
+                "username": username, "playerList": getPlayerList(rooms[key]),
+                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
         });
     });
 
@@ -462,6 +474,8 @@ io.on("connection", function(socket) {
          * Implementation of sGameStarted signal
          * @see API.md
          */
-        io.sockets.to(key).emit("sGameStarted", {"from": rooms[key].users[rooms[key].from].username, "to": rooms[key].users[rooms[key].to].username});
+        io.sockets.to(key).emit("sGameStarted", {
+            "from": rooms[key].users[rooms[key].from].username,
+            "to": rooms[key].users[rooms[key].to].username});
     });
 });
