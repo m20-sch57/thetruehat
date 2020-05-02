@@ -192,21 +192,39 @@ class App {
             this.socket.on("sYouJoined", function(data) {
                 console.log("sYouJoined", data);
             })
+            this.socket.on("sGameStarted", function(data) {
+                console.log("sGameStarted", data);
+            })
         }
 
         this.socket.on("sPlayerJoined", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
+            if (data.host != _this.myUsername) {
+                el("preparationPage_start").style.display = "none";
+            } else {
+                el("preparationPage_start").style.display = "";
+            }
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
+            if (data.host != _this.myUsername) {
+                el("preparationPage_start").style.display = "none";
+            } else {
+                el("preparationPage_start").style.display = "";
+            }
         })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
                 case "wait":
                     _this.setPlayers(data.playerList.filter(user => user.online)
                         .map(user => user.username), data.host);
+                    if (data.host != _this.myUsername) {
+                        el("preparationPage_start").style.display = "none";
+                    } else {
+                        el("preparationPage_start").style.display = "";
+                    }
                     _this.showPage("preparationPage");
                     break;
             }
