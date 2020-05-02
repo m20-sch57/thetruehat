@@ -297,13 +297,13 @@ io.on("connection", function(socket) {
              * Implementation of sPlayerJoined signal
              * @see API.md
              */
-            socket.broadcast.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
+            io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
 
             /**
              * Implementation of sYouJoined signal
              * @see API.md
              */
-            let joinObj = {"key": key, "playerList": getPlayerList(rooms[key]), "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)]};
+            let joinObj = {"key": key, "playerList": getPlayerList(rooms[key]), "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username};
             switch (rooms[key].state) {
                 case "wait":
                     break;
