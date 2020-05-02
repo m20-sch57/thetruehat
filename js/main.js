@@ -129,7 +129,7 @@ class App {
             `${usernames.length} ${wordPlayers(usernames.length)}`;
         let _this = this;
         usernames.forEach(username => _this.addPlayer(username))
-        this.setRoomHost(this.roomHost);
+        this.setRoomHost(this.roomHost);''
     }
 
     addPlayer(username) {
@@ -258,6 +258,7 @@ class App {
     }
 }
 
+let app;
 window.onload = function() {
-    let app = new App();
+    app = new App();
 }
