@@ -427,8 +427,9 @@ io.on("connection", function(socket) {
              */
             // Sending new state of the room.
             let host = "";
-            if (findFirstPos(rooms[key].users, "online", true) !== -1) {
-                host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username;
+            const pos = findFirstPos(rooms[key].users, "online", true);
+            if (pos !== -1) {
+                host = rooms[key].users[pos].username;
             }
             io.sockets.to(key).emit("sPlayerLeft", {
                 "username": username, "playerList": getPlayerList(rooms[key]),
@@ -658,8 +659,9 @@ io.on("connection", function(socket) {
              */
             // Sending new state of the room.
             let host = "";
-            if (findFirstPos(rooms[_key].users, "online", true) !== -1) {
-                host = rooms[_key].users[findFirstPos(rooms[_key].users, "online", true)].username;
+            const pos = findFirstPos(rooms[key].users, "online", true);
+            if (pos !== -1) {
+                host = rooms[_key].users[pos].username;
             }
             io.sockets.to(_key).emit("sPlayerLeft", {
                 "username": username, "playerList": getPlayerList(rooms[_key]),
