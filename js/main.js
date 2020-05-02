@@ -65,6 +65,87 @@ class App {
         }
     }
 
+    showPage(page) {
+        if (this.pageLog.length >= 1) {
+            el(this.pageLog.last()).style.display = "none";
+        }
+        el(page).style.display = "";
+        this.pageLog.push(page);
+    }
+
+    goBack() {
+        el(this.pageLog.pop()).style.display = "none";
+        if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
+        el(this.pageLog.last()).style.display = "";
+    }
+
+    leaveRoom() {
+        this.socket.emit("cLeaveRoom");
+        this.goBack();
+    }
+
+    setPlayers(usernames, host) {
+        el("waitPage_users").innerHTML = "";
+        el("waitPage_playersCnt").innerText = 
+            `${usernames.length} ${wordPlayers(usernames.length)}`;
+        let _this = this;
+        usernames.forEach(username => _this.addPlayer(username))
+        if (host) {
+            el(`user_${host}`).classList.add("host");
+        }
+    }
+
+    addPlayer(username) {
+        el("waitPage_users").appendChild(
+            template("waitPage_user", {"username": username}));
+        if (username == this.myUsername) {
+            el(`user_${username}`).classList.add("you");
+        }
+    }
+
+    // removePlayer(username) {
+    //     deleteNode(el(`user_${username}`));
+    // }
+
+    setMyUsername(username) {
+        this.myUsername = username;
+    }
+
+    setKey(value) {
+        this.myRoomKey = value.toUpperCase();
+        location.hash = value;
+        el("joinPage_inputKey").value = this.myRoomKey;
+        el("waitPage_title").innerText = this.myRoomKey;
+    }
+
+    generateKey() {
+        fetch("/getFreeKey")
+            .then(response => response.json())
+            .then(result => el("joinPage_inputKey").value = result.key)
+    }
+
+    copyKey() {
+        navigator.clipboard.writeText(this.myRoomKey);
+    }
+
+    copyLink() {
+        navigator.clipboard.writeText(`http://${document.domain}:5000/#${
+            this.myRoomKey}`);
+    }
+
+    pasteKey() {
+        navigator.clipboard.readText().then(clipText => {
+            el("joinPage_inputKey").value = clipText;
+        })
+    }
+
+    checkClipboard() {
+        if (!(navigator.clipboard && navigator.clipboard.readText)) {
+            // el("joinPage_pasteKey").style.display = "none";
+            el("joinPage_pasteKey").setAttribute("disabled", "");
+        }
+    }
+
     enterRoom() {
         if (this.myRoomKey == "") {
             console.log("Empty room key");
@@ -92,151 +173,8 @@ class App {
         })
     }
 
-    setKey(value) {
-        this.myRoomKey = value;
-        location.hash = value;
-        el("joinPage_inputKey").value = this.myRoomKey;
-        el("waitPage_title").innerText = this.myRoomKey;
-    }
-
-    showPage(page) {
-        if (this.pageLog.length >= 1) {
-            el(this.pageLog.last()).style.display = "none";
-        }
-        el(page).style.display = "";
-        this.pageLog.push(page);
-
-        if (page == "createPage") {
-            this.getKey();
-        }
-    }
-
-    goBack() {
-        el(this.pageLog.pop()).style.display = "none";
-        if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
-        el(this.pageLog.last()).style.display = "";
-    }
-
-    leaveRoom() {
-        this.socket.emit("cLeaveRoom");
-        this.goBack();
-        this.roomHost = "";
-    }
-
-    setPlayers(usernames) {
-        el("waitPage_users").innerHTML = "";
-        el("waitPage_playersCnt").innerText = 
-            `${usernames.length} ${wordPlayers(usernames.length)}`;
-        let _this = this;
-        usernames.forEach(username => _this.addPlayer(username))
-        this.setRoomHost(this.roomHost);''
-    }
-
-    addPlayer(username) {
-        el("waitPage_users").appendChild(
-            template("waitPage_user", {"username": username}));
-        if (username == this.myUsername) {
-            el(`user_${username}`).classList.add("you");
-        }
-    }
-
-    // removePlayer(username) {
-    //     deleteNode(el(`user_${username}`));
-    // }
-
-    setRoomHost(username) {
-        if (this.roomHost && el(`user_${this.roomHost}`)) {
-            el(`user_${this.roomHost}`).classList.remove("host");
-        }
-        this.roomHost = username;
-        el(`user_${this.roomHost}`).classList.add("host");
-    }
-
-    setMyUsername(username) {
-        this.myUsername = username;
-    }
-
-    getKey() {
-        fetch("/getFreeKey")
-            .then(response => response.json())
-            .then(result => el("createPage_key").innerText = result.key)
-    }
-
-    copyKey() {
-        navigator.clipboard.writeText(el("createPage_key").innerText);
-    }
-
-    copyLink() {
-        navigator.clipboard.writeText(`http://${document.domain}:5000/#${
-            el("createPage_key").innerText}`);
-    }
-
-    pasteKey() {
-        navigator.clipboard.readText().then(clipText => {
-            el("joinPage_inputKey").value = clipText;
-        })
-    }
-
-    checkClipboard() {
-        if (!(navigator.clipboard && navigator.clipboard.writeText)) {
-            el("createPage_copyKey").style.display = "none";
-            el("createPage_copyLink").style.display = "none";
-        }
-        if (!(navigator.clipboard && navigator.clipboard.readText)) {
-            el("joinPage_pasteKey").style.display = "none";
-        }
-    }
-
-    setDOMEventListeners() {
-        el("mainPage_createRoom").onclick = () => this.showPage('createPage');
-        el("mainPage_joinRoom").onclick = () => this.showPage('joinPage');
-        el("mainPage_viewRules").onclick = () => this.showPage('rulesPage');
-        el("createPage_goBack").onclick = () => this.goBack();
-        el("createPage_viewRules").onclick = () => this.showPage('rulesPage');
-        el("createPage_copyKey").onclick = () => this.copyKey();
-        el("createPage_copyLink").onclick = () => this.copyLink();
-        el("createPage_go").onclick = () => {
-            this.setKey(el("createPage_key").innerText);
-            this.setMyUsername(el("createPage_inputName").value);
-            this.enterRoom();
-        };
-        el("joinPage_goBack").onclick = () => this.goBack();
-        el("joinPage_viewRules").onclick = () => this.showPage('rulesPage');
-        el("joinPage_pasteKey").onclick = () => this.pasteKey();
-        el("joinPage_go").onclick = () => {
-            this.setKey(el("joinPage_inputKey").value);
-            this.setMyUsername(el("joinPage_inputName").value);
-            this.enterRoom();
-        }
-        el("rulesPage_goBack").onclick = () => this.goBack();
-        el("waitPage_viewRules").onclick = () => this.showPage('rulesPage');
-        el("waitPage_goBack").onclick = () => this.leaveRoom();
-        el("waitPage_start").onclick = () => this.socket.emit("cStartGame");
-    }
-
     setSocketioEventListeners() {
         let _this = this;
-        this.socket.on("sPlayerJoined", function(data) {
-            _this.setPlayers(data.playerList.filter(user => user.online)
-                .map(user => user.username));
-        })
-        this.socket.on("sPlayerLeft", function(data) {
-            _this.setPlayers(data.playerList.filter(user => user.online)
-                .map(user => user.username));
-        })
-        this.socket.on("sNewHost", function(data) {
-            _this.setRoomHost(data.username);
-        })
-        this.socket.on("sYouJoined", function(data) {
-            switch (data.state) {
-                case "wait":
-                    if (data.playerList.filter(user => user.online).length >= 1) {
-                        _this.setRoomHost(data.playerList.filter(user => user.online)[0].username);
-                    }
-                    _this.showPage("waitPage");
-                    break;
-            }
-        })
 
         if (this.debug) {
             this.socket.on("sPlayerJoined", function(data) {
@@ -255,6 +193,51 @@ class App {
                 console.log("sYouJoined", data);
             })
         }
+
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+        })
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+        })
+        this.socket.on("sYouJoined", function(data) {
+            switch (data.state) {
+                case "wait":
+                    _this.setPlayers(data.playerList.filter(user => user.online)
+                        .map(user => user.username), data.host);
+                    _this.showPage("waitPage");
+                    break;
+            }
+        })
+    }
+
+    setDOMEventListeners() {
+        el("mainPage_createRoom").onclick = () => {
+            this.generateKey();
+            this.showPage('joinPage');
+        }
+        el("mainPage_joinRoom").onclick = () => {
+            el("joinPage_inputKey").value = this.myRoomKey;
+            this.showPage('joinPage');
+        }
+        el("mainPage_viewRules").onclick = () => this.showPage('rulesPage');
+        el("joinPage_goBack").onclick = () => this.goBack();
+        el("joinPage_viewRules").onclick = () => this.showPage('rulesPage');
+        el("joinPage_pasteKey").onclick = () => this.pasteKey();
+        el("joinPage_generateKey").onclick = () => this.generateKey();
+        el("joinPage_go").onclick = () => {
+            this.setKey(el("joinPage_inputKey").value);
+            this.setMyUsername(el("joinPage_inputName").value);
+            this.enterRoom();
+        }
+        el("rulesPage_goBack").onclick = () => this.goBack();
+        el("waitPage_viewRules").onclick = () => this.showPage('rulesPage');
+        el("waitPage_goBack").onclick = () => this.leaveRoom();
+        el("waitPage_start").onclick = () => this.socket.emit("cStartGame");
+        el("waitPage_copyKey").onclick = () => this.copyKey();
+        el("waitPage_copyLink").onclick = () => this.copyLink();
     }
 }
 
