@@ -503,9 +503,9 @@ io.on("connection", function(socket) {
          * findFirstSidPos must be used intead
          */
 
-        let key = "";
-        let username = "";
-        let usernamePos = -1;
+        let key = [];
+        let username = [];
+        let usernamePos = [];
         let keys = Object.keys(rooms);
         // searching for given sid within all rooms
         for (let i = 0; i < keys.length; ++i) {
@@ -513,38 +513,44 @@ io.on("connection", function(socket) {
 
             const pos = findFirstSidPos(users, socket.id);
             if (pos !== -1) {
-                key = keys[i];
-                usernamePos = pos;
-                username = users[usernamePos].username;
+                key.push(keys[i]);
+                usernamePos.push(pos);
+                username.push(users[usernamePos].username);
             }
         }
 
         // users wasn't logged in
-        if (key === "") {
+        if (key.length === 0) {
             return;
         }
-        
-        // Logging the disconnection
-        console.log("Player", username, "disconnected", key);
 
-        // Saving the position of the current host
-        const pos = findFirstPos(rooms[key].users, "online", true)
+        for (let i = 0; i < key.length; ++i) {
+            let _key = key[i];
+            let _username = username[i];
+            let _usernamePos = usernamePos[i];
+            
+            // Logging the disconnection
+            console.log("Player", _username, "disconnected", _key);
 
-        // Removing the user from the room info
-        rooms[key].users[usernamePos].online = false;
-        rooms[key].users[usernamePos].sids = [];
+            // Saving the position of the current host
+            const pos = findFirstPos(rooms[_key].users, "online", true)
 
-        /**
-         * Implementation of sPlayerLeft signal
-         * @see API.md
-         */
-        // Sending new state of the room.
-        let host = "";
-        if (findFirstPos(rooms[key].users, "online", true) !== -1) {
-            host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username;
+            // Removing the user from the room info
+            rooms[_key].users[_usernamePos].online = false;
+            rooms[_key].users[_usernamePos].sids = [];
+
+            /**
+             * Implementation of sPlayerLeft signal
+             * @see API.md
+             */
+            // Sending new state of the room.
+            let host = "";
+            if (findFirstPos(rooms[_key].users, "online", true) !== -1) {
+                host = rooms[_key].users[findFirstPos(rooms[_key].users, "online", true)].username;
+            }
+            io.sockets.to(_key).emit("sPlayerLeft", {
+                "username": username, "playerList": getPlayerList(rooms[_key]),
+                "host": host});
         }
-        io.sockets.to(key).emit("sPlayerLeft", {
-            "username": username, "playerList": getPlayerList(rooms[key]),
-            "host": host});
     });
 });
