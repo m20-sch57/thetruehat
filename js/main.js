@@ -254,6 +254,12 @@ class App {
             this.socket.on("sYouJoined", function(data) {
                 console.log("sYouJoined", data);
             })
+            this.socket.on("sExplanationEnded", function(data) {
+                console.log("sExplanationEnded", data);
+            })
+            this.socket.on("sExplanationStarted", function(data) {
+                console.log("sExplanationStarted", data);
+            })
         }
     }
 }

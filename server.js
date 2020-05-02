@@ -4,6 +4,8 @@
 
 const PORT = 5000;
 const WORD_NUMBER = 40;
+const DELAY = 3;
+const EXPLANATION_LENGTH = 5;
 
 const express = require("express");
 const app = express();
@@ -202,7 +204,11 @@ app.get("/getRoomInfo", function(req, res) {
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
  *     - from --- username of speaker,
- *     - to --- username of listener.
+ *     - to --- username of listener,
+ *     - speakerReady --- bool,
+ *     - listenerReady --- bool,
+ *     - word --- current word,
+ *     - endTime --- UTC time of end of explanation (in miliseconds).
  */
 const rooms = {};
 
@@ -332,9 +338,9 @@ io.on("connection", function(socket) {
                             joinObj.substate = "explanation";
                             joinObj.from =  rooms[key].users[rooms[key].from].username;
                             joinObj.to =  rooms[key].users[rooms[key].to].username;
-                            joinObj.endtime = 0;
+                            joinObj.endTime = rooms[key].endTime;
                             if (joinObj.from === name) {
-                                joinObj.word = "";
+                                joinObj.word = rooms[key].word;
                             }
                             break;
                         case "edit":
@@ -482,6 +488,16 @@ io.on("connection", function(socket) {
         // preparing storage for explained words
         rooms[key].usedWords = {};
 
+        // preparing word container
+        rooms[key].word = "";
+
+        // preparing endTime container
+        rooms[key].endTime = 0;
+
+        // preparing flags for 'wait'
+        rooms[key].speakerReady = false;
+        rooms[key].listenerReady = false;
+
         // preparing 'from' and 'to'
         const numberOfPlayers = rooms[key].users.length;
         const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
@@ -495,5 +511,51 @@ io.on("connection", function(socket) {
         io.sockets.to(key).emit("sGameStarted", {
             "from": rooms[key].users[rooms[key].from].username,
             "to": rooms[key].users[rooms[key].to].username});
+    });
+
+    /**
+     * Implementation of cSpeakerReady function
+     * @see API.md
+     */
+    socket.on("cSpeakerReady", function() {
+        const key = getRoom(socket); // key of room
+
+        // setting flag for speaker
+        rooms[key].speakerReady = true;
+
+        // if listener is ready --- let's start!
+        if (rooms[key].listenerReady) {
+            const date = new Date();
+            const currentTime = date.getTime();
+            rooms[key].startTime = currentTime + DELAY * 1000;
+            setTimeout(function() {
+                io.sockets.to(key).emit("sExplanationEnded", {
+                    "wordsCount": rooms[key].freshWords.length});
+            }, (DELAY + EXPLANATION_LENGTH) * 1000);
+            io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+        }
+    });
+
+    /**
+     * Implementation of cListenerReady function
+     * @see API.md
+     */
+    socket.on("cListenerReady", function() {
+        const key = getRoom(socket); // key of room
+
+        // setting flag for speaker
+        rooms[key].listenerReady = true;
+
+        // if listener is ready --- let's start!
+        if (rooms[key].speakerReady) {
+            const date = new Date();
+            const currentTime = date.getTime();
+            rooms[key].startTime = currentTime + DELAY * 1000;
+            setTimeout(function() {
+                io.sockets.to(key).emit("sExplanationEnded", {
+                    "wordsCount": rooms[key].freshWords.length});
+            }, (DELAY + EXPLANATION_LENGTH) * 1000);
+            io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+        }
     });
 });
