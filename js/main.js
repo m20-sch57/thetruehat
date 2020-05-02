@@ -211,6 +211,9 @@ class App {
             this.socket.on("sGameStarted", function(data) {
                 console.log("sGameStarted", data);
             })
+            this.socket.on("sNewWord", function(data) {
+                console.log("sNewWord", data);
+            })
         }
 
         this.socket.on("sPlayerJoined", function(data) {
