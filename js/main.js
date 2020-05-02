@@ -146,6 +146,16 @@ class App {
         }
     }
 
+    showStartAction(host) {
+        if (host != this.myUsername) {
+            el("preparationPage_start").style.display = "none";
+            el("preparationPage_startLabel").style.display = "";
+        } else {
+            el("preparationPage_start").style.display = "";
+            el("preparationPage_startLabel").style.display = "none";
+        }
+    }
+
     enterRoom() {
         if (this.myRoomKey == "") {
             console.log("Empty room key");
@@ -200,31 +210,19 @@ class App {
         this.socket.on("sPlayerJoined", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
-            if (data.host != _this.myUsername) {
-                el("preparationPage_start").style.display = "none";
-            } else {
-                el("preparationPage_start").style.display = "";
-            }
+            _this.showStartAction(data.host);
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
-            if (data.host != _this.myUsername) {
-                el("preparationPage_start").style.display = "none";
-            } else {
-                el("preparationPage_start").style.display = "";
-            }
+            _this.showStartAction(data.host);
         })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
                 case "wait":
                     _this.setPlayers(data.playerList.filter(user => user.online)
                         .map(user => user.username), data.host);
-                    if (data.host != _this.myUsername) {
-                        el("preparationPage_start").style.display = "none";
-                    } else {
-                        el("preparationPage_start").style.display = "";
-                    }
+                    _this.showStartAction(data.host);
                     _this.showPage("preparationPage");
                     break;
             }
