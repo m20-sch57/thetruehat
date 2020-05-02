@@ -607,7 +607,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        // setting flag for speaker
+        // setting flag for listener
         rooms[key].listenerReady = true;
 
         // if listener is ready --- let's start!
