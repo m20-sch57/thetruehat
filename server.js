@@ -496,4 +496,55 @@ io.on("connection", function(socket) {
             "from": rooms[key].users[rooms[key].from].username,
             "to": rooms[key].users[rooms[key].to].username});
     });
+
+    socket.on("disconnect", function() {
+        /**
+         * room key can't be acceessed via getRoom(socket)
+         * findFirstSidPos must be used intead
+         */
+
+        let key = "";
+        let username = "";
+        let usernamePos = -1;
+        let keys = Object.keys(rooms);
+        // searching for given sid within all rooms
+        for (let i = 0; i < keys.length; ++i) {
+            const users = rooms[keys[i]].users;
+
+            const pos = findFirstSidPos(users, socket.id);
+            if (pos !== -1) {
+                key = keys[i];
+                usernamePos = pos;
+                username = users[usernamePos].username;
+            }
+        }
+
+        // users wasn't logged in
+        if (key === "") {
+            return;
+        }
+        
+        // Logging the disconnection
+        console.log("Player", username, "disconnected", key);
+
+        // Saving the position of the current host
+        const pos = findFirstPos(rooms[key].users, "online", true)
+
+        // Removing the user from the room info
+        rooms[key].users[usernamePos].online = false;
+        rooms[key].users[usernamePos].sids = [];
+
+        /**
+         * Implementation of sPlayerLeft signal
+         * @see API.md
+         */
+        // Sending new state of the room.
+        let host = "";
+        if (findFirstPos(rooms[key].users, "online", true) !== -1) {
+            host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username;
+        }
+        io.sockets.to(key).emit("sPlayerLeft", {
+            "username": username, "playerList": getPlayerList(rooms[key]),
+            "host": host});
+    });
 });
