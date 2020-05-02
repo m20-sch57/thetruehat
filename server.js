@@ -297,7 +297,8 @@ io.on("connection", function(socket) {
              * Implementation of sPlayerJoined signal
              * @see API.md
              */
-            io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
+            io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key]),
+                                                      "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
 
             /**
              * Implementation of sYouJoined signal
@@ -309,6 +310,7 @@ io.on("connection", function(socket) {
                     joinObj.state = "wait";
                     break;
                 case "play":
+                    joinObj.state = "play";
                     switch (rooms[key].substate) {
                         case "wait":
                             break;
@@ -322,14 +324,6 @@ io.on("connection", function(socket) {
                     break;
             }
             socket.emit("sYouJoined", joinObj);
-
-            /**
-             * Implementation of sNewHost signal
-             * @see API.md
-             */
-            if (hostChanged) {
-                io.sockets.to(key).emit("sNewHost", {"username": name});
-            }
         });
     });
 
@@ -374,17 +368,13 @@ io.on("connection", function(socket) {
             rooms[key].users[usernamePos].online = false;
             rooms[key].users[usernamePos].sids = [];
 
-            // If the user was the first player in the room, host will be changed
-            if (findFirstPos(rooms[key].users, "online", true) !== -1 && pos === usernamePos) {
-                io.sockets.to(key).emit("sNewHost", {"username": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
-            }
-
             /**
              * Implementation of sPlayerLeft signal
              * @see API.md
              */
             // Sending new state of the room.
-            io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key])});
+            io.sockets.to(key).emit("sPlayerLeft", {"username": username, "playerList": getPlayerList(rooms[key]),
+                                                    "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
         });
     });
 
