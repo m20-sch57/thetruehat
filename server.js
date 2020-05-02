@@ -231,7 +231,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        const key = ev.key; // key of the room
+        const key = ev.key.toLowerCase(); // key of the room
         const name = ev.username; // name of the user
 
         // if room and usrs exist, we should check the user
@@ -297,7 +297,30 @@ io.on("connection", function(socket) {
              * Implementation of sPlayerJoined signal
              * @see API.md
              */
-            io.sockets.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
+            socket.broadcast.to(key).emit("sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key])});
+
+            /**
+             * Implementation of sYouJoined signal
+             * @see API.md
+             */
+            let joinObj = {"key": key, "playerList": getPlayerList(rooms[key]), "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)]};
+            switch (rooms[key].state) {
+                case "wait":
+                    break;
+                case "play":
+                    switch (rooms[key].substate) {
+                        case "wait":
+                            break;
+                        default:
+                            console.log(rooms[key]);
+                            break;
+                    }
+                    break;
+                default:
+                    console.log(rooms[key]);
+                    break;
+            }
+            socket.emit("sYouJoined", joinObj);
 
             /**
              * Implementation of sNewHost signal
@@ -305,21 +328,6 @@ io.on("connection", function(socket) {
              */
             if (hostChanged) {
                 io.sockets.to(key).emit("sNewHost", {"username": name});
-            }
-
-            /**
-             * Implementation of sYouJoined signal
-             * @see API.md
-             */
-            // TODO Implement
-            if (rooms[key].state === "wait") {
-                socket.emit("sYouJoined", {"key": key,
-                                           "state": "wait",
-                                           "playerList": getPlayerList(rooms[key]),
-                                           "host": rooms[key].users[findFirstPos(rooms[key].users],
-                                           "online", true)});
-            } else {
-                console.log("ERR: cJoinRoom: Not implemented: sYouJoined for states !== 'wait'");
             }
         });
     });
