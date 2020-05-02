@@ -306,6 +306,7 @@ io.on("connection", function(socket) {
             let joinObj = {"key": key, "playerList": getPlayerList(rooms[key]), "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username};
             switch (rooms[key].state) {
                 case "wait":
+                    joinObj.state = "wait";
                     break;
                 case "play":
                     switch (rooms[key].substate) {
