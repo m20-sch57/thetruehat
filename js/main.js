@@ -129,6 +129,7 @@ class App {
             `${usernames.length} ${wordPlayers(usernames.length)}`;
         let _this = this;
         usernames.forEach(username => _this.addPlayer(username))
+        this.setRoomHost(this.roomHost);
     }
 
     addPlayer(username) {
@@ -214,16 +215,10 @@ class App {
         this.socket.on("sPlayerJoined", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username));
-            if (data.playerList.filter(user => user.online)) {
-                _this.setRoomHost(data.playerList.filter(user => user.online)[0].username);
-            }
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username));
-            if (data.playerList.filter(user => user.online)) {
-                _this.setRoomHost(data.playerList.filter(user => user.online)[0].username);
-            }
         })
         this.socket.on("sNewHost", function(data) {
             _this.setRoomHost(data.username);
@@ -231,6 +226,9 @@ class App {
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
                 case "wait":
+                    if (data.playerList.filter(user => user.online).length >= 1) {
+                        _this.setRoomHost(data.playerList.filter(user => user.online)[0].username);
+                    }
                     _this.showPage("waitPage");
                     break;
             }
