@@ -294,47 +294,47 @@ button, input {
     padding: 0 30px 0 30px;
 }
 
-/* Wait page */
+/* Preparation page */
 
-#waitPage_header {
+#preparationPage_header {
     width: 100%;
     text-align: center;
     padding: 0 30px 30px 30px;
 }
 
-#waitPage_title {
+#preparationPage_title {
     margin-bottom: 10px;
 }
 
-#waitPage_copyKey {
+#preparationPage_copyKey {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-#waitPage_copyLink {
+#preparationPage_copyLink {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: -1px;
 }
 
-#waitPage_body {
+#preparationPage_body {
     padding: 0 30px 0 30px;
 }
 
-#waitPage_users {
+#preparationPage_users {
     margin-bottom: 30px;
 }
 
-#waitPage_users .spacer {
+#preparationPage_users .spacer {
     height: 1px;
 }
 
-#waitPage_users .user-item {
+#preparationPage_users .user-item {
     padding: 10px;
     text-align: center;
 }
 
-#waitPage_users .host::before {
+#preparationPage_users .host::before {
     content: '';
     float: left;
     height: 25px;
@@ -343,16 +343,16 @@ button, input {
     background-size: 100%;
 }
 
-#waitPage_users .you::after {
+#preparationPage_users .you::after {
     content: ' (Ты)';
     font-weight: bold;
 }
 
-#waitPage_users div:nth-child(odd) {
+#preparationPage_users div:nth-child(odd) {
     background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 
-#waitPage_start {
+#preparationPage_start {
     width: 100%;
 }
 
