@@ -137,10 +137,15 @@ function startExplanation(key) {
     const date = new Date();
     const currentTime = date.getTime();
     rooms[key].startTime = currentTime + DELAY * 1000;
+    rooms[key].word = rooms[key].freshWords.pop();
     setTimeout(function() {
         io.sockets.to(key).emit("sExplanationEnded", {
             "wordsCount": rooms[key].freshWords.length});
     }, (DELAY + EXPLANATION_LENGTH) * 1000);
+    setTimeout(function() {
+        io.sockets.to(rooms[key].users[rooms[key].from].sids[0]).emit(
+            "sNewtWord", {"word": rooms[key].word});
+    });
     io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
 }
 
