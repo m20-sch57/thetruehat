@@ -417,9 +417,6 @@ io.on("connection", function(socket) {
             // Logging the leaving
             console.log("Player", username, "left", key);
 
-            // Saving the position of the current host
-            const pos = findFirstPos(rooms[key].users, "online", true)
-
             // Removing the user from the room info
             rooms[key].users[usernamePos].online = false;
             rooms[key].users[usernamePos].sids = [];
@@ -650,9 +647,6 @@ io.on("connection", function(socket) {
             
             // Logging the disconnection
             console.log("Player", _username, "disconnected", _key);
-
-            // Saving the position of the current host
-            const pos = findFirstPos(rooms[_key].users, "online", true)
 
             // Removing the user from the room info
             rooms[_key].users[_usernamePos].online = false;
