@@ -462,6 +462,6 @@ io.on("connection", function(socket) {
          * Implementation of sGameStarted signal
          * @see API.md
          */
-        io.sockets.to(key).emit("sGameStarted", {"from": rooms[key].users[rooms[key].from], "to": rooms[key].users[rooms[key].to]});
+        io.sockets.to(key).emit("sGameStarted", {"from": rooms[key].users[rooms[key].from].username, "to": rooms[key].users[rooms[key].to].username});
     });
 });
