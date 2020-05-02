@@ -313,6 +313,22 @@ io.on("connection", function(socket) {
                     joinObj.state = "play";
                     switch (rooms[key].substate) {
                         case "wait":
+                            joinObj.substate = "wait";
+                            joinObj.from =  rooms[key].users[rooms[key].from].username;
+                            joinObj.to =  rooms[key].users[rooms[key].to].username;
+                            break;
+                        case "explanation":
+                            joinObj.substate = "explanation";
+                            joinObj.from =  rooms[key].users[rooms[key].from].username;
+                            joinObj.to =  rooms[key].users[rooms[key].to].username;
+                            joinObj.endtime = 0;
+                            if (joinObj.from === name) {
+                                joinObj.word = "";
+                            }
+                            break;
+                        case "edit":
+                            joinObj.substate = "edit";
+                            joinObj.editWords = [];
                             break;
                         default:
                             console.log(rooms[key]);
@@ -446,6 +462,6 @@ io.on("connection", function(socket) {
          * Implementation of sGameStarted signal
          * @see API.md
          */
-        io.sockets.to(key).emit("sGameStarted", {"from": rooms[key].users[rooms[key].from], "to": rooms[key].users[rooms[key].to]});
+        io.sockets.to(key).emit("sGameStarted", {"from": rooms[key].users[rooms[key].from].username, "to": rooms[key].users[rooms[key].to].username});
     });
 });
