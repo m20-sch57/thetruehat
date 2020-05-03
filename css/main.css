@@ -394,33 +394,48 @@ button, input {
     height: 50%;
 }
 
-#gamePage_fromLabel {
-    padding: 10px;
+#gamePage_fromBox {
+    padding: 5px;
     margin-top: auto;
-    margin-bottom: 10px;
+    text-align: left;
+}
+
+#gamePage_fromLabel {
     font-size: 20px;
-    font-weight: lighter;
+    margin-bottom: 0;
 }
 
 #gamePage_from {
-    font-style: italic;
-    font-weight: bold;
-    color: green;
+    font-size: 25px;
+    font-weight: lighter;
+    color: rgb(15, 170, 74);
 }
 
-#gamePage_toLabel {
-    padding: 10px;
-    margin-top: 10px;
+#gamePage_fromHint {
+    font-size: 17px;
+    margin-top: 5px;
+}
+
+#gamePage_toBox {
+    padding: 5px;
     margin-bottom: auto;
-    font-size: 20px;
-    font-weight: lighter;
     text-align: right;
 }
 
+#gamePage_toHint {
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+#gamePage_toLabel {
+    font-size: 20px;
+    margin-top: 0;
+}
+
 #gamePage_to {
-    font-style: italic;
-    font-weight: bold;
-    color: blue;
+    font-size: 25px;
+    font-weight: lighter;
+    color: rgb(0, 140, 255);
 }
 
 #gamePage_speakerReadyBox, #gamePage_listenerReadyBox {
@@ -429,8 +444,10 @@ button, input {
 }
 
 #gamePage_speakerReadyTitle, #gamePage_listenerReadyTitle {
+    font-size: 25px;
+    font-weight: lighter;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 #gamePage_speakerReadyButton, #gamePage_listenerReadyButton {
@@ -445,7 +462,9 @@ button, input {
 
 #gamePage_observerReadyTitle, #gamePage_observerTimer {
     font-size: 25px;
+    font-weight: lighter;
     margin: auto;
+    user-select: none;
 }
 
 #gamePage_explanationBox {
@@ -484,6 +503,7 @@ button, input {
     font-weight: lighter;
     margin-top: 0;
     margin-bottom: auto;
+    user-select: none;
 }
 
 #gamePage_explanationActions {
