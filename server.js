@@ -171,7 +171,7 @@ function finishExplanation(key) {
     rooms[key].word = "";
 
     io.sockets.to(key).emit("sExplanationEnded", {
-        "wordsCount": rooms[key].freshWords});
+        "wordsCount": rooms[key].freshWords.length});
 }
 
 //----------------------------------------------------------
