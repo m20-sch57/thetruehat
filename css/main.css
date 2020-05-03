@@ -44,13 +44,13 @@ button, input {
     line-height: 20px;
 }
 
-.small-button:hover, .medium-button:hover {
+.small-button:hover:enabled, .medium-button:hover:enabled {
     background-color: rgb(44, 98, 185);
     color: whitesmoke;
     box-shadow: 1px 1px 5px grey;
 }
 
-.small-button:active, .medium-button:active {
+.small-button:active:enabled, .medium-button:active:enabled {
     background-color: rgb(36, 52, 77);
 }
 
@@ -332,15 +332,18 @@ button, input {
 }
 
 #preparationPage_users .user-item {
-    padding: 10px;
+    padding: 15px;
+    font-size: 20px;
+    line-height: 20px;
     text-align: center;
 }
 
 #preparationPage_users .host::before {
     content: '';
     float: left;
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
+    margin-right: -20px;
     background-image: url(\hat.png);
     background-size: 100%;
 }
@@ -348,6 +351,18 @@ button, input {
 #preparationPage_users .you::after {
     content: ' (Ты)';
     font-weight: bold;
+}
+
+#preparationPage_users .online:after {
+    content: '\25CF';
+    margin-left: 5px;
+    color: forestgreen;
+}
+
+#preparationPage_users .offline:after {
+    content: '\25CF';
+    margin-left: 5px;
+    color: goldenrod;
 }
 
 #preparationPage_users div:nth-child(even) {
