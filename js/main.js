@@ -17,6 +17,14 @@ function deleteNode(node) {
     node.parentNode.removeChild(node);
 }
 
+function hide(id) {
+    el(id).style.display = "none";
+}
+
+function show(id) {
+    el(id).style.display = "";
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -67,16 +75,16 @@ class App {
 
     showPage(page) {
         if (this.pageLog.length >= 1) {
-            el(this.pageLog.last()).style.display = "none";
+            hide(this.pageLog.last());
         }
         el(page).style.display = "";
         this.pageLog.push(page);
     }
 
     goBack() {
-        el(this.pageLog.pop()).style.display = "none";
+        hide(this.pageLog.pop());
         if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
-        el(this.pageLog.last()).style.display = "";
+        show(this.pageLog.last());
     }
 
     leaveRoom() {
@@ -148,11 +156,11 @@ class App {
 
     showStartAction(host) {
         if (host != this.myUsername) {
-            el("preparationPage_start").style.display = "none";
-            el("preparationPage_startLabel").style.display = "";
+            hide("preparationPage_start");
+            show("preparationPage_startLabel");
         } else {
-            el("preparationPage_start").style.display = "";
-            el("preparationPage_startLabel").style.display = "none";
+            show("preparationPage_start");
+            hide("preparationPage_startLabel");
         }
     }
 
@@ -181,6 +189,37 @@ class App {
                     break;
             }
         })
+    }
+
+    setGameState(state, data) {
+        switch(state) {
+            case "wait":
+                this.hideAllGameActions()
+                switch (this.myUsername) {
+                    case data.listener:
+                        show("gamePage_listenerReadyBox");
+                        break;
+                    case data.speaker:
+                        show("gamePage_speakerReadyBox");
+                        break;
+                    default:
+                        show("gamePage_observerReadyBox");
+                        break;
+                }
+                show("gamePage_fromTo");
+                el("gamePage_from").innerText = data.speaker;
+                el("gamePage_to").innerText = data.listener;
+                break;
+        }
+    }
+
+    hideAllGameActions() {
+        hide("gamePage_fromTo");
+        hide("gamePage_speakerReadyBox");
+        hide("gamePage_listenerReadyBox");
+        hide("gamePage_observerReadyBox");
+        hide("gamePage_observerBox");
+        hide("gamePage_explanationBox");
     }
 
     setSocketioEventListeners() {
@@ -217,6 +256,13 @@ class App {
                     _this.showPage("preparationPage");
                     break;
             }
+        })
+        this.socket.on("sGameStarted", function(data) {
+            _this.setGameState("wait", {
+                "speaker": data.from,
+                "listener": data.to
+            })
+            _this.showPage("gamePage");
         })
     }
 
