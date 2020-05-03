@@ -353,6 +353,14 @@ class App {
                 _this.showStartAction(data.host);
                 _this.showPage("preparationPage");
                 break;
+            case "play":
+                if (data.state == "play") {
+                    this.myRole = (data.from == this.myUsername) ? "speaker" :
+                        (data.to == this.myUsername) ? "listener" : "observer";
+                }
+                _this.setGameState(data.substate, data);
+                _this.showPage("gamePage");
+                break;
             }
         })
         this.socket.on("sGameStarted", function(data) {
