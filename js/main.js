@@ -4,7 +4,34 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-function el(id) {
+const DELAY_TIME = 3000;
+const EXPLANATION_TIME = 20000;
+const AFTERMATH_TIME = 3000;
+
+function animate({timing, draw, duration}) {
+    // Largely taken from https://learn.javascript.ru
+    timing = timing || (time => time);
+    console.log(timing);
+    return new Promise(function(resolve) {
+        let start = performance.now();
+        requestAnimationFrame(function animate(time) {
+            let timeFraction = (time - start) / duration;
+            if (timeFraction > 1) timeFraction = 1;
+
+            let progress = timing(timeFraction);
+
+            draw(progress);
+
+            if (timeFraction < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                return resolve();
+            }
+        });
+    })
+}
+
+function el(id) {   
     return document.getElementById(id);
 }
 
@@ -45,13 +72,13 @@ function wordPlayers(playersCounter) {
 
 function template(templateName, arg) {
     switch (templateName) {
-        case "preparationPage_user":
-            let div = document.createElement("div");
-            div.innerText = arg.username;
-            div.classList.add("user-item");
-            div.setAttribute("id", `user_${arg.username}`);
-            return div;
-            break;
+    case "preparationPage_user":
+        let div = document.createElement("div");
+        div.innerText = arg.username;
+        div.classList.add("user-item");
+        div.setAttribute("id", `user_${arg.username}`);
+        return div;
+        break;
     }
 }
 
@@ -63,6 +90,7 @@ class App {
 
         this.pageLog = [];
         this.myUsername = "";
+        this.myRole = "";
         this.setKey(readLocationHash());
 
         this.checkClipboard();
@@ -123,6 +151,7 @@ class App {
         this.myUsername = username;
     }
 
+
     setKey(value) {
         this.myRoomKey = value.toUpperCase();
         location.hash = value;
@@ -181,44 +210,88 @@ class App {
                 return;
             };
             switch(result.state) {
-                case "wait":
-                case "play":
-                    this.socket.emit("cJoinRoom", 
-                        {"username": this.myUsername, 
-                         "key": this.myRoomKey
-                    });
-                    break; 
-                case "end":
-                    console.log("Results in MVP-next.");
-                    break;
+            case "wait":
+            case "play":
+                this.socket.emit("cJoinRoom", 
+                    {"username": this.myUsername, 
+                     "key": this.myRoomKey
+                });
+                break; 
+            case "end":
+                console.log("Results in MVP-next.");
+                break;
             }
         })
     }
 
     setGameState(state, data) {
         switch(state) {
-            case "wait":
-                this.hideAllGameActions()
-                switch (this.myUsername) {
-                    case data.listener:
-                        show("gamePage_listenerReadyBox");
-                        break;
-                    case data.speaker:
-                        show("gamePage_speakerReadyBox");
-                        break;
-                    default:
-                        show("gamePage_observerReadyBox");
-                        break;
-                }
-                show("gamePage_fromTo");
-                el("gamePage_from").innerText = data.speaker;
-                el("gamePage_to").innerText = data.listener;
+        case "wait":
+            this.hideAllGameActions()
+            switch (this.myUsername) {
+            case data.listener:
+                show("gamePage_listenerReadyBox");
+                this.myRole = "listener";
                 break;
+            case data.speaker:
+                show("gamePage_speakerReadyBox");
+                this.myRole = "speaker";
+                break;
+            default:
+                show("gamePage_observerReadyBox");
+                this.myRole = "observer";
+                break;
+            }
+            show("gamePage_speakerListener");
+            el("gamePage_speaker").innerText = data.speaker;
+            el("gamePage_listener").innerText = data.listener;
+            break;
+        case "explanation":
+        console.log(data.startTime - (new Date()).getTime());
+            setTimeout(() => {
+                console.log("timeout", this);
+                if (this.myRole == "") {
+                    console.log("WARN: empty role");
+                    return;
+                }
+                this.hideAllGameActions()
+                if (this.myRole == 'speaker') {
+                    show("gamePage_explanationDelayBox");
+                    this.animateDelay().then(() => {
+                        hide("gamePage_explanationDelayBox");
+                        show("gamePage_explanationBox");
+                        this.animateTimer().then(() => {
+                            el("gamePage_explanationTimer").innerText = "00:00";
+                        })
+                    })
+                }
+            }, data.startTime - (new Date()).getTime() - DELAY_TIME);
+            break;
         }
     }
 
+    animateDelay() {
+        return animate({
+            duration: DELAY_TIME,
+            draw: (progress) => {
+                el("gamePage_explanationDelayTimer").innerText = 
+                    Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
+            }
+        })
+    }
+
+    animateTimer() {
+        return animate({
+            duration: EXPLANATION_TIME,
+            draw: (progress) => {
+                el("gamePage_explanationTimer").innerText = 
+                    Math.floor((1 - progress) / 1000 * EXPLANATION_TIME) + 1;
+            }
+        })
+    }
+
     hideAllGameActions() {
-        hide("gamePage_fromTo");
+        hide("gamePage_speakerListener");
         hide("gamePage_speakerReadyBox");
         hide("gamePage_listenerReadyBox");
         hide("gamePage_observerReadyBox");
@@ -229,13 +302,13 @@ class App {
     listenerReady() {
         this.socket.emit("cListenerReady");
         disable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innertext = "Подожди напарника"
+        el("gamePage_listenerReadyButton").innerText = "Подожди напарника"
     }
 
     speakerReady() {
         this.socket.emit("cSpeakerReady");
         disable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innertext = "Подожди напарника"
+        el("gamePage_speakerReadyButton").innerText = "Подожди напарника"
     }
 
     setSocketioEventListeners() {
@@ -265,12 +338,12 @@ class App {
         })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
-                case "wait":
-                    _this.setPlayers(data.playerList.filter(user => user.online)
-                        .map(user => user.username), data.host);
-                    _this.showStartAction(data.host);
-                    _this.showPage("preparationPage");
-                    break;
+            case "wait":
+                _this.setPlayers(data.playerList.filter(user => user.online)
+                    .map(user => user.username), data.host);
+                _this.showStartAction(data.host);
+                _this.showPage("preparationPage");
+                break;
             }
         })
         this.socket.on("sGameStarted", function(data) {
@@ -279,6 +352,9 @@ class App {
                 "listener": data.to
             })
             _this.showPage("gamePage");
+        })
+        this.socket.on("sExplanationStarted", function(data) {
+            _this.setGameState("explanation", data);
         })
     }
 
