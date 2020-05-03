@@ -4,8 +4,10 @@
 
 const PORT = 5000;
 const WORD_NUMBER = 40;
-const DELAY = 3;
-const EXPLANATION_LENGTH = 20;
+const DELAY = 2; // given delay for client reaction
+const EXPLANATION_LENGTH = 20; // length of explanation
+const PRE = 3; // delay for transfer
+const POST = 3; // time for guess
 
 const express = require("express");
 const app = express();
@@ -112,7 +114,7 @@ function generateWords(key) {
  * @param numberOfPlayers number of players
  * @param lastSpeaker index of previous speaker
  * @param lastListener index of precious listener
- * @return object with fields: from and to --- indices of speaker and listener
+ * @return object with fields: speaker and listener --- indices of speaker and listener
  */
 function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
     let speaker = (lastSpeaker + 1) % numberOfPlayers;
@@ -123,7 +125,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
             listener++;
         }
     }
-    return {"from": speaker, "to": listener};
+    return {"speaker": speaker, "listener": listener};
 }
 
 /**
@@ -136,17 +138,42 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + DELAY * 1000;
+    rooms[key].startTime = currentTime + PRE * 1000;
     rooms[key].word = rooms[key].freshWords.pop();
     setTimeout(function() {
-        io.sockets.to(key).emit("sExplanationEnded", {
-            "wordsCount": rooms[key].freshWords.length});
-    }, (DELAY + EXPLANATION_LENGTH) * 1000);
+        finishExplanation(key);
+    }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
     setTimeout(function() {
-        io.sockets.to(rooms[key].users[rooms[key].from].sids[0]).emit(
+        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
             "sNewWord", {"word": rooms[key].word});
-    }, DELAY * 1000);
+    }, PRE * 1000);
     io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+}
+
+/**
+ * finish an explanation
+ *
+ * @param key --- key of the room
+ * @return null
+ */
+function finishExplanation(key) {
+    if (rooms[key].substate !== "explanation") {
+        return;
+    }
+    rooms[key].substate = "edit";
+
+    // returning word to the hat
+    if (rooms[key].word !== "") {
+        rooms[key].freshWords.splice(Math.floor(Math.random() * (rooms[key].freshWords.length - 1)), 0, rooms[key].word);
+    }
+
+    rooms[key].startTime = 0;
+    rooms[key] = "";
+
+    console.log(rooms[key], rooms[key].freshWords);
+    
+    io.sockets.to(key).emit("sExplanationEnded", {
+        "wordsCount": rooms[key].freshWords});
 }
 
 //----------------------------------------------------------
@@ -226,8 +253,8 @@ app.get("/getRoomInfo", function(req, res) {
  *     - freshWords --- list of words in hat,
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
- *     - from --- username of speaker,
- *     - to --- username of listener,
+ *     - speaker --- position of speaker,
+ *     - listener --- position of listener,
  *     - speakerReady --- bool,
  *     - listenerReady --- bool,
  *     - word --- current word,
@@ -354,15 +381,15 @@ io.on("connection", function(socket) {
                     switch (rooms[key].substate) {
                         case "wait":
                             joinObj.substate = "wait";
-                            joinObj.from =  rooms[key].users[rooms[key].from].username;
-                            joinObj.to =  rooms[key].users[rooms[key].to].username;
+                            joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
+                            joinObj.listener =  rooms[key].users[rooms[key].listener].username;
                             break;
                         case "explanation":
                             joinObj.substate = "explanation";
-                            joinObj.from =  rooms[key].users[rooms[key].from].username;
-                            joinObj.to =  rooms[key].users[rooms[key].to].username;
+                            joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
+                            joinObj.listener =  rooms[key].users[rooms[key].listener].username;
                             joinObj.endTime = rooms[key].endTime;
-                            if (joinObj.from === name) {
+                            if (joinObj.speaker === name) {
                                 joinObj.word = rooms[key].word;
                             }
                             break;
@@ -519,19 +546,20 @@ io.on("connection", function(socket) {
         rooms[key].speakerReady = false;
         rooms[key].listenerReady = false;
 
-        // preparing 'from' and 'to'
+        // preparing 'speaker' and 'listener'
         const numberOfPlayers = rooms[key].users.length;
         const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
-        rooms[key].from = nextPair.from;
-        rooms[key].to = nextPair.to;
+        rooms[key].speaker = nextPair.speaker;
+        rooms[key].listener = nextPair.listener;
 
         /**
          * Implementation of sGameStarted signal
          * @see API.md
          */
         io.sockets.to(key).emit("sGameStarted", {
-            "from": rooms[key].users[rooms[key].from].username,
-            "to": rooms[key].users[rooms[key].to].username});
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
+            "wordsCount": rooms[key].freshWords.length});
     });
 
     /**
@@ -550,7 +578,7 @@ io.on("connection", function(socket) {
         }
 
         // check whether the client is speaker
-        if (rooms[key].users[rooms[key].from].sids[0] !== socket.id) {
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
             socket.emit("sFailure", {
                 "request": "cSpeakerReady",
                 "msg": "you aren't a speaker"});
@@ -590,7 +618,7 @@ io.on("connection", function(socket) {
         }
 
         // check whether the client is listener
-        if (rooms[key].users[rooms[key].to].sids[0] !== socket.id) {
+        if (rooms[key].users[rooms[key].listener].sids[0] !== socket.id) {
             socket.emit("sFailure", {
                 "request": "cListenerReady",
                 "msg": "you aren't a listener"});
@@ -614,6 +642,51 @@ io.on("connection", function(socket) {
         }
     });
     
+    /**
+     * Implementation of cEndWordExplanation function
+     * @see API.md
+     */
+    socket.on("cEndWordExplanation", function(ev) {
+        const key = getRoom(socket); // key of the room
+        console.log(key);
+        
+        let cause = ev.cause;
+        switch (cause) {
+            case "explained":
+                // changing the score
+                rooms[key].users[rooms[key].speaker].scoreExplained++;
+                rooms[key].users[rooms[key].listener].scoreGuessed++;
+
+                // logging the word
+                rooms[key].usedWords[rooms[key].word] = "explained";
+                rooms[key].word = "";
+
+                // checking the time
+                const date = new Date();
+                if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
+                    // finishing the explanation
+                    finishExplanation(key);
+                    return;
+                }
+
+                // emmiting new word
+                rooms[key].word = rooms[key].freshWords.pop();
+                socket.emit("sNewWord", rooms[key].word);
+                return;
+            case "mistake":
+                // logging the word
+                rooms[key].usedWords[rooms[key].word] = "mistake";
+
+                // finishing the explanation
+                finishExplanation(key);
+                return;
+            case "notExplained":
+                // finishing the explanation
+                finishExplanation(key);
+                return;
+        }
+    });
+
     socket.on("disconnect", function() {
         /**
          * room key can't be acceessed via getRoom(socket)
@@ -659,7 +732,7 @@ io.on("connection", function(socket) {
              */
             // Sending new state of the room.
             let host = "";
-            const pos = findFirstPos(rooms[key].users, "online", true);
+            const pos = findFirstPos(rooms[_key].users, "online", true);
             if (pos !== -1) {
                 host = rooms[_key].users[pos].username;
             }
