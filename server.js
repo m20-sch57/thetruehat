@@ -183,7 +183,7 @@ function finishExplanation(key) {
      * Implementation of sWordsToEdit signal
      * @see API.md
      */
-    io.socket.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
+    io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
         "sWordsToEdit", {"editWords": rooms[key].editWords});
 }
 
