@@ -168,10 +168,8 @@ function finishExplanation(key) {
     }
 
     rooms[key].startTime = 0;
-    rooms[key] = "";
+    rooms[key].word = "";
 
-    console.log(rooms[key], rooms[key].freshWords);
-    
     io.sockets.to(key).emit("sExplanationEnded", {
         "wordsCount": rooms[key].freshWords});
 }
@@ -569,6 +567,13 @@ io.on("connection", function(socket) {
     socket.on("cSpeakerReady", function() {
         const key = getRoom(socket); // key of room
 
+        // the game must be in 'play' state
+        if (rooms[key].state !== "play") {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "game hasn't started"});
+        }
+
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
             socket.emit("sFailure", {
@@ -609,6 +614,13 @@ io.on("connection", function(socket) {
     socket.on("cListenerReady", function() {
         const key = getRoom(socket); // key of room
 
+        // the game must be in 'play' state
+        if (rooms[key].state !== "play") {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "game hasn't started"});
+        }
+
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
             socket.emit("sFailure", {
@@ -648,8 +660,24 @@ io.on("connection", function(socket) {
      */
     socket.on("cEndWordExplanation", function(ev) {
         const key = getRoom(socket); // key of the room
-        console.log(key);
         
+        // chicking if speaker send this
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "req": "cEndWordExplanation",
+                "msg": "you aren't a listener"});
+            return;
+        }
+
+        // checking if time is correct
+        const date = new Date();
+        if (date.getTime() < rooms[key].startTime) {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "to early"});
+            return;
+        }
+
         let cause = ev.cause;
         switch (cause) {
             case "explained":
@@ -662,7 +690,6 @@ io.on("connection", function(socket) {
                 rooms[key].word = "";
 
                 // checking the time
-                const date = new Date();
                 if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
                     // finishing the explanation
                     finishExplanation(key);
