@@ -689,6 +689,14 @@ io.on("connection", function(socket) {
                 rooms[key].usedWords[rooms[key].word] = "explained";
                 rooms[key].word = "";
 
+                /**
+                 * Implementation of sWordExplanationEnded signal
+                 * @see API.md
+                 */
+                io.sockets.emit("sWordExplanationEnded", {
+                    "cause": cause,
+                    "wordsCount": rooms[key].freshWords.length});
+
                 // checking the time
                 if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
                     // finishing the explanation
@@ -698,16 +706,32 @@ io.on("connection", function(socket) {
 
                 // emmiting new word
                 rooms[key].word = rooms[key].freshWords.pop();
-                socket.emit("sNewWord", rooms[key].word);
+                socket.emit("sNewWord", {"word": rooms[key].word});
                 return;
             case "mistake":
                 // logging the word
                 rooms[key].usedWords[rooms[key].word] = "mistake";
 
+                /**
+                 * Implementation of sWordExplanationEnded signal
+                 * @see API.md
+                 */
+                io.sockets.emit("sWordExplanationEnded", {
+                    "cause": cause,
+                    "wordsCount": rooms[key].freshWords.length + 1});
+
                 // finishing the explanation
                 finishExplanation(key);
                 return;
             case "notExplained":
+                /**
+                 * Implementation of sWordExplanationEnded signal
+                 * @see API.md
+                 */
+                io.sockets.emit("sWordExplanationEnded", {
+                    "cause": cause,
+                    "wordsCount": rooms[key].freshWords.length + 1});
+
                 // finishing the explanation
                 finishExplanation(key);
                 return;
