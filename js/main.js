@@ -385,6 +385,12 @@ class App {
         el("preparationPage_copyLink").onclick = () => this.copyLink();
         el("gamePage_listenerReadyButton").onclick = () => this.listenerReady();
         el("gamePage_speakerReadyButton").onclick = () => this.speakerReady();
+        el("gamePage_explanationSuccess").onclick = () => this.socket.emit(
+            "cEndWordExplanation", {"cause": "explained"});
+        el("gamePage_explanationFailed").onclick = () => this.socket.emit(
+            "cEndWordExplanation", {"cause": "notExplained"});
+        el("gamePage_explanationMistake").onclick = () => this.socket.emit(
+            "cEndWordExplanation", {"cause": "mistake"});
     }
 }
 
