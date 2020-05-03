@@ -4,6 +4,8 @@
 
 const PORT = 5000;
 const WORD_NUMBER = 40;
+const DELAY = 3;
+const EXPLANATION_LENGTH = 20;
 
 const express = require("express");
 const app = express();
@@ -121,7 +123,30 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
             listener++;
         }
     }
-    return {"from": speaker, "listener": listener};
+    return {"from": speaker, "to": listener};
+}
+
+/**
+ * start an explanation
+ *
+ * @param key --- key of the room
+ * @return null
+ */
+function startExplanation(key) {
+    rooms[key].substate = "explanation";
+    const date = new Date();
+    const currentTime = date.getTime();
+    rooms[key].startTime = currentTime + DELAY * 1000;
+    rooms[key].word = rooms[key].freshWords.pop();
+    setTimeout(function() {
+        io.sockets.to(key).emit("sExplanationEnded", {
+            "wordsCount": rooms[key].freshWords.length});
+    }, (DELAY + EXPLANATION_LENGTH) * 1000);
+    setTimeout(function() {
+        io.sockets.to(rooms[key].users[rooms[key].from].sids[0]).emit(
+            "sNewWord", {"word": rooms[key].word});
+    }, DELAY * 1000);
+    io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
 }
 
 //----------------------------------------------------------
@@ -202,7 +227,11 @@ app.get("/getRoomInfo", function(req, res) {
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
  *     - from --- username of speaker,
- *     - to --- username of listener.
+ *     - to --- username of listener,
+ *     - speakerReady --- bool,
+ *     - listenerReady --- bool,
+ *     - word --- current word,
+ *     - endTime --- UTC time of end of explanation (in miliseconds).
  */
 const rooms = {};
 
@@ -332,9 +361,9 @@ io.on("connection", function(socket) {
                             joinObj.substate = "explanation";
                             joinObj.from =  rooms[key].users[rooms[key].from].username;
                             joinObj.to =  rooms[key].users[rooms[key].to].username;
-                            joinObj.endtime = 0;
+                            joinObj.endTime = rooms[key].endTime;
                             if (joinObj.from === name) {
-                                joinObj.word = "";
+                                joinObj.word = rooms[key].word;
                             }
                             break;
                         case "edit":
@@ -388,9 +417,6 @@ io.on("connection", function(socket) {
             // Logging the leaving
             console.log("Player", username, "left", key);
 
-            // Saving the position of the current host
-            const pos = findFirstPos(rooms[key].users, "online", true)
-
             // Removing the user from the room info
             rooms[key].users[usernamePos].online = false;
             rooms[key].users[usernamePos].sids = [];
@@ -400,9 +426,14 @@ io.on("connection", function(socket) {
              * @see API.md
              */
             // Sending new state of the room.
+            let host = "";
+            const pos = findFirstPos(rooms[key].users, "online", true);
+            if (pos !== -1) {
+                host = rooms[key].users[pos].username;
+            }
             io.sockets.to(key).emit("sPlayerLeft", {
                 "username": username, "playerList": getPlayerList(rooms[key]),
-                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
+                "host": host});
         });
     });
 
@@ -430,6 +461,20 @@ io.on("connection", function(socket) {
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "wait") {
             socket.emit("sFailure", {"request": "cStartGame", "msg": "Game have already started"});
+            return;
+        }
+
+        // Fail if only one user is online
+        let cnt = 0
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                cnt++;
+            }
+        }
+        if (cnt < 2) {
+            socket.emit("sFailure", {
+                "request": "cStartGame", 
+                "msg": "Not enough online users to start the game (at least two required)"});
             return;
         }
 
@@ -464,6 +509,16 @@ io.on("connection", function(socket) {
         // preparing storage for explained words
         rooms[key].usedWords = {};
 
+        // preparing word container
+        rooms[key].word = "";
+
+        // preparing endTime container
+        rooms[key].endTime = 0;
+
+        // preparing flags for 'wait'
+        rooms[key].speakerReady = false;
+        rooms[key].listenerReady = false;
+
         // preparing 'from' and 'to'
         const numberOfPlayers = rooms[key].users.length;
         const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
@@ -477,5 +532,140 @@ io.on("connection", function(socket) {
         io.sockets.to(key).emit("sGameStarted", {
             "from": rooms[key].users[rooms[key].from].username,
             "to": rooms[key].users[rooms[key].to].username});
+    });
+
+    /**
+     * Implementation of cSpeakerReady function
+     * @see API.md
+     */
+    socket.on("cSpeakerReady", function() {
+        const key = getRoom(socket); // key of room
+
+        // the game substate must be 'wait'
+        if (rooms[key].substate !== "wait") {
+            socket.emit("sFailure", {
+                "request": "cSpeakerReady",
+                "msg": "game substate isn't 'wait'"});
+            return;
+        }
+
+        // check whether the client is speaker
+        if (rooms[key].users[rooms[key].from].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cSpeakerReady",
+                "msg": "you aren't a speaker"});
+            return;
+        }
+
+        // check if speaker isn't already ready
+        if (rooms[key].speakerReady) {
+            socket.emit("sFailure", {
+                "request": "cSpeakerReady",
+                "msg": "speaker is already ready"});
+            return;
+        }
+
+        // setting flag for speaker
+        rooms[key].speakerReady = true;
+
+        // if listener is ready --- let's start!
+        if (rooms[key].listenerReady) {
+            startExplanation(key);
+        }
+    });
+
+    /**
+     * Implementation of cListenerReady function
+     * @see API.md
+     */
+    socket.on("cListenerReady", function() {
+        const key = getRoom(socket); // key of room
+
+        // the game substate must be 'wait'
+        if (rooms[key].substate !== "wait") {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "game substate isn't 'wait'"});
+            return;
+        }
+
+        // check whether the client is listener
+        if (rooms[key].users[rooms[key].to].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "you aren't a listener"});
+            return;
+        }
+
+        // check if listener isn't already ready
+        if (rooms[key].listenerReady) {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "listener is already ready"});
+            return;
+        }
+
+        // setting flag for listener
+        rooms[key].listenerReady = true;
+
+        // if listener is ready --- let's start!
+        if (rooms[key].speakerReady) {
+            startExplanation(key);
+        }
+    });
+    
+    socket.on("disconnect", function() {
+        /**
+         * room key can't be acceessed via getRoom(socket)
+         * findFirstSidPos must be used intead
+         */
+
+        let key = [];
+        let username = [];
+        let usernamePos = [];
+        let keys = Object.keys(rooms);
+        // searching for given sid within all rooms
+        for (let i = 0; i < keys.length; ++i) {
+            const users = rooms[keys[i]].users;
+
+            const pos = findFirstSidPos(users, socket.id);
+            if (pos !== -1) {
+                key.push(keys[i]);
+                usernamePos.push(pos);
+                username.push(users[usernamePos].username);
+            }
+        }
+
+        // users wasn't logged in
+        if (key.length === 0) {
+            return;
+        }
+
+        for (let i = 0; i < key.length; ++i) {
+            let _key = key[i];
+            let _username = username[i];
+            let _usernamePos = usernamePos[i];
+            
+            // Logging the disconnection
+            console.log("Player", _username, "disconnected", _key);
+
+            // Removing the user from the room info
+            rooms[_key].users[_usernamePos].online = false;
+            rooms[_key].users[_usernamePos].sids = [];
+
+            /**
+             * Implementation of sPlayerLeft signal
+             * @see API.md
+             */
+            // Sending new state of the room.
+            let host = "";
+            const pos = findFirstPos(rooms[key].users, "online", true);
+            if (pos !== -1) {
+                host = rooms[_key].users[pos].username;
+            }
+            io.sockets.to(_key).emit("sPlayerLeft", {
+                "username": username, "playerList": getPlayerList(rooms[_key]),
+                "host": host});
+        }
     });
 });
