@@ -825,11 +825,11 @@ io.on("connection", function(socket) {
     socket.on("cWordsEdited", function(ev) {
         const key = getRoom(socket); // key of the room
 
-        // check if game state is 'play'
-        if (rooms[key].state === "play") {
+        // check if game state is 'edit'
+        if (rooms[key].state === "edit") {
             socket.emit("sFailure", {
                 "request": "cWordsEdited",
-                "msg": "game state isn't 'play'"})
+                "msg": "game state isn't 'edit'"})
             return;
         }
 
