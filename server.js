@@ -157,6 +157,12 @@ function startExplanation(key) {
  * @return null
  */
 function finishExplanation(key) {
+    // if game has ended
+    if (!(key in rooms)) {
+        return;
+    }
+
+    // if signal has been sent
     if (rooms[key].substate !== "explanation") {
         return;
     }
@@ -201,8 +207,10 @@ function endGame(key) {
             "scoreExplained": rooms[key].users[i].scoreExplained,
             "scoreGuessed": rooms[key].users[i].scoreGuessed});
     }
+
+    // sorting results
     results.sort(function(a, b) {
-        return (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
+        return 0 - (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
     });
 
     /**
