@@ -386,7 +386,7 @@ io.on("connection", function(socket) {
                             joinObj.substate = "explanation";
                             joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
                             joinObj.listener =  rooms[key].users[rooms[key].listener].username;
-                            joinObj.endTime = rooms[key].endTime;
+                            joinObj.startTime = rooms[key].startTime;
                             if (joinObj.speaker === name) {
                                 joinObj.word = rooms[key].word;
                             }
@@ -538,7 +538,7 @@ io.on("connection", function(socket) {
         rooms[key].word = "";
 
         // preparing endTime container
-        rooms[key].endTime = 0;
+        rooms[key].startTime = 0;
 
         // preparing flags for 'wait'
         rooms[key].speakerReady = false;
