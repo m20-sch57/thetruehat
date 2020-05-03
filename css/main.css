@@ -353,18 +353,6 @@ button, input {
     font-weight: bold;
 }
 
-#preparationPage_users .online:after {
-    content: '\25CF';
-    margin-left: 5px;
-    color: forestgreen;
-}
-
-#preparationPage_users .offline:after {
-    content: '\25CF';
-    margin-left: 5px;
-    color: goldenrod;
-}
-
 #preparationPage_users div:nth-child(even) {
     background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
