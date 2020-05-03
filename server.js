@@ -215,9 +215,12 @@ function endGame(key) {
     delete rooms[key];
 
     // removing users from room
+    // don't working...
+    /*
     io.sockets.clients(key).forEach(function(socket) {
         socket.leave(key);
     })
+    */
 }
 
 //----------------------------------------------------------
