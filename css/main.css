@@ -468,6 +468,12 @@ button, input {
     user-select: none;
 }
 
+#gamePage_explanationPreviewBox {
+    top: 0;
+    height: 100%;
+    display: flex;
+}
+
 #gamePage_explanationBox {
     top: 0;
     height: 100%;
