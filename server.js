@@ -164,14 +164,60 @@ function finishExplanation(key) {
 
     // returning word to the hat
     if (rooms[key].word !== "") {
-        rooms[key].freshWords.splice(Math.floor(Math.random() * (rooms[key].freshWords.length - 1)), 0, rooms[key].word);
+        rooms[key].freshWords.splice(
+            Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+            0, rooms[key].word);
     }
 
     rooms[key].startTime = 0;
     rooms[key].word = "";
 
+    /**
+     * Implementation of sExplanationEnded signal
+     * @see API.md
+     */
     io.sockets.to(key).emit("sExplanationEnded", {
         "wordsCount": rooms[key].freshWords.length});
+    
+    /**
+     * Implementation of sWordsToEdit signal
+     * @see API.md
+     */
+    io.socket.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
+        "sWordsToEdit", {"editWords": rooms[key].editWords});
+}
+
+/**
+ * end the game
+ * @param key --- key of the room
+ * @return none
+ */
+function endGame(key) {
+    // preapring results
+    let results = [];
+    for (let i = 0; i < rooms[key].users.length; ++i) {
+        results.push({
+            "username": rooms[key].users[i].username,
+            "scoreExplained": rooms[key].users[i].scoreExplained,
+            "scoreGuessed": rooms[key].users[i].scoreGuessed});
+    }
+    results.sort(function(a, b) {
+        return (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
+    });
+
+    /**
+     * Implementation of sGameEnded signal
+     * @see API.md
+     */
+    io.sockets.emit("sGameEnded", {"results": results});
+
+    // removing room
+    delete rooms[key];
+
+    // removing users from room
+    io.sockets.clients(key).forEach(function(socket) {
+        socket.leave(key);
+    })
 }
 
 //----------------------------------------------------------
@@ -256,7 +302,8 @@ app.get("/getRoomInfo", function(req, res) {
  *     - speakerReady --- bool,
  *     - listenerReady --- bool,
  *     - word --- current word,
- *     - endTime --- UTC time of end of explanation (in miliseconds).
+ *     - startTime --- UTC time of start of explanation (in miliseconds).
+ *     - editWords --- list of words to edit
  */
 const rooms = {};
 
@@ -534,6 +581,9 @@ io.on("connection", function(socket) {
         // preparing storage for explained words
         rooms[key].usedWords = {};
 
+        // preparing storage for words to edit
+        rooms[key].editWords = [];
+
         // preparing word container
         rooms[key].word = "";
 
@@ -571,7 +621,7 @@ io.on("connection", function(socket) {
         if (rooms[key].state !== "play") {
             socket.emit("sFailure", {
                 "request": "cListenerReady",
-                "msg": "game hasn't started"});
+                "msg": "game state isn't 'play'"});
         }
 
         // the game substate must be 'wait'
@@ -618,7 +668,7 @@ io.on("connection", function(socket) {
         if (rooms[key].state !== "play") {
             socket.emit("sFailure", {
                 "request": "cListenerReady",
-                "msg": "game hasn't started"});
+                "msg": "game state isn't 'play'"});
         }
 
         // the game substate must be 'wait'
@@ -661,10 +711,24 @@ io.on("connection", function(socket) {
     socket.on("cEndWordExplanation", function(ev) {
         const key = getRoom(socket); // key of the room
         
+        // checking if proper state and substate
+        if (rooms[key].state !== "play") {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "game state isn't 'play'"});
+            return;
+        }
+        if (rooms[key].substate !== "explanation") {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "game substate isn't 'explanation'"});
+            return;
+        }
+
         // chicking if speaker send this
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
             socket.emit("sFailure", {
-                "req": "cEndWordExplanation",
+                "request": "cEndWordExplanation",
                 "msg": "you aren't a listener"});
             return;
         }
@@ -681,12 +745,13 @@ io.on("connection", function(socket) {
         let cause = ev.cause;
         switch (cause) {
             case "explained":
-                // changing the score
-                rooms[key].users[rooms[key].speaker].scoreExplained++;
-                rooms[key].users[rooms[key].listener].scoreGuessed++;
-
                 // logging the word
-                rooms[key].usedWords[rooms[key].word] = "explained";
+                rooms[key].editWords.push({
+                    "word": rooms[key].word,
+                    "wordState": "explained",
+                    "transfer": true});
+
+                // removing the word from the 'word' container
                 rooms[key].word = "";
 
                 /**
@@ -704,13 +769,22 @@ io.on("connection", function(socket) {
                     return;
                 }
 
+                // if words left --- time to finish the explanation
+                if (rooms[key].freshWords.length === 0) {
+                    finishExplanation(key);
+                    return;
+                }
+
                 // emmiting new word
                 rooms[key].word = rooms[key].freshWords.pop();
                 socket.emit("sNewWord", {"word": rooms[key].word});
                 return;
             case "mistake":
                 // logging the word
-                rooms[key].usedWords[rooms[key].word] = "mistake";
+                rooms[key].editWords.push({
+                    "word": rooms[key].word,
+                    "wordState": "mistake",
+                    "transfer": true});
 
                 /**
                  * Implementation of sWordExplanationEnded signal
@@ -724,6 +798,12 @@ io.on("connection", function(socket) {
                 finishExplanation(key);
                 return;
             case "notExplained":
+                // logging the word
+                rooms[key].editWords.push({
+                    "word": rooms[key].word,
+                    "wordState": "notExplained",
+                    "transfer": true});
+
                 /**
                  * Implementation of sWordExplanationEnded signal
                  * @see API.md
@@ -736,6 +816,123 @@ io.on("connection", function(socket) {
                 finishExplanation(key);
                 return;
         }
+    });
+
+    /**
+     * Implementation of cWordsEdited function
+     * @see API.md
+     */
+    socket.on("cWordsEdited", function(ev) {
+        const key = getRoom(socket); // key of the room
+
+        // check if game state is 'play'
+        if (rooms[key].state === "play") {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "game state isn't 'play'"})
+            return;
+        }
+
+        // check if game substate is 'edit'
+        if (rooms[key].substate !== "edit") {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "game substate isn't 'edit'"})
+            return;
+        }
+
+        // check if speaker send this signal
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "only speaker can send this signal"});
+            return;
+        }
+
+        // moving editWords
+        const editWords = ev.editWords;
+
+        // comparing the legth of serer editWords and client editWords
+        if (editWords.length !== rooms[key].editWords.length) {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "incorrect number of words"});
+            return;
+        }
+
+        // applying changes and counting success explanations
+        let cnt = 0;
+        for (let i = 0; i < editWords.length; ++i) {
+            let word = rooms[key].editWords[i];
+            
+            // checking matching of information
+            if (word.word !== editWords[i].word) {
+                socket.emit("sFailure", {
+                    "request": "cWordsEdited",
+                    "msg": `incorrect word at position ${i}`});
+                return;
+            }
+
+            switch (editWords[i].wordState) {
+                case "explained":
+                    // counting explained words
+                    cnt++;
+                case "mistake":
+                    // transfering data to serer structure
+                    rooms[key].editWords[i].wordState = editWords[i].wordState;
+                    break;
+                case "notExplained":
+                    // returning not explained words to the hat
+                    rooms[key].editWords[i].transfer = false;
+                    break;
+            }
+        }
+
+        // tranfering round info
+        // changing the score
+        rooms[key].users[rooms[key].speaker].scoreExplained += cnt;
+        rooms[key].users[rooms[key].listener].scoreGuessed += cnt;
+
+        // changing usedWords and creating words list
+        let words = [];
+        for (let i = 0; i < rooms[key].editWords.length; ++i) {
+            if (rooms[key].editWords[i].transfer) {
+                rooms[key].usedWords[rooms[key].editWords[i].word] = rooms[key].editWords[i].wordState;
+                words.push({
+                    "word": rooms[key].editWords[i].word,
+                    "wordState": rooms[key].editWords[i].wordState});
+            } else {
+                rooms[key].freshWords.splice(
+                    Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+                    0, rooms[key].editWords[i].word);
+            }
+        }
+
+        // if no words left it's time to finish the game
+        if (rooms[key].freshWords.length === 0) {
+            endGame(key);
+            return;
+        }
+
+        // initializing next round
+        rooms[key].editWords = [];
+        rooms[key].word = "";
+        rooms[key].startTime = 0;
+
+        // choosing next pair
+        const numberOfPlayers = rooms[key].users.length;
+        const nextPair = getNextPair(numberOfPlayers, rooms[key].speaker, rooms[key].listener);
+        rooms[key].speaker = nextPair.speaker;
+        rooms[key].listener = nextPair.listener;
+
+        /**
+         * Implementation of sNextTurn signal
+         * @see API.md
+         */
+        io.sockets.to(key).emit("sNextTurn", {
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
+            "words": words});
     });
 
     socket.on("disconnect", function() {
