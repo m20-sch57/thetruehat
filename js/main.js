@@ -17,6 +17,18 @@ function deleteNode(node) {
     node.parentNode.removeChild(node);
 }
 
+function hide(id) {
+    el(id).style.display = "none";
+}
+
+function show(id) {
+    el(id).style.display = "";
+}
+
+function disable(id) {
+    el(id).setAttribute("disabled", "");
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -67,16 +79,16 @@ class App {
 
     showPage(page) {
         if (this.pageLog.length >= 1) {
-            el(this.pageLog.last()).style.display = "none";
+            hide(this.pageLog.last());
         }
         el(page).style.display = "";
         this.pageLog.push(page);
     }
 
     goBack() {
-        el(this.pageLog.pop()).style.display = "none";
+        hide(this.pageLog.pop());
         if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
-        el(this.pageLog.last()).style.display = "";
+        show(this.pageLog.last());
     }
 
     leaveRoom() {
@@ -142,17 +154,17 @@ class App {
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             // el("joinPage_pasteKey").style.display = "none";
-            el("joinPage_pasteKey").setAttribute("disabled", "");
+            disable(el("joinPage_pasteKey"))
         }
     }
 
     showStartAction(host) {
         if (host != this.myUsername) {
-            el("preparationPage_start").style.display = "none";
-            el("preparationPage_startLabel").style.display = "";
+            hide("preparationPage_start");
+            show("preparationPage_startLabel");
         } else {
-            el("preparationPage_start").style.display = "";
-            el("preparationPage_startLabel").style.display = "none";
+            show("preparationPage_start");
+            hide("preparationPage_startLabel");
         }
     }
 
@@ -183,33 +195,61 @@ class App {
         })
     }
 
+    setGameState(state, data) {
+        switch(state) {
+            case "wait":
+                this.hideAllGameActions()
+                switch (this.myUsername) {
+                    case data.listener:
+                        show("gamePage_listenerReadyBox");
+                        break;
+                    case data.speaker:
+                        show("gamePage_speakerReadyBox");
+                        break;
+                    default:
+                        show("gamePage_observerReadyBox");
+                        break;
+                }
+                show("gamePage_fromTo");
+                el("gamePage_from").innerText = data.speaker;
+                el("gamePage_to").innerText = data.listener;
+                break;
+        }
+    }
+
+    hideAllGameActions() {
+        hide("gamePage_fromTo");
+        hide("gamePage_speakerReadyBox");
+        hide("gamePage_listenerReadyBox");
+        hide("gamePage_observerReadyBox");
+        hide("gamePage_observerBox");
+        hide("gamePage_explanationBox");
+    }
+
+    listenerReady() {
+        this.socket.emit("cListenerReady");
+        disable("gamePage_listenerReadyButton");
+        el("gamePage_listenerReadyButton").innertext = "Подожди напарника"
+    }
+
+    speakerReady() {
+        this.socket.emit("cSpeakerReady");
+        disable("gamePage_speakerReadyButton");
+        el("gamePage_speakerReadyButton").innertext = "Подожди напарника"
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
         if (this.debug) {
-            this.socket.on("sPlayerJoined", function(data) {
-                console.log("sPlayerJoined", data);
-            })
-            this.socket.on("sPlayerLeft", function(data) {
-                console.log("sPlayerLeft", data);
-            })
-            this.socket.on("sNewHost", function(data) {
-                console.log("sNewHost", data);
-            })
-            this.socket.on("sFailure", function(data) {
-                console.log("sFailure", data);
-            })
-            this.socket.on("sYouJoined", function(data) {
-                console.log("sYouJoined", data);
-            })
-            this.socket.on("sExplanationEnded", function(data) {
-                console.log("sExplanationEnded", data);
-            })
-            this.socket.on("sExplanationStarted", function(data) {
-                console.log("sExplanationStarted", data);
-            })
-            this.socket.on("sGameStarted", function(data) {
-                console.log("sGameStarted", data);
+            let events = ["sPlayerJoined", "sPlayerLeft", "sFailure",
+            "sYouJoined", "sGameStarted", "sExplanationStarted",
+            "sExplanationEnded", "sNextTurn", "sNewWord", "sWordExplanationEnded",
+            "sWordsToEdit", "sGameEnded"];
+            events.forEach((event) => {
+                _this.socket.on(event, function(data) {
+                    console.log(event, data);
+                })
             })
             this.socket.on("sNewWord", function(data) {
                 console.log("sNewWord", data);
@@ -235,6 +275,13 @@ class App {
                     _this.showPage("preparationPage");
                     break;
             }
+        })
+        this.socket.on("sGameStarted", function(data) {
+            _this.setGameState("wait", {
+                "speaker": data.from,
+                "listener": data.to
+            })
+            _this.showPage("gamePage");
         })
     }
 
@@ -263,6 +310,8 @@ class App {
         el("preparationPage_start").onclick = () => this.socket.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
+        el("gamePage_listenerReadyButton").onclick = () => this.listenerReady();
+        el("gamePage_speakerReadyButton").onclick = () => this.speakerReady();
     }
 }
 
