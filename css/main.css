@@ -362,6 +362,7 @@ button, input {
 
 #preparationPage_startLabel {
     width: 100%;
+    font-weight: lighter;
     text-align: center;
 }
 
