@@ -333,9 +333,6 @@ class App {
                     console.log(event, data);
                 })
             })
-            this.socket.on("sNewWord", function(data) {
-                console.log("sNewWord", data);
-            })
         }
 
         this.socket.on("sPlayerJoined", function(data) {
@@ -358,8 +355,8 @@ class App {
                 break;
             case "play":
                 if (data.state == "play") {
-                    this.myRole = (data.from == this.myUsername) ? "speaker" :
-                        (data.to == this.myUsername) ? "listener" : "observer";
+                    this.myRole = (data.speaker == this.myUsername) ? "speaker" :
+                        (data.listener == this.myUsername) ? "listener" : "observer";
                 }
                 _this.setGameState(data.substate, data);
                 _this.showPage("gamePage");
@@ -368,8 +365,8 @@ class App {
         })
         this.socket.on("sGameStarted", function(data) {
             _this.setGameState("wait", {
-                "speaker": data.from,
-                "listener": data.to
+                "speaker": data.speaker,
+                "listener": data.listener
             })
             _this.showPage("gamePage");
         })
