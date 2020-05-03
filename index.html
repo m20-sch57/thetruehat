@@ -82,7 +82,7 @@
                     <div class="spacer"></div>
                 </div>
                 <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
-                <h1 id="preparationPage_startLabel" style="display: none;">Дождитесь начала игры</h1>
+                <h1 id="preparationPage_startLabel" style="display: none;">Дождись начала игры</h1>
             </div>
         </div>
     </div>
@@ -100,24 +100,28 @@
             </div>
             <div id="gamePage_body">
                 <div id="gamePage_fromTo">
-                    <h1 id="gamePage_fromLabel">
-                        <span class="fa fa-microphone"></span> <span id="gamePage_from">
-                            Вася
-                        </span> объясняет
-                    </h1>
-                    <h1 id="gamePage_toLabel">
-                        <span class="fa fa-headphones"></span> Отгадывает <span id="gamePage_to">
-                            Петя
-                        </span>
-                    </h1>
+                    <div id="gamePage_fromBox">
+                        <h1 id="gamePage_fromLabel">
+                            <span class="fa fa-microphone"></span>
+                            <span id="gamePage_from">Вася</span>
+                        </h1>
+                        <p id="gamePage_fromHint">объясняет</p>
+                    </div>
+                    <div id="gamePage_toBox">
+                        <p id="gamePage_toHint">отгадывает</p>
+                        <h1 id="gamePage_toLabel">
+                            <span id="gamePage_to">Петя</span>
+                            <span class="fa fa-headphones"></span>
+                        </h1>
+                    </div>
                 </div>
                 <div id="gamePage_speakerReadyBox" style="display: none;">
                     <h1 id="gamePage_speakerReadyTitle">Пришло время объяснять!</h1>
-                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton">Я готов</button>
+                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton">Я готов объяснять</button>
                 </div>
                 <div id="gamePage_listenerReadyBox" style="display: none;">
                     <h1 id="gamePage_listenerReadyTitle">Пришло время отгадывать!</h1>
-                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">Я готов</button>
+                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">Я готов отгадывать</button>
                 </div>
                 <div id="gamePage_observerReadyBox" style="display: none;">
                     <h1 id="gamePage_observerReadyTitle">Ожидание готовности...</h1>
@@ -128,16 +132,16 @@
                     </h1>
                 </div>
                 <div id="gamePage_explanationBox" style="display: none;">
-                    <h1 class="timer-green" id="gamePage_explanationPreviewTimer">
+                    <h1 class="timer-green" id="gamePage_explanationPreviewTimer" style="display: none;">
                         3
                     </h1>
-                    <h1 id="gamePage_explanationWord" style="display: none;">
+                    <h1 id="gamePage_explanationWord">
                         Эскадрон
                     </h1>
-                    <h1 id="gamePage_explanationTimer" style="display: none;">
+                    <h1 id="gamePage_explanationTimer">
                         01:00
                     </h1>
-                    <div id="gamePage_explanationActions" style="display: none;">
+                    <div id="gamePage_explanationActions">
                         <button class="medium-button bg-green" id="gamePage_explanationSuccess">
                             Угадал
                         </button>
