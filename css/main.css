@@ -468,7 +468,7 @@ button, input {
     user-select: none;
 }
 
-#gamePage_explanationPreviewBox {
+#gamePage_explanationDelayBox {
     top: 0;
     height: 100%;
     display: flex;
@@ -481,7 +481,7 @@ button, input {
     flex-flow: column;
 }
 
-#gamePage_explanationPreviewTimer {
+#gamePage_explanationDelayTimer {
     text-align: center;
     font-size: 130px;
     font-weight: lighter;
