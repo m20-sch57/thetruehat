@@ -31,6 +31,14 @@ function animate({timing, draw, duration}) {
     })
 }
 
+function timeFromSeconds(sec) {
+    let min = Math.floor(sec / 60);
+    sec -= 60 * min;
+    if (sec < 10) sec = "0" + String(sec);
+    if (min < 10) min = "0" + String(min);
+    return `${min}:${sec}`
+}
+
 function el(id) {   
     return document.getElementById(id);
 }
@@ -183,7 +191,7 @@ class App {
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             // el("joinPage_pasteKey").style.display = "none";
-            disable(el("joinPage_pasteKey"))
+            disable("joinPage_pasteKey")
         }
     }
 
@@ -285,7 +293,8 @@ class App {
             duration: EXPLANATION_TIME,
             draw: (progress) => {
                 el("gamePage_explanationTimer").innerText = 
-                    Math.floor((1 - progress) / 1000 * EXPLANATION_TIME) + 1;
+                    timeFromSeconds(Math.floor(
+                    (1 - progress) / 1000 * EXPLANATION_TIME) + 1);
             }
         })
     }
@@ -346,6 +355,14 @@ class App {
                     .map(user => user.username), data.host);
                 _this.showStartAction(data.host);
                 _this.showPage("preparationPage");
+                break;
+            case "play":
+                if (data.state == "play") {
+                    this.myRole = (data.from == this.myUsername) ? "speaker" :
+                        (data.to == this.myUsername) ? "listener" : "observer";
+                }
+                _this.setGameState(data.substate, data);
+                _this.showPage("gamePage");
                 break;
             }
         })
