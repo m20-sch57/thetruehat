@@ -332,9 +332,8 @@ button, input {
 }
 
 #preparationPage_users .user-item {
-    padding: 15px;
-    font-size: 20px;
-    line-height: 20px;
+    padding: 8px;
+    font-size: 18px;
     text-align: center;
 }
 
@@ -399,7 +398,7 @@ button, input {
     padding: 10px;
     margin-top: auto;
     margin-bottom: 10px;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: lighter;
 }
 
@@ -413,7 +412,7 @@ button, input {
     padding: 10px;
     margin-top: 10px;
     margin-bottom: auto;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: lighter;
     text-align: right;
 }
@@ -445,6 +444,7 @@ button, input {
 }
 
 #gamePage_observerReadyTitle, #gamePage_observerTimer {
+    font-size: 25px;
     margin: auto;
 }
 
