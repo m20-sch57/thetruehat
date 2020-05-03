@@ -8,13 +8,13 @@ const DELAY_TIME = 3000;
 const EXPLANATION_TIME = 20000;
 const AFTERMATH_TIME = 3000;
 
-function animate({timing, draw, duration}) {
+function animate({startTime, timing, draw, duration}) {
     // Largely taken from https://learn.javascript.ru
     timing = timing || (time => time);
-    console.log(timing);
     return new Promise(function(resolve) {
-        let start = performance.now();
-        requestAnimationFrame(function animate(time) {
+        let start = startTime;
+        requestAnimationFrame(function animate() {
+            time = (new Date()).getTime();
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
 
@@ -257,29 +257,43 @@ class App {
         case "explanation":
         console.log(data.startTime - (new Date()).getTime());
             setTimeout(() => {
-                console.log("timeout", this);
                 if (this.myRole == "") {
                     console.log("WARN: empty role");
                     return;
                 }
                 this.hideAllGameActions()
-                if (this.myRole == 'speaker') {
+                switch (this.myRole) {
+                case "speaker":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay().then(() => {
+                    this.animateDelay(data.startTime - DELAY_TIME).then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_explanationBox");
-                        this.animateTimer().then(() => {
+                        this.animateTimer(data.startTime).then(() => {
+                            el("gamePage_explanationTimer").innerText = "00:00";
+                        })
+                    })
+                    break;
+                case "listener":
+                case "observer":
+                    show("gamePage_explanationDelayBox");
+                    this.animateDelay(data.startTime - DELAY_TIME).then(() => {
+                        hide("gamePage_explanationDelayBox");
+                        show("gamePage_speakerListener");
+                        show("gamePage_observerBox");
+                        this.animateTimer(data.startTime).then(() => {
                             el("gamePage_explanationTimer").innerText = "00:00";
                         })
                     })
                 }
+
             }, data.startTime - (new Date()).getTime() - DELAY_TIME);
             break;
         }
     }
 
-    animateDelay() {
+    animateDelay(startTime) {
         return animate({
+            startTime,
             duration: DELAY_TIME,
             draw: (progress) => {
                 el("gamePage_explanationDelayTimer").innerText = 
@@ -288,13 +302,15 @@ class App {
         })
     }
 
-    animateTimer() {
+    animateTimer(startTime) {
         return animate({
+            startTime,
             duration: EXPLANATION_TIME,
             draw: (progress) => {
-                el("gamePage_explanationTimer").innerText = 
-                    timeFromSeconds(Math.floor(
-                    (1 - progress) / 1000 * EXPLANATION_TIME) + 1);
+                let time = timeFromSeconds(Math.floor((1 - progress) / 
+                    1000 * EXPLANATION_TIME) + 1);
+                el("gamePage_explanationTimer").innerText = time;
+                el("gamePage_observerTimer").innerText = time;
             }
         })
     }
