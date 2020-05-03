@@ -25,6 +25,10 @@ function show(id) {
     el(id).style.display = "";
 }
 
+function disable(id) {
+    el(id).setAttribute("disabled", "");
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -150,7 +154,7 @@ class App {
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             // el("joinPage_pasteKey").style.display = "none";
-            el("joinPage_pasteKey").setAttribute("disabled", "");
+            disable(el("joinPage_pasteKey"))
         }
     }
 
@@ -222,6 +226,18 @@ class App {
         hide("gamePage_explanationBox");
     }
 
+    listenerReady() {
+        this.socket.emit("cListenerReady");
+        disable("gamePage_listenerReadyButton");
+        el("gamePage_listenerReadyButton").innertext = "Подожди напарника"
+    }
+
+    speakerReady() {
+        this.socket.emit("cSpeakerReady");
+        disable("gamePage_speakerReadyButton");
+        el("gamePage_speakerReadyButton").innertext = "Подожди напарника"
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -291,6 +307,8 @@ class App {
         el("preparationPage_start").onclick = () => this.socket.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
+        el("gamePage_listenerReadyButton").onclick = () => this.listenerReady();
+        el("gamePage_speakerReadyButton").onclick = () => this.speakerReady();
     }
 }
 
