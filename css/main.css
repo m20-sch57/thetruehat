@@ -389,51 +389,51 @@ button, input {
     padding: 0 30px 0 30px;
 }
 
-#gamePage_fromTo {
+#gamePage_speakerListener {
     display: flex;
     flex-flow: column;
     height: 50%;
 }
 
-#gamePage_fromBox {
+#gamePage_speakerBox {
     padding: 5px;
     margin-top: auto;
     text-align: left;
 }
 
-#gamePage_fromLabel {
+#gamePage_speakerLabel {
     font-size: 20px;
     margin-bottom: 0;
 }
 
-#gamePage_from {
+#gamePage_speaker {
     font-size: 25px;
     font-weight: lighter;
     color: rgb(15, 170, 74);
 }
 
-#gamePage_fromHint {
+#gamePage_speakerHint {
     font-size: 17px;
     margin-top: 5px;
 }
 
-#gamePage_toBox {
+#gamePage_listenerBox {
     padding: 5px;
     margin-bottom: auto;
     text-align: right;
 }
 
-#gamePage_toHint {
+#gamePage_listenerHint {
     font-size: 17px;
     margin-bottom: 5px;
 }
 
-#gamePage_toLabel {
+#gamePage_listenerLabel {
     font-size: 20px;
     margin-top: 0;
 }
 
-#gamePage_to {
+#gamePage_listener {
     font-size: 25px;
     font-weight: lighter;
     color: rgb(0, 140, 255);

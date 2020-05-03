@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-    <div class="page" id="preparationPage">
+    <div class="page" id="preparationPage" style="display: none;">
         <button class="white-bubble go-back" id="preparationPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="preparationPage_viewRules">
@@ -90,7 +90,7 @@
             </div>
         </div>
     </div>
-    <div class="page" id="gamePage" style="display: none;">
+    <div class="page" id="gamePage">
         <button class="white-bubble go-back" id="gamePage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="gamePage_viewRules">
@@ -103,18 +103,18 @@
                 </span></p>
             </div>
             <div id="gamePage_body">
-                <div id="gamePage_fromTo">
-                    <div id="gamePage_fromBox">
-                        <h1 id="gamePage_fromLabel">
+                <div id="gamePage_speakerListener" style="display: none;">
+                    <div id="gamePage_speakerBox">
+                        <h1 id="gamePage_speakerLabel">
                             <span class="fa fa-microphone"></span>
-                            <span id="gamePage_from">Вася</span>
+                            <span id="gamePage_speaker">Вася</span>
                         </h1>
-                        <p id="gamePage_fromHint">объясняет</p>
+                        <p id="gamePage_speakerHint">объясняет</p>
                     </div>
-                    <div id="gamePage_toBox">
-                        <p id="gamePage_toHint">отгадывает</p>
-                        <h1 id="gamePage_toLabel">
-                            <span id="gamePage_to">Петя</span>
+                    <div id="gamePage_listenerBox">
+                        <p id="gamePage_listenerHint">отгадывает</p>
+                        <h1 id="gamePage_listenerLabel">
+                            <span id="gamePage_listener">Петя</span>
                             <span class="fa fa-headphones"></span>
                         </h1>
                     </div>
