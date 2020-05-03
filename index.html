@@ -82,7 +82,7 @@
                     <div class="spacer"></div>
                 </div>
                 <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
-                <h1 id="preparationPage_startLabel">Дождитесь начала игры</h1>
+                <h1 id="preparationPage_startLabel" style="display: none;">Дождись начала игры</h1>
             </div>
         </div>
     </div>
@@ -99,25 +99,29 @@
                 </span></p>
             </div>
             <div id="gamePage_body">
-                <div id="gamePage_fromTo" style="display: none;">
-                    <h1 id="gamePage_fromLabel">
-                        <span class="fa fa-microphone"></span> <span id="gamePage_from">
-                            Вася
-                        </span> объясняет
-                    </h1>
-                    <h1 id="gamePage_toLabel">
-                        <span class="fa fa-headphones"></span> Отгадывает <span id="gamePage_to">
-                            Петя
-                        </span>
-                    </h1>
+                <div id="gamePage_speakerListener" style="display: none;">
+                    <div id="gamePage_speakerBox">
+                        <h1 id="gamePage_speakerLabel">
+                            <span class="fa fa-microphone"></span>
+                            <span id="gamePage_speaker">Вася</span>
+                        </h1>
+                        <p id="gamePage_speakerHint">объясняет</p>
+                    </div>
+                    <div id="gamePage_listenerBox">
+                        <p id="gamePage_listenerHint">отгадывает</p>
+                        <h1 id="gamePage_listenerLabel">
+                            <span id="gamePage_listener">Петя</span>
+                            <span class="fa fa-headphones"></span>
+                        </h1>
+                    </div>
                 </div>
                 <div id="gamePage_speakerReadyBox" style="display: none;">
                     <h1 id="gamePage_speakerReadyTitle">Пришло время объяснять!</h1>
-                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton">Я готов</button>
+                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton">Я готов объяснять</button>
                 </div>
                 <div id="gamePage_listenerReadyBox" style="display: none;">
                     <h1 id="gamePage_listenerReadyTitle">Пришло время отгадывать!</h1>
-                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">Я готов</button>
+                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">Я готов отгадывать</button>
                 </div>
                 <div id="gamePage_observerReadyBox" style="display: none;">
                     <h1 id="gamePage_observerReadyTitle">Ожидание готовности...</h1>
@@ -127,17 +131,18 @@
                         01:00
                     </h1>
                 </div>
-                <div id="gamePage_explanationBox" style="display: none;">
-                    <h1 class="timer-green" id="gamePage_explanationPreviewTimer">
+                <div id="gamePage_explanationDelayBox" style="display: none;">
+                    <h1 class="timer-green" id="gamePage_explanationDelayTimer">
                         3
                     </h1>
-                    <h1 id="gamePage_explanationWord" style="display: none;">
+                </div>
+                <div id="gamePage_explanationBox" style="display: none;">
+                    <h1 id="gamePage_explanationWord">
                         Эскадрон
                     </h1>
-                    <h1 id="gamePage_explanationTimer" style="display: none;">
-                        01:00
+                    <h1 id="gamePage_explanationTimer">
                     </h1>
-                    <div id="gamePage_explanationActions" style="display: none;">
+                    <div id="gamePage_explanationActions">
                         <button class="medium-button bg-green" id="gamePage_explanationSuccess">
                             Угадал
                         </button>
