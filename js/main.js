@@ -187,29 +187,14 @@ class App {
         let _this = this;
 
         if (this.debug) {
-            this.socket.on("sPlayerJoined", function(data) {
-                console.log("sPlayerJoined", data);
-            })
-            this.socket.on("sPlayerLeft", function(data) {
-                console.log("sPlayerLeft", data);
-            })
-            this.socket.on("sNewHost", function(data) {
-                console.log("sNewHost", data);
-            })
-            this.socket.on("sFailure", function(data) {
-                console.log("sFailure", data);
-            })
-            this.socket.on("sYouJoined", function(data) {
-                console.log("sYouJoined", data);
-            })
-            this.socket.on("sGameStarted", function(data) {
-                console.log("sGameStarted", data);
-            })
-            this.socket.on("sExplanationEnded", function(data) {
-                console.log("sExplanationEnded", data);
-            })
-            this.socket.on("sExplanationStarted", function(data) {
-                console.log("sExplanationStarted", data);
+            let events = ["sPlayerJoined", "sPlayerLeft", "sFailure",
+            "sYouJoined", "sGameStarted", "sExplanationStarted",
+            "sExplanationEnded", "sNextTurn", "sNewWord", "sWordExplanationEnded",
+            "sWordsToEdit", "sGameEnded"];
+            events.forEach((event) => {
+                _this.socket.on(event, function(data) {
+                    console.log(event, data);
+                })
             })
         }
 
