@@ -44,13 +44,13 @@ button, input {
     line-height: 20px;
 }
 
-.small-button:hover, .medium-button:hover {
+.small-button:hover:enabled, .medium-button:hover:enabled {
     background-color: rgb(44, 98, 185);
     color: whitesmoke;
     box-shadow: 1px 1px 5px grey;
 }
 
-.small-button:active, .medium-button:active {
+.small-button:active:enabled, .medium-button:active:enabled {
     background-color: rgb(36, 52, 77);
 }
 
@@ -332,15 +332,17 @@ button, input {
 }
 
 #preparationPage_users .user-item {
-    padding: 10px;
+    padding: 8px;
+    font-size: 18px;
     text-align: center;
 }
 
 #preparationPage_users .host::before {
     content: '';
     float: left;
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
+    margin-right: -20px;
     background-image: url(\hat.png);
     background-size: 100%;
 }
@@ -396,7 +398,7 @@ button, input {
     padding: 10px;
     margin-top: auto;
     margin-bottom: 10px;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: lighter;
 }
 
@@ -410,7 +412,7 @@ button, input {
     padding: 10px;
     margin-top: 10px;
     margin-bottom: auto;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: lighter;
     text-align: right;
 }
@@ -442,6 +444,7 @@ button, input {
 }
 
 #gamePage_observerReadyTitle, #gamePage_observerTimer {
+    font-size: 25px;
     margin: auto;
 }
 
