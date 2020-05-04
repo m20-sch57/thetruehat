@@ -2,12 +2,16 @@
 
 "use strict"
 
-const PORT = 5000;
-const WORD_NUMBER = 40;
-const DELAY = 2; // given delay for client reaction
-const EXPLANATION_LENGTH = 20; // length of explanation
-const PRE = 3; // delay for transfer
-const POST = 3; // time for guess
+const config = require("./config.json");
+
+const PORT = config.port;
+const WORD_NUMBER = config.wordNumber;
+const DELAY = config.transferTime; // given delay for client reaction
+const EXPLANATION_LENGTH = config.explanationTime; // length of explanation
+const PRE = config.delayTime; // delay for transfer
+const POST = config.aftermathTime; // time for guess
+
+const allWords = require(config.wordsPath).words;
 
 const express = require("express");
 const app = express();
@@ -98,13 +102,15 @@ function getRoom(socket) {
  * @return list of words
  */
 function generateWords(key) {
-    /*
-    Temporary measures.
-    TODO: proper word generation
-    */
     let words = [];
-    for (let i = 0; i < WORD_NUMBER; ++i) {
-        words.push(i);
+    let used = {};
+    const numberOfAllWords = allWords.length;
+    while (words.length < WORD_NUMBER) {
+        const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
+        if (!(pos in used)) {
+            used[pos] = true;
+            words.push(allWords[pos]);
+        }
     }
     return words;
 }
@@ -742,6 +748,14 @@ io.on("connection", function(socket) {
      */
     socket.on("cEndWordExplanation", function(ev) {
         const key = getRoom(socket); // key of the room
+
+        // checking if room exists
+        if (!(key in rooms)) {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "game exnded"});
+            return;
+        }
         
         // checking if proper state and substate
         if (rooms[key].state !== "play") {
@@ -757,7 +771,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        // chicking if speaker send this
+        // checking if speaker send this
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
             socket.emit("sFailure", {
                 "request": "cEndWordExplanation",

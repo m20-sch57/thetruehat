@@ -1,0 +1,9 @@
+{
+    "port": 5000,
+    "wordsPath": "./words/easy.json",
+    "transferTime": 2,
+    "delayTime": 3,
+    "explanationTime": 20,
+    "aftermathTime": 3,
+    "wordNumber": 40
+}
