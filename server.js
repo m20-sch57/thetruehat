@@ -568,6 +568,18 @@ io.on("connection", function(socket) {
         // acquiring the key
         const key = getRoom(socket);
 
+        // if game ended
+        if (!(key in rooms)) {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "game ended"});
+            return;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "wait") {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "Game have already started"});
+            return;
+        }
+
         // checking whether siganl owner is host
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
@@ -578,12 +590,6 @@ io.on("connection", function(socket) {
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
             socket.emit("sFailure", {"request": "cStartGame", "msg": "Only host can start the game"});
-            return;
-        }
-        
-        // if state isn't 'wait', something went wrong
-        if (rooms[key].state !== "wait") {
-            socket.emit("sFailure", {"request": "cStartGame", "msg": "Game have already started"});
             return;
         }
 
@@ -671,6 +677,12 @@ io.on("connection", function(socket) {
     socket.on("cSpeakerReady", function() {
         const key = getRoom(socket); // key of room
 
+        // if game ended
+        if (!(key in rooms)) {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "game ended"});
+            return;
+        }
+
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
             socket.emit("sFailure", {
@@ -717,6 +729,12 @@ io.on("connection", function(socket) {
      */
     socket.on("cListenerReady", function() {
         const key = getRoom(socket); // key of room
+
+        // if game ended
+        if (!(key in rooms)) {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "game ended"});
+            return;
+        }
 
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
@@ -769,7 +787,7 @@ io.on("connection", function(socket) {
         if (!(key in rooms)) {
             socket.emit("sFailure", {
                 "request": "cEndWordExplanation",
-                "msg": "game exnded"});
+                "msg": "game ended"});
             return;
         }
         
@@ -889,6 +907,12 @@ io.on("connection", function(socket) {
      */
     socket.on("cWordsEdited", function(ev) {
         const key = getRoom(socket); // key of the room
+
+        // if game ended
+        if (!(key in rooms)) {
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "game ended"});
+            return;
+        }
 
         // check if game state is 'edit'
         if (rooms[key].state === "edit") {
