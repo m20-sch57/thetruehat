@@ -140,8 +140,12 @@ function startExplanation(key) {
     const currentTime = date.getTime();
     rooms[key].startTime = currentTime + PRE * 1000;
     rooms[key].word = rooms[key].freshWords.pop();
+    const numberOfTurn = rooms[key].numberOfTurn;
     setTimeout(function() {
-        finishExplanation(key);
+        // if explanation hasn't finished yet
+        if (rooms[key].numberOfTurn === numberOfTurn) {
+            finishExplanation(key);
+        }
     }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
     setTimeout(function() {
         io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
@@ -323,6 +327,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - word --- current word,
  *     - startTime --- UTC time of start of explanation (in miliseconds).
  *     - editWords --- list of words to edit
+ *     - numberOfTurn --- number of turn
  */
 const rooms = {};
 
@@ -608,6 +613,9 @@ io.on("connection", function(socket) {
 
         // preparing endTime container
         rooms[key].startTime = 0;
+
+        // setting number of turn
+        rooms[key].numberOfTurn = 0;
 
         // preparing flags for 'wait'
         rooms[key].speakerReady = false;
@@ -943,6 +951,7 @@ io.on("connection", function(socket) {
         rooms[key].startTime = 0;
         rooms[key].speakerReady = false;
         rooms[key].listenerReady = false;
+        rooms[key].numberOfTurn++;
 
         // choosing next pair
         const numberOfPlayers = rooms[key].users.length;
