@@ -4,8 +4,10 @@
 
 const PORT = 5000;
 const WORD_NUMBER = 40;
-const DELAY = 3;
-const EXPLANATION_LENGTH = 20;
+const DELAY = 2; // given delay for client reaction
+const EXPLANATION_LENGTH = 20; // length of explanation
+const PRE = 3; // delay for transfer
+const POST = 3; // time for guess
 
 const express = require("express");
 const app = express();
@@ -112,7 +114,7 @@ function generateWords(key) {
  * @param numberOfPlayers number of players
  * @param lastSpeaker index of previous speaker
  * @param lastListener index of precious listener
- * @return object with fields: from and to --- indices of speaker and listener
+ * @return object with fields: speaker and listener --- indices of speaker and listener
  */
 function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
     let speaker = (lastSpeaker + 1) % numberOfPlayers;
@@ -123,7 +125,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
             listener++;
         }
     }
-    return {"from": speaker, "to": listener};
+    return {"speaker": speaker, "listener": listener};
 }
 
 /**
@@ -136,17 +138,97 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + DELAY * 1000;
+    rooms[key].startTime = currentTime + PRE * 1000;
     rooms[key].word = rooms[key].freshWords.pop();
     setTimeout(function() {
-        io.sockets.to(key).emit("sExplanationEnded", {
-            "wordsCount": rooms[key].freshWords.length});
-    }, (DELAY + EXPLANATION_LENGTH) * 1000);
+        finishExplanation(key);
+    }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
     setTimeout(function() {
-        io.sockets.to(rooms[key].users[rooms[key].from].sids[0]).emit(
+        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
             "sNewWord", {"word": rooms[key].word});
-    }, DELAY * 1000);
+    }, PRE * 1000);
     io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+}
+
+/**
+ * finish an explanation
+ *
+ * @param key --- key of the room
+ * @return null
+ */
+function finishExplanation(key) {
+    // if game has ended
+    if (!(key in rooms)) {
+        return;
+    }
+
+    // if signal has been sent
+    if (rooms[key].substate !== "explanation") {
+        return;
+    }
+    rooms[key].substate = "edit";
+
+    // returning word to the hat
+    if (rooms[key].word !== "") {
+        rooms[key].freshWords.splice(
+            Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+            0, rooms[key].word);
+    }
+
+    rooms[key].startTime = 0;
+    rooms[key].word = "";
+
+    /**
+     * Implementation of sExplanationEnded signal
+     * @see API.md
+     */
+    io.sockets.to(key).emit("sExplanationEnded", {
+        "wordsCount": rooms[key].freshWords.length});
+    
+    /**
+     * Implementation of sWordsToEdit signal
+     * @see API.md
+     */
+    io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
+        "sWordsToEdit", {"editWords": rooms[key].editWords});
+}
+
+/**
+ * end the game
+ * @param key --- key of the room
+ * @return none
+ */
+function endGame(key) {
+    // preapring results
+    let results = [];
+    for (let i = 0; i < rooms[key].users.length; ++i) {
+        results.push({
+            "username": rooms[key].users[i].username,
+            "scoreExplained": rooms[key].users[i].scoreExplained,
+            "scoreGuessed": rooms[key].users[i].scoreGuessed});
+    }
+
+    // sorting results
+    results.sort(function(a, b) {
+        return 0 - (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
+    });
+
+    /**
+     * Implementation of sGameEnded signal
+     * @see API.md
+     */
+    io.sockets.emit("sGameEnded", {"results": results});
+
+    // removing room
+    delete rooms[key];
+
+    // removing users from room
+    // don't working...
+    /*
+    io.sockets.clients(key).forEach(function(socket) {
+        socket.leave(key);
+    })
+    */
 }
 
 //----------------------------------------------------------
@@ -226,12 +308,13 @@ app.get("/getRoomInfo", function(req, res) {
  *     - freshWords --- list of words in hat,
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
- *     - from --- username of speaker,
- *     - to --- username of listener,
+ *     - speaker --- position of speaker,
+ *     - listener --- position of listener,
  *     - speakerReady --- bool,
  *     - listenerReady --- bool,
  *     - word --- current word,
- *     - endTime --- UTC time of end of explanation (in miliseconds).
+ *     - startTime --- UTC time of start of explanation (in miliseconds).
+ *     - editWords --- list of words to edit
  */
 const rooms = {};
 
@@ -354,15 +437,15 @@ io.on("connection", function(socket) {
                     switch (rooms[key].substate) {
                         case "wait":
                             joinObj.substate = "wait";
-                            joinObj.from =  rooms[key].users[rooms[key].from].username;
-                            joinObj.to =  rooms[key].users[rooms[key].to].username;
+                            joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
+                            joinObj.listener =  rooms[key].users[rooms[key].listener].username;
                             break;
                         case "explanation":
                             joinObj.substate = "explanation";
-                            joinObj.from =  rooms[key].users[rooms[key].from].username;
-                            joinObj.to =  rooms[key].users[rooms[key].to].username;
-                            joinObj.endTime = rooms[key].endTime;
-                            if (joinObj.from === name) {
+                            joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
+                            joinObj.listener =  rooms[key].users[rooms[key].listener].username;
+                            joinObj.startTime = rooms[key].startTime;
+                            if (joinObj.speaker === name) {
                                 joinObj.word = rooms[key].word;
                             }
                             break;
@@ -509,29 +592,33 @@ io.on("connection", function(socket) {
         // preparing storage for explained words
         rooms[key].usedWords = {};
 
+        // preparing storage for words to edit
+        rooms[key].editWords = [];
+
         // preparing word container
         rooms[key].word = "";
 
         // preparing endTime container
-        rooms[key].endTime = 0;
+        rooms[key].startTime = 0;
 
         // preparing flags for 'wait'
         rooms[key].speakerReady = false;
         rooms[key].listenerReady = false;
 
-        // preparing 'from' and 'to'
+        // preparing 'speaker' and 'listener'
         const numberOfPlayers = rooms[key].users.length;
         const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
-        rooms[key].from = nextPair.from;
-        rooms[key].to = nextPair.to;
+        rooms[key].speaker = nextPair.speaker;
+        rooms[key].listener = nextPair.listener;
 
         /**
          * Implementation of sGameStarted signal
          * @see API.md
          */
         io.sockets.to(key).emit("sGameStarted", {
-            "from": rooms[key].users[rooms[key].from].username,
-            "to": rooms[key].users[rooms[key].to].username});
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
+            "wordsCount": rooms[key].freshWords.length});
     });
 
     /**
@@ -540,6 +627,13 @@ io.on("connection", function(socket) {
      */
     socket.on("cSpeakerReady", function() {
         const key = getRoom(socket); // key of room
+
+        // the game must be in 'play' state
+        if (rooms[key].state !== "play") {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "game state isn't 'play'"});
+        }
 
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
@@ -550,7 +644,7 @@ io.on("connection", function(socket) {
         }
 
         // check whether the client is speaker
-        if (rooms[key].users[rooms[key].from].sids[0] !== socket.id) {
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
             socket.emit("sFailure", {
                 "request": "cSpeakerReady",
                 "msg": "you aren't a speaker"});
@@ -581,6 +675,13 @@ io.on("connection", function(socket) {
     socket.on("cListenerReady", function() {
         const key = getRoom(socket); // key of room
 
+        // the game must be in 'play' state
+        if (rooms[key].state !== "play") {
+            socket.emit("sFailure", {
+                "request": "cListenerReady",
+                "msg": "game state isn't 'play'"});
+        }
+
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
             socket.emit("sFailure", {
@@ -590,7 +691,7 @@ io.on("connection", function(socket) {
         }
 
         // check whether the client is listener
-        if (rooms[key].users[rooms[key].to].sids[0] !== socket.id) {
+        if (rooms[key].users[rooms[key].listener].sids[0] !== socket.id) {
             socket.emit("sFailure", {
                 "request": "cListenerReady",
                 "msg": "you aren't a listener"});
@@ -614,6 +715,240 @@ io.on("connection", function(socket) {
         }
     });
     
+    /**
+     * Implementation of cEndWordExplanation function
+     * @see API.md
+     */
+    socket.on("cEndWordExplanation", function(ev) {
+        const key = getRoom(socket); // key of the room
+        
+        // checking if proper state and substate
+        if (rooms[key].state !== "play") {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "game state isn't 'play'"});
+            return;
+        }
+        if (rooms[key].substate !== "explanation") {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "game substate isn't 'explanation'"});
+            return;
+        }
+
+        // chicking if speaker send this
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "you aren't a listener"});
+            return;
+        }
+
+        // checking if time is correct
+        const date = new Date();
+        if (date.getTime() < rooms[key].startTime) {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "to early"});
+            return;
+        }
+
+        let cause = ev.cause;
+        switch (cause) {
+            case "explained":
+                // logging the word
+                rooms[key].editWords.push({
+                    "word": rooms[key].word,
+                    "wordState": "explained",
+                    "transfer": true});
+
+                // removing the word from the 'word' container
+                rooms[key].word = "";
+
+                /**
+                 * Implementation of sWordExplanationEnded signal
+                 * @see API.md
+                 */
+                io.sockets.emit("sWordExplanationEnded", {
+                    "cause": cause,
+                    "wordsCount": rooms[key].freshWords.length});
+
+                // checking the time
+                if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
+                    // finishing the explanation
+                    finishExplanation(key);
+                    return;
+                }
+
+                // if words left --- time to finish the explanation
+                if (rooms[key].freshWords.length === 0) {
+                    finishExplanation(key);
+                    return;
+                }
+
+                // emmiting new word
+                rooms[key].word = rooms[key].freshWords.pop();
+                socket.emit("sNewWord", {"word": rooms[key].word});
+                return;
+            case "mistake":
+                // logging the word
+                rooms[key].editWords.push({
+                    "word": rooms[key].word,
+                    "wordState": "mistake",
+                    "transfer": true});
+
+                // word don't go to the hat
+                rooms[key].word = "";
+
+                /**
+                 * Implementation of sWordExplanationEnded signal
+                 * @see API.md
+                 */
+                io.sockets.emit("sWordExplanationEnded", {
+                    "cause": cause,
+                    "wordsCount": rooms[key].freshWords.length});
+
+                // finishing the explanation
+                finishExplanation(key);
+                return;
+            case "notExplained":
+                // logging the word
+                rooms[key].editWords.push({
+                    "word": rooms[key].word,
+                    "wordState": "notExplained",
+                    "transfer": true});
+
+                /**
+                 * Implementation of sWordExplanationEnded signal
+                 * @see API.md
+                 */
+                io.sockets.emit("sWordExplanationEnded", {
+                    "cause": cause,
+                    "wordsCount": rooms[key].freshWords.length + 1});
+
+                // finishing the explanation
+                finishExplanation(key);
+                return;
+        }
+    });
+
+    /**
+     * Implementation of cWordsEdited function
+     * @see API.md
+     */
+    socket.on("cWordsEdited", function(ev) {
+        const key = getRoom(socket); // key of the room
+
+        // check if game state is 'edit'
+        if (rooms[key].state === "edit") {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "game state isn't 'edit'"})
+            return;
+        }
+
+        // check if game substate is 'edit'
+        if (rooms[key].substate !== "edit") {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "game substate isn't 'edit'"})
+            return;
+        }
+
+        // check if speaker send this signal
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "only speaker can send this signal"});
+            return;
+        }
+
+        // moving editWords
+        const editWords = ev.editWords;
+
+        // comparing the legth of serer editWords and client editWords
+        if (editWords.length !== rooms[key].editWords.length) {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "incorrect number of words"});
+            return;
+        }
+
+        // applying changes and counting success explanations
+        let cnt = 0;
+        for (let i = 0; i < editWords.length; ++i) {
+            let word = rooms[key].editWords[i];
+            
+            // checking matching of information
+            if (word.word !== editWords[i].word) {
+                socket.emit("sFailure", {
+                    "request": "cWordsEdited",
+                    "msg": `incorrect word at position ${i}`});
+                return;
+            }
+
+            switch (editWords[i].wordState) {
+                case "explained":
+                    // counting explained words
+                    cnt++;
+                case "mistake":
+                    // transfering data to serer structure
+                    rooms[key].editWords[i].wordState = editWords[i].wordState;
+                    break;
+                case "notExplained":
+                    // returning not explained words to the hat
+                    rooms[key].editWords[i].transfer = false;
+                    break;
+            }
+        }
+
+        // tranfering round info
+        // changing the score
+        rooms[key].users[rooms[key].speaker].scoreExplained += cnt;
+        rooms[key].users[rooms[key].listener].scoreGuessed += cnt;
+
+        // changing usedWords and creating words list
+        let words = [];
+        for (let i = 0; i < rooms[key].editWords.length; ++i) {
+            if (rooms[key].editWords[i].transfer) {
+                rooms[key].usedWords[rooms[key].editWords[i].word] = rooms[key].editWords[i].wordState;
+                words.push({
+                    "word": rooms[key].editWords[i].word,
+                    "wordState": rooms[key].editWords[i].wordState});
+            } else {
+                rooms[key].freshWords.splice(
+                    Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+                    0, rooms[key].editWords[i].word);
+            }
+        }
+
+        // if no words left it's time to finish the game
+        if (rooms[key].freshWords.length === 0) {
+            endGame(key);
+            return;
+        }
+
+        // initializing next round
+        rooms[key].editWords = [];
+        rooms[key].word = "";
+        rooms[key].startTime = 0;
+
+        // choosing next pair
+        const numberOfPlayers = rooms[key].users.length;
+        const nextPair = getNextPair(numberOfPlayers, rooms[key].speaker, rooms[key].listener);
+        rooms[key].speaker = nextPair.speaker;
+        rooms[key].listener = nextPair.listener;
+
+        /**
+         * Implementation of sNextTurn signal
+         * @see API.md
+         */
+        io.sockets.to(key).emit("sNextTurn", {
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
+            "words": words});
+    });
+
     socket.on("disconnect", function() {
         /**
          * room key can't be acceessed via getRoom(socket)
@@ -659,7 +994,7 @@ io.on("connection", function(socket) {
              */
             // Sending new state of the room.
             let host = "";
-            const pos = findFirstPos(rooms[key].users, "online", true);
+            const pos = findFirstPos(rooms[_key].users, "online", true);
             if (pos !== -1) {
                 host = rooms[_key].users[pos].username;
             }
