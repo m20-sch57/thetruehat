@@ -109,7 +109,7 @@ function generateWords(key) {
         const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
         if (!(pos in used)) {
             used[pos] = true;
-            words.push(allWords[words]);
+            words.push(allWords[pos]);
         }
     }
     return words;
