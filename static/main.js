@@ -47,6 +47,12 @@ function timeFromSeconds(sec) {
     return `${min}:${sec}`
 }
 
+function aftermathTimeFormat(msec) {
+    let sec = Math.floor(msec / 10);
+    msec -= 10 * sec;
+    return `${sec}.${msec}`;
+}
+
 function el(id) {   
     return document.getElementById(id);
 }
@@ -378,8 +384,9 @@ class App {
             startTime,
             duration: AFTERMATH_TIME,
             draw: (progress) => {
-                let time = (Math.floor((1 - progress) / 
-                    1000 * AFTERMATH_TIME) + 1);
+                let msec = (Math.floor((1 - progress) / 
+                    100 * AFTERMATH_TIME) + 1);
+                let time = aftermathTimeFormat(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
