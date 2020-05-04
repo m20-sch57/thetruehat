@@ -937,9 +937,12 @@ io.on("connection", function(socket) {
         }
 
         // initializing next round
+        rooms[key].substate = "wait";
         rooms[key].editWords = [];
         rooms[key].word = "";
         rooms[key].startTime = 0;
+        rooms[key].speakerReady = false;
+        rooms[key].listenerReady = false;
 
         // choosing next pair
         const numberOfPlayers = rooms[key].users.length;
