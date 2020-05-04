@@ -260,11 +260,20 @@ function endGame(key) {
  * @see API.md
  */
 app.get("/getFreeKey", function(req, res) {
-    /*
-    Temporary measures.
-    TODO: qualitative key generator
-     */
-    res.json({"key": Math.floor(Math.random() * 899999999 + 100000000).toString()});
+    // getting the setings
+    const minKeyLength = config.minKeyLength;
+    const maxKeyLength = config.maxKeyLength;
+    const keyConsonant = config.keyConsonant;
+    const keyVowels = config.keyVowels;
+    // getting the key length
+    const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
+    // generatin the key
+    let key = "";
+    for (let i = 0; i < keyLength; ++i) {
+        const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
+        key += charList[Math.floor(Math.random() * charList.length)];
+    }
+    res.json({"key": key});
 });
 
 /**
