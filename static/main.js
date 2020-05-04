@@ -548,6 +548,8 @@ class App {
             "cEndWordExplanation", {"cause": "notExplained"});
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
+        el("gamePage_goBack").onclick = () => this.leaveRoom();
+        el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
     }
 }
 
