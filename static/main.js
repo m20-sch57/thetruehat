@@ -291,7 +291,6 @@ class App {
                 this.myRole = "speaker";
                 break;
             default:
-                show("gamePage_observerReadyBox");
                 this.myRole = "observer";
                 break;
             }
