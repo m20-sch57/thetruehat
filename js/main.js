@@ -281,7 +281,7 @@ class App {
                         show("gamePage_speakerListener");
                         show("gamePage_observerBox");
                         this.animateTimer(data.startTime).then(() => {
-                            el("gamePage_explanationTimer").innerText = "00:00";
+                            el("gamePage_observerTimer").innerText = "00:00";
                         })
                     })
                 }
@@ -370,24 +370,28 @@ class App {
                 _this.showPage("preparationPage");
                 break;
             case "play":
-                if (data.state == "play") {
-                    this.myRole = (data.speaker == this.myUsername) ? "speaker" :
-                        (data.listener == this.myUsername) ? "listener" : "observer";
-                }
+                _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
+                    (data.listener == _this.myUsername) ? "listener" : "observer";
                 _this.setGameState(data.substate, data);
                 _this.showPage("gamePage");
                 break;
             }
         })
         this.socket.on("sGameStarted", function(data) {
-            _this.setGameState("wait", {
-                "speaker": data.speaker,
-                "listener": data.listener
-            })
+            _this.setGameState("wait", data)
             _this.showPage("gamePage");
         })
         this.socket.on("sExplanationStarted", function(data) {
             _this.setGameState("explanation", data);
+        })
+        this.socket.on("sNewWord", function(data) {
+            el("gamePage_explanationWord").innerText = data.word;
+        })
+        this.socket.on("sWordsToEdit", function(data) {
+            _this.socket.emit("cWordsEdited", data);
+        })
+        this.socket.on("sNextTurn", function(data) {
+            _this.setGameState("wait", data);
         })
     }
 
