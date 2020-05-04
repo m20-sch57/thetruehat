@@ -398,7 +398,10 @@ class App {
                 _this.showPage("preparationPage");
                 break;
             case "play":
+                el("gamePage_speaker").innerText = data.speaker;
+                el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
+                el("gamePage_explanationWord").innerText = data.word;
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
                     "observer";
