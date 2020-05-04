@@ -47,6 +47,12 @@ function timeFromSeconds(sec) {
     return `${min}:${sec}`
 }
 
+function aftermathTimeFormat(msec) {
+    let sec = Math.floor(msec / 10);
+    msec -= 10 * sec;
+    return `${sec}.${msec}`;
+}
+
 function el(id) {   
     return document.getElementById(id);
 }
@@ -183,8 +189,9 @@ class App {
 
 
     setKey(value) {
-        this.myRoomKey = value.toUpperCase();
-        location.hash = value;
+        value = value.toUpperCase();
+        this.myRoomKey = value
+        location.hash = value
         el("joinPage_inputKey").value = this.myRoomKey;
         el("preparationPage_title").innerText = this.myRoomKey;
     }
@@ -378,8 +385,9 @@ class App {
             startTime,
             duration: AFTERMATH_TIME,
             draw: (progress) => {
-                let time = (Math.floor((1 - progress) / 
-                    1000 * AFTERMATH_TIME) + 1);
+                let msec = (Math.floor((1 - progress) / 
+                    100 * AFTERMATH_TIME) + 1);
+                let time = aftermathTimeFormat(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
@@ -540,6 +548,8 @@ class App {
             "cEndWordExplanation", {"cause": "notExplained"});
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
+        el("gamePage_goBack").onclick = () => this.leaveRoom();
+        el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
     }
 }
 
