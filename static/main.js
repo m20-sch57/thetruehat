@@ -62,10 +62,12 @@ function deleteNode(node) {
 
 function hide(id) {
     el(id).style.display = "none";
+    // console.log("Hide", id);
 }
 
 function show(id) {
     el(id).style.display = "";
+    // console.log("Show", id);
 }
 
 function disable(id) {
@@ -398,6 +400,7 @@ class App {
         hide("gamePage_observerBox");
         hide("gamePage_explanationBox");
         hide("gamePage_observerTimer");
+        hide("gamePage_explanationDelayBox");
     }
 
     listenerReady() {
