@@ -551,6 +551,9 @@ button, input {
     #gamePage_speakerReadyBox, #gamePage_listenerReadyBox, #gamePage_observerBox {
         height: 60px;
     }
+    #gamePage_explanationDelayBox {
+        height: 300px;
+    }
     #gamePage_explanationWordTimer {
         height: 300px;
     }
