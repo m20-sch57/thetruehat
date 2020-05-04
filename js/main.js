@@ -5,6 +5,7 @@ Array.prototype.last = function() {
 }
 
 const DELAY_TIME = 3000;
+const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const EXPLANATION_TIME = 20000;
 const AFTERMATH_TIME = 3000;
 
@@ -317,6 +318,8 @@ class App {
             draw: (progress) => {
                 el("gamePage_explanationDelayTimer").innerText = 
                     Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
+                el("gamePage_explanationDelayTimer").style.background = 
+                    DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
             }
         })
     }
