@@ -189,8 +189,9 @@ class App {
 
 
     setKey(value) {
-        this.myRoomKey = value.toUpperCase();
-        location.hash = value;
+        value = value.toUpperCase();
+        this.myRoomKey = value
+        location.hash = value
         el("joinPage_inputKey").value = this.myRoomKey;
         el("preparationPage_title").innerText = this.myRoomKey;
     }
