@@ -506,6 +506,14 @@ io.on("connection", function(socket) {
     socket.on("cLeaveRoom", function() {
         const key = getRoom(socket); // Key of user's current room
 
+        // checking if key is valid
+        if (!(key in rooms)) {
+            // when game ended
+            console.log("Player", socket.id, "left", key);
+            socket.leave(key);
+            return;
+        }
+
         // If user is only in his own room
         if (key === socket.id) {
             socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
