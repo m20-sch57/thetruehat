@@ -5,8 +5,11 @@ Array.prototype.last = function() {
 }
 
 const DELAY_TIME = 3000;
+const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const EXPLANATION_TIME = 20000;
 const AFTERMATH_TIME = 3000;
+const SPEAKER_READY = "Я готов объяснять";
+const LISTENER_READY = "Я готов отгадывать";
 
 function animate({startTime, timing, draw, duration}) {
     // Largely taken from https://learn.javascript.ru
@@ -248,7 +251,11 @@ class App {
         case "wait":
             this.hideAllGameActions()
             enable("gamePage_listenerReadyButton");
+            el("gamePage_listenerReadyButton").innerText = 
+                LISTENER_READY
             enable("gamePage_speakerReadyButton");
+            el("gamePage_speakerReadyButton").innerText = 
+                SPEAKER_READY
             switch (this.myUsername) {
             case data.listener:
                 show("gamePage_listenerReadyBox");
@@ -278,23 +285,29 @@ class App {
                 switch (this.myRole) {
                 case "speaker":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME).then(() => {
+                    this.animateDelay(data.startTime - DELAY_TIME)
+                    .then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_explanationBox");
-                        this.animateTimer(data.startTime).then(() => {
-                            el("gamePage_explanationTimer").innerText = "00:00";
+                        this.animateTimer(data.startTime)
+                        .then(() => {
+                            el("gamePage_explanationTimer").innerText = 
+                                "00:00";
                         })
                     })
                     break;
                 case "listener":
                 case "observer":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME).then(() => {
+                    this.animateDelay(data.startTime - DELAY_TIME)
+                    .then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_speakerListener");
                         show("gamePage_observerBox");
-                        this.animateTimer(data.startTime).then(() => {
-                            el("gamePage_observerTimer").innerText = "00:00";
+                        this.animateTimer(data.startTime)
+                        .then(() => {
+                            el("gamePage_observerTimer").innerText = 
+                                "00:00";
                         })
                     })
                 }
@@ -311,6 +324,8 @@ class App {
             draw: (progress) => {
                 el("gamePage_explanationDelayTimer").innerText = 
                     Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
+                el("gamePage_explanationDelayTimer").style.background = 
+                    DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
             }
         })
     }
@@ -355,8 +370,8 @@ class App {
         if (this.debug) {
             let events = ["sPlayerJoined", "sPlayerLeft", "sFailure",
             "sYouJoined", "sGameStarted", "sExplanationStarted",
-            "sExplanationEnded", "sNextTurn", "sNewWord", "sWordExplanationEnded",
-            "sWordsToEdit", "sGameEnded"];
+            "sExplanationEnded", "sNextTurn", "sNewWord", 
+            "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
             events.forEach((event) => {
                 _this.socket.on(event, function(data) {
                     console.log(event, data);
@@ -383,14 +398,17 @@ class App {
                 _this.showPage("preparationPage");
                 break;
             case "play":
+                el("gamePage_wordsCnt").innerText = data.wordsCount;
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
-                    (data.listener == _this.myUsername) ? "listener" : "observer";
+                    (data.listener == _this.myUsername) ? "listener" : 
+                    "observer";
                 _this.setGameState(data.substate, data);
                 _this.showPage("gamePage");
                 break;
             }
         })
-        this.socket.on("sGameStarted", function(data) {
+        this.socket.on("sGameStarted", function(data) {    
+            el("gamePage_wordsCnt").innerText = data.wordsCount;
             _this.setGameState("wait", data)
             _this.showPage("gamePage");
         })
@@ -405,6 +423,12 @@ class App {
         })
         this.socket.on("sNextTurn", function(data) {
             _this.setGameState("wait", data);
+        })
+        this.socket.on("sWordExplanationEnded", function(data) {
+            el("gamePage_wordsCnt").innerText = data.wordsCount;
+        })
+        this.socket.on("sExplanationEnded", function(data) {
+            el("gamePage_wordsCnt").innerText = data.wordsCount;
         })
     }
 
@@ -428,13 +452,16 @@ class App {
             this.enterRoom();
         }
         el("rulesPage_goBack").onclick = () => this.goBack();
-        el("preparationPage_viewRules").onclick = () => this.showPage('rulesPage');
+        el("preparationPage_viewRules").onclick = () => 
+            this.showPage('rulesPage');
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
-        el("gamePage_listenerReadyButton").onclick = () => this.listenerReady();
-        el("gamePage_speakerReadyButton").onclick = () => this.speakerReady();
+        el("gamePage_listenerReadyButton").onclick = () => 
+            this.listenerReady();
+        el("gamePage_speakerReadyButton").onclick = () => 
+        this.speakerReady();
         el("gamePage_explanationSuccess").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "explained"});
         el("gamePage_explanationFailed").onclick = () => this.emit(
