@@ -64,6 +64,10 @@ function disable(id) {
     el(id).setAttribute("disabled", "");
 }
 
+function enable(id) {
+    el(id).removeAttribute("disabled");
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -243,6 +247,8 @@ class App {
         switch(state) {
         case "wait":
             this.hideAllGameActions()
+            enable("gamePage_listenerReadyButton");
+            enable("gamePage_speakerReadyButton");
             switch (this.myUsername) {
             case data.listener:
                 show("gamePage_listenerReadyBox");
