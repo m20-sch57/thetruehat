@@ -8,6 +8,8 @@ const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const EXPLANATION_TIME = 20000;
 const AFTERMATH_TIME = 3000;
+const SPEAKER_READY = "Я готов объяснять";
+const LISTENER_READY = "Я готов отгадывать";
 
 function animate({startTime, timing, draw, duration}) {
     // Largely taken from https://learn.javascript.ru
@@ -249,7 +251,11 @@ class App {
         case "wait":
             this.hideAllGameActions()
             enable("gamePage_listenerReadyButton");
+            el("gamePage_listenerReadyButton").innerText = 
+                LISTENER_READY
             enable("gamePage_speakerReadyButton");
+            el("gamePage_speakerReadyButton").innerText = 
+                SPEAKER_READY
             switch (this.myUsername) {
             case data.listener:
                 show("gamePage_listenerReadyBox");
