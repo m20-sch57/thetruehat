@@ -7,7 +7,7 @@
     "aftermathTime": 3,
     "wordNumber": 40,
     "minKeyLength": 6,
-    "maxKeyLength": 14,
+    "maxKeyLength": 11,
     "keyConsonant": [
         "б", "в", "г", "д", "ж",
         "з", "к", "л", "м", "н",
