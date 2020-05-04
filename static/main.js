@@ -434,11 +434,21 @@ class App {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
             _this.showStartAction(data.host);
+            if (data.playerList.filter(user => user.online).length > 1) {
+                enable("preparationPage_start")
+            } else {
+                disable("preparationPage_start")
+            }
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
             _this.showStartAction(data.host);
+            if (data.playerList.filter(user => user.online).length > 1) {
+                enable("preparationPage_start")
+            } else {
+                disable("preparationPage_start")
+            }
         })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
@@ -447,6 +457,11 @@ class App {
                     .map(user => user.username), data.host);
                 _this.showStartAction(data.host);
                 _this.showPage("preparationPage");
+                if (data.playerList.filter(user => user.online).length > 1) {
+                    enable("preparationPage_start")
+                } else {
+                    disable("preparationPage_start")
+                }
                 break;
             case "play":
                 el("gamePage_speaker").innerText = data.speaker;
