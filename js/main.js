@@ -207,6 +207,10 @@ class App {
             // el("joinPage_pasteKey").style.display = "none";
             disable("joinPage_pasteKey")
         }
+        if (!(navigator.clipboard && navigator.clipboard.writeText)) {
+            disable("preparationPage_copyKey");
+            disable("preparationPage_copyLink");
+        }
     }
 
     showStartAction(host) {
