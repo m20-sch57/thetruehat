@@ -346,6 +346,8 @@ class App {
     }
 
     animateTimer(startTime, roundId) {
+        el("gamePage_explanationTimer").classList.remove("timer-aftermath");
+        el("gamePage_observerTimer").classList.remove("timer-aftermath");
         let _this = this;
         let animation = animate({
             startTime,
@@ -384,8 +386,6 @@ class App {
             }
         })
         return animation.then(() => {
-            el("gamePage_explanationTimer").classList.remove("timer-aftermath");
-            el("gamePage_observerTimer").classList.remove("timer-aftermath");
             el("gamePage_explanationTimer").innerText = "0";
             el("gamePage_observerTimer").innerText = "0";
         })
