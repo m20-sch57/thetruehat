@@ -54,6 +54,10 @@ button, input {
     background-color: rgb(36, 52, 77);
 }
 
+.small-button:disabled, .medium-button:disabled {
+    background-color: lightgrey;
+}
+
 .medium-input {
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
