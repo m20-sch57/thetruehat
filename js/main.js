@@ -291,8 +291,8 @@ class App {
                         show("gamePage_explanationBox");
                         this.animateTimer(data.startTime)
                         .then(() => {
-                            el("gamePage_explanationTimer").innerText = 
-                                "00:00";
+                            this.animateAftermath(data.startTime + 
+                                EXPLANATION_TIME);
                         })
                     })
                     break;
@@ -306,8 +306,8 @@ class App {
                         show("gamePage_observerBox");
                         this.animateTimer(data.startTime)
                         .then(() => {
-                            el("gamePage_observerTimer").innerText = 
-                                "00:00";
+                            this.animateAftermath(data.startTime + 
+                                EXPLANATION_TIME);
                         })
                     })
                 }
@@ -331,7 +331,7 @@ class App {
     }
 
     animateTimer(startTime) {
-        return animate({
+        let animation = animate({
             startTime,
             duration: EXPLANATION_TIME,
             draw: (progress) => {
@@ -340,6 +340,32 @@ class App {
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             }
+        })
+        return animation.then(() => {
+            el("gamePage_explanationTimer").innerText = "00:00";
+            el("gamePage_observerTimer").innerText = "00:00";
+        })
+    }
+
+    animateAftermath(startTime) {
+        el("gamePage_explanationTimer").classList.add("timer-aftermath");
+        el("gamePage_observerTimer").classList.add("timer-aftermath");
+        let animation =  animate({
+            startTime,
+            duration: AFTERMATH_TIME,
+            draw: (progress) => {
+                console.log(progress);
+                let time = (Math.floor((1 - progress) / 
+                    1000 * AFTERMATH_TIME) + 1);
+                el("gamePage_explanationTimer").innerText = time;
+                el("gamePage_observerTimer").innerText = time;
+            }
+        })
+        return animation.then(() => {
+            el("gamePage_explanationTimer").classList.remove("timer-aftermath");
+            el("gamePage_observerTimer").classList.remove("timer-aftermath");
+            el("gamePage_explanationTimer").innerText = "0";
+            el("gamePage_observerTimer").innerText = "0";
         })
     }
 
