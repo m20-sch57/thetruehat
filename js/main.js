@@ -11,9 +11,10 @@ const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 
-function animate({startTime, timing, draw, duration}) {
+function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
     timing = timing || (time => time);
+    stopCondition = stopCondition || (() => false)
     return new Promise(function(resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
@@ -24,6 +25,10 @@ function animate({startTime, timing, draw, duration}) {
             let progress = timing(timeFraction);
 
             draw(progress);
+
+            if (stopCondition()) {
+                return;
+            }
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -107,6 +112,7 @@ class App {
         this.myUsername = "";
         this.myRole = "";
         this.setKey(readLocationHash());
+        this.roundId = 0;
 
         this.checkClipboard();
 
@@ -279,6 +285,7 @@ class App {
             el("gamePage_listener").innerText = data.listener;
             break;
         case "explanation":
+            let roundId = this.roundId;
             setTimeout(() => {
                 if (this.myRole == "") {
                     console.log("WARN: empty role");
@@ -288,29 +295,30 @@ class App {
                 switch (this.myRole) {
                 case "speaker":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME)
+                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
                     .then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_explanationBox");
-                        this.animateTimer(data.startTime)
+                        this.animateTimer(data.startTime, roundId)
                         .then(() => {
                             this.animateAftermath(data.startTime + 
-                                EXPLANATION_TIME);
+                                EXPLANATION_TIME, roundId);
                         })
                     })
                     break;
                 case "listener":
                 case "observer":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME)
+                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
                     .then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_speakerListener");
                         show("gamePage_observerBox");
-                        this.animateTimer(data.startTime)
+                        show("gamePage_observerTimer");
+                        this.animateTimer(data.startTime, roundId)
                         .then(() => {
                             this.animateAftermath(data.startTime + 
-                                EXPLANATION_TIME);
+                                EXPLANATION_TIME, roundId);
                         })
                     })
                 }
@@ -320,7 +328,8 @@ class App {
         }
     }
 
-    animateDelay(startTime) {
+    animateDelay(startTime, roundId) {
+        let _this = this;
         return animate({
             startTime,
             duration: DELAY_TIME,
@@ -329,11 +338,15 @@ class App {
                     Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
+            },
+            stopCondition: () => {
+                return _this.roundId != roundId;
             }
         })
     }
 
-    animateTimer(startTime) {
+    animateTimer(startTime, roundId) {
+        let _this = this;
         let animation = animate({
             startTime,
             duration: EXPLANATION_TIME,
@@ -342,6 +355,9 @@ class App {
                     1000 * EXPLANATION_TIME) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
+            },
+            stopCondition: () => {
+                return _this.roundId != roundId;
             }
         })
         return animation.then(() => {
@@ -350,7 +366,8 @@ class App {
         })
     }
 
-    animateAftermath(startTime) {
+    animateAftermath(startTime, roundId) {
+        let _this = this;
         el("gamePage_explanationTimer").classList.add("timer-aftermath");
         el("gamePage_observerTimer").classList.add("timer-aftermath");
         let animation =  animate({
@@ -361,6 +378,9 @@ class App {
                     1000 * AFTERMATH_TIME) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
+            },
+            stopCondition: () => {
+                return _this.roundId != roundId;
             }
         })
         return animation.then(() => {
@@ -377,6 +397,7 @@ class App {
         hide("gamePage_listenerReadyBox");
         hide("gamePage_observerBox");
         hide("gamePage_explanationBox");
+        hide("gamePage_observerTimer");
     }
 
     listenerReady() {
@@ -453,6 +474,7 @@ class App {
         })
         this.socket.on("sNextTurn", function(data) {
             _this.setGameState("wait", data);
+            _this.roundId += 1;
         })
         this.socket.on("sWordExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
