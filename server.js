@@ -797,13 +797,16 @@ io.on("connection", function(socket) {
                     "wordState": "mistake",
                     "transfer": true});
 
+                // word don't go to the hat
+                rooms[key].word = "";
+
                 /**
                  * Implementation of sWordExplanationEnded signal
                  * @see API.md
                  */
                 io.sockets.emit("sWordExplanationEnded", {
                     "cause": cause,
-                    "wordsCount": rooms[key].freshWords.length + 1});
+                    "wordsCount": rooms[key].freshWords.length});
 
                 // finishing the explanation
                 finishExplanation(key);
