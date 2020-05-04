@@ -21,9 +21,8 @@ const io = require("socket.io")(server);
 server.listen(PORT);
 console.log("Listening on port " + PORT);
 
-// Serving static css and js files
-app.use(express.static("css"));
-app.use(express.static("js"));
+// Serving static files
+app.use(express.static("static"));
 
 // Serving page of the game by default address
 app.get("/", function(req, res) {
@@ -144,7 +143,7 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + PRE * 1000;
+    rooms[key].startTime = currentTime + (PRE + DELAY) * 1000;
     rooms[key].word = rooms[key].freshWords.pop();
     const numberOfTurn = rooms[key].numberOfTurn;
     setTimeout(function() {
@@ -159,7 +158,7 @@ function startExplanation(key) {
     setTimeout(function() {
         io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
             "sNewWord", {"word": rooms[key].word});
-    }, PRE * 1000);
+    }, (PRE + DELAY) * 1000);
     io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
 }
 
@@ -505,6 +504,14 @@ io.on("connection", function(socket) {
      */
     socket.on("cLeaveRoom", function() {
         const key = getRoom(socket); // Key of user's current room
+
+        // checking if key is valid
+        if (!(key in rooms)) {
+            // when game ended
+            console.log("Player", socket.id, "left", key);
+            socket.leave(key);
+            return;
+        }
 
         // If user is only in his own room
         if (key === socket.id) {
