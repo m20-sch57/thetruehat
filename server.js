@@ -450,6 +450,7 @@ io.on("connection", function(socket) {
                     break;
                 case "play":
                     joinObj.state = "play";
+                    joinObj.wordsCount = rooms[key].freshWords.length;
                     switch (rooms[key].substate) {
                         case "wait":
                             joinObj.substate = "wait";
@@ -461,6 +462,7 @@ io.on("connection", function(socket) {
                             joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
                             joinObj.listener =  rooms[key].users[rooms[key].listener].username;
                             joinObj.startTime = rooms[key].startTime;
+                            joinObj.wordsCount++;
                             if (joinObj.speaker === name) {
                                 joinObj.word = rooms[key].word;
                             }
