@@ -157,7 +157,13 @@ class App {
 
     leaveRoom() {
         this.emit("cLeaveRoom");
-        this.goBack();
+        while (this.pageLog.length > 0 && ["preparationPage", "gamePage"].indexOf(
+            this.pageLog.last()) != -1) {
+            hide(this.pageLog.pop());
+        }
+        if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
+        show(this.pageLog.last());
+
     }
 
     setPlayers(usernames, host) {
