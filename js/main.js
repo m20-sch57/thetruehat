@@ -279,7 +279,6 @@ class App {
             el("gamePage_listener").innerText = data.listener;
             break;
         case "explanation":
-        console.log(data.startTime - (new Date()).getTime());
             setTimeout(() => {
                 if (this.myRole == "") {
                     console.log("WARN: empty role");
@@ -358,7 +357,6 @@ class App {
             startTime,
             duration: AFTERMATH_TIME,
             draw: (progress) => {
-                console.log(progress);
                 let time = (Math.floor((1 - progress) / 
                     1000 * AFTERMATH_TIME) + 1);
                 el("gamePage_explanationTimer").innerText = time;
@@ -377,7 +375,6 @@ class App {
         hide("gamePage_speakerListener");
         hide("gamePage_speakerReadyBox");
         hide("gamePage_listenerReadyBox");
-        hide("gamePage_observerReadyBox");
         hide("gamePage_observerBox");
         hide("gamePage_explanationBox");
     }
