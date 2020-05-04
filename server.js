@@ -143,6 +143,9 @@ function startExplanation(key) {
     const numberOfTurn = rooms[key].numberOfTurn;
     setTimeout(function() {
         // if explanation hasn't finished yet
+        if (!( key in rooms)) {
+            return;
+        }
         if (rooms[key].numberOfTurn === numberOfTurn) {
             finishExplanation(key);
         }
