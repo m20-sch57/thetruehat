@@ -11,9 +11,10 @@ const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 
-function animate({startTime, timing, draw, duration}) {
+function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
     timing = timing || (time => time);
+    stopCondition = stopCondition || (() => false)
     return new Promise(function(resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
@@ -24,6 +25,10 @@ function animate({startTime, timing, draw, duration}) {
             let progress = timing(timeFraction);
 
             draw(progress);
+
+            if (stopCondition()) {
+                return;
+            }
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -57,10 +62,12 @@ function deleteNode(node) {
 
 function hide(id) {
     el(id).style.display = "none";
+    // console.log("Hide", id);
 }
 
 function show(id) {
     el(id).style.display = "";
+    // console.log("Show", id);
 }
 
 function disable(id) {
@@ -107,6 +114,7 @@ class App {
         this.myUsername = "";
         this.myRole = "";
         this.setKey(readLocationHash());
+        this.roundId = 0;
 
         this.checkClipboard();
 
@@ -279,6 +287,7 @@ class App {
             el("gamePage_listener").innerText = data.listener;
             break;
         case "explanation":
+            let roundId = this.roundId;
             setTimeout(() => {
                 if (this.myRole == "") {
                     console.log("WARN: empty role");
@@ -288,29 +297,30 @@ class App {
                 switch (this.myRole) {
                 case "speaker":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME)
+                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
                     .then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_explanationBox");
-                        this.animateTimer(data.startTime)
+                        this.animateTimer(data.startTime, roundId)
                         .then(() => {
                             this.animateAftermath(data.startTime + 
-                                EXPLANATION_TIME);
+                                EXPLANATION_TIME, roundId);
                         })
                     })
                     break;
                 case "listener":
                 case "observer":
                     show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME)
+                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
                     .then(() => {
                         hide("gamePage_explanationDelayBox");
                         show("gamePage_speakerListener");
                         show("gamePage_observerBox");
-                        this.animateTimer(data.startTime)
+                        show("gamePage_observerTimer");
+                        this.animateTimer(data.startTime, roundId)
                         .then(() => {
                             this.animateAftermath(data.startTime + 
-                                EXPLANATION_TIME);
+                                EXPLANATION_TIME, roundId);
                         })
                     })
                 }
@@ -320,7 +330,8 @@ class App {
         }
     }
 
-    animateDelay(startTime) {
+    animateDelay(startTime, roundId) {
+        let _this = this;
         return animate({
             startTime,
             duration: DELAY_TIME,
@@ -329,11 +340,17 @@ class App {
                     Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
+            },
+            stopCondition: () => {
+                return _this.roundId != roundId;
             }
         })
     }
 
-    animateTimer(startTime) {
+    animateTimer(startTime, roundId) {
+        el("gamePage_explanationTimer").classList.remove("timer-aftermath");
+        el("gamePage_observerTimer").classList.remove("timer-aftermath");
+        let _this = this;
         let animation = animate({
             startTime,
             duration: EXPLANATION_TIME,
@@ -342,6 +359,9 @@ class App {
                     1000 * EXPLANATION_TIME) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
+            },
+            stopCondition: () => {
+                return _this.roundId != roundId;
             }
         })
         return animation.then(() => {
@@ -350,7 +370,8 @@ class App {
         })
     }
 
-    animateAftermath(startTime) {
+    animateAftermath(startTime, roundId) {
+        let _this = this;
         el("gamePage_explanationTimer").classList.add("timer-aftermath");
         el("gamePage_observerTimer").classList.add("timer-aftermath");
         let animation =  animate({
@@ -361,11 +382,12 @@ class App {
                     1000 * AFTERMATH_TIME) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
+            },
+            stopCondition: () => {
+                return _this.roundId != roundId;
             }
         })
         return animation.then(() => {
-            el("gamePage_explanationTimer").classList.remove("timer-aftermath");
-            el("gamePage_observerTimer").classList.remove("timer-aftermath");
             el("gamePage_explanationTimer").innerText = "0";
             el("gamePage_observerTimer").innerText = "0";
         })
@@ -377,6 +399,8 @@ class App {
         hide("gamePage_listenerReadyBox");
         hide("gamePage_observerBox");
         hide("gamePage_explanationBox");
+        hide("gamePage_observerTimer");
+        hide("gamePage_explanationDelayBox");
     }
 
     listenerReady() {
@@ -410,11 +434,21 @@ class App {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
             _this.showStartAction(data.host);
+            if (data.playerList.filter(user => user.online).length > 1) {
+                enable("preparationPage_start")
+            } else {
+                disable("preparationPage_start")
+            }
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
             _this.showStartAction(data.host);
+            if (data.playerList.filter(user => user.online).length > 1) {
+                enable("preparationPage_start")
+            } else {
+                disable("preparationPage_start")
+            }
         })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
@@ -423,11 +457,17 @@ class App {
                     .map(user => user.username), data.host);
                 _this.showStartAction(data.host);
                 _this.showPage("preparationPage");
+                if (data.playerList.filter(user => user.online).length > 1) {
+                    enable("preparationPage_start")
+                } else {
+                    disable("preparationPage_start")
+                }
                 break;
             case "play":
                 el("gamePage_speaker").innerText = data.speaker;
                 el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
+                el("gamePage_title").innerText = _this.myUsername;
                 el("gamePage_explanationWord").innerText = data.word;
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
@@ -439,6 +479,7 @@ class App {
         })
         this.socket.on("sGameStarted", function(data) {    
             el("gamePage_wordsCnt").innerText = data.wordsCount;
+            el("gamePage_title").innerText = _this.myUsername;
             _this.setGameState("wait", data)
             _this.showPage("gamePage");
         })
@@ -453,6 +494,7 @@ class App {
         })
         this.socket.on("sNextTurn", function(data) {
             _this.setGameState("wait", data);
+            _this.roundId += 1;
         })
         this.socket.on("sWordExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
