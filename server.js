@@ -4,7 +4,7 @@
 
 const config = require("./config.json");
 
-const PORT = config.prt;
+const PORT = config.port;
 const WORD_NUMBER = config.wordNumber;
 const DELAY = config.transferTime; // given delay for client reaction
 const EXPLANATION_LENGTH = config.explanationTime; // length of explanation
@@ -103,9 +103,14 @@ function getRoom(socket) {
  */
 function generateWords(key) {
     let words = [];
+    let used = {};
     const numberOfAllWords = allWords.length;
     for (let i = 0; i < WORD_NUMBER; ++i) {
-        words.push(allWords[Math.floor(Math.random() * (numberOfAllWords - 1))]);
+        const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
+        if (!(pos in used)) {
+            used[pos] = true;
+            words.push(allWords[words]);
+        }
     }
     return words;
 }
@@ -743,6 +748,14 @@ io.on("connection", function(socket) {
      */
     socket.on("cEndWordExplanation", function(ev) {
         const key = getRoom(socket); // key of the room
+
+        // checking if room exists
+        if (!(key in rooms)) {
+            socket.emit("sFailure", {
+                "request": "cEndWordExplanation",
+                "msg": "game exnded"});
+            return;
+        }
         
         // checking if proper state and substate
         if (rooms[key].state !== "play") {
@@ -758,7 +771,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        // chicking if speaker send this
+        // checking if speaker send this
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
             socket.emit("sFailure", {
                 "request": "cEndWordExplanation",
