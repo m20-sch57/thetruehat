@@ -449,6 +449,7 @@ class App {
                 el("gamePage_speaker").innerText = data.speaker;
                 el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
+                el("gamePage_title").innerText = _this.myUsername;
                 el("gamePage_explanationWord").innerText = data.word;
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
@@ -460,6 +461,7 @@ class App {
         })
         this.socket.on("sGameStarted", function(data) {    
             el("gamePage_wordsCnt").innerText = data.wordsCount;
+            el("gamePage_title").innerText = _this.myUsername;
             _this.setGameState("wait", data)
             _this.showPage("gamePage");
         })
