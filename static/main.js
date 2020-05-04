@@ -207,6 +207,10 @@ class App {
             // el("joinPage_pasteKey").style.display = "none";
             disable("joinPage_pasteKey")
         }
+        if (!(navigator.clipboard && navigator.clipboard.writeText)) {
+            disable("preparationPage_copyKey");
+            disable("preparationPage_copyLink");
+        }
     }
 
     showStartAction(host) {
@@ -275,7 +279,6 @@ class App {
             el("gamePage_listener").innerText = data.listener;
             break;
         case "explanation":
-        console.log(data.startTime - (new Date()).getTime());
             setTimeout(() => {
                 if (this.myRole == "") {
                     console.log("WARN: empty role");
@@ -291,8 +294,8 @@ class App {
                         show("gamePage_explanationBox");
                         this.animateTimer(data.startTime)
                         .then(() => {
-                            el("gamePage_explanationTimer").innerText = 
-                                "00:00";
+                            this.animateAftermath(data.startTime + 
+                                EXPLANATION_TIME);
                         })
                     })
                     break;
@@ -306,8 +309,8 @@ class App {
                         show("gamePage_observerBox");
                         this.animateTimer(data.startTime)
                         .then(() => {
-                            el("gamePage_observerTimer").innerText = 
-                                "00:00";
+                            this.animateAftermath(data.startTime + 
+                                EXPLANATION_TIME);
                         })
                     })
                 }
@@ -331,7 +334,7 @@ class App {
     }
 
     animateTimer(startTime) {
-        return animate({
+        let animation = animate({
             startTime,
             duration: EXPLANATION_TIME,
             draw: (progress) => {
@@ -341,13 +344,37 @@ class App {
                 el("gamePage_observerTimer").innerText = time;
             }
         })
+        return animation.then(() => {
+            el("gamePage_explanationTimer").innerText = "00:00";
+            el("gamePage_observerTimer").innerText = "00:00";
+        })
+    }
+
+    animateAftermath(startTime) {
+        el("gamePage_explanationTimer").classList.add("timer-aftermath");
+        el("gamePage_observerTimer").classList.add("timer-aftermath");
+        let animation =  animate({
+            startTime,
+            duration: AFTERMATH_TIME,
+            draw: (progress) => {
+                let time = (Math.floor((1 - progress) / 
+                    1000 * AFTERMATH_TIME) + 1);
+                el("gamePage_explanationTimer").innerText = time;
+                el("gamePage_observerTimer").innerText = time;
+            }
+        })
+        return animation.then(() => {
+            el("gamePage_explanationTimer").classList.remove("timer-aftermath");
+            el("gamePage_observerTimer").classList.remove("timer-aftermath");
+            el("gamePage_explanationTimer").innerText = "0";
+            el("gamePage_observerTimer").innerText = "0";
+        })
     }
 
     hideAllGameActions() {
         hide("gamePage_speakerListener");
         hide("gamePage_speakerReadyBox");
         hide("gamePage_listenerReadyBox");
-        hide("gamePage_observerReadyBox");
         hide("gamePage_observerBox");
         hide("gamePage_explanationBox");
     }
@@ -398,7 +425,10 @@ class App {
                 _this.showPage("preparationPage");
                 break;
             case "play":
+                el("gamePage_speaker").innerText = data.speaker;
+                el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
+                el("gamePage_explanationWord").innerText = data.word;
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
                     "observer";
