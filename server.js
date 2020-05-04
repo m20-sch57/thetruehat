@@ -105,7 +105,7 @@ function generateWords(key) {
     let words = [];
     let used = {};
     const numberOfAllWords = allWords.length;
-    for (let i = 0; i < WORD_NUMBER; ++i) {
+    while (words.length < WORD_NUMBER) {
         const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
         if (!(pos in used)) {
             used[pos] = true;
