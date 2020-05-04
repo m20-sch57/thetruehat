@@ -184,13 +184,21 @@ function finishExplanation(key) {
      */
     io.sockets.to(key).emit("sExplanationEnded", {
         "wordsCount": rooms[key].freshWords.length});
-    
+
+    // generating editWords for client (without 'transport' flag)
+    let editWords = [];
+    for (let i = 0; i < rooms[key].editWords.length; ++i) {
+        editWords.push({
+            "word": rooms[key].editWords[i].word,
+            "wordState": rooms[key].editWords[i].wordState});
+    }
+
     /**
      * Implementation of sWordsToEdit signal
      * @see API.md
      */
     io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
-        "sWordsToEdit", {"editWords": rooms[key].editWords});
+        "sWordsToEdit", {"editWords": editWords});
 }
 
 /**
