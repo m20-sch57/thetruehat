@@ -64,6 +64,10 @@ function disable(id) {
     el(id).setAttribute("disabled", "");
 }
 
+function enable(id) {
+    el(id).removeAttribute("disabled");
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -113,6 +117,13 @@ class App {
         }
     }
 
+    emit(event, data) {
+        this.socket.emit(event, data);
+        if (this.debug) {
+            console.log(event, data);
+        }
+    }
+
     showPage(page) {
         if (this.pageLog.length >= 1) {
             hide(this.pageLog.last());
@@ -128,7 +139,7 @@ class App {
     }
 
     leaveRoom() {
-        this.socket.emit("cLeaveRoom");
+        this.emit("cLeaveRoom");
         this.goBack();
     }
 
@@ -220,7 +231,7 @@ class App {
             switch(result.state) {
             case "wait":
             case "play":
-                this.socket.emit("cJoinRoom", 
+                this.emit("cJoinRoom", 
                     {"username": this.myUsername, 
                      "key": this.myRoomKey
                 });
@@ -236,6 +247,8 @@ class App {
         switch(state) {
         case "wait":
             this.hideAllGameActions()
+            enable("gamePage_listenerReadyButton");
+            enable("gamePage_speakerReadyButton");
             switch (this.myUsername) {
             case data.listener:
                 show("gamePage_listenerReadyBox");
@@ -325,13 +338,13 @@ class App {
     }
 
     listenerReady() {
-        this.socket.emit("cListenerReady");
+        this.emit("cListenerReady");
         disable("gamePage_listenerReadyButton");
         el("gamePage_listenerReadyButton").innerText = "Подожди напарника"
     }
 
     speakerReady() {
-        this.socket.emit("cSpeakerReady");
+        this.emit("cSpeakerReady");
         disable("gamePage_speakerReadyButton");
         el("gamePage_speakerReadyButton").innerText = "Подожди напарника"
     }
@@ -388,7 +401,7 @@ class App {
             el("gamePage_explanationWord").innerText = data.word;
         })
         this.socket.on("sWordsToEdit", function(data) {
-            _this.socket.emit("cWordsEdited", data);
+            _this.emit("cWordsEdited", data);
         })
         this.socket.on("sNextTurn", function(data) {
             _this.setGameState("wait", data);
@@ -417,16 +430,16 @@ class App {
         el("rulesPage_goBack").onclick = () => this.goBack();
         el("preparationPage_viewRules").onclick = () => this.showPage('rulesPage');
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
-        el("preparationPage_start").onclick = () => this.socket.emit("cStartGame");
+        el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
         el("gamePage_listenerReadyButton").onclick = () => this.listenerReady();
         el("gamePage_speakerReadyButton").onclick = () => this.speakerReady();
-        el("gamePage_explanationSuccess").onclick = () => this.socket.emit(
+        el("gamePage_explanationSuccess").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "explained"});
-        el("gamePage_explanationFailed").onclick = () => this.socket.emit(
+        el("gamePage_explanationFailed").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "notExplained"});
-        el("gamePage_explanationMistake").onclick = () => this.socket.emit(
+        el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
     }
 }
