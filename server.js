@@ -856,6 +856,14 @@ io.on("connection", function(socket) {
             return;
         }
 
+        // checking input
+        if (!checkOject(ev, {"cause": "string"})) {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "incorrect input"});
+            return;
+        }
+
         let cause = ev.cause;
         switch (cause) {
             case "explained":
@@ -969,14 +977,6 @@ io.on("connection", function(socket) {
             socket.emit("sFailure", {
                 "request": "cWordsEdited",
                 "msg": "only speaker can send this signal"});
-            return;
-        }
-
-        // checking input
-        if (!checkOject(ev, {"cause": "string"})) {
-            socket.emit("sFailure", {
-                "request": "cWordsEdited",
-                "msg": "incorrect input"});
             return;
         }
 
