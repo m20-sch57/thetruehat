@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/home/adanni/bin/node
 
 "use strict"
 

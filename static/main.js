@@ -4,7 +4,7 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const PORT = 5000;
+const PORT = 3005;
 
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
