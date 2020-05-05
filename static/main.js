@@ -12,7 +12,6 @@ const EXPLANATION_TIME = 20000;
 const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
-const PORT = 5000;
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
