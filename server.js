@@ -972,6 +972,14 @@ io.on("connection", function(socket) {
             return;
         }
 
+        // checking input
+        if (!checkOject(ev, {"cause": "string"})) {
+            socket.emit("sFailure", {
+                "request": "cWordsEdited",
+                "msg": "incorrect input"});
+            return;
+        }
+
         // moving editWords
         const editWords = ev.editWords;
 
