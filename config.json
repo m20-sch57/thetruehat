@@ -1,7 +1,7 @@
 {
     "port": 3005,
     "wordsPath": "./words/easy.json",
-    "transferTime": 0,
+    "transferTime": 1,
     "delayTime": 3,
     "explanationTime": 20,
     "aftermathTime": 3,
