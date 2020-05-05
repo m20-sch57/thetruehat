@@ -99,15 +99,20 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
-function template(templateName, arg) {
+function template(templateName, data) {
     switch (templateName) {
     case "preparationPage_user":
         let div = document.createElement("div");
-        div.innerText = arg.username;
+        div.innerText = data.username;
         div.classList.add("user-item");
-        div.setAttribute("id", `user_${arg.username}`);
+        div.setAttribute("id", `user_${data.username}`);
         return div;
-        break;
+    case "resultPage_results":
+        let p = document.createElement("p");
+        p.innerText = `${data.username} объяснил ${data.scoreExplained}, 
+            угадал ${data.scoreGuessed}. Всего ${data.scoreExplained + 
+                data.scoreGuessed}`;
+        return p;
     }
 }
 
@@ -443,6 +448,14 @@ class App {
         el("gamePage_speakerReadyButton").innerText = "Подожди напарника"
     }
 
+    showResults(results) {
+        this.showPage("resultPage");
+        results.forEach((result) => {
+            el("resultPage_results").appendChild(template(
+                "resultPage_results", result));
+        })
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -529,6 +542,9 @@ class App {
         })
         this.socket.on("sExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
+        })
+        this.socket.on("sGameEnded", function(data) {
+            _this.showResults(data.results);
         })
     }
 
