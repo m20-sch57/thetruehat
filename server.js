@@ -271,7 +271,7 @@ function endGame(key) {
      * Implementation of sGameEnded signal
      * @see API.md
      */
-    io.sockets.emit("sGameEnded", {"results": results});
+    io.sockets.to(key).emit("sGameEnded", {"results": results});
 
     // removing room
     delete rooms[key];
