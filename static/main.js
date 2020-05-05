@@ -4,7 +4,58 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-function el(id) {
+const PORT = 5000;
+
+const DELAY_TIME = 3000;
+const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
+const EXPLANATION_TIME = 20000;
+const AFTERMATH_TIME = 3000;
+const SPEAKER_READY = "Я готов объяснять";
+const LISTENER_READY = "Я готов отгадывать";
+
+function animate({startTime, timing, draw, duration, stopCondition}) {
+    // Largely taken from https://learn.javascript.ru
+    timing = timing || (time => time);
+    stopCondition = stopCondition || (() => false)
+    return new Promise(function(resolve) {
+        let start = startTime;
+        requestAnimationFrame(function animate() {
+            time = (new Date()).getTime();
+            let timeFraction = (time - start) / duration;
+            if (timeFraction > 1) timeFraction = 1;
+
+            let progress = timing(timeFraction);
+
+            draw(progress);
+
+            if (stopCondition()) {
+                return;
+            }
+
+            if (timeFraction < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                return resolve();
+            }
+        });
+    })
+}
+
+function timeFromSeconds(sec) {
+    let min = Math.floor(sec / 60);
+    sec -= 60 * min;
+    if (sec < 10) sec = "0" + String(sec);
+    if (min < 10) min = "0" + String(min);
+    return `${min}:${sec}`
+}
+
+function aftermathTimeFormat(msec) {
+    let sec = Math.floor(msec / 10);
+    msec -= 10 * sec;
+    return `${sec}.${msec}`;
+}
+
+function el(id) {   
     return document.getElementById(id);
 }
 
@@ -47,7 +98,7 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`http://${document.domain}:5000`);
+        this.socket = io.connect(`http://${document.domain}:${PORT}`);
 
         this.pageLog = [];
         this.myUsername = "";
