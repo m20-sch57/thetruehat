@@ -33,6 +33,32 @@ app.get("/", function(req, res) {
 // Handy functions
 
 /**
+ * Checks object with pattern
+ *
+ * @param object --- object
+ * @param pattern --- pattern
+ * @retrun if objects corresponds to the pattern
+ */
+function checkOject(object, pattern) {
+    // comparing length
+    const objKeys = Object.keys(object);
+    if (objKeys.length !== Object.keys(pattern).length) {
+        return false;
+    }
+
+    for (let i = 0; i < objKeys.length; ++i) {
+        if (!(objKeys[i] in pattern)) {
+            return false;
+        }
+        const typeStr = pattern[objKeys[i]];
+        if (typeof(object[objKeys[i]]) !== typeStr) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Return playerList structure,
  * @see API.md
  *
@@ -358,6 +384,12 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cJoinRoom", function(ev) {
+        // checking input
+        if (!checkOject(ev, {"key": "string", "username": "string"})) {
+            socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Incorrect input"});
+            return;
+        }
+
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
             socket.emit("sFailure", {"request": "cJoinRoom", "msg": "You are in room now"});
@@ -505,17 +537,17 @@ io.on("connection", function(socket) {
     socket.on("cLeaveRoom", function() {
         const key = getRoom(socket); // Key of user's current room
 
+        // If user is only in his own room
+        if (key === socket.id) {
+            socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
+            return;
+        }
+
         // checking if key is valid
         if (!(key in rooms)) {
             // when game ended
             console.log("Player", socket.id, "left", key);
             socket.leave(key);
-            return;
-        }
-
-        // If user is only in his own room
-        if (key === socket.id) {
-            socket.emit("sFailure", {"request": "cLeaveRoom", "msg": "you aren't in the room"});
             return;
         }
 
