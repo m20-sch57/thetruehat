@@ -40,6 +40,14 @@ app.get("/", function(req, res) {
  * @retrun if objects corresponds to the pattern
  */
 function checkOject(object, pattern) {
+    // checking object for undefined or null
+    if (object === undefined) {
+        return false;
+    }
+    if (object === null) {
+        return false;
+    }
+
     // comparing length
     const objKeys = Object.keys(object);
     if (objKeys.length !== Object.keys(pattern).length) {
