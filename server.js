@@ -888,7 +888,7 @@ io.on("connection", function(socket) {
                  * Implementation of sWordExplanationEnded signal
                  * @see API.md
                  */
-                io.sockets.emit("sWordExplanationEnded", {
+                io.sockets.to(key).emit("sWordExplanationEnded", {
                     "cause": cause,
                     "wordsCount": rooms[key].freshWords.length});
 
@@ -923,7 +923,7 @@ io.on("connection", function(socket) {
                  * Implementation of sWordExplanationEnded signal
                  * @see API.md
                  */
-                io.sockets.emit("sWordExplanationEnded", {
+                io.sockets.to(key).emit("sWordExplanationEnded", {
                     "cause": cause,
                     "wordsCount": rooms[key].freshWords.length});
 
@@ -941,7 +941,7 @@ io.on("connection", function(socket) {
                  * Implementation of sWordExplanationEnded signal
                  * @see API.md
                  */
-                io.sockets.emit("sWordExplanationEnded", {
+                io.sockets.to(key).emit("sWordExplanationEnded", {
                     "cause": cause,
                     "wordsCount": rooms[key].freshWords.length + 1});
 
