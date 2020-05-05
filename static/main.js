@@ -291,7 +291,6 @@ class App {
                 this.myRole = "speaker";
                 break;
             default:
-                show("gamePage_observerReadyBox");
                 this.myRole = "observer";
                 break;
             }
@@ -322,7 +321,6 @@ class App {
                     })
                     break;
                 case "listener":
-                case "observer":
                     show("gamePage_explanationDelayBox");
                     this.animateDelay(data.startTime - DELAY_TIME, roundId)
                     .then(() => {
@@ -336,6 +334,21 @@ class App {
                                 EXPLANATION_TIME, roundId);
                         })
                     })
+                    break;
+                case "observer":
+                    show("gamePage_speakerListener");
+                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
+                    .then(() => {
+                        show("gamePage_speakerListener");
+                        show("gamePage_observerBox");
+                        show("gamePage_observerTimer");
+                        this.animateTimer(data.startTime, roundId)
+                        .then(() => {
+                            this.animateAftermath(data.startTime + 
+                                EXPLANATION_TIME, roundId);
+                        })
+                    })
+                    break;
                 }
 
             }, data.startTime - (new Date()).getTime() - DELAY_TIME);
