@@ -4,6 +4,8 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
+const PORT = 5000;
+
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const EXPLANATION_TIME = 20000;
@@ -114,7 +116,7 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`http://${document.domain}:5000`);
+        this.socket = io.connect(`http://${document.domain}:${PORT}`);
 
         this.pageLog = [];
         this.myUsername = "";
