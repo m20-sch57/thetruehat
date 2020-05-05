@@ -688,6 +688,7 @@ io.on("connection", function(socket) {
             socket.emit("sFailure", {
                 "request": "cListenerReady",
                 "msg": "game state isn't 'play'"});
+            return;
         }
 
         // the game substate must be 'wait'
@@ -741,6 +742,7 @@ io.on("connection", function(socket) {
             socket.emit("sFailure", {
                 "request": "cListenerReady",
                 "msg": "game state isn't 'play'"});
+            return;
         }
 
         // the game substate must be 'wait'
