@@ -405,7 +405,7 @@ button, input {
 #gamePage_speakerListener {
     display: flex;
     flex-flow: column;
-    height: calc(100% - 130px);
+    height: calc(100% - 52px);
 }
 
 #gamePage_speakerBox {
@@ -453,7 +453,7 @@ button, input {
 }
 
 #gamePage_speakerReadyBox, #gamePage_listenerReadyBox, #gamePage_observerBox {
-    height: 130px;
+    height: 52px;
     display: flex;
     flex-flow: column;
 }
@@ -555,9 +555,6 @@ button, input {
 @media (min-width: 500px) {
     #gamePage_speakerListener {
         height: 250px;
-    }
-    #gamePage_speakerReadyBox, #gamePage_listenerReadyBox, #gamePage_observerBox {
-        height: 60px;
     }
     #gamePage_explanationDelayBox {
         height: 300px;
