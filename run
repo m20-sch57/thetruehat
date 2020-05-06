@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -f "server.pid" ]; then
+    exit 1;
+else
+    ./server.js \&> server.log &
+fi

@@ -2,6 +2,14 @@
 
 "use strict"
 
+const process = require("process");
+const fs = require("fs");
+fs.writeFile("server.pid", process.pid.toString(), function(err, data) {
+    if (err) {
+        console.log(err);
+    }
+});
+
 const config = require("./config.json");
 
 const PORT = config.port;
