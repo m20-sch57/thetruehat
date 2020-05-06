@@ -37,9 +37,9 @@ app.get("/", function(req, res) {
  *
  * @param object --- object
  * @param pattern --- pattern
- * @retrun if objects corresponds to the pattern
+ * @return if objects corresponds to the pattern
  */
-function checkOject(object, pattern) {
+function checkObject(object, pattern) {
     // checking object for undefined or null
     if (object === undefined) {
         return false;
@@ -271,7 +271,7 @@ function endGame(key) {
      * Implementation of sGameEnded signal
      * @see API.md
      */
-    io.sockets.emit("sGameEnded", {"results": results});
+    io.sockets.to(key).emit("sGameEnded", {"results": results});
 
     // removing room
     delete rooms[key];
@@ -393,7 +393,7 @@ io.on("connection", function(socket) {
      */
     socket.on("cJoinRoom", function(ev) {
         // checking input
-        if (!checkOject(ev, {"key": "string", "username": "string"})) {
+        if (!checkObject(ev, {"key": "string", "username": "string"})) {
             socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Incorrect input"});
             return;
         }
@@ -865,7 +865,7 @@ io.on("connection", function(socket) {
         }
 
         // checking input
-        if (!checkOject(ev, {"cause": "string"})) {
+        if (!checkObject(ev, {"cause": "string"})) {
             socket.emit("sFailure", {
                 "request": "cWordsEdited",
                 "msg": "incorrect input"});
@@ -1017,7 +1017,7 @@ io.on("connection", function(socket) {
                     // counting explained words
                     cnt++;
                 case "mistake":
-                    // transfering data to serer structure
+                    // transferring data to serer structure
                     rooms[key].editWords[i].wordState = editWords[i].wordState;
                     break;
                 case "notExplained":
@@ -1027,7 +1027,7 @@ io.on("connection", function(socket) {
             }
         }
 
-        // tranfering round info
+        // transferring round info
         // changing the score
         rooms[key].users[rooms[key].speaker].scoreExplained += cnt;
         rooms[key].users[rooms[key].listener].scoreGuessed += cnt;

@@ -533,6 +533,58 @@ class App {
         })
     }
 
+        if (this.debug) {
+            this.socket.on("sPlayerJoined", function(data) {
+                console.log("sPlayerJoined", data);
+            })
+            this.socket.on("sPlayerLeft", function(data) {
+                console.log("sPlayerLeft", data);
+            })
+            this.socket.on("sNewHost", function(data) {
+                console.log("sNewHost", data);
+            })
+            this.socket.on("sFailure", function(data) {
+                console.log("sFailure", data);
+            })
+            this.socket.on("sYouJoined", function(data) {
+                console.log("sYouJoined", data);
+            })
+            this.socket.on("sExplanationEnded", function(data) {
+                console.log("sExplanationEnded", data);
+            })
+            this.socket.on("sExplanationStarted", function(data) {
+                console.log("sExplanationStarted", data);
+            })
+            this.socket.on("sGameStarted", function(data) {
+                console.log("sGameStarted", data);
+            })
+            this.socket.on("sNewWord", function(data) {
+                console.log("sNewWord", data);
+            })
+        }
+
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
+        this.socket.on("sYouJoined", function(data) {
+            switch (data.state) {
+                case "wait":
+                    _this.setPlayers(data.playerList.filter(user => user.online)
+                        .map(user => user.username), data.host);
+                    _this.showStartAction(data.host);
+                    _this.showPage("preparationPage");
+                    break;
+            }
+        })
+    }
+
     setDOMEventListeners() {
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
