@@ -282,12 +282,13 @@ function endGame(key) {
     delete rooms[key];
 
     // removing users from room
-    // don't working...
-    /*
-    io.sockets.clients(key).forEach(function(socket) {
-        socket.leave(key);
-    })
-    */
+    io.sockets.in(key).clients(function(err, clients) {
+        clients.forEach(function(sid) {
+            let socket = io.sockets.connected[sid];
+            console.log("Player", sid, "disconnected from", key);
+            socket.leave(key);
+        });
+    });
 }
 
 //----------------------------------------------------------
