@@ -155,45 +155,58 @@ function template(templateName, data) {
     }
 }
 
-// class Music {
-//     constructor () {
-//         this.currentSound = false;
-//     }
-
-//     killSound() {
-//         if (this.currentSound) {
-//             this.currentSound.pause()
-//             this.currentSound = false;
-//         }
-//     }
-
-//     playSound(sound) {
-//         let currentSound = new Audio(sound);
-//         // this.currentSound = currentSound;
-//         let promise = currentSound.play()
-//         console.log(promise);
-//         promise.then(() => {
-//             this.currentSound = currentSound;
-//         })
-//         // console.log(this);   
-//         // this.currentSound = currentSound;
-//         // this.currentSound.play();
-//         // (new Audio(sound)).play();
-//     }
-// }
-
-let currentSound = false;
-function killSound() {
-    if (this.currentSound) {
-        this.currentSound.pause();
+class Sound {
+    constructor () {
         this.currentSound = false;
     }
+
+    killSound() {
+        if (this.currentSound) {
+            this.currentSound.pause()
+            this.currentSound = false;
+        }
+    }
+
+    playSound(sound, startTime) {
+        this.currentSound = el(sound);
+        if (getTime() < startTime) {
+            setTimeout(() => {
+                this.killSound();
+                this.currentSound.play();
+            }, startTime - getTime());
+        } else if (getTime() - startTime < 
+                this.currentSound.duration * 1000){
+            this.currentSound.currentTime = (getTime() - startTime) / 
+                1000;
+            this.currentSound.play();
+        }
+    }
 }
-function playSound(sound) {
-    killSound();
-    let currentSound = new Audio(sound);
-    currentSound.play();
-}
+
+// let currentSound = false;
+// function killSound() {
+//     if (currentSound) {
+//         currentSound.pause();
+//         currentSound = false;
+//     }
+// }
+// function playSound(sound, startTime) {
+//     if (!startTime) {
+//         console.log("empty start time");
+//     }
+//     currentSound = el(sound);
+//     // console.log()
+//     if (getTime() < startTime) {
+//         setTimeout(() => {
+//             killSound();
+//             currentSound.play();
+//         }, startTime - getTime());
+//     } else if (getTime() - startTime < currentSound.duration * 1000){
+//         console.log("else");
+//         currentSound.currentTime = (getTime() - startTime) / 1000;
+//         currentSound.play();
+//     }
+// }
 
 class App {
     constructor() {
@@ -220,7 +233,7 @@ class App {
             this.showPage("mainPage");
         }
 
-        this.music = new Music();
+        this.sound = new Sound();
     }
 
     emit(event, data) {
@@ -455,7 +468,7 @@ class App {
 
     animateDelay(startTime, roundId) {
         let _this = this;
-        playSound("delayTimer.mp3");
+        this.sound.playSound("delayTimer", startTime);
         return animate({
             startTime,
             duration: DELAY_TIME,
@@ -466,7 +479,9 @@ class App {
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
             },
             stopCondition: () => {
-                killSound();
+                if (_this.roundId != roundId) {
+                    this.sound.killSound();
+                }
                 return _this.roundId != roundId;
             }
         })
