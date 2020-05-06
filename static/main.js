@@ -191,6 +191,10 @@ class App {
 
     goBack() {
         hide(this.pageLog.pop());
+        while (this.pageLog.length > 0 && ["preparationPage", "gamePage"].indexOf(
+            this.pageLog.last()) != -1) {
+            hide(this.pageLog.pop());
+        }
         if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
         show(this.pageLog.last());
     }
@@ -360,7 +364,7 @@ class App {
                         })
                     })
                     break;
-                case: "observer"
+                case "observer":
                 case "listener":
                     show("gamePage_explanationDelayBox");
                     this.animateDelay(data.startTime - DELAY_TIME, roundId)
@@ -631,6 +635,7 @@ class App {
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
         el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
+        el("resultsPage_goBack").onclick = () => this.goBack();
     }
 }
 
