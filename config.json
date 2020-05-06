@@ -3,7 +3,7 @@
     "wordsPath": "./words/easy.json",
     "transferTime": 1,
     "delayTime": 3,
-    "explanationTime": 20,
+    "explanationTime": 30,
     "aftermathTime": 3,
     "wordNumber": 40,
     "minKeyLength": 6,
