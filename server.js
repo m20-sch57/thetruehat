@@ -33,7 +33,7 @@ app.get("/", function(req, res) {
 // Handy functions
 
 /**
- * Checks object with pattern
+ * Checks object with the pattern
  *
  * @param object --- object
  * @param pattern --- pattern
@@ -67,10 +67,10 @@ function checkObject(object, pattern) {
 }
 
 /**
- * Return playerList structure,
+ * Returns playerList structure,
  * @see API.md
  *
- * @param room room object
+ * @param room Room object
  * @return list of players
  */
 function getPlayerList(room) {
@@ -80,9 +80,9 @@ function getPlayerList(room) {
 /**
  * Finds first position in users array where element has attribute with given value
  *
- * @param users users array
- * @param field attribute
- * @param val value
+ * @param users The users array
+ * @param field The attribute to check
+ * @param val the value to find
  * @return position if exists else -1
  */
 function findFirstPos(users, field, val) {
@@ -95,10 +95,10 @@ function findFirstPos(users, field, val) {
 }
 
 /**
- * Finds first position in users array where given socket id is in list of socket ids
+ * Finds first position in users array where given socket ID is in list of socket IDs
  *
- * @param users users array
- * @param sid socket id
+ * @param users The users array
+ * @param sid Socket ID
  * @return position if exists else -1
  */
 function findFirstSidPos(users, sid) {
@@ -111,7 +111,7 @@ function findFirstSidPos(users, sid) {
 }
 
 /**
- * Return current player's room.
+ * Returns current player's room.
  *
  * @param socket The socket of the player
  * @return id of current player's room: his own socket room or game room with him
@@ -129,12 +129,11 @@ function getRoom(socket) {
 }
 
 /**
- * Generate word list by key
+ * Generate word list
  *
- * @param key key of the room
  * @return list of words
  */
-function generateWords(key) {
+function generateWords() {
     let words = [];
     let used = {};
     const numberOfAllWords = allWords.length;
@@ -149,10 +148,11 @@ function generateWords(key) {
 }
 
 /**
- * get next pair of players
- * @param numberOfPlayers number of players
- * @param lastSpeaker index of previous speaker
- * @param lastListener index of precious listener
+ * Get next speaker and listener
+ *
+ * @param numberOfPlayers Number of players
+ * @param lastSpeaker Index of previous speaker
+ * @param lastListener Index of previous listener
  * @return object with fields: speaker and listener --- indices of speaker and listener
  */
 function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
@@ -168,10 +168,9 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 }
 
 /**
- * start an explanation
+ * Start an explanation
  *
  * @param key --- key of the room
- * @return null
  */
 function startExplanation(key) {
     rooms[key].substate = "explanation";
@@ -179,8 +178,8 @@ function startExplanation(key) {
     const currentTime = date.getTime();
     rooms[key].startTime = currentTime + (PRE + DELAY) * 1000;
     rooms[key].word = rooms[key].freshWords.pop();
-    const numberOfTurn = rooms[key].numberOfTurn;
     /*
+    const numberOfTurn = rooms[key].numberOfTurn;
     setTimeout(function() {
         // if explanation hasn't finished yet
         if (!( key in rooms)) {
@@ -191,15 +190,14 @@ function startExplanation(key) {
         }
     }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
     */
-    setTimeout(Signals.sNewWord, (PRE + DELAY) * 1000);
-    Signals.sExplanationStarted()
+    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY) * 1000);
+    Signals.sExplanationStarted(key)
 }
 
 /**
- * finish an explanation
+ * Finish an explanation
  *
  * @param key --- key of the room
- * @return null
  */
 function finishExplanation(key) {
     // if game has ended
@@ -236,13 +234,13 @@ function finishExplanation(key) {
             "wordState": rooms[key].editWords[i].wordState});
     }
 
-    Signals.sWordsToEdit(key)
+    Signals.sWordsToEdit(key, editWords)
 }
 
 /**
- * end the game
+ * End the game
+ *
  * @param key --- key of the room
- * @return none
  */
 function endGame(key) {
     // preparing results
@@ -282,11 +280,15 @@ class Signals {
     /**
      * Implementation of sPlayerJoined signal
      * @see API.md
+     *
+     * @param socket Socket to emit
+     * @param room Room object
+     * @param username User's name
      */
-    static sPlayerJoined(socket, room) {
+    static sPlayerJoined(socket, room, username) {
         socket.emit(
             "sPlayerJoined", {
-                "username": name, "playerList": getPlayerList(room),
+                "username": username, "playerList": getPlayerList(room),
                 "host": room.users[findFirstPos(room.users, "online", true)].username
             });
     }
@@ -294,6 +296,10 @@ class Signals {
     /**
      * Implementation of sPlayerLeft signal
      * @see API.md
+     *
+     * @param socket Socket to emit
+     * @param room Room object
+     * @param username User's name
      */
     static sPlayerLeft(socket, room, username) {
         // Sending new state of the room.
@@ -311,6 +317,9 @@ class Signals {
     /**
      * Implementation of sYouJoined signal
      * @see API.md
+     *
+     * @param socket Socket to emit
+     * @param key Key of the room
      */
     static sYouJoined(socket, key) {
         const room = rooms[key];
@@ -361,6 +370,11 @@ class Signals {
     /**
      * Implementation of sFailure signal
      * @see API.md
+     *
+     *
+     * @param socket Socket to emit
+     * @param request Request that is failed
+     * @param msg Message to send
      */
     static sFailure(socket, request, msg) {
         socket.emit("sFailure", {"request": request, "msg": msg});
@@ -369,6 +383,8 @@ class Signals {
     /**
      * Implementation of sGameStarted signal
      * @see API.md
+     *
+     * @param key Key of the Room
      */
     static sGameStarted(key) {
         io.sockets.to(key).emit("sGameStarted", {
@@ -380,6 +396,9 @@ class Signals {
     /**
      * Implementation of sNextTurn signal
      * @see API.md
+     *
+     * @param key Key of the room
+     * @param words Words' statistic
      */
     static sNextTurn(key, words) {
         io.sockets.to(key).emit("sNextTurn", {
@@ -391,6 +410,8 @@ class Signals {
     /**
      * Implementation of sExplanationStarted signal
      * @see API.md
+     *
+     * @param key Key of the room
      */
     static sExplanationStarted(key) {
         io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
@@ -399,6 +420,8 @@ class Signals {
     /**
      * Implementation of sNewWord signal
      * @see API.md
+     *
+     * @param key Key of the room
      */
     static sNewWord(key) {
         io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit("sNewWord", {"word": rooms[key].word});
@@ -407,6 +430,9 @@ class Signals {
     /**
      * Implementation of sWordExplanationEnded signal
      * @see API.md
+     *
+     * @param key Key of the room
+     * @param cause Result of word explanation
      */
     static sWordExplanationEnded(key, cause) {
         io.sockets.to(key).emit("sWordExplanationEnded", {
@@ -417,6 +443,8 @@ class Signals {
     /**
      * Implementation of sExplanationEnded signal
      * @see API.md
+     *
+     * @param key Key of the room
      */
     static sExplanationEnded(key) {
         io.sockets.to(key).emit("sExplanationEnded", {
@@ -426,8 +454,11 @@ class Signals {
     /**
      * Implementation of sWordsToEdit signal
      * @see API.md
+     *
+     * @param key Key of the room
+     * @param editWords List of words to edit
      */
-    static sWordsToEdit(key) {
+    static sWordsToEdit(key, editWords) {
         io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
             "sWordsToEdit", {"editWords": editWords});
     }
@@ -435,6 +466,9 @@ class Signals {
     /**
      * Implementation of sGameEnded signal
      * @see API.md
+     *
+     * @param key Key of the room
+     * @param results Results of the game
      */
     static sGameEnded(key, results) {
         io.sockets.to(key).emit("sGameEnded", {"results": results});
@@ -652,7 +686,7 @@ io.on("connection", function(socket) {
              * Implementation of sPlayerJoined signal
              * @see API.md
              */
-            Signals.sPlayerJoined(io.sockets.to(key), rooms[key])
+            Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name)
 
             Signals.sYouJoined(socket, key)
         });
