@@ -191,11 +191,8 @@ function startExplanation(key) {
         }
     }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
     */
-    setTimeout(function() {
-        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
-            "sNewWord", {"word": rooms[key].word});
-    }, (PRE + DELAY) * 1000);
-    io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+    setTimeout(Signals.sNewWord, (PRE + DELAY) * 1000);
+    Signals.sExplanationStarted()
 }
 
 /**
@@ -229,12 +226,7 @@ function finishExplanation(key) {
     rooms[key].startTime = 0;
     rooms[key].word = "";
 
-    /**
-     * Implementation of sExplanationEnded signal
-     * @see API.md
-     */
-    io.sockets.to(key).emit("sExplanationEnded", {
-        "wordsCount": rooms[key].freshWords.length});
+    Signals.sExplanationEnded(key)
 
     // generating editWords for client (without 'transport' flag)
     let editWords = [];
@@ -244,12 +236,7 @@ function finishExplanation(key) {
             "wordState": rooms[key].editWords[i].wordState});
     }
 
-    /**
-     * Implementation of sWordsToEdit signal
-     * @see API.md
-     */
-    io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
-        "sWordsToEdit", {"editWords": editWords});
+    Signals.sWordsToEdit(key)
 }
 
 /**
@@ -272,11 +259,7 @@ function endGame(key) {
         return 0 - (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
     });
 
-    /**
-     * Implementation of sGameEnded signal
-     * @see API.md
-     */
-    io.sockets.to(key).emit("sGameEnded", {"results": results});
+    Signals.sGameEnded(key, results)
 
     // removing room
     delete rooms[key];
@@ -396,13 +379,68 @@ class Signals {
             "wordsCount": rooms[key].freshWords.length});
     }
 
-    static sNextTurn() {}
-    static sExplanationStarted() {}
-    static sNewWord() {}
-    static sWordExplanationEnded() {}
-    static sExplanationEnded() {}
-    static sWordsToEdit() {}
-    static sGameEnded() {}
+    /**
+     * Implementation of sNextTurn signal
+     * @see API.md
+     */
+    static sNextTurn(key, words) {
+        io.sockets.to(key).emit("sNextTurn", {
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
+            "words": words});
+    }
+
+    /**
+     * Implementation of sExplanationStarted signal
+     * @see API.md
+     */
+    static sExplanationStarted(key) {
+        io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+    }
+
+    /**
+     * Implementation of sNewWord signal
+     * @see API.md
+     */
+    static sNewWord(key) {
+        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit("sNewWord", {"word": rooms[key].word});
+    }
+
+    /**
+     * Implementation of sWordExplanationEnded signal
+     * @see API.md
+     */
+    static sWordExplanationEnded(key, cause) {
+        io.sockets.to(key).emit("sWordExplanationEnded", {
+            "cause": cause,
+            "wordsCount": rooms[key].freshWords.length});
+    }
+
+    /**
+     * Implementation of sExplanationEnded signal
+     * @see API.md
+     */
+    static sExplanationEnded(key) {
+        io.sockets.to(key).emit("sExplanationEnded", {
+            "wordsCount": rooms[key].freshWords.length});
+    }
+
+    /**
+     * Implementation of sWordsToEdit signal
+     * @see API.md
+     */
+    static sWordsToEdit(key) {
+        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
+            "sWordsToEdit", {"editWords": editWords});
+    }
+
+    /**
+     * Implementation of sGameEnded signal
+     * @see API.md
+     */
+    static sGameEnded(key, results) {
+        io.sockets.to(key).emit("sGameEnded", {"results": results});
+    }
 }
 
 /**
@@ -920,13 +958,7 @@ io.on("connection", function(socket) {
                 // removing the word from the 'word' container
                 rooms[key].word = "";
 
-                /**
-                 * Implementation of sWordExplanationEnded signal
-                 * @see API.md
-                 */
-                io.sockets.to(key).emit("sWordExplanationEnded", {
-                    "cause": cause,
-                    "wordsCount": rooms[key].freshWords.length});
+                Signals.sWordExplanationEnded(key, cause)
 
                 // checking the time
                 if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
@@ -943,7 +975,7 @@ io.on("connection", function(socket) {
 
                 // emitting new word
                 rooms[key].word = rooms[key].freshWords.pop();
-                socket.emit("sNewWord", {"word": rooms[key].word});
+                Signals.sNewWord(key)
                 return;
             case "mistake":
                 // logging the word
@@ -955,13 +987,7 @@ io.on("connection", function(socket) {
                 // word don't go to the hat
                 rooms[key].word = "";
 
-                /**
-                 * Implementation of sWordExplanationEnded signal
-                 * @see API.md
-                 */
-                io.sockets.to(key).emit("sWordExplanationEnded", {
-                    "cause": cause,
-                    "wordsCount": rooms[key].freshWords.length});
+                Signals.sWordExplanationEnded(key, cause)
 
                 // finishing the explanation
                 finishExplanation(key);
@@ -973,13 +999,7 @@ io.on("connection", function(socket) {
                     "wordState": "notExplained",
                     "transfer": true});
 
-                /**
-                 * Implementation of sWordExplanationEnded signal
-                 * @see API.md
-                 */
-                io.sockets.to(key).emit("sWordExplanationEnded", {
-                    "cause": cause,
-                    "wordsCount": rooms[key].freshWords.length + 1});
+                Signals.sWordExplanationEnded(key, cause)
 
                 // finishing the explanation
                 finishExplanation(key);
@@ -1094,14 +1114,7 @@ io.on("connection", function(socket) {
         rooms[key].speaker = nextPair.speaker;
         rooms[key].listener = nextPair.listener;
 
-        /**
-         * Implementation of sNextTurn signal
-         * @see API.md
-         */
-        io.sockets.to(key).emit("sNextTurn", {
-            "speaker": rooms[key].users[rooms[key].speaker].username,
-            "listener": rooms[key].users[rooms[key].listener].username,
-            "words": words});
+        Signals.sNextTurn(key, words)
     });
 
     socket.on("disconnect", function() {
