@@ -675,6 +675,9 @@ io.on("connection", function(socket) {
         // generating word list (later key can affect word list)
         rooms[key].freshWords = generateWords(key);
 
+        // debug output
+        console.log(rooms[key].freshWords);
+
         // preparing storage for explained words
         rooms[key].usedWords = {};
 
@@ -1052,6 +1055,9 @@ io.on("connection", function(socket) {
             endGame(key);
             return;
         }
+
+        // debug output
+        console.log(rooms[key].freshWords);
 
         // initializing next round
         rooms[key].substate = "wait";
