@@ -636,6 +636,7 @@ class App {
         el("gamePage_goBack").onclick = () => this.leaveRoom();
         el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
         el("resultsPage_goBack").onclick = () => this.goBack();
+        el("resultsPage_viewRules").onclick = () => this.showPage("rulesPage");
     }
 }
 
