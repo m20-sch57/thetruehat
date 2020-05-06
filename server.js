@@ -291,8 +291,6 @@ class Signals {
             });
     }
 
-    // TODO: Implement all signals
-
     /**
      * Implementation of sPlayerLeft signal
      * @see API.md
