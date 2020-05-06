@@ -1,11 +1,11 @@
 {
     "port": 3005,
-    "wordsPath": "./words/easy.json",
+    "wordsPath": "./words/all.json",
     "transferTime": 1,
     "delayTime": 3,
     "explanationTime": 30,
     "aftermathTime": 3,
-    "wordNumber": 40,
+    "wordNumber": 100,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [

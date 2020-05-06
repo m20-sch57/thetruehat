@@ -457,7 +457,7 @@ io.on("connection", function(socket) {
 
             // If game has started, only logging in can be perfomed
             if (rooms[key].state === "play" && pos === -1) {
-                console.log(socket.id, "sFailure",
+                console.log(socket.id, "sFailure", {
                     "request": "cJoinRoom",
                     "msg": "Game have started, only logging in can be perfomed"});
                 socket.emit("sFailure", {
