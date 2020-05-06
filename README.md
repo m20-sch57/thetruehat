@@ -4,6 +4,9 @@
 TheTrueHat is a web-application for the game Alias. You can play the Alias with your friends or organise an Alias tournament.
 This project supports a web-interface for the game, and a server that will took responsibility for all technical details.
 
+## Play now!
+The alpha test is available now [here](http://m20-sch57.site:3005/).
+
 ## Features
 * Cross-platform. You can set the server up on Windows, Linux and Mac OS X, and web-application supports Google Chrome (PC and Android), Mozilla Firefox (PC and Android), Opera (PC and Android) and Microsoft Edge (PC and Android).
 * Easy to start. It's ready to start right now. You don't need to delve into anything and code anything to start play.
