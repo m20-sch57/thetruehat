@@ -291,7 +291,7 @@ class App {
     }
 
     copyLink() {
-        navigator.clipboard.writeText(`http://${document.domain}:5000/#${
+        navigator.clipboard.writeText(`http://${document.domain}:${PORT}/#${
             this.myRoomKey}`);
     }
 
