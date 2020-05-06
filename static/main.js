@@ -8,7 +8,7 @@ const PORT = 3005;
 
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-const EXPLANATION_TIME = 40000;
+const EXPLANATION_TIME = 30000;
 const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
