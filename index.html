@@ -4,14 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/main.css">
-
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
-    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+    <link rel="shortcut icon" href="/hat.png">
 
     <title>Шляпа</title>
     <script src="/socket.io/socket.io.js"></script>
@@ -27,38 +23,20 @@
             <button id="mainPage_viewRules"></button>
         </div>
     </div>
-    <div class="page" id="createPage" style="display: none;">
-        <button class="white-bubble go-back" id="createPage_goBack">
-            <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="createPage_viewRules">
-            Правила
-        </button>
-        <div class="content-small">
-            <div id="createPage_header">
-                <h1 id="createPage_key">Джомолунгма</h1>
-                <p class="hint">Это ключ комнаты. Отправь его друзьям.</p>
-                <button class="small-button bg-blue" id="createPage_copyKey">
-                </button><button class="small-button bg-blue" id="createPage_copyLink">
-                </button>
-            </div>
-            <div id="createPage_body">
-                <input class="medium-input" id="createPage_inputName" placeholder="Введи своё имя">
-                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
-                <button class="medium-button bg-green" id="createPage_go">Поехали!</button>
-            </div>
-        </div>
-    </div>
     <div class="page" id="joinPage" style="display: none;">
         <button class="white-bubble go-back" id="joinPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="joinPage_viewRules">
-            Правила
         </button>
         <div class="content-small">
             <div id="joinPage_header">
                 <input class="large-input" id="joinPage_inputKey" spellcheck="false" placeholder="Ключ игры">
-                <p class="hint">Введи ключ, который тебе прислал товарищ</p>
-                <button class="small-button bg-blue" id="joinPage_pasteKey">Вставить ключ</button>
+                <p class="hint">Введённый выше ключ необходим для игры.</p>
+                <button class="small-button bg-blue" id="joinPage_pasteKey">
+                    Вставить
+                </button><button class="small-button bg-blue" id="joinPage_generateKey">
+                    Сгенерировать новый
+                </button>
             </div>
             <div id="joinPage_body">
                 <input class="medium-input" id="joinPage_inputName" placeholder="Введи своё имя">
@@ -80,21 +58,117 @@
             </div>
         </div>
     </div>
-    <div class="page" id="waitPage" style="display: none;">
-        <button class="white-bubble go-back" id="waitPage_goBack">
+    <div class="page" id="preparationPage" style="display: none;">
+        <button class="white-bubble go-back" id="preparationPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="waitPage_viewRules">
-            Правила
+        </button><button class="white-bubble view-rules" id="preparationPage_viewRules">
         </button>
         <div class="content-small">
-            <div id="waitPage_header">
-                <h1 id="waitPage_title">ФЕДРО</h1>
-                <p class="hint"><span id="waitPage_playersCnt">0</span></p>
+            <div id="preparationPage_header">
+                <h1 id="preparationPage_title">
+                </h1>
+                <p class="hint" style="display: none;"><span id="preparationPage_playersCnt">0</span></p>
+                <button class="small-button bg-blue" id="preparationPage_copyKey">
+                    Копир. ключ
+                </button><button class="small-button bg-blue" id="preparationPage_copyLink">
+                    Копир. ссылку
+                </button>
             </div>
-            <div id="waitPage_body">
-                <div id="waitPage_users">
+            <div id="preparationPage_body">
+                <div id="preparationPage_usersTable">
+                    <div class="spacer"></div>
+                    <div id="preparationPage_users"></div>
+                    <div class="spacer"></div>
                 </div>
-                <button class="small-button bg-green" id="waitPage_start">Начать игру</button>
+                <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
+                <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="gamePage" style="display: none;">
+        <button class="white-bubble go-back" id="gamePage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="gamePage_viewRules">
+        </button>
+        <div class="content-small">
+            <div id="gamePage_header">
+                <h1 id="gamePage_title">Федро Губкин</h1>
+                <p class="hint">Слов в шляпе: <span id="gamePage_wordsCnt">
+                </span></p>
+            </div>
+            <div id="gamePage_body">
+                <div id="gamePage_speakerListener" style="display: none;">
+                    <div id="gamePage_speakerBox">
+                        <h1 id="gamePage_speakerLabel">
+                            <span class="fa fa-microphone"></span>
+                            <span id="gamePage_speaker"></span>
+                        </h1>
+                        <p id="gamePage_speakerHint">объясняет</p>
+                    </div>
+                    <div id="gamePage_listenerBox">
+                        <p id="gamePage_listenerHint">отгадывает</p>
+                        <h1 id="gamePage_listenerLabel">
+                            <span id="gamePage_listener"></span>
+                            <span class="fa fa-headphones"></span>
+                        </h1>
+                    </div>
+                </div>
+                <div id="gamePage_speakerReadyBox" style="display: none;">
+                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton">Я готов объяснять</button>
+                </div>
+                <div id="gamePage_listenerReadyBox" style="display: none;">
+                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">Я готов отгадывать</button>
+                </div>
+                <div id="gamePage_observerBox" style="display: none;">
+                    <h1 id="gamePage_observerTimer">
+                    </h1>
+                </div>
+                <div id="gamePage_explanationDelayBox" style="display: none;">
+                    <h1 class="timer-green" id="gamePage_explanationDelayTimer">
+                    </h1>
+                </div>
+                <div id="gamePage_explanationBox" style="display: none;">
+                    <div id="gamePage_explanationWordTimer">
+                        <h1 id="gamePage_explanationWord">
+                        </h1>
+                        <h1 id="gamePage_explanationTimer">
+                        </h1>
+                    </div>
+                    <div id="gamePage_explanationActions">
+                        <button class="medium-button bg-green" id="gamePage_explanationSuccess">
+                            Угадал
+                        </button>
+                        <button class="medium-button bg-blue" id="gamePage_explanationFailed">
+                            Не угадал
+                        </button><button class="medium-button bg-red" id="gamePage_explanationMistake">
+                            Ошибка
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="resultsPage" style="display: none;">
+        <button class="white-bubble go-back" id="resultsPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="resultsPage_viewRules">
+        </button>
+        <div class="content-small">
+            <div id="resultsPage_header">
+                <h1 id="resultsPage_title">Результаты игры</h1>
+            </div>
+            <div id="resultsPage_body">
+                <table id="resultsPage_table">
+                <thead>
+                    <th>Игрок</th>
+                    <th>Объяснено</th>
+                    <th>Угадано</th>
+                    <th>Сумма</th>
+                </thead>
+                <tbody id="resultPage_results">
+                </tbody>
+                </table>
+                <button class="medium-button bg-green" id="resultsPage_newGame">Новая игра</button>
             </div>
         </div>
     </div>

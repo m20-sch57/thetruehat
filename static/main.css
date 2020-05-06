@@ -2,8 +2,12 @@
     box-sizing: border-box;
 }
 
+html {
+    height: 100%;
+}
+
 body {
-    height: 100vh;
+    height: 100%;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
 }
@@ -13,6 +17,8 @@ button, input {
     outline: 0;
 }
 
+/* Common classes */
+
 .page {
     display: flex;
     height: 100%;
@@ -20,7 +26,9 @@ button, input {
 }
 
 .content-small {
-    margin: 100px auto 50px auto;
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
     width: 100%;
     max-width: 500px;
 }
@@ -30,7 +38,6 @@ button, input {
     border: 1px solid grey;
     border-radius: 22px;
     font-size: 15px;
-    margin: 5px;
 }
 
 .medium-button {
@@ -41,14 +48,18 @@ button, input {
     line-height: 20px;
 }
 
-.small-button:hover, .medium-button:hover {
+.small-button:hover:enabled, .medium-button:hover:enabled {
     background-color: rgb(44, 98, 185);
     color: whitesmoke;
     box-shadow: 1px 1px 5px grey;
 }
 
-.small-button:active, .medium-button:active {
+.small-button:active:enabled, .medium-button:active:enabled {
     background-color: rgb(36, 52, 77);
+}
+
+.small-button:disabled, .medium-button:disabled {
+    background-color: lightgrey;
 }
 
 .medium-input {
@@ -115,6 +126,10 @@ button, input {
     width: 150px;
     font-size: 20px;
     padding-top: 50px;
+    background-image: url(\hat.png);
+    background-size: 35%;
+    background-position: center 85px;
+    background-repeat: no-repeat;
 }
 
 .bg-blue {
@@ -124,6 +139,28 @@ button, input {
 .bg-green {
     background-color: lightgreen;
 }
+
+.bg-red {
+    background-color: lightcoral;
+}
+
+.timer-green {
+    background-color: forestgreen;
+}
+
+.timer-yellow {
+    background-color: goldenrod;
+}
+
+.timer-red {
+    background-color: red;
+}
+
+.timer-aftermath {
+    color: red;
+}
+
+/* Main page */
 
 #mainPage_actions {
     height: 100%;
@@ -207,65 +244,23 @@ button, input {
     }
 }
 
-#createPage_header {
-    width: 100%;
-    text-align: center;
-    padding: 50px 30px 50px 30px;
-}
-
-#createPage_key {
-    font-size: 40px;
-    text-transform: uppercase;
-    margin-bottom: 0;
-}
-
-#createPage_copyKey {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    margin: 5px 0 0 0;
-}
-
-#createPage_copyKey::after {
-    content: 'Копир. ключ';
-}
-
-#createPage_copyLink {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    margin: 5px 0 0 -1px;
-}
-
-#createPage_copyLink::after {
-    content: 'Копир. ссылку';
-}
-
-#createPage_body {
-    padding: 0 30px 0 30px;
-}
-
-#createPage_inputName {
-    width: 100%;
-}
-
-#createPage_go {
-    width: 100%;
-    margin-top: 10px;
-}
-
-@media (min-width: 500px) {
-    #createPage_copyKey::after {
-        content: 'Копировать ключ';
-    }
-
-    #createPage_copyLink::after {
-        content: 'Копировать ссылку';
-    }
-}
+/* Join page */
 
 #joinPage_header {
     width: 100%;
     text-align: center;
     padding: 50px 30px 50px 30px;
+}
+
+#joinPage_pasteKey {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#joinPage_generateKey {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
 }
 
 #joinPage_body {
@@ -288,6 +283,8 @@ button, input {
     margin-top: 10px;
 }
 
+/* Rules page */
+
 #rulesPage_header {
     width: 100%;
     text-align: center;
@@ -309,51 +306,299 @@ button, input {
     padding: 0 30px 0 30px;
 }
 
-#waitPage_header {
+/* Preparation page */
+
+#preparationPage_header {
     width: 100%;
     text-align: center;
     padding: 0 30px 30px 30px;
 }
 
-#waitPage_title {
-    margin-bottom: 0;
+#preparationPage_title {
+    text-transform: uppercase;
+    margin-bottom: 10px;
 }
 
-#waitPage_body {
+#preparationPage_copyKey {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#preparationPage_copyLink {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+#preparationPage_body {
     padding: 0 30px 0 30px;
 }
 
-#waitPage_users {
+#preparationPage_usersTable {
     margin-bottom: 30px;
 }
 
-#waitPage_users .spacer {
+#preparationPage_usersTable .spacer {
     height: 1px;
+    background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 
-#waitPage_users .user-item {
-    padding: 10px;
+#preparationPage_users .user-item {
+    padding: 8px;
+    font-size: 18px;
     text-align: center;
 }
 
-#waitPage_users .host::before {
+#preparationPage_users .host::before {
     content: '';
     float: left;
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
+    margin-right: -20px;
     background-image: url(\hat.png);
     background-size: 100%;
 }
 
-#waitPage_users .you::after {
+#preparationPage_users .you::after {
     content: ' (Ты)';
     font-weight: bold;
 }
 
-#waitPage_users div:nth-child(odd) {
+#preparationPage_users div:nth-child(even) {
     background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 
-#waitPage_start {
+#preparationPage_start {
     width: 100%;
+}
+
+#preparationPage_startLabel {
+    width: 100%;
+    font-weight: lighter;
+    text-align: center;
+}
+
+/* Game page */
+
+#gamePage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#gamePage_title {
+    font-weight: lighter;
+    margin-bottom: 0;
+}
+
+#gamePage_wordsCnt {
+    font-style: italic;
+    font-weight: bold;
+}
+
+#gamePage_body {
+    flex-grow: 1;
+    width: 100%;
+    padding: 0 30px 0 30px;
+}
+
+#gamePage_speakerListener {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - 52px);
+}
+
+#gamePage_speakerBox {
+    padding: 10px 10px 20px 10px;
+    margin-top: auto;
+    text-align: left;
+}
+
+#gamePage_speakerLabel {
+    font-size: 20px;
+    margin-bottom: 0;
+}
+
+#gamePage_speaker {
+    font-size: 25px;
+    font-weight: lighter;
+    color: rgb(15, 170, 74);
+}
+
+#gamePage_speakerHint {
+    font-size: 17px;
+    margin: -3px 0 0 0;
+}
+
+#gamePage_listenerBox {
+    padding: 20px 10px 10px 10px;
+    margin-bottom: auto;
+    text-align: right;
+}
+
+#gamePage_listenerHint {
+    font-size: 17px;
+    margin: 0 0 -3px 0;
+}
+
+#gamePage_listenerLabel {
+    font-size: 20px;
+    margin-top: 0;
+}
+
+#gamePage_listener {
+    font-size: 25px;
+    font-weight: lighter;
+    color: rgb(0, 140, 255);
+}
+
+#gamePage_speakerReadyBox, #gamePage_listenerReadyBox, #gamePage_observerBox {
+    height: 52px;
+    display: flex;
+    flex-flow: column;
+}
+
+#gamePage_speakerReadyButton, #gamePage_listenerReadyButton {
+    width: 100%;
+    margin-top: auto;
+}
+
+#gamePage_observerTimer {
+    font-size: 30px;
+    font-weight: lighter;
+    margin: auto auto 0 auto;
+    user-select: none;
+}
+
+#gamePage_explanationDelayBox {
+    top: 0;
+    height: 100%;
+    display: flex;
+}
+
+#gamePage_explanationBox {
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+#gamePage_explanationDelayTimer {
+    text-align: center;
+    font-size: 130px;
+    font-weight: lighter;
+    margin: auto;
+    border-radius: 50%;
+    height: 177px;
+    width: 177px;
+    color: whitesmoke;
+    user-select: none;
+}
+
+#gamePage_explanationWordTimer {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - 105px);
+}
+
+#gamePage_explanationWord {
+    width: 100%;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 40px;
+    font-weight: lighter;
+    margin-top: auto;
+    margin-bottom: 0;
+}
+
+#gamePage_explanationTimer {
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: lighter;
+    margin-top: 0;
+    margin-bottom: auto;
+    user-select: none;
+}
+
+#gamePage_explanationActions {
+    height: 105px;
+}
+
+#gamePage_explanationSuccess {
+    width: 100%;
+    margin-top: auto;
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#gamePage_explanationFailed {
+    width: calc(50% + 0.5px);
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-top: -1px;
+}
+
+#gamePage_explanationMistake {
+    width: calc(50% + 0.5px);
+    border-radius: 10px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-top: -1px;
+    margin-left: -1px;
+}
+
+@media (min-width: 500px) {
+    #gamePage_speakerListener {
+        height: 250px;
+    }
+    #gamePage_explanationDelayBox {
+        height: 300px;
+    }
+    #gamePage_explanationWordTimer {
+        height: 300px;
+    }
+    #gamePage_explanationActions {
+        padding: 0 30px 0 30px;
+    }
+}
+
+/* Results page */
+
+#resultsPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 20px 30px;
+}
+
+#resultsPage_title {
+    font-weight: lighter;
+}
+
+#resultsPage_body {
+    width: 100%;
+    padding: 0 30px 0 30px;
+}
+
+#resultsPage_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#resultsPage_table td, #resultsPage_table th {
+    text-align: center;
+    padding: 7px 5px 7px 5px;
+}
+
+#resultsPage_table .sum {
+    font-weight: bold;
+}
+
+#resultsPage_newGame {
+    width: 100%;
+    margin-top: 30px;
 }
