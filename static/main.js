@@ -183,31 +183,6 @@ class Sound {
     }
 }
 
-// let currentSound = false;
-// function killSound() {
-//     if (currentSound) {
-//         currentSound.pause();
-//         currentSound = false;
-//     }
-// }
-// function playSound(sound, startTime) {
-//     if (!startTime) {
-//         console.log("empty start time");
-//     }
-//     currentSound = el(sound);
-//     // console.log()
-//     if (getTime() < startTime) {
-//         setTimeout(() => {
-//             killSound();
-//             currentSound.play();
-//         }, startTime - getTime());
-//     } else if (getTime() - startTime < currentSound.duration * 1000){
-//         console.log("else");
-//         currentSound.currentTime = (getTime() - startTime) / 1000;
-//         currentSound.play();
-//     }
-// }
-
 class App {
     constructor() {
         this.debug = true;
