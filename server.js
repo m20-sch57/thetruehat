@@ -37,9 +37,9 @@ app.get("/", function(req, res) {
  *
  * @param object --- object
  * @param pattern --- pattern
- * @retrun if objects corresponds to the pattern
+ * @return if objects corresponds to the pattern
  */
-function checkOject(object, pattern) {
+function checkObject(object, pattern) {
     // checking object for undefined or null
     if (object === undefined) {
         return false;
@@ -180,6 +180,7 @@ function startExplanation(key) {
     rooms[key].startTime = currentTime + (PRE + DELAY) * 1000;
     rooms[key].word = rooms[key].freshWords.pop();
     const numberOfTurn = rooms[key].numberOfTurn;
+    /*
     setTimeout(function() {
         // if explanation hasn't finished yet
         if (!( key in rooms)) {
@@ -189,6 +190,7 @@ function startExplanation(key) {
             finishExplanation(key);
         }
     }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
+    */
     setTimeout(function() {
         io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
             "sNewWord", {"word": rooms[key].word});
@@ -215,11 +217,14 @@ function finishExplanation(key) {
     rooms[key].substate = "edit";
 
     // returning word to the hat
+    // no, see cWordsEdited
+    /*
     if (rooms[key].word !== "") {
         rooms[key].freshWords.splice(
             Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
             0, rooms[key].word);
     }
+    */
 
     rooms[key].startTime = 0;
     rooms[key].word = "";
@@ -271,7 +276,7 @@ function endGame(key) {
      * Implementation of sGameEnded signal
      * @see API.md
      */
-    io.sockets.emit("sGameEnded", {"results": results});
+    io.sockets.to(key).emit("sGameEnded", {"results": results});
 
     // removing room
     delete rooms[key];
@@ -393,7 +398,7 @@ io.on("connection", function(socket) {
      */
     socket.on("cJoinRoom", function(ev) {
         // checking input
-        if (!checkOject(ev, {"key": "string", "username": "string"})) {
+        if (!checkObject(ev, {"key": "string", "username": "string"})) {
             socket.emit("sFailure", {"request": "cJoinRoom", "msg": "Incorrect input"});
             return;
         }
@@ -865,7 +870,7 @@ io.on("connection", function(socket) {
         }
 
         // checking input
-        if (!checkOject(ev, {"cause": "string"})) {
+        if (!checkObject(ev, {"cause": "string"})) {
             socket.emit("sFailure", {
                 "request": "cWordsEdited",
                 "msg": "incorrect input"});
@@ -1017,7 +1022,7 @@ io.on("connection", function(socket) {
                     // counting explained words
                     cnt++;
                 case "mistake":
-                    // transfering data to serer structure
+                    // transferring data to serer structure
                     rooms[key].editWords[i].wordState = editWords[i].wordState;
                     break;
                 case "notExplained":
@@ -1027,7 +1032,7 @@ io.on("connection", function(socket) {
             }
         }
 
-        // tranfering round info
+        // transferring round info
         // changing the score
         rooms[key].users[rooms[key].speaker].scoreExplained += cnt;
         rooms[key].users[rooms[key].listener].scoreGuessed += cnt;

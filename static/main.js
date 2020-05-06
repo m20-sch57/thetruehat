@@ -4,13 +4,37 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
+const PORT = 5000;
+
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const EXPLANATION_TIME = 20000;
 const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
-const PORT = 5000;
+
+
+const TIME_SYNC_DELTA = 1200000;
+
+
+let delta = 0;
+
+function getTime() {
+    return performance.now() + delta;
+}
+
+async function getDelta() {
+    let zero = performance.now();
+    time = (await (await fetch("http://zadachi.mccme.ru/misc/time/getTime.cgi")).json()).time;
+    let now = performance.now();
+    delta = time + (now - zero) / 2 - now;
+}
+
+async function maintainDelta() {
+    setTimeout(maintainDelta, TIME_SYNC_DELTA);
+    getDelta();
+    console.log((new Date).getTime() - getTime());
+}
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -19,7 +43,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
     return new Promise(function(resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
-            time = (new Date()).getTime();
+            time = getTime();
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
 
@@ -367,7 +391,7 @@ class App {
                     break;
                 }
 
-            }, data.startTime - (new Date()).getTime() - DELAY_TIME);
+            }, data.startTime - getTime() - DELAY_TIME);
             break;
         }
     }
@@ -553,6 +577,16 @@ class App {
         this.socket.on("sExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
         })
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
         this.socket.on("sGameEnded", function(data) {
             _this.showResults(data.results);
         })
@@ -601,5 +635,7 @@ class App {
 
 let app;
 window.onload = function() {
-    app = new App();
+    maintainDelta().then(function () {
+        app = new App()
+    });
 }
