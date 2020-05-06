@@ -489,6 +489,7 @@ class App {
 
     showResults(results) {
         this.showPage("resultsPage");
+        el("resultPage_results").innerHTML = "";
         results.forEach((result) => {
             el("resultPage_results").appendChild(template(
                 "resultPage_results", result));
