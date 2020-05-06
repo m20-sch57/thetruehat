@@ -155,24 +155,44 @@ function template(templateName, data) {
     }
 }
 
-class Music {
-    constructor () {
+// class Music {
+//     constructor () {
+//         this.currentSound = false;
+//     }
+
+//     killSound() {
+//         if (this.currentSound) {
+//             this.currentSound.pause()
+//             this.currentSound = false;
+//         }
+//     }
+
+//     playSound(sound) {
+//         let currentSound = new Audio(sound);
+//         // this.currentSound = currentSound;
+//         let promise = currentSound.play()
+//         console.log(promise);
+//         promise.then(() => {
+//             this.currentSound = currentSound;
+//         })
+//         // console.log(this);   
+//         // this.currentSound = currentSound;
+//         // this.currentSound.play();
+//         // (new Audio(sound)).play();
+//     }
+// }
+
+let currentSound = false;
+function killSound() {
+    if (this.currentSound) {
+        this.currentSound.pause();
         this.currentSound = false;
     }
-
-    killSound() {
-        if (this.currentSound) {
-            this.currentSound.pause()
-            this.currentSound = false;
-        }
-    }
-
-    playSound(sound) {
-
-        this.killSound();
-        this.currentSound = new Audio(sound);
-        this.currentSound.play();
-    }
+}
+function playSound(sound) {
+    killSound();
+    let currentSound = new Audio(sound);
+    currentSound.play();
 }
 
 class App {
@@ -378,8 +398,9 @@ class App {
                     console.log("WARN: empty role");
                     return;
                 }
-                this.hideAllGameActions()
-                this.music.playSound("delayTimer.mp3");
+                this.hideAllGameActions();
+                // (new Audio("delayTimer.mp3")).play();
+                // (new Music()).playSound("delayTimer.mp3");
                 console.log("sound time:", performance.now());
                 switch (this.myRole) {
                 case "speaker":
@@ -434,6 +455,7 @@ class App {
 
     animateDelay(startTime, roundId) {
         let _this = this;
+        playSound("delayTimer.mp3");
         return animate({
             startTime,
             duration: DELAY_TIME,
@@ -444,7 +466,7 @@ class App {
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
             },
             stopCondition: () => {
-                this.music.killSound();
+                killSound();
                 return _this.roundId != roundId;
             }
         })
