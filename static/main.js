@@ -109,7 +109,7 @@ function template(templateName, data) {
         return div;
     case "resultPage_results":
         let p = document.createElement("p");
-        p.innerText = `${data.username} объяснил ${data.scoreExplained}, 
+        p.innerText = `${data.username} объяснил ${data.scoreExplained},
             угадал ${data.scoreGuessed}. Всего ${data.scoreExplained + 
                 data.scoreGuessed}`;
         return p;
@@ -266,7 +266,7 @@ class App {
             case "wait":
             case "play":
                 this.emit("cJoinRoom", 
-                    {"username": this.myUsername, 
+                    {"username": this.myUsername,
                      "key": this.myRoomKey
                 });
                 break; 
