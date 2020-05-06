@@ -307,6 +307,7 @@ class Signals {
                 "host": room.users[findFirstPos(room.users, "online", true)].username
             });
     }
+
     // TODO: Implement all signals
 
     /**
@@ -314,7 +315,7 @@ class Signals {
      * @see API.md
      */
     static sPlayerLeft(socket, room, username) {
-    // Sending new state of the room.
+        // Sending new state of the room.
         let host = "";
         const pos = findFirstPos(room.users, "online", true);
         if (pos !== -1) {
@@ -322,9 +323,59 @@ class Signals {
         }
         socket.emit("sPlayerLeft", {
             "username": username, "playerList": getPlayerList(room),
-            "host": host});}
+            "host": host
+        });
+    }
 
-    static sYouJoined() {}
+    /**
+     * Implementation of sYouJoined signal
+     * @see API.md
+     */
+    static sYouJoined(socket, key) {
+        const room = rooms[key];
+        let joinObj = {
+            "key": key,
+            "playerList": getPlayerList(room),
+            "host": room.users[findFirstPos(room.users, "online", true)].username
+        };
+        switch (room.state) {
+            case "wait":
+                joinObj.state = "wait";
+                break;
+            case "play":
+                joinObj.state = "play";
+                joinObj.wordsCount = room.freshWords.length;
+                switch (room.substate) {
+                    case "wait":
+                        joinObj.substate = "wait";
+                        joinObj.speaker = room.users[room.speaker].username;
+                        joinObj.listener = room.users[room.listener].username;
+                        break;
+                    case "explanation":
+                        joinObj.substate = "explanation";
+                        joinObj.speaker = room.users[room.speaker].username;
+                        joinObj.listener = room.users[room.listener].username;
+                        joinObj.startTime = room.startTime;
+                        joinObj.wordsCount++;
+                        if (joinObj.speaker === name) {
+                            joinObj.word = room.word;
+                        }
+                        break;
+                    case "edit":
+                        joinObj.substate = "edit";
+                        joinObj.editWords = [];
+                        break;
+                    default:
+                        console.log(room);
+                        break;
+                }
+                break;
+            default:
+                console.log(rooms[key]);
+                break;
+        }
+        socket.emit("sYouJoined", joinObj);
+    }
 
     /**
      * Implementation of sFailure signal
@@ -334,7 +385,17 @@ class Signals {
         socket.emit("sFailure", {"request": request, "msg": msg});
     }
 
-    static sGameStarted() {}
+    /**
+     * Implementation of sGameStarted signal
+     * @see API.md
+     */
+    static sGameStarted(key) {
+        io.sockets.to(key).emit("sGameStarted", {
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
+            "wordsCount": rooms[key].freshWords.length});
+    }
+
     static sNextTurn() {}
     static sExplanationStarted() {}
     static sNewWord() {}
@@ -557,51 +618,7 @@ io.on("connection", function(socket) {
              */
             Signals.sPlayerJoined(io.sockets.to(key), rooms[key])
 
-            /**
-             * Implementation of sYouJoined signal
-             * @see API.md
-             */
-            let joinObj = {
-                "key": key,
-                "playerList": getPlayerList(rooms[key]),
-                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username};
-            switch (rooms[key].state) {
-                case "wait":
-                    joinObj.state = "wait";
-                    break;
-                case "play":
-                    joinObj.state = "play";
-                    joinObj.wordsCount = rooms[key].freshWords.length;
-                    switch (rooms[key].substate) {
-                        case "wait":
-                            joinObj.substate = "wait";
-                            joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
-                            joinObj.listener =  rooms[key].users[rooms[key].listener].username;
-                            break;
-                        case "explanation":
-                            joinObj.substate = "explanation";
-                            joinObj.speaker =  rooms[key].users[rooms[key].speaker].username;
-                            joinObj.listener =  rooms[key].users[rooms[key].listener].username;
-                            joinObj.startTime = rooms[key].startTime;
-                            joinObj.wordsCount++;
-                            if (joinObj.speaker === name) {
-                                joinObj.word = rooms[key].word;
-                            }
-                            break;
-                        case "edit":
-                            joinObj.substate = "edit";
-                            joinObj.editWords = [];
-                            break;
-                        default:
-                            console.log(rooms[key]);
-                            break;
-                    }
-                    break;
-                default:
-                    console.log(rooms[key]);
-                    break;
-            }
-            socket.emit("sYouJoined", joinObj);
+            Signals.sYouJoined(socket, key)
         });
     });
 
@@ -754,14 +771,7 @@ io.on("connection", function(socket) {
         rooms[key].speaker = nextPair.speaker;
         rooms[key].listener = nextPair.listener;
 
-        /**
-         * Implementation of sGameStarted signal
-         * @see API.md
-         */
-        io.sockets.to(key).emit("sGameStarted", {
-            "speaker": rooms[key].users[rooms[key].speaker].username,
-            "listener": rooms[key].users[rooms[key].listener].username,
-            "wordsCount": rooms[key].freshWords.length});
+        Signals.sGameStarted(key)
     });
 
     /**
