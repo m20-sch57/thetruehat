@@ -140,7 +140,7 @@ function template(templateName, data) {
         let scoreGuessed = document.createElement("td");
         scoreGuessed.innerText = data.scoreGuessed;
         let score = document.createElement("td");
-        score.innerText = data.scoreGuessed + data.scoreGuessed;
+        score.innerText = data.scoreGuessed + data.scoreExplained;
         score.classList.add("sum");
         elem.appendChild(username);
         elem.appendChild(scoreExplained);
