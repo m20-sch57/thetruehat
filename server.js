@@ -258,7 +258,7 @@ function finishExplanation(key) {
  * @return none
  */
 function endGame(key) {
-    // preapring results
+    // preparing results
     let results = [];
     for (let i = 0; i < rooms[key].users.length; ++i) {
         results.push({
@@ -299,14 +299,14 @@ function endGame(key) {
  * @see API.md
  */
 app.get("/getFreeKey", function(req, res) {
-    // getting the setings
+    // getting the settings
     const minKeyLength = config.minKeyLength;
     const maxKeyLength = config.maxKeyLength;
     const keyConsonant = config.keyConsonant;
     const keyVowels = config.keyVowels;
     // getting the key length
     const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
-    // generatin the key
+    // generating the key
     let key = "";
     for (let i = 0; i < keyLength; ++i) {
         const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
@@ -382,7 +382,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - speakerReady --- bool,
  *     - listenerReady --- bool,
  *     - word --- current word,
- *     - startTime --- UTC time of start of explanation (in miliseconds).
+ *     - startTime --- UTC time of start of explanation (in milliseconds).
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
  */
@@ -422,7 +422,7 @@ io.on("connection", function(socket) {
         const key = ev.key.toLowerCase(); // key of the room
         const name = ev.username; // name of the user
 
-        // if room and usrs exist, we should check the user
+        // if room and users exist, we should check the user
         if (rooms[key] !== undefined) {
             const pos = findFirstPos(rooms[key].users, "username", name);
 
@@ -432,11 +432,11 @@ io.on("connection", function(socket) {
                 return;
             }
 
-            // If game has started, only logging in can be perfomed
+            // If game has started, only logging in can be performed
             if (rooms[key].state === "play" && pos === -1) {
                 socket.emit("sFailure", {
                     "request": "cJoinRoom",
-                    "msg": "Game have started, only logging in can be perfomed"});
+                    "msg": "Game have started, only logging in can be performed"});
                 return;
             }
         }
@@ -626,12 +626,12 @@ io.on("connection", function(socket) {
             return;
         }
 
-        // checking whether siganl owner is host
+        // checking whether signal owner is host
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
             console.log("cStartGame: Everyone is offline");
-            socket.emit("sFailure", {"request": "cStartGame", "mgs": "Everyone is offline"});
+            socket.emit("sFailure", {"request": "cStartGame", "msg": "Everyone is offline"});
             return;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
@@ -911,7 +911,7 @@ io.on("connection", function(socket) {
                     return;
                 }
 
-                // emmiting new word
+                // emitting new word
                 rooms[key].word = rooms[key].freshWords.pop();
                 socket.emit("sNewWord", {"word": rooms[key].word});
                 return;
@@ -997,7 +997,7 @@ io.on("connection", function(socket) {
         // moving editWords
         const editWords = ev.editWords;
 
-        // comparing the legth of serer editWords and client editWords
+        // comparing the length of serer editWords and client editWords
         if (editWords.length !== rooms[key].editWords.length) {
             socket.emit("sFailure", {
                 "request": "cWordsEdited",
@@ -1086,8 +1086,8 @@ io.on("connection", function(socket) {
 
     socket.on("disconnect", function() {
         /**
-         * room key can't be acceessed via getRoom(socket)
-         * findFirstSidPos must be used intead
+         * room key can't be accessed via getRoom(socket)
+         * findFirstSidPos must be used instead
          */
 
         let key = [];
