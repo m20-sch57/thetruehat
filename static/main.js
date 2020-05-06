@@ -20,7 +20,11 @@ const TIME_SYNC_DELTA = 1200000;
 let delta = 0;
 
 function getTime() {
-    return performance.now() + delta;
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        return (new Date).getTime();
+    } else {
+        return performance.now() + delta;
+    }
 }
 
 async function getDelta() {
@@ -83,6 +87,7 @@ function el(id) {
 }
 
 function readLocationHash() {
+    console.log(location);
     if (location.hash == "") return "";
     return decodeURIComponent(location.hash.slice(1));
 }
@@ -150,6 +155,26 @@ function template(templateName, data) {
     }
 }
 
+class Music {
+    constructor () {
+        this.currentSound = false;
+    }
+
+    killSound() {
+        if (this.currentSound) {
+            this.currentSound.pause()
+            this.currentSound = false;
+        }
+    }
+
+    playSound(sound) {
+
+        this.killSound();
+        this.currentSound = new Audio(sound);
+        this.currentSound.play();
+    }
+}
+
 class App {
     constructor() {
         this.debug = true;
@@ -160,6 +185,7 @@ class App {
         this.myUsername = "";
         this.myRole = "";
         this.setKey(readLocationHash());
+        console.log(readLocationHash());
         this.roundId = 0;
 
         this.checkClipboard();
@@ -167,11 +193,14 @@ class App {
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
 
+        console.log(this.myRoomKey);
         if (this.myRoomKey != "") {
             this.showPage("joinPage");
         } else {
             this.showPage("mainPage");
         }
+
+        this.music = new Music();
     }
 
     emit(event, data) {
@@ -350,6 +379,8 @@ class App {
                     return;
                 }
                 this.hideAllGameActions()
+                this.music.playSound("delayTimer.mp3");
+                console.log("sound time:", performance.now());
                 switch (this.myRole) {
                 case "speaker":
                     show("gamePage_explanationDelayBox");
@@ -413,6 +444,7 @@ class App {
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
             },
             stopCondition: () => {
+                this.music.killSound();
                 return _this.roundId != roundId;
             }
         })
