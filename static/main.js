@@ -228,16 +228,13 @@ class App {
 
     goBack() {
         hide(this.pageLog.pop());
-        while (this.pageLog.length > 0 && ["preparationPage", "gamePage"].indexOf(
-            this.pageLog.last()) != -1) {
-            hide(this.pageLog.pop());
-        }
         if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
         show(this.pageLog.last());
     }
 
     leaveRoom() {
         this.emit("cLeaveRoom");
+        hide(this.pageLog.pop());
         while (this.pageLog.length > 0 && ["preparationPage", "gamePage"].indexOf(
             this.pageLog.last()) != -1) {
             hide(this.pageLog.pop());
@@ -680,7 +677,7 @@ class App {
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
         el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
-        el("resultsPage_goBack").onclick = () => this.goBack();
+        el("resultsPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_viewRules").onclick = () => this.showPage("rulesPage");
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
