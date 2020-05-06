@@ -1133,7 +1133,7 @@ io.on("connection", function(socket) {
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
 
-            Signals.sPlayerLeft()
+            Signals.sPlayerLeft(io.sockets.to(_key), rooms[_key], username)
         }
     });
 });
