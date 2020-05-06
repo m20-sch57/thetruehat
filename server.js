@@ -217,11 +217,14 @@ function finishExplanation(key) {
     rooms[key].substate = "edit";
 
     // returning word to the hat
+    // no, see cWordsEdited
+    /*
     if (rooms[key].word !== "") {
         rooms[key].freshWords.splice(
             Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
             0, rooms[key].word);
     }
+    */
 
     rooms[key].startTime = 0;
     rooms[key].word = "";
