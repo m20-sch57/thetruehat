@@ -637,6 +637,10 @@ class App {
         el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
         el("resultsPage_goBack").onclick = () => this.goBack();
         el("resultsPage_viewRules").onclick = () => this.showPage("rulesPage");
+        el("resultsPage_newGame").onclick = () => {
+            this.generateKey();
+            this.showPage("joinPage");
+        }
     }
 }
 
