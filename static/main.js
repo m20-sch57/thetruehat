@@ -108,11 +108,21 @@ function template(templateName, data) {
         div.setAttribute("id", `user_${data.username}`);
         return div;
     case "resultPage_results":
-        let p = document.createElement("p");
-        p.innerText = `${data.username} объяснил ${data.scoreExplained},
-            угадал ${data.scoreGuessed}. Всего ${data.scoreExplained + 
-                data.scoreGuessed}`;
-        return p;
+        let elem = document.createElement("tr");
+        let username = document.createElement("td");
+        username.innerText = data.username;
+        let scoreExplained = document.createElement("td");
+        scoreExplained.innerText = data.scoreExplained;
+        let scoreGuessed = document.createElement("td");
+        scoreGuessed.innerText = data.scoreGuessed;
+        let score = document.createElement("td");
+        score.innerText = data.scoreGuessed + data.scoreGuessed;
+        score.classList.add("sum");
+        elem.appendChild(username);
+        elem.appendChild(scoreExplained);
+        elem.appendChild(scoreGuessed);
+        elem.appendChild(score);
+        return elem;
     }
 }
 
@@ -449,7 +459,7 @@ class App {
     }
 
     showResults(results) {
-        this.showPage("resultPage");
+        this.showPage("resultsPage");
         results.forEach((result) => {
             el("resultPage_results").appendChild(template(
                 "resultPage_results", result));
