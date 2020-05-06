@@ -309,7 +309,21 @@ class Signals {
     }
     // TODO: Implement all signals
 
-    static sPlayerLeft() {}
+    /**
+     * Implementation of sPlayerLeft signal
+     * @see API.md
+     */
+    static sPlayerLeft(socket, room, username) {
+    // Sending new state of the room.
+        let host = "";
+        const pos = findFirstPos(room.users, "online", true);
+        if (pos !== -1) {
+            host = room.users[pos].username;
+        }
+        socket.emit("sPlayerLeft", {
+            "username": username, "playerList": getPlayerList(room),
+            "host": host});}
+
     static sYouJoined() {}
 
     /**
@@ -541,9 +555,7 @@ io.on("connection", function(socket) {
              * Implementation of sPlayerJoined signal
              * @see API.md
              */
-            io.sockets.to(key).emit(
-                "sPlayerJoined", {"username": name, "playerList": getPlayerList(rooms[key]),
-                "host": rooms[key].users[findFirstPos(rooms[key].users, "online", true)].username});
+            Signals.sPlayerJoined(io.sockets.to(key), rooms[key])
 
             /**
              * Implementation of sYouJoined signal
@@ -639,19 +651,7 @@ io.on("connection", function(socket) {
             rooms[key].users[usernamePos].online = false;
             rooms[key].users[usernamePos].sids = [];
 
-            /**
-             * Implementation of sPlayerLeft signal
-             * @see API.md
-             */
-            // Sending new state of the room.
-            let host = "";
-            const pos = findFirstPos(rooms[key].users, "online", true);
-            if (pos !== -1) {
-                host = rooms[key].users[pos].username;
-            }
-            io.sockets.to(key).emit("sPlayerLeft", {
-                "username": username, "playerList": getPlayerList(rooms[key]),
-                "host": host});
+            Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username)
         });
     });
 
@@ -1133,19 +1133,7 @@ io.on("connection", function(socket) {
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
 
-            /**
-             * Implementation of sPlayerLeft signal
-             * @see API.md
-             */
-            // Sending new state of the room.
-            let host = "";
-            const pos = findFirstPos(rooms[_key].users, "online", true);
-            if (pos !== -1) {
-                host = rooms[_key].users[pos].username;
-            }
-            io.sockets.to(_key).emit("sPlayerLeft", {
-                "username": username, "playerList": getPlayerList(rooms[_key]),
-                "host": host});
+            Signals.sPlayerLeft()
         }
     });
 });
