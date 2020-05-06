@@ -567,6 +567,16 @@ class App {
         this.socket.on("sExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
         })
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.setPlayers(data.playerList.filter(user => user.online)
+                .map(user => user.username), data.host);
+            _this.showStartAction(data.host);
+        })
         this.socket.on("sGameEnded", function(data) {
             _this.showResults(data.results);
         })
