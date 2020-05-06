@@ -225,11 +225,14 @@ function finishExplanation(key) {
     rooms[key].substate = "edit";
 
     // returning word to the hat
+    // no, see cWordsEdited
+    /*
     if (rooms[key].word !== "") {
         rooms[key].freshWords.splice(
             Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
             0, rooms[key].word);
     }
+    */
 
     rooms[key].startTime = 0;
     rooms[key].word = "";
@@ -685,9 +688,6 @@ io.on("connection", function(socket) {
         // generating word list (later key can affect word list)
         rooms[key].freshWords = generateWords(key);
 
-        // debug output
-        console.log(rooms[key].freshWords);
-
         // preparing storage for explained words
         rooms[key].usedWords = {};
 
@@ -1065,9 +1065,6 @@ io.on("connection", function(socket) {
             endGame(key);
             return;
         }
-
-        // debug output
-        console.log(rooms[key].freshWords);
 
         // initializing next round
         rooms[key].substate = "wait";
