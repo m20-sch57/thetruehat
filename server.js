@@ -474,26 +474,6 @@ class Signals {
         io.sockets.to(key).emit("sGameEnded", {"results": results});
     }
 }
-
-/**
- * Room class
- */
-class Room {
-    constructor() {
-        this.state = "wait";
-        this.users = [];
-    }
-}
-
-class User {
-    constructor(username, sids, online=true) {
-        this.username = username;
-        this.sids = sids;
-        this.online = online;
-        this.scoreExplained = 0;
-        this.scoreGuessed = 0;
-    }
-}
 //----------------------------------------------------------
 // HTTP functions
 
@@ -564,17 +544,11 @@ app.get("/getRoomInfo", function(req, res) {
 //----------------------------------------------------------
 
 /**
- * Dictionary of game rooms.
- * Its keys --- keys of rooms, its values --- rooms' infos.
+ * Room class
  *
  * Room's info is an object that has fields:
  *     - state --- state of the room,
- *     - users --- list of users, each user has:
- *         - username --- no comments,
- *         - sids --- socket ids,
- *         - online --- whether the player is online,
- *         - scoreExplained --- no comments,
- *         - scoreGuessed --- no comments,
+ *     - users --- list of users (User objects)
  * if state === "play":
  *     - substate --- substate of the room,
  *     - freshWords --- list of words in hat,
@@ -588,6 +562,37 @@ app.get("/getRoomInfo", function(req, res) {
  *     - startTime --- UTC time of start of explanation (in milliseconds).
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
+ */
+class Room {
+    constructor() {
+        this.state = "wait";
+        this.users = [];
+    }
+}
+
+/**
+ * User class
+ *
+ * User is an object that has fields:
+ *     - username --- no comments,
+ *     - sids --- socket ids,
+ *     - online --- whether the player is online,
+ *     - scoreExplained --- no comments,
+ *     - scoreGuessed --- no comments,
+ */
+class User {
+    constructor(username, sids, online=true) {
+        this.username = username;
+        this.sids = sids;
+        this.online = online;
+        this.scoreExplained = 0;
+        this.scoreGuessed = 0;
+    }
+}
+
+/**
+ * Dictionary of game rooms.
+ * Its keys --- keys of rooms, its values --- rooms' infos.
  */
 const rooms = {};
 
