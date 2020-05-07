@@ -13,7 +13,16 @@ The alpha test is available now [here](http://m20-sch57.site:3005/).
 * Good performance: this project is written on Node.js - one of the fastest frameworks.
 
 ## Quick start
-**NOTE.** You have to install the project previously.
+
+### Installation
+1. Install [Node.js](https://nodejs.org/)
+1. Download the repository.
+1. Run in a console in the repository directory:
+    ```shell script
+    npm install
+    ```
+   
+### Setting up
 
 1. Run in a console:
     ```shell script
@@ -23,13 +32,8 @@ The alpha test is available now [here](http://m20-sch57.site:3005/).
 1. If you need some help with our site, you can use [site map](docs/site_map.md) to play the game.
 1. Have fun!
 
-## Installation
-1. Install [Node.js](https://nodejs.org/)
-1. Download the repository.
-1. Run in a console in the repository directory:
-    ```shell script
-    npm install
-    ```
+### Configuring
+Now this option is in work. It will be realised in future versions.
 
 ## Documentation
 You can see the documentation [here](docs/main.md).
