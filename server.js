@@ -237,6 +237,11 @@ function finishExplanation(key) {
     }
     */
 
+    let flag = 0;
+    if (word !== "") {
+        flag = 1;
+    }
+
     rooms[key].startTime = 0;
     rooms[key].word = "";
 
@@ -245,9 +250,9 @@ function finishExplanation(key) {
      * @see API.md
      */
     console.log(key, "sExplanationEnded", {
-        "wordsCount": rooms[key].freshWords.length});
+        "wordsCount": rooms[key].freshWords.length + flag});
     io.sockets.to(key).emit("sExplanationEnded", {
-        "wordsCount": rooms[key].freshWords.length});
+        "wordsCount": rooms[key].freshWords.length + flag});
 
     // generating editWords for client (without 'transport' flag)
     let editWords = [];
