@@ -23,6 +23,16 @@ The alpha test is available now [here](http://m20-sch57.site:3005/).
 
 ### Launching and using
 
+### Installation
+1. Install [Node.js](https://nodejs.org/)
+1. Download the repository.
+1. Run in a console in the repository directory:
+    ```shell script
+    npm install
+    ```
+   
+### Setting up
+
 1. Run in a console:
     ```shell script
     node server.js
