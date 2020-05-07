@@ -67,7 +67,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
     })
 }
 
-function timeFromSeconds(sec) {
+function explanationTimeFormat(sec) {
     let min = Math.floor(sec / 60);
     sec -= 60 * min;
     if (sec < 10) sec = "0" + String(sec);
@@ -192,7 +192,6 @@ class App {
         this.myUsername = "";
         this.myRole = "";
         this.setKey(readLocationHash());
-        console.log(readLocationHash());
         this.roundId = 0;
 
         this.checkClipboard();
@@ -200,7 +199,6 @@ class App {
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
 
-        console.log(this.myRoomKey);
         if (this.myRoomKey != "") {
             this.showPage("joinPage");
         } else {
@@ -457,7 +455,7 @@ class App {
             startTime,
             duration: EXPLANATION_TIME,
             draw: (progress) => {
-                let time = timeFromSeconds(Math.floor((1 - progress) / 
+                let time = explanationTimeFormat(Math.floor((1 - progress) / 
                     1000 * EXPLANATION_TIME) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
