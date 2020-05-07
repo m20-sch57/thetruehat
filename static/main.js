@@ -272,6 +272,17 @@ class App {
         el("preparationPage_title").innerText = this.myRoomKey;
     }
 
+    setWord(word) {
+        el("gamePage_explanationWord").innerText = word;
+        el("gamePage_explanationWord").classList.remove("big-word");
+        el("gamePage_explanationWord").classList.remove("large-word");
+        if (word.length > 15) {
+            el("gamePage_explanationWord").classList.add("large-word");
+        } else if (word.length > 10) {
+            el("gamePage_explanationWord").classList.add("big-word");
+        }
+    }   
+
     generateKey() {
         fetch("/getFreeKey")
             .then(response => response.json())
@@ -578,7 +589,7 @@ class App {
                 el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
                 el("gamePage_title").innerText = _this.myUsername;
-                el("gamePage_explanationWord").innerText = data.word;
+                _this.setWord(data.word);
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
                     "observer";
@@ -597,7 +608,7 @@ class App {
             _this.setGameState("explanation", data);
         })
         this.socket.on("sNewWord", function(data) {
-            el("gamePage_explanationWord").innerText = data.word;
+            _this.setWord(data.word);
         })
         this.socket.on("sWordsToEdit", function(data) {
             _this.emit("cWordsEdited", data);
