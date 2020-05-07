@@ -568,6 +568,55 @@ class Room {
         this.state = "wait";
         this.users = [];
     }
+
+    /**
+     * Preparing room for the game
+     */
+    gamePrepare() {
+        // changing state to 'play'
+        this.state = "play";
+
+        // generating word list (later key can affect word list)
+        this.freshWords = generateWords();
+
+        // preparing storage for explained words
+        this.usedWords = {};
+
+        // setting number of turn
+        this.numberOfTurn = 0;
+
+        this.roundPrepare()
+    }
+
+    /**
+     * Preparing room for new round
+     */
+    roundPrepare() {
+        // setting substate to 'wait'
+        this.substate = "wait";
+
+        // preparing storage for words to edit
+        this.editWords = [];
+
+        // preparing word container
+        this.word = "";
+
+        // preparing startTime container
+        this.startTime = 0;
+
+        // preparing flags for 'wait'
+        this.speakerReady = false;
+        this.listenerReady = false;
+
+        // updating number of the turn
+        this.numberOfTurn++;
+
+        // preparing 'speaker' and 'listener'
+        const numberOfPlayers = this.users.length;
+        const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
+        this.speaker = nextPair.speaker;
+        this.listener = nextPair.listener;
+    }
 }
 
 /**
@@ -687,10 +736,6 @@ io.on("connection", function(socket) {
                 hostChanged = true;
             }
 
-            /**
-             * Implementation of sPlayerJoined signal
-             * @see API.md
-             */
             Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name)
 
             Signals.sYouJoined(socket, key)
@@ -809,42 +854,7 @@ io.on("connection", function(socket) {
         // removing offline users
         rooms[key].users = onlineUsers;
 
-        /**
-         * preparing room object for the game
-         */
-        // changing state to 'play'
-        rooms[key].state = "play";
-
-        // setting substate to 'wait'
-        rooms[key].substate = "wait";
-
-        // generating word list (later key can affect word list)
-        rooms[key].freshWords = generateWords(key);
-
-        // preparing storage for explained words
-        rooms[key].usedWords = {};
-
-        // preparing storage for words to edit
-        rooms[key].editWords = [];
-
-        // preparing word container
-        rooms[key].word = "";
-
-        // preparing endTime container
-        rooms[key].startTime = 0;
-
-        // setting number of turn
-        rooms[key].numberOfTurn = 0;
-
-        // preparing flags for 'wait'
-        rooms[key].speakerReady = false;
-        rooms[key].listenerReady = false;
-
-        // preparing 'speaker' and 'listener'
-        const numberOfPlayers = rooms[key].users.length;
-        const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
-        rooms[key].speaker = nextPair.speaker;
-        rooms[key].listener = nextPair.listener;
+        rooms[key].gamePrepare()
 
         Signals.sGameStarted(key)
     });
@@ -1136,20 +1146,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        // initializing next round
-        rooms[key].substate = "wait";
-        rooms[key].editWords = [];
-        rooms[key].word = "";
-        rooms[key].startTime = 0;
-        rooms[key].speakerReady = false;
-        rooms[key].listenerReady = false;
-        rooms[key].numberOfTurn++;
-
-        // choosing next pair
-        const numberOfPlayers = rooms[key].users.length;
-        const nextPair = getNextPair(numberOfPlayers, rooms[key].speaker, rooms[key].listener);
-        rooms[key].speaker = nextPair.speaker;
-        rooms[key].listener = nextPair.listener;
+        rooms[key].roundPrepare()
 
         Signals.sNextTurn(key, words)
     });
