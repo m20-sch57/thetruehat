@@ -1,6 +1,6 @@
 Array.prototype.last = function() {
     console.assert(this.length >= 1, 
-        "Try to get last element of empty array");
+        "Attempt to get last element of empty array");
     return this[this.length - 1];
 }
 
@@ -15,7 +15,6 @@ const LISTENER_READY = "Я готов отгадывать";
 
 
 const TIME_SYNC_DELTA = 1200000;
-
 
 let delta = 0;
 
@@ -73,7 +72,7 @@ function timeFromSeconds(sec) {
     sec -= 60 * min;
     if (sec < 10) sec = "0" + String(sec);
     if (min < 10) min = "0" + String(min);
-    return `${min}:${sec}`
+    return `${min}:${sec}`;
 }
 
 function aftermathTimeFormat(msec) {
@@ -162,7 +161,7 @@ class Sound {
 
     killSound() {
         if (this.currentSound) {
-            this.currentSound.pause()
+            this.currentSound.pause();
             this.currentSound = false;
         }
     }
@@ -249,7 +248,7 @@ class App {
         el("preparationPage_playersCnt").innerText = 
             `${usernames.length} ${wordPlayers(usernames.length)}`;
         let _this = this;
-        usernames.forEach(username => _this.addPlayer(username))
+        usernames.forEach(username => _this.addPlayer(username));
         if (host) {
             el(`user_${host}`).classList.add("host");
         }
@@ -263,19 +262,14 @@ class App {
         }
     }
 
-    // removePlayer(username) {
-    //     deleteNode(el(`user_${username}`));
-    // }
-
     setMyUsername(username) {
         this.myUsername = username;
     }
 
-
     setKey(value) {
         value = value.toUpperCase();
-        this.myRoomKey = value
-        location.hash = value
+        this.myRoomKey = value;
+        location.hash = value;
         el("joinPage_inputKey").value = this.myRoomKey;
         el("preparationPage_title").innerText = this.myRoomKey;
     }
@@ -283,7 +277,7 @@ class App {
     generateKey() {
         fetch("/getFreeKey")
             .then(response => response.json())
-            .then(result => el("joinPage_inputKey").value = result.key)
+            .then(result => el("joinPage_inputKey").value = result.key);
     }
 
     copyKey() {
@@ -304,7 +298,7 @@ class App {
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             // el("joinPage_pasteKey").style.display = "none";
-            disable("joinPage_pasteKey")
+            disable("joinPage_pasteKey");
         }
         if (!(navigator.clipboard && navigator.clipboard.writeText)) {
             disable("preparationPage_copyKey");
@@ -354,11 +348,9 @@ class App {
         case "wait":
             this.hideAllGameActions()
             enable("gamePage_listenerReadyButton");
-            el("gamePage_listenerReadyButton").innerText = 
-                LISTENER_READY
+            el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
             enable("gamePage_speakerReadyButton");
-            el("gamePage_speakerReadyButton").innerText = 
-                SPEAKER_READY
+            el("gamePage_speakerReadyButton").innerText = SPEAKER_READY;
             switch (this.myUsername) {
             case data.listener:
                 show("gamePage_listenerReadyBox");
@@ -384,8 +376,6 @@ class App {
                     return;
                 }
                 this.hideAllGameActions();
-                // (new Audio("delayTimer.mp3")).play();
-                // (new Music()).playSound("delayTimer.mp3");
                 console.log("sound time:", performance.now());
                 switch (this.myRole) {
                 case "speaker":
@@ -448,7 +438,7 @@ class App {
                 el("gamePage_explanationDelayTimer").innerText = 
                     Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
-                    DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)]
+                    DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
             },
             stopCondition: () => {
                 if (_this.roundId != roundId) {
@@ -519,13 +509,13 @@ class App {
     listenerReady() {
         this.emit("cListenerReady");
         disable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innerText = "Подожди напарника"
+        el("gamePage_listenerReadyButton").innerText = "Подожди напарника";
     }
 
     speakerReady() {
         this.emit("cSpeakerReady");
         disable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innerText = "Подожди напарника"
+        el("gamePage_speakerReadyButton").innerText = "Подожди напарника";
     }
 
     showResults(results) {
@@ -557,9 +547,9 @@ class App {
                 .map(user => user.username), data.host);
             _this.showStartAction(data.host);
             if (data.playerList.filter(user => user.online).length > 1) {
-                enable("preparationPage_start")
+                enable("preparationPage_start");
             } else {
-                disable("preparationPage_start")
+                disable("preparationPage_start");
             }
         })
         this.socket.on("sPlayerLeft", function(data) {
@@ -567,9 +557,9 @@ class App {
                 .map(user => user.username), data.host);
             _this.showStartAction(data.host);
             if (data.playerList.filter(user => user.online).length > 1) {
-                enable("preparationPage_start")
+                enable("preparationPage_start");
             } else {
-                disable("preparationPage_start")
+                disable("preparationPage_start");
             }
         })
         this.socket.on("sYouJoined", function(data) {
@@ -580,9 +570,9 @@ class App {
                 _this.showStartAction(data.host);
                 _this.showPage("preparationPage");
                 if (data.playerList.filter(user => user.online).length > 1) {
-                    enable("preparationPage_start")
+                    enable("preparationPage_start");
                 } else {
-                    disable("preparationPage_start")
+                    disable("preparationPage_start");
                 }
                 break;
             case "play":
@@ -602,7 +592,7 @@ class App {
         this.socket.on("sGameStarted", function(data) {    
             el("gamePage_wordsCnt").innerText = data.wordsCount;
             el("gamePage_title").innerText = _this.myUsername;
-            _this.setGameState("wait", data)
+            _this.setGameState("wait", data);
             _this.showPage("gamePage");
         })
         this.socket.on("sExplanationStarted", function(data) {
@@ -689,6 +679,6 @@ class App {
 let app;
 window.onload = function() {
     maintainDelta().then(function () {
-        app = new App()
+        app = new App();
     });
 }
