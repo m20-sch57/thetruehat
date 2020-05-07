@@ -853,13 +853,13 @@ io.on("connection", function(socket) {
 
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket,"cStartGame", "game ended");
+            Signals.sFailure(socket,"cSpeakerReady", "game ended");
             return;
         }
 
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket,"cListenerReady", "game state isn't 'play'");
+            Signals.sFailure(socket,"cSpeakerReady", "game state isn't 'play'");
             return;
         }
 
@@ -899,7 +899,7 @@ io.on("connection", function(socket) {
 
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket,"cStartGame", "game ended");
+            Signals.sFailure(socket,"cListenerReady", "game ended");
             return;
         }
 
@@ -974,7 +974,7 @@ io.on("connection", function(socket) {
 
         // checking input
         if (!checkObject(ev, {"cause": "string"})) {
-            Signals.sFailure(socket,"cWordsEdited","incorrect input");
+            Signals.sFailure(socket,"cEndWordExplanation","incorrect input");
             return;
         }
 
@@ -1048,7 +1048,7 @@ io.on("connection", function(socket) {
 
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket,"cStartGame", "game ended");
+            Signals.sFailure(socket,"cWordsEdited", "game ended");
             return;
         }
 
