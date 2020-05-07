@@ -647,6 +647,100 @@ class User {
 const rooms = {};
 
 //----------------------------------------------------------
+// Checks for socket signals
+
+function checkInputFormat(socket, ev, format) {
+    if (checkObject(ev, format)) {
+        Signals.sFailure(socket, "invalid format");
+        return true;
+    }
+    return false;
+}
+
+function checkJoinRoomConditions(socket) {
+    const key = ev.key.toLowerCase(); // key of the room
+    const name = ev.username; // name of the user
+
+    // If user is not in his own room, it will be an error
+    if (getRoom(socket) !== socket.id) {
+        Signals.sFailure(socket, "cJoinRoom", "You are in room now");
+        return false;
+    }
+
+    // If key is "" or name is "", it will be an error
+    if (key === "") {
+        Signals.sFailure(socket, "cJoinRoom", "Invalid key of room");
+        return false;
+    }
+    if (username === "") {
+        Signals.sFailure(socket, "cJoinRoom", "Invalid username");
+        return false;
+    }
+
+    // if room and users exist, we should check the user
+    if (rooms[key] !== undefined) {
+        const pos = findFirstPos(rooms[key].users, "username", name);
+
+        // If username is used, it will be an error
+        if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
+            Signals.sFailure(socket, "cJoinRoom", "Username is already used");
+            return false;
+        }
+
+        // If game has started, only logging in can be performed
+        if (rooms[key].state === "play" && pos === -1) {
+            Signals.sFailure(socket, "cJoinRoom", "Game have started, only logging in can be performed");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function joinRoomCallback(socket, key, err) {
+    // If any error happened
+    if (err) {
+        console.log(err);
+        Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
+        return;
+    }
+    // If user haven't joined the room
+    if (getRoom(socket) !== key) {
+        Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
+        return;
+    }
+
+    // Logging the joining
+    console.log("Player", name, "joined to", key);
+
+    // If room isn't saved in main dictionary, let's save it and create info about it
+    if (!(key in rooms)) {
+        rooms[key] = new Room()
+    }
+
+    // Adding the user to the room info
+    const pos = findFirstPos(rooms[key].users, "username", name);
+    if (pos === -1) {
+        // creating new one
+        rooms[key].users.push(new User(name, [socket.id]));
+    } else {
+        // logging in user
+        rooms[key].users[pos].sids = [socket.id];
+        rooms[key].users[pos].online = true;
+    }
+
+    // If this user is the first online user, the user will be the host of the room
+    let hostChanged = false;
+    if (findFirstPos(rooms[key].users, "online", true) === findFirstPos(rooms[key].users, "username", name)) {
+        hostChanged = true;
+    }
+
+    Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
+
+    Signals.sYouJoined(socket, key);
+}
+
+//----------------------------------------------------------
 // Socket.IO functions
 
 io.on("connection", function(socket) {
@@ -656,91 +750,18 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cJoinRoom", function(ev) {
-        // checking input
-        if (!checkObject(ev, {"key": "string", "username": "string"})) {
-            Signals.sFailure(socket,"cJoinRoom", "Incorrect input");
+        // checking input format
+        if (!checkInputFormat(socket, ev, {"key": "string", "username": "string"})) {
             return;
         }
 
-        // If user is not in his own room, it will be an error
-        if (getRoom(socket) !== socket.id) {
-            Signals.sFailure(socket,"cJoinRoom","You are in room now");
+        // checking signal conditions
+        if (!checkJoinRoomConditions(socket)) {
             return;
         }
-        // If key is "" or name is "", it will be an error
-        if (ev.key === "") {
-            Signals.sFailure(socket,"cJoinRoom", "Invalid key of room");
-            return;
-        }
-        if (ev.username === "") {
-            Signals.sFailure(socket,"cJoinRoom", "Invalid username");
-            return;
-        }
-
-        const key = ev.key.toLowerCase(); // key of the room
-        const name = ev.username; // name of the user
-
-        // if room and users exist, we should check the user
-        if (rooms[key] !== undefined) {
-            const pos = findFirstPos(rooms[key].users, "username", name);
-
-            // If username is used, it will be an error
-            if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
-                Signals.sFailure(socket,"cJoinRoom", "Username is already used");
-                return;
-            }
-
-            // If game has started, only logging in can be performed
-            if (rooms[key].state === "play" && pos === -1) {
-                Signals.sFailure(socket,"cJoinRoom", "Game have started, only logging in can be performed");
-                return;
-            }
-        }
-
 
         // Adding the user to the room
-        socket.join(key, function(err) {
-            // If any error happened
-            if (err) {
-                console.log(err);
-                Signals.sFailure(socket,"joinRoom", "Failed to join the room");
-                return;
-            }
-            // If user haven't joined the room
-            if (getRoom(socket) !== key) {
-                Signals.sFailure(socket,"joinRoom", "Failed to join the room");
-                return;
-            }
-
-            // Logging the joining
-            console.log("Player", name, "joined to", key);
-
-            // If room isn't saved in main dictionary, let's save it and create info about it
-            if (!(key in rooms)) {
-                rooms[key] = new Room()
-            }
-
-            // Adding the user to the room info
-            const pos = findFirstPos(rooms[key].users, "username", name);
-            if (pos === -1) {
-                // creating new one
-                rooms[key].users.push(new User(name, [socket.id]));
-            } else {
-                // logging in user
-                rooms[key].users[pos].sids = [socket.id];
-                rooms[key].users[pos].online = true;
-            }
-
-            // If this user is the first online user, the user will be the host of the room
-            let hostChanged = false;
-            if (findFirstPos(rooms[key].users, "online", true) === findFirstPos(rooms[key].users, "username", name)) {
-                hostChanged = true;
-            }
-
-            Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name)
-
-            Signals.sYouJoined(socket, key)
-        });
+        socket.join(key, (err) => joinRoomCallback(socket, key, err));
     });
 
     /**
