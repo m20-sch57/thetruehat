@@ -448,7 +448,7 @@ class Signals {
      */
     static sExplanationEnded(key) {
         io.sockets.to(key).emit("sExplanationEnded", {
-            "wordsCount": rooms[key].freshWords.length});
+            "wordsCount": rooms[key].freshWords.length + (rooms[key].usedWords[rooms[key].usedWords.length].wordState === "notExplained") ? 1 : 0});
     }
 
     /**
