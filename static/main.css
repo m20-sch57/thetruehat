@@ -160,6 +160,14 @@ button, input {
     color: red;
 }
 
+.big-word {
+    font-size: 30px;
+}
+
+.large-word {
+    font-size: 20px;
+}
+
 /* Main page */
 
 #mainPage_actions {
