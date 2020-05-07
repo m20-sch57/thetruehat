@@ -238,7 +238,7 @@ function finishExplanation(key) {
     */
 
     let flag = 0;
-    if (word !== "") {
+    if (rooms[key].word !== "") {
         flag = 1;
     }
 
