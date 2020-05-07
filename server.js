@@ -707,14 +707,12 @@ function joinRoomCallback(socket, data, err) {
         Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
         return;
     }
+
     // If user haven't joined the room
     if (getRoom(socket) !== key) {
         Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
         return;
     }
-
-    // Logging the joining
-    console.log("Player", name, "joined to", key);
 
     // If room isn't saved in main dictionary, let's save it and create info about it
     if (!(key in rooms)) {
@@ -730,12 +728,6 @@ function joinRoomCallback(socket, data, err) {
         // logging in user
         rooms[key].users[pos].sids = [socket.id];
         rooms[key].users[pos].online = true;
-    }
-
-    // If this user is the first online user, the user will be the host of the room
-    let hostChanged = false;
-    if (findFirstPos(rooms[key].users, "online", true) === findFirstPos(rooms[key].users, "username", name)) {
-        hostChanged = true;
     }
 
     Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
