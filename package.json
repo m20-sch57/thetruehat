@@ -1,0 +1,47 @@
+{
+  "name": "thetruehat",
+  "description": "The implementation of well-known game Alias.",
+  "homepage": "https://github.com/m20-sch57/thetruehat#readme",
+  "bugs": {
+    "url": "https://github.com/m20-sch57/thetruehat/issues"
+  },
+  "author": {
+    "name": "Yury Voronov"
+  },
+  "contributors": [
+    {
+      "name": "Ivan Gaidai-Turlov",
+      "url": "https://github.com/gtivansan"
+    },
+    {
+      "name": "Gleb Minaev",
+      "url": "https://github.com/lounres"
+    },
+    {
+      "name": "Fedor Kuyanov",
+      "url": "https://github.com/kuyanov"
+    },
+    {
+      "name": "Alexander Danyarkhodzhaev",
+      "url": "https://github.com/alexdany657"
+    },
+    {
+      "name": "Yury Voronov",
+      "url": "https://github.com/yurvor"
+    },
+    {
+      "name": "Semyon Savkin",
+      "url": "https://github.com/cookiedoth"
+    }
+  ],
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^2.1.4",
+    "@types/socket.io-client": "^1.4.32",
+    "@types/express": "^4.17.6"
+  }
+}
