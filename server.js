@@ -649,17 +649,17 @@ const rooms = {};
 //----------------------------------------------------------
 // Checks for socket signals
 
-function checkInputFormat(socket, ev, format) {
-    if (checkObject(ev, format)) {
+function checkInputFormat(socket, data, format) {
+    if (checkObject(data, format)) {
         Signals.sFailure(socket, "invalid format");
         return true;
     }
     return false;
 }
 
-function checkJoinRoomConditions(socket) {
-    const key = ev.key.toLowerCase(); // key of the room
-    const name = ev.username; // name of the user
+function checkJoinRoomConditions(socket, data) {
+    const key = data.key.toLowerCase(); // key of the room
+    const name = data.username; // name of the user
 
     // If user is not in his own room, it will be an error
     if (getRoom(socket) !== socket.id) {
@@ -672,7 +672,7 @@ function checkJoinRoomConditions(socket) {
         Signals.sFailure(socket, "cJoinRoom", "Invalid key of room");
         return false;
     }
-    if (username === "") {
+    if (name === "") {
         Signals.sFailure(socket, "cJoinRoom", "Invalid username");
         return false;
     }
@@ -697,7 +697,10 @@ function checkJoinRoomConditions(socket) {
     return true;
 }
 
-function joinRoomCallback(socket, key, err) {
+function joinRoomCallback(socket, data, err) {
+    const key = data.key.toLowerCase(); // key of the room
+    const name = data.username; // name of the user
+
     // If any error happened
     if (err) {
         console.log(err);
@@ -749,19 +752,19 @@ io.on("connection", function(socket) {
      * Implementation of cJoinRoom function
      * @see API.md
      */
-    socket.on("cJoinRoom", function(ev) {
+    socket.on("cJoinRoom", function(data) {
         // checking input format
-        if (!checkInputFormat(socket, ev, {"key": "string", "username": "string"})) {
+        if (!checkInputFormat(socket, data, {"key": "string", "username": "string"})) {
             return;
         }
 
         // checking signal conditions
-        if (!checkJoinRoomConditions(socket)) {
+        if (!checkJoinRoomConditions(socket, data)) {
             return;
         }
 
         // Adding the user to the room
-        socket.join(key, (err) => joinRoomCallback(socket, key, err));
+        socket.join(data.key, (err) => joinRoomCallback(socket, data, err));
     });
 
     /**
