@@ -650,11 +650,11 @@ const rooms = {};
 // Checks for socket signals
 
 function checkInputFormat(socket, data, format, signal) {
-    if (checkObject(data, format)) {
+    if (!checkObject(data, format)) {
         Signals.sFailure(socket, signal, "invalid format");
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 function joinRoomCallback(socket, data, err) {
@@ -795,9 +795,7 @@ function cEndWordExplanation(socket, key, cause) {
     }
 }
 
-function cWordsEdited(socket, key, ev) {
-    const editWords = ev.editWords;
-
+function cWordsEdited(socket, key, editWords) {
     // applying changes and counting success explanations
     let cnt = 0;
     for (let i = 0; i < editWords.length; ++i) {
@@ -1223,7 +1221,7 @@ io.on("connection", function(socket) {
         // setting flag for listener
         rooms[key].listenerReady = true;
 
-        // if listener is ready --- let's start!
+        // if speaker is ready --- let's start!
         if (rooms[key].speakerReady) {
             startExplanation(key);
         }
@@ -1233,11 +1231,11 @@ io.on("connection", function(socket) {
      * Implementation of cEndWordExplanation function
      * @see API.md
      */
-    socket.on("cEndWordExplanation", function(ev) {
+    socket.on("cEndWordExplanation", function(data) {
         const key = getRoom(socket); // key of the room
 
         // checking input format
-        if (!checkInputFormat(socket, ev, {"cause": "string"}, "cEndWordExplanation")) {
+        if (!checkInputFormat(socket, data, {"cause": "string"}, "cEndWordExplanation")) {
             return;
         }
 
@@ -1246,29 +1244,27 @@ io.on("connection", function(socket) {
             return;
         }
 
-        const cause = ev.cause; // cause
-
-        cEndWordExplanation(socket, key, cause);
+        cEndWordExplanation(socket, key, data.cause);
     });
 
     /**
      * Implementation of cWordsEdited function
      * @see API.md
      */
-    socket.on("cWordsEdited", function(ev) {
+    socket.on("cWordsEdited", function(data) {
         const key = getRoom(socket); // key of the room
 
         // checking input format
-        if (!checkInputFormat(socket, ev, {"editWords": "object"}, "cWordsEdited")) {
+        if (!checkInputFormat(socket, data, {"editWords": "object"}, "cWordsEdited")) {
             return;
         }
 
         // checking signal conditions
-        if (!CheckConditions.cWordsEdited(socket, key, ev)) {
+        if (!CheckConditions.cWordsEdited(socket, key, data.editWords)) {
             return;
         }
 
-        cWordsEdited(socket, key, ev);
+        cWordsEdited(socket, key, data.editWords);
     });
 
     socket.on("disconnect", function() {
