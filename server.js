@@ -705,14 +705,11 @@ function leaveRoomCallback(socket, key, err) {
         return;
     }
 
-    // Logging the leaving
-    console.log("Player", username, "left", key);
-
     // Removing the user from the room info
     rooms[key].users[usernamePos].online = false;
     rooms[key].users[usernamePos].sids = [];
 
-    Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username)
+    Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
 }
 
 function cStartGame(socket, key) {
@@ -732,9 +729,170 @@ function cStartGame(socket, key) {
     // removing offline users
     rooms[key].users = onlineUsers;
 
-    rooms[key].gamePrepare()
+    rooms[key].gamePrepare();
 
-    Signals.sGameStarted(key)
+    Signals.sGameStarted(key);
+}
+
+function cEndWordExplanation(socket, key, cause) {
+    switch (cause) {
+        case "explained":
+            // logging the word
+            rooms[key].editWords.push({
+                "word": rooms[key].word,
+                "wordState": "explained",
+                "transfer": true});
+
+            // removing the word from the 'word' container
+            rooms[key].word = "";
+
+            Signals.sWordExplanationEnded(key, cause);
+
+            // checking the time
+            if ((new Date()).getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
+                // finishing the explanation
+                finishExplanation(key);
+                return;
+            }
+
+            // if words left --- time to finish the explanation
+            if (rooms[key].freshWords.length === 0) {
+                finishExplanation(key);
+                return;
+            }
+
+            // emitting new word
+            rooms[key].word = rooms[key].freshWords.pop();
+            Signals.sNewWord(key)
+            return;
+        case "mistake":
+            // logging the word
+            rooms[key].editWords.push({
+                "word": rooms[key].word,
+                "wordState": "mistake",
+                "transfer": true});
+
+            // word don't go to the hat
+            rooms[key].word = "";
+
+            Signals.sWordExplanationEnded(key, cause);
+
+            // finishing the explanation
+            finishExplanation(key);
+            return;
+        case "notExplained":
+            // logging the word
+            rooms[key].editWords.push({
+                "word": rooms[key].word,
+                "wordState": "notExplained",
+                "transfer": true});
+
+            Signals.sWordExplanationEnded(key, cause);
+
+            // finishing the explanation
+            finishExplanation(key);
+            return;
+    }
+}
+
+function cWordsEdited(socket, key, ev) {
+    const editWords = ev.editWords;
+
+    // applying changes and counting success explanations
+    let cnt = 0;
+    for (let i = 0; i < editWords.length; ++i) {
+        let word = rooms[key].editWords[i];
+        
+        // checking matching of information
+        if (word.word !== editWords[i].word) {
+            Signals.sFailure(socket,"cWordsEdited", `incorrect word at position ${i}`);
+            return;
+        }
+
+        switch (editWords[i].wordState) {
+            case "explained":
+                // counting explained words
+                cnt++;
+            case "mistake":
+                // transferring data to serer structure
+                rooms[key].editWords[i].wordState = editWords[i].wordState;
+                break;
+            case "notExplained":
+                // returning not explained words to the hat
+                rooms[key].editWords[i].transfer = false;
+                break;
+        }
+    }
+
+    // transferring round info
+    // changing the score
+    rooms[key].users[rooms[key].speaker].scoreExplained += cnt;
+    rooms[key].users[rooms[key].listener].scoreGuessed += cnt;
+
+    // changing usedWords and creating words list
+    let words = [];
+    for (let i = 0; i < rooms[key].editWords.length; ++i) {
+        if (rooms[key].editWords[i].transfer) {
+            rooms[key].usedWords[rooms[key].editWords[i].word] = rooms[key].editWords[i].wordState;
+            words.push({
+                "word": rooms[key].editWords[i].word,
+                "wordState": rooms[key].editWords[i].wordState});
+        } else {
+            rooms[key].freshWords.splice(
+                Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+                0, rooms[key].editWords[i].word);
+        }
+    }
+
+    // if no words left it's time to finish the game
+    if (rooms[key].freshWords.length === 0) {
+        endGame(key);
+        return;
+    }
+
+    rooms[key].roundPrepare();
+
+    Signals.sNextTurn(key, words);
+}
+
+function disconnect(socket) {
+    /**
+     * room key can't be accessed via getRoom(socket)
+     * findFirstSidPos must be used instead
+     */
+
+    let key = [];
+    let username = [];
+    let usernamePos = [];
+    const keys = Object.keys(rooms);
+    // searching for given sid within all rooms
+    for (let i = 0; i < keys.length; ++i) {
+        const users = rooms[keys[i]].users;
+
+        const pos = findFirstSidPos(users, socket.id);
+        if (pos !== -1) {
+            key.push(keys[i]);
+            usernamePos.push(pos);
+            username.push(users[usernamePos].username);
+        }
+    }
+
+    // users wasn't logged in
+    if (key.length === 0) {
+        return;
+    }
+
+    for (let i = 0; i < key.length; ++i) {
+        const _key = key[i];
+        const _username = username[i];
+        const _usernamePos = usernamePos[i];
+        
+        // Removing the user from the room info
+        rooms[_key].users[_usernamePos].online = false;
+        rooms[_key].users[_usernamePos].sids = [];
+
+        Signals.sPlayerLeft(io.sockets.to(_key), rooms[_key], username);
+    }
 }
 
 class CheckConditions {
@@ -822,7 +980,6 @@ class CheckConditions {
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
-            console.log("cStartGame: Everyone is offline");
             Signals.sFailure(socket, "cStartGame", "Everyone is offline");
             return false;
         }
@@ -907,6 +1064,70 @@ class CheckConditions {
         // check if listener isn't already ready
         if (rooms[key].listenerReady) {
             Signals.sFailure(socket, "cListenerReady", "listener is already ready");
+            return false;
+        }
+        return true;
+    }
+
+    static cEndWordExplanation(socket, key) {
+        // checking if room exists
+        if (!(key in rooms)) {
+            Signals.sFailure(socket, "cEndWordExplanation", "game ended");
+            return false;
+        }
+        
+        // checking if proper state and substate
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket, "cEndWordExplanation","game state isn't 'play'");
+            return false;
+        }
+        if (rooms[key].substate !== "explanation") {
+            Signals.sFailure(socket, "cEndWordExplanation", "game substate isn't 'explanation'");
+            return false;
+        }
+
+        // checking if speaker send this
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            Signals.sFailure(socket, "cEndWordExplanation", "you aren't a listener");
+            return false;
+        }
+
+        // checking if time is correct
+        if ((new Date).getTime() < rooms[key].startTime) {
+            Signals.sFailure(socket, "cEndWordExplanation", "to early");
+            return false;
+        }
+        return true;
+    }
+
+    static cWordsEdited(socket, key, editWords) {
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket,"cWordsEdited", "game ended");
+            return false;
+        }
+
+        // check if game state is 'edit'
+        if (rooms[key].state === "edit") {
+            Signals.sFailure(socket, "cWordsEdited", "game state isn't 'edit'")
+            return false;
+        }
+
+        // check if game substate is 'edit'
+        if (rooms[key].substate !== "edit") {
+            Signals.sFailure(socket,"cWordsEdited","game substate isn't 'edit'")
+            return false;
+        }
+
+        // check if speaker send this signal
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            Signals.sFailure(socket,"cWordsEdited", "only speaker can send this signal");
+            return false;
+        }
+
+        // comparing the length of serer editWords and client editWords
+        if (editWords.length !== rooms[key].editWords.length) {
+            Signals.sFailure(socket,"cWordsEdited", "incorrect number of words");
             return false;
         }
         return true;
@@ -1015,100 +1236,19 @@ io.on("connection", function(socket) {
     socket.on("cEndWordExplanation", function(ev) {
         const key = getRoom(socket); // key of the room
 
-        // checking if room exists
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cEndWordExplanation", "game ended");
-            return;
-        }
-        
-        // checking if proper state and substate
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket,"cEndWordExplanation","game state isn't 'play'");
-            return;
-        }
-        if (rooms[key].substate !== "explanation") {
-            Signals.sFailure(socket,"cEndWordExplanation", "game substate isn't 'explanation'");
+        // checking input format
+        if (!checkInputFormat(socket, ev, {"cause": "string"})) {
             return;
         }
 
-        // checking if speaker send this
-        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cEndWordExplanation", "you aren't a listener");
+        // check signal conditions
+        if (!CheckConditions.cEndWordExplanation(socket, key)) {
             return;
         }
 
-        // checking if time is correct
-        const date = new Date();
-        if (date.getTime() < rooms[key].startTime) {
-            Signals.sFailure(socket,"cEndWordExplanation", "to early");
-            return;
-        }
+        const cause = ev.cause; // cause
 
-        // checking input
-        if (!checkObject(ev, {"cause": "string"})) {
-            Signals.sFailure(socket,"cEndWordExplanation","incorrect input");
-            return;
-        }
-
-        let cause = ev.cause;
-        switch (cause) {
-            case "explained":
-                // logging the word
-                rooms[key].editWords.push({
-                    "word": rooms[key].word,
-                    "wordState": "explained",
-                    "transfer": true});
-
-                // removing the word from the 'word' container
-                rooms[key].word = "";
-
-                Signals.sWordExplanationEnded(key, cause)
-
-                // checking the time
-                if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
-                    // finishing the explanation
-                    finishExplanation(key);
-                    return;
-                }
-
-                // if words left --- time to finish the explanation
-                if (rooms[key].freshWords.length === 0) {
-                    finishExplanation(key);
-                    return;
-                }
-
-                // emitting new word
-                rooms[key].word = rooms[key].freshWords.pop();
-                Signals.sNewWord(key)
-                return;
-            case "mistake":
-                // logging the word
-                rooms[key].editWords.push({
-                    "word": rooms[key].word,
-                    "wordState": "mistake",
-                    "transfer": true});
-
-                // word don't go to the hat
-                rooms[key].word = "";
-
-                Signals.sWordExplanationEnded(key, cause)
-
-                // finishing the explanation
-                finishExplanation(key);
-                return;
-            case "notExplained":
-                // logging the word
-                rooms[key].editWords.push({
-                    "word": rooms[key].word,
-                    "wordState": "notExplained",
-                    "transfer": true});
-
-                Signals.sWordExplanationEnded(key, cause)
-
-                // finishing the explanation
-                finishExplanation(key);
-                return;
-        }
+        cEndWordExplanation(socket, key, cause);
     });
 
     /**
@@ -1118,136 +1258,20 @@ io.on("connection", function(socket) {
     socket.on("cWordsEdited", function(ev) {
         const key = getRoom(socket); // key of the room
 
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cWordsEdited", "game ended");
+        // checking input format
+        if (!checkInputFormat(socket, ev, {"editWords": "object"})) {
             return;
         }
 
-        // check if game state is 'edit'
-        if (rooms[key].state === "edit") {
-            Signals.sFailure(socket, "cWordsEdited", "game state isn't 'edit'")
+        // checking signal conditions
+        if (!CheckConditions.cWordsEdited(socket, key, ev)) {
             return;
         }
 
-        // check if game substate is 'edit'
-        if (rooms[key].substate !== "edit") {
-            Signals.sFailure(socket,"cWordsEdited","game substate isn't 'edit'")
-            return;
-        }
-
-        // check if speaker send this signal
-        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cWordsEdited", "only speaker can send this signal");
-            return;
-        }
-
-        // moving editWords
-        const editWords = ev.editWords;
-
-        // comparing the length of serer editWords and client editWords
-        if (editWords.length !== rooms[key].editWords.length) {
-            Signals.sFailure(socket,"cWordsEdited", "incorrect number of words");
-            return;
-        }
-
-        // applying changes and counting success explanations
-        let cnt = 0;
-        for (let i = 0; i < editWords.length; ++i) {
-            let word = rooms[key].editWords[i];
-            
-            // checking matching of information
-            if (word.word !== editWords[i].word) {
-                Signals.sFailure(socket,"cWordsEdited", `incorrect word at position ${i}`);
-                return;
-            }
-
-            switch (editWords[i].wordState) {
-                case "explained":
-                    // counting explained words
-                    cnt++;
-                case "mistake":
-                    // transferring data to serer structure
-                    rooms[key].editWords[i].wordState = editWords[i].wordState;
-                    break;
-                case "notExplained":
-                    // returning not explained words to the hat
-                    rooms[key].editWords[i].transfer = false;
-                    break;
-            }
-        }
-
-        // transferring round info
-        // changing the score
-        rooms[key].users[rooms[key].speaker].scoreExplained += cnt;
-        rooms[key].users[rooms[key].listener].scoreGuessed += cnt;
-
-        // changing usedWords and creating words list
-        let words = [];
-        for (let i = 0; i < rooms[key].editWords.length; ++i) {
-            if (rooms[key].editWords[i].transfer) {
-                rooms[key].usedWords[rooms[key].editWords[i].word] = rooms[key].editWords[i].wordState;
-                words.push({
-                    "word": rooms[key].editWords[i].word,
-                    "wordState": rooms[key].editWords[i].wordState});
-            } else {
-                rooms[key].freshWords.splice(
-                    Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
-                    0, rooms[key].editWords[i].word);
-            }
-        }
-
-        // if no words left it's time to finish the game
-        if (rooms[key].freshWords.length === 0) {
-            endGame(key);
-            return;
-        }
-
-        rooms[key].roundPrepare()
-
-        Signals.sNextTurn(key, words)
+        cWordsEdited(socket, key, ev);
     });
 
     socket.on("disconnect", function() {
-        /**
-         * room key can't be accessed via getRoom(socket)
-         * findFirstSidPos must be used instead
-         */
-
-        let key = [];
-        let username = [];
-        let usernamePos = [];
-        let keys = Object.keys(rooms);
-        // searching for given sid within all rooms
-        for (let i = 0; i < keys.length; ++i) {
-            const users = rooms[keys[i]].users;
-
-            const pos = findFirstSidPos(users, socket.id);
-            if (pos !== -1) {
-                key.push(keys[i]);
-                usernamePos.push(pos);
-                username.push(users[usernamePos].username);
-            }
-        }
-
-        // users wasn't logged in
-        if (key.length === 0) {
-            return;
-        }
-
-        for (let i = 0; i < key.length; ++i) {
-            let _key = key[i];
-            let _username = username[i];
-            let _usernamePos = usernamePos[i];
-            
-            // Logging the disconnection
-            console.log("Player", _username, "disconnected", _key);
-
-            // Removing the user from the room info
-            rooms[_key].users[_usernamePos].online = false;
-            rooms[_key].users[_usernamePos].sids = [];
-
-            Signals.sPlayerLeft(io.sockets.to(_key), rooms[_key], username)
-        }
+        disconnect(socket);
     });
 });
