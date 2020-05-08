@@ -1156,7 +1156,7 @@ io.on("connection", function(socket) {
         }
 
         // Adding the user to the room
-        socket.join(data.key, (err) => Callbacks.joinRoomCallback(socket, data, err));
+        socket.join(data.key.toLowerCase(), (err) => Callbacks.joinRoomCallback(socket, data, err));
     });
 
     /**
