@@ -649,9 +649,9 @@ const rooms = {};
 //----------------------------------------------------------
 // Checks for socket signals
 
-function checkInputFormat(socket, data, format) {
+function checkInputFormat(socket, data, format, signal) {
     if (checkObject(data, format)) {
-        Signals.sFailure(socket, "invalid format");
+        Signals.sFailure(socket, signal, "invalid format");
         return true;
     }
     return false;
@@ -1145,7 +1145,7 @@ io.on("connection", function(socket) {
      */
     socket.on("cJoinRoom", function(data) {
         // checking input format
-        if (!checkInputFormat(socket, data, {"key": "string", "username": "string"})) {
+        if (!checkInputFormat(socket, data, {"key": "string", "username": "string"}, "cJoinRoom")) {
             return;
         }
 
@@ -1237,7 +1237,7 @@ io.on("connection", function(socket) {
         const key = getRoom(socket); // key of the room
 
         // checking input format
-        if (!checkInputFormat(socket, ev, {"cause": "string"})) {
+        if (!checkInputFormat(socket, ev, {"cause": "string"}, "cEndWordExplanation")) {
             return;
         }
 
@@ -1259,7 +1259,7 @@ io.on("connection", function(socket) {
         const key = getRoom(socket); // key of the room
 
         // checking input format
-        if (!checkInputFormat(socket, ev, {"editWords": "object"})) {
+        if (!checkInputFormat(socket, ev, {"editWords": "object"}, "cWordsEdited")) {
             return;
         }
 
