@@ -266,7 +266,6 @@ function endGame(key) {
     io.sockets.in(key).clients(function(err, clients) {
         clients.forEach(function(sid) {
             let socket = io.sockets.connected[sid];
-            console.log("Player", sid, "disconnected from", key);
             socket.leave(key);
         });
     });
@@ -449,7 +448,7 @@ class Signals {
     static sExplanationEnded(key) {
         io.sockets.to(key).emit("sExplanationEnded", {
             "wordsCount": rooms[key].freshWords.length +
-            (rooms[key].usedWords[rooms[key].usedWords.length].wordState === "notExplained") ? 1 : 0});
+            ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
     }
 
     /**
@@ -586,6 +585,10 @@ class Room {
         // setting number of turn
         this.numberOfTurn = 0;
 
+        const numberOfPlayers = this.users.length;
+        this.speaker = numberOfPlayers - 1;
+        this.listener = numberOfPlayers - 2;
+
         this.roundPrepare()
     }
 
@@ -614,7 +617,7 @@ class Room {
 
         // preparing 'speaker' and 'listener'
         const numberOfPlayers = this.users.length;
-        const nextPair = getNextPair(numberOfPlayers, numberOfPlayers - 1, numberOfPlayers - 2);
+        const nextPair = getNextPair(numberOfPlayers, this.speaker, this.listener);
         this.speaker = nextPair.speaker;
         this.listener = nextPair.listener;
     }
@@ -649,212 +652,70 @@ const rooms = {};
 //----------------------------------------------------------
 // Checks for socket signals
 
-function checkInputFormat(socket, data, format) {
-    if (checkObject(data, format)) {
-        Signals.sFailure(socket, "invalid format");
-        return true;
-    }
-    return false;
-}
-
-function checkJoinRoomConditions(socket, data) {
-    const key = data.key.toLowerCase(); // key of the room
-    const name = data.username; // name of the user
-
-    // If user is not in his own room, it will be an error
-    if (getRoom(socket) !== socket.id) {
-        Signals.sFailure(socket, "cJoinRoom", "You are in room now");
+function checkInputFormat(socket, data, format, signal) {
+    if (!checkObject(data, format)) {
+        Signals.sFailure(socket, signal, "invalid format");
         return false;
     }
-
-    // If key is "" or name is "", it will be an error
-    if (key === "") {
-        Signals.sFailure(socket, "cJoinRoom", "Invalid key of room");
-        return false;
-    }
-    if (name === "") {
-        Signals.sFailure(socket, "cJoinRoom", "Invalid username");
-        return false;
-    }
-
-    // if room and users exist, we should check the user
-    if (rooms[key] !== undefined) {
-        const pos = findFirstPos(rooms[key].users, "username", name);
-
-        // If username is used, it will be an error
-        if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
-            Signals.sFailure(socket, "cJoinRoom", "Username is already used");
-            return false;
-        }
-
-        // If game has started, only logging in can be performed
-        if (rooms[key].state === "play" && pos === -1) {
-            Signals.sFailure(socket, "cJoinRoom", "Game have started, only logging in can be performed");
-            return false;
-        }
-    }
-
     return true;
 }
 
-function joinRoomCallback(socket, data, err) {
-    const key = data.key.toLowerCase(); // key of the room
-    const name = data.username; // name of the user
+class Callbacks {
+    static joinRoomCallback(socket, data, err) {
+        const key = data.key.toLowerCase(); // key of the room
+        const name = data.username; // name of the user
 
-    // If any error happened
-    if (err) {
-        console.log(err);
-        Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
-        return;
-    }
-
-    // If user haven't joined the room
-    if (getRoom(socket) !== key) {
-        Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
-        return;
-    }
-
-    // If room isn't saved in main dictionary, let's save it and create info about it
-    if (!(key in rooms)) {
-        rooms[key] = new Room()
-    }
-
-    // Adding the user to the room info
-    const pos = findFirstPos(rooms[key].users, "username", name);
-    if (pos === -1) {
-        // creating new one
-        rooms[key].users.push(new User(name, [socket.id]));
-    } else {
-        // logging in user
-        rooms[key].users[pos].sids = [socket.id];
-        rooms[key].users[pos].online = true;
-    }
-
-    Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
-
-    Signals.sYouJoined(socket, key);
-}
-
-//----------------------------------------------------------
-// Socket.IO functions
-
-io.on("connection", function(socket) {
-
-    /**
-     * Implementation of cJoinRoom function
-     * @see API.md
-     */
-    socket.on("cJoinRoom", function(data) {
-        // checking input format
-        if (!checkInputFormat(socket, data, {"key": "string", "username": "string"})) {
+        // If any error happened
+        if (err) {
+            Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
             return;
         }
 
-        // checking signal conditions
-        if (!checkJoinRoomConditions(socket, data)) {
+        // If user haven't joined the room
+        if (getRoom(socket) !== key) {
+            Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
             return;
         }
 
-        // Adding the user to the room
-        socket.join(data.key, (err) => joinRoomCallback(socket, data, err));
-    });
-
-    /**
-     * Implementation of cLeaveRoom function
-     * @see API.md
-     */
-    socket.on("cLeaveRoom", function() {
-        const key = getRoom(socket); // Key of user's current room
-
-        // If user is only in his own room
-        if (key === socket.id) {
-            Signals.sFailure(socket,"cLeaveRoom", "you aren't in the room");
-            return;
-        }
-
-        // checking if key is valid
+        // If room isn't saved in main dictionary, let's save it and create info about it
         if (!(key in rooms)) {
-            // when game ended
-            console.log("Player", socket.id, "left", key);
-            socket.leave(key);
-            return;
+            rooms[key] = new Room()
         }
 
-        // getting username
+        // Adding the user to the room info
+        const pos = findFirstPos(rooms[key].users, "username", name);
+        if (pos === -1) {
+            // creating new one
+            rooms[key].users.push(new User(name, [socket.id]));
+        } else {
+            // logging in user
+            rooms[key].users[pos].sids = [socket.id];
+            rooms[key].users[pos].online = true;
+        }
+
+        Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
+
+        Signals.sYouJoined(socket, key);
+    }
+
+    static leaveRoomCallback(socket, key, err) {
         const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
         const username = rooms[key].users[usernamePos].username;
 
-        // if username is ""
-        if (username === "") {
-            Signals.sFailure(socket,"cLeaveRoom", "you aren't in the room");
+        // If any error happened
+        if (err) {
+            Signals.sFailure(socket,"cLeaveRoom", "failed to leave the room");
             return;
         }
 
-        // Removing the user from the room
-        socket.leave(key, function(err) {
-            // If any error happened
-            if (err) {
-                Signals.sFailure(socket,"cLeaveRoom", "failed to leave the room");
-                return;
-            }
+        // Removing the user from the room info
+        rooms[key].users[usernamePos].online = false;
+        rooms[key].users[usernamePos].sids = [];
 
-            // Logging the leaving
-            console.log("Player", username, "left", key);
+        Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
+    }
 
-            // Removing the user from the room info
-            rooms[key].users[usernamePos].online = false;
-            rooms[key].users[usernamePos].sids = [];
-
-            Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username)
-        });
-    });
-
-    /**
-     * Implementation of cStartGame function
-     * @see API.md
-     */
-    socket.on("cStartGame", function() {
-        // acquiring the key
-        const key = getRoom(socket);
-
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cStartGame", "game ended");
-            return;
-        }
-
-        // if state isn't 'wait', something went wrong
-        if (rooms[key].state !== "wait") {
-            Signals.sFailure(socket,"cStartGame", "Game have already started");
-            return;
-        }
-
-        // checking whether signal owner is host
-        const hostPos = findFirstPos(rooms[key].users, "online", true);
-        if (hostPos === -1) {
-            // very strange case, probably something went wrong, let's log it!
-            console.log("cStartGame: Everyone is offline");
-            Signals.sFailure(socket,"cStartGame", "Everyone is offline");
-            return;
-        }
-        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cStartGame", "Only host can start the game");
-            return;
-        }
-
-        // Fail if only one user is online
-        let cnt = 0
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                cnt++;
-            }
-        }
-        if (cnt < 2) {
-            Signals.sFailure(socket,"cStartGame",
-                "Not enough online users to start the game (at least two required)");
-            return;
-        }
-
+    static cStartGame(socket, key) {
         /**
          * kicking off offline users
          */
@@ -871,146 +732,12 @@ io.on("connection", function(socket) {
         // removing offline users
         rooms[key].users = onlineUsers;
 
-        rooms[key].gamePrepare()
+        rooms[key].gamePrepare();
 
-        Signals.sGameStarted(key)
-    });
+        Signals.sGameStarted(key);
+    }
 
-    /**
-     * Implementation of cSpeakerReady function
-     * @see API.md
-     */
-    socket.on("cSpeakerReady", function() {
-        const key = getRoom(socket); // key of room
-
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cSpeakerReady", "game ended");
-            return;
-        }
-
-        // the game must be in 'play' state
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket,"cSpeakerReady", "game state isn't 'play'");
-            return;
-        }
-
-        // the game substate must be 'wait'
-        if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket,"cSpeakerReady", "game substate isn't 'wait'");
-            return;
-        }
-
-        // check whether the client is speaker
-        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cSpeakerReady", "you aren't a speaker");
-            return;
-        }
-
-        // check if speaker isn't already ready
-        if (rooms[key].speakerReady) {
-            Signals.sFailure(socket,"cSpeakerReady","speaker is already ready");
-            return;
-        }
-
-        // setting flag for speaker
-        rooms[key].speakerReady = true;
-
-        // if listener is ready --- let's start!
-        if (rooms[key].listenerReady) {
-            startExplanation(key);
-        }
-    });
-
-    /**
-     * Implementation of cListenerReady function
-     * @see API.md
-     */
-    socket.on("cListenerReady", function() {
-        const key = getRoom(socket); // key of room
-
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cListenerReady", "game ended");
-            return;
-        }
-
-        // the game must be in 'play' state
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket,"cListenerReady", "game state isn't 'play'");
-            return;
-        }
-
-        // the game substate must be 'wait'
-        if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket,"cListenerReady", "game substate isn't 'wait'");
-            return;
-        }
-
-        // check whether the client is listener
-        if (rooms[key].users[rooms[key].listener].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cListenerReady", "you aren't a listener");
-            return;
-        }
-
-        // check if listener isn't already ready
-        if (rooms[key].listenerReady) {
-            Signals.sFailure(socket,"cListenerReady", "listener is already ready");
-            return;
-        }
-
-        // setting flag for listener
-        rooms[key].listenerReady = true;
-
-        // if listener is ready --- let's start!
-        if (rooms[key].speakerReady) {
-            startExplanation(key);
-        }
-    });
-    
-    /**
-     * Implementation of cEndWordExplanation function
-     * @see API.md
-     */
-    socket.on("cEndWordExplanation", function(ev) {
-        const key = getRoom(socket); // key of the room
-
-        // checking if room exists
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cEndWordExplanation", "game ended");
-            return;
-        }
-        
-        // checking if proper state and substate
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket,"cEndWordExplanation","game state isn't 'play'");
-            return;
-        }
-        if (rooms[key].substate !== "explanation") {
-            Signals.sFailure(socket,"cEndWordExplanation", "game substate isn't 'explanation'");
-            return;
-        }
-
-        // checking if speaker send this
-        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cEndWordExplanation", "you aren't a listener");
-            return;
-        }
-
-        // checking if time is correct
-        const date = new Date();
-        if (date.getTime() < rooms[key].startTime) {
-            Signals.sFailure(socket,"cEndWordExplanation", "to early");
-            return;
-        }
-
-        // checking input
-        if (!checkObject(ev, {"cause": "string"})) {
-            Signals.sFailure(socket,"cEndWordExplanation","incorrect input");
-            return;
-        }
-
-        let cause = ev.cause;
+    static cEndWordExplanation(socket, key, cause) {
         switch (cause) {
             case "explained":
                 // logging the word
@@ -1022,10 +749,10 @@ io.on("connection", function(socket) {
                 // removing the word from the 'word' container
                 rooms[key].word = "";
 
-                Signals.sWordExplanationEnded(key, cause)
+                Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if (date.getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
+                if ((new Date()).getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
@@ -1051,7 +778,7 @@ io.on("connection", function(socket) {
                 // word don't go to the hat
                 rooms[key].word = "";
 
-                Signals.sWordExplanationEnded(key, cause)
+                Signals.sWordExplanationEnded(key, cause);
 
                 // finishing the explanation
                 finishExplanation(key);
@@ -1063,54 +790,15 @@ io.on("connection", function(socket) {
                     "wordState": "notExplained",
                     "transfer": true});
 
-                Signals.sWordExplanationEnded(key, cause)
+                Signals.sWordExplanationEnded(key, cause);
 
                 // finishing the explanation
                 finishExplanation(key);
                 return;
         }
-    });
+    }
 
-    /**
-     * Implementation of cWordsEdited function
-     * @see API.md
-     */
-    socket.on("cWordsEdited", function(ev) {
-        const key = getRoom(socket); // key of the room
-
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket,"cWordsEdited", "game ended");
-            return;
-        }
-
-        // check if game state is 'edit'
-        if (rooms[key].state === "edit") {
-            Signals.sFailure(socket, "cWordsEdited", "game state isn't 'edit'")
-            return;
-        }
-
-        // check if game substate is 'edit'
-        if (rooms[key].substate !== "edit") {
-            Signals.sFailure(socket,"cWordsEdited","game substate isn't 'edit'")
-            return;
-        }
-
-        // check if speaker send this signal
-        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cWordsEdited", "only speaker can send this signal");
-            return;
-        }
-
-        // moving editWords
-        const editWords = ev.editWords;
-
-        // comparing the length of serer editWords and client editWords
-        if (editWords.length !== rooms[key].editWords.length) {
-            Signals.sFailure(socket,"cWordsEdited", "incorrect number of words");
-            return;
-        }
-
+    static cWordsEdited(socket, key, editWords) {
         // applying changes and counting success explanations
         let cnt = 0;
         for (let i = 0; i < editWords.length; ++i) {
@@ -1163,12 +851,12 @@ io.on("connection", function(socket) {
             return;
         }
 
-        rooms[key].roundPrepare()
+        rooms[key].roundPrepare();
 
-        Signals.sNextTurn(key, words)
-    });
+        Signals.sNextTurn(key, words);
+    }
 
-    socket.on("disconnect", function() {
+    static disconnect(socket) {
         /**
          * room key can't be accessed via getRoom(socket)
          * findFirstSidPos must be used instead
@@ -1177,7 +865,7 @@ io.on("connection", function(socket) {
         let key = [];
         let username = [];
         let usernamePos = [];
-        let keys = Object.keys(rooms);
+        const keys = Object.keys(rooms);
         // searching for given sid within all rooms
         for (let i = 0; i < keys.length; ++i) {
             const users = rooms[keys[i]].users;
@@ -1196,18 +884,391 @@ io.on("connection", function(socket) {
         }
 
         for (let i = 0; i < key.length; ++i) {
-            let _key = key[i];
-            let _username = username[i];
-            let _usernamePos = usernamePos[i];
+            const _key = key[i];
+            const _username = username[i];
+            const _usernamePos = usernamePos[i];
             
-            // Logging the disconnection
-            console.log("Player", _username, "disconnected", _key);
-
             // Removing the user from the room info
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
 
-            Signals.sPlayerLeft(io.sockets.to(_key), rooms[_key], username)
+            Signals.sPlayerLeft(io.sockets.to(_key), rooms[_key], _username);
+        }
+    }
+}
+
+class CheckConditions {
+    static cJoinRoom(socket, data) {
+        const key = data.key.toLowerCase(); // key of the room
+        const name = data.username; // name of the user
+
+        // If user is not in his own room, it will be an error
+        if (getRoom(socket) !== socket.id) {
+            Signals.sFailure(socket, "cJoinRoom", "You are in room now");
+            return false;
+        }
+
+        // If key is "" or name is "", it will be an error
+        if (key === "") {
+            Signals.sFailure(socket, "cJoinRoom", "Invalid key of room");
+            return false;
+        }
+        if (name === "") {
+            Signals.sFailure(socket, "cJoinRoom", "Invalid username");
+            return false;
+        }
+
+        // if room and users exist, we should check the user
+        if (rooms[key] !== undefined) {
+            const pos = findFirstPos(rooms[key].users, "username", name);
+
+            // If username is used, it will be an error
+            if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
+                Signals.sFailure(socket, "cJoinRoom", "Username is already used");
+                return false;
+            }
+
+            // If game has started, only logging in can be performed
+            if (rooms[key].state === "play" && pos === -1) {
+                Signals.sFailure(socket, "cJoinRoom", "Game have started, only logging in can be performed");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static cLeaveRoom(socket, key) {
+        // If user is only in his own room
+        if (key === socket.id) {
+            Signals.sFailure(socket, "cLeaveRoom", "you aren't in the room");
+            return false;
+        }
+
+        // checking if key is valid
+        if (!(key in rooms)) {
+            // when game ended
+            socket.leave(key);
+            return false;
+        }
+
+        // getting username
+        const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
+        const username = rooms[key].users[usernamePos].username;
+
+        // if username is ""
+        if (username === "") {
+            Signals.sFailure(socket, "cLeaveRoom", "you aren't in the room");
+            return false;
+        }
+        return true;
+    }
+
+    static cStartGame(socket, key) {
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket, "cStartGame", "game ended");
+            return false;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "wait") {
+            Signals.sFailure(socket, "cStartGame", "Game have already started");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket, "cStartGame", "Everyone is offline");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket, "cStartGame", "Only host can start the game");
+            return false;
+        }
+
+        // Fail if only one user is online
+        let cnt = 0
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                cnt++;
+            }
+        }
+        if (cnt < 2) {
+            Signals.sFailure(socket,"cStartGame",
+                "Not enough online users to start the game (at least two required)");
+            return false;
+        }
+        return true;
+    }
+
+    static cSpeakerReady(socket, key) {
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket, "cSpeakerReady", "game ended");
+            return false;
+        }
+
+        // the game must be in 'play' state
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket, "cSpeakerReady", "game state isn't 'play'");
+            return false;
+        }
+
+        // the game substate must be 'wait'
+        if (rooms[key].substate !== "wait") {
+            Signals.sFailure(socket, "cSpeakerReady", "game substate isn't 'wait'");
+            return false;
+        }
+
+        // check whether the client is speaker
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            Signals.sFailure(socket, "cSpeakerReady", "you aren't a speaker");
+            return false;
+        }
+
+        // check if speaker isn't already ready
+        if (rooms[key].speakerReady) {
+            Signals.sFailure(socket, "cSpeakerReady","speaker is already ready");
+            return false;
+        }
+        return true;
+    }
+
+    static cListenerReady(socket, key) {
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket, "cListenerReady", "game ended");
+            return false;
+        }
+
+        // the game must be in 'play' state
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket, "cListenerReady", "game state isn't 'play'");
+            return false;
+        }
+
+        // the game substate must be 'wait'
+        if (rooms[key].substate !== "wait") {
+            Signals.sFailure(socket, "cListenerReady", "game substate isn't 'wait'");
+            return false;
+        }
+
+        // check whether the client is listener
+        if (rooms[key].users[rooms[key].listener].sids[0] !== socket.id) {
+            Signals.sFailure(socket, "cListenerReady", "you aren't a listener");
+            return false;
+        }
+
+        // check if listener isn't already ready
+        if (rooms[key].listenerReady) {
+            Signals.sFailure(socket, "cListenerReady", "listener is already ready");
+            return false;
+        }
+        return true;
+    }
+
+    static cEndWordExplanation(socket, key) {
+        // checking if room exists
+        if (!(key in rooms)) {
+            Signals.sFailure(socket, "cEndWordExplanation", "game ended");
+            return false;
+        }
+        
+        // checking if proper state and substate
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket, "cEndWordExplanation","game state isn't 'play'");
+            return false;
+        }
+        if (rooms[key].substate !== "explanation") {
+            Signals.sFailure(socket, "cEndWordExplanation", "game substate isn't 'explanation'");
+            return false;
+        }
+
+        // checking if speaker send this
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            Signals.sFailure(socket, "cEndWordExplanation", "you aren't a listener");
+            return false;
+        }
+
+        // checking if time is correct
+        if ((new Date).getTime() < rooms[key].startTime) {
+            Signals.sFailure(socket, "cEndWordExplanation", "to early");
+            return false;
+        }
+        return true;
+    }
+
+    static cWordsEdited(socket, key, editWords) {
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket,"cWordsEdited", "game ended");
+            return false;
+        }
+
+        // check if game state is 'edit'
+        if (rooms[key].state === "edit") {
+            Signals.sFailure(socket, "cWordsEdited", "game state isn't 'edit'")
+            return false;
+        }
+
+        // check if game substate is 'edit'
+        if (rooms[key].substate !== "edit") {
+            Signals.sFailure(socket,"cWordsEdited","game substate isn't 'edit'")
+            return false;
+        }
+
+        // check if speaker send this signal
+        if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
+            Signals.sFailure(socket,"cWordsEdited", "only speaker can send this signal");
+            return false;
+        }
+
+        // comparing the length of serer editWords and client editWords
+        if (editWords.length !== rooms[key].editWords.length) {
+            Signals.sFailure(socket,"cWordsEdited", "incorrect number of words");
+            return false;
+        }
+        return true;
+    }
+}
+
+//----------------------------------------------------------
+// Socket.IO functions
+
+io.on("connection", function(socket) {
+
+    /**
+     * Implementation of cJoinRoom function
+     * @see API.md
+     */
+    socket.on("cJoinRoom", function(data) {
+        // checking input format
+        if (!checkInputFormat(socket, data, {"key": "string", "username": "string"}, "cJoinRoom")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cJoinRoom(socket, data)) {
+            return;
+        }
+
+        // Adding the user to the room
+        socket.join(data.key.toLowerCase(), (err) => Callbacks.joinRoomCallback(socket, data, err));
+    });
+
+    /**
+     * Implementation of cLeaveRoom function
+     * @see API.md
+     */
+    socket.on("cLeaveRoom", function() {
+        const key = getRoom(socket); // key of the room
+
+        // checking signal conditions
+        if (!CheckConditions.cLeaveRoom(socket, key)) {
+            return;
+        }
+
+        // Removing the user from the room
+        socket.leave(key, (err) => Callbacks.leaveRoomCallback(socket, key, err));
+    });
+
+    /**
+     * Implementation of cStartGame function
+     * @see API.md
+     */
+    socket.on("cStartGame", function() {
+        const key = getRoom(socket); // key of the room
+
+        // checking signal conditions
+        if (!CheckConditions.cStartGame(socket, key)) {
+            return;
+        }
+
+        Callbacks.cStartGame(socket, key);
+    });
+
+    /**
+     * Implementation of cSpeakerReady function
+     * @see API.md
+     */
+    socket.on("cSpeakerReady", function() {
+        const key = getRoom(socket); // key of room
+
+        if (!CheckConditions.cSpeakerReady(socket, key)) {
+            return;
+        }
+
+        // setting flag for speaker
+        rooms[key].speakerReady = true;
+
+        // if listener is ready --- let's start!
+        if (rooms[key].listenerReady) {
+            startExplanation(key);
         }
     });
+
+    /**
+     * Implementation of cListenerReady function
+     * @see API.md
+     */
+    socket.on("cListenerReady", function() {
+        const key = getRoom(socket); // key of room
+
+        if (!CheckConditions.cListenerReady(socket, key)) {
+            return;
+        }
+
+        // setting flag for listener
+        rooms[key].listenerReady = true;
+
+        // if speaker is ready --- let's start!
+        if (rooms[key].speakerReady) {
+            startExplanation(key);
+        }
+    });
+    
+    /**
+     * Implementation of cEndWordExplanation function
+     * @see API.md
+     */
+    socket.on("cEndWordExplanation", function(data) {
+        const key = getRoom(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"cause": "string"}, "cEndWordExplanation")) {
+            return;
+        }
+
+        // check signal conditions
+        if (!CheckConditions.cEndWordExplanation(socket, key)) {
+            return;
+        }
+
+        Callbacks.cEndWordExplanation(socket, key, data.cause);
+    });
+
+    /**
+     * Implementation of cWordsEdited function
+     * @see API.md
+     */
+    socket.on("cWordsEdited", function(data) {
+        const key = getRoom(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"editWords": "object"}, "cWordsEdited")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cWordsEdited(socket, key, data.editWords)) {
+            return;
+        }
+
+        Callbacks.cWordsEdited(socket, key, data.editWords);
+    });
+
+    socket.on("disconnect", () => Callbacks.disconnect(socket));
 });
