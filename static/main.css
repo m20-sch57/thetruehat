@@ -640,7 +640,7 @@ button, input {
     border-bottom-right-radius: 0;
 }
 
-#editPage_list .explained-selected {
+#editPage_list .explained.selected {
     background-color: lightgreen;
 }
 
@@ -650,7 +650,7 @@ button, input {
     margin-left: -1px;
 }
 
-#editPage_list .not-explained-selected {
+#editPage_list .not-explained.selected {
     background-color: lightblue;
 }
 
@@ -661,7 +661,7 @@ button, input {
     margin-left: -1px;
 }
 
-#editPage_list .mistake-selected {
+#editPage_list .mistake.selected {
     background-color: lightcoral;
 }
 
