@@ -35,6 +35,7 @@ button, input {
 
 .small-button {
     padding: 10px 15px 10px 15px;
+    color: rgba(0, 0, 0, 0.85);
     border: 1px solid grey;
     border-radius: 22px;
     font-size: 15px;
@@ -42,6 +43,7 @@ button, input {
 
 .medium-button {
     padding: 15px 20px 15px 20px;
+    color: rgba(0, 0, 0, 0.85);
     border: 1px solid grey;
     border-radius: 25px;
     font-size: 20px;
@@ -510,7 +512,7 @@ button, input {
 #gamePage_explanationWordTimer {
     display: flex;
     flex-flow: column;
-    height: calc(100% - 105px);
+    height: calc(100% - 125px);
 }
 
 #gamePage_explanationWord {
@@ -533,20 +535,22 @@ button, input {
 }
 
 #gamePage_explanationActions {
-    height: 105px;
+    height: 125px;
 }
 
 #gamePage_explanationSuccess {
+    height: 75px;
     width: 100%;
     margin-top: auto;
-    border-radius: 10px;
+    font-size: 30px;
+    border-radius: 15px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
 #gamePage_explanationFailed {
     width: calc(50% + 0.5px);
-    border-radius: 10px;
+    border-radius: 15px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -555,7 +559,7 @@ button, input {
 
 #gamePage_explanationMistake {
     width: calc(50% + 0.5px);
-    border-radius: 10px;
+    border-radius: 15px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
