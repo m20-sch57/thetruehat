@@ -274,12 +274,15 @@ class App {
 
     setWord(word) {
         el("gamePage_explanationWord").innerText = word;
-        el("gamePage_explanationWord").classList.remove("big-word");
+        el("gamePage_explanationWord").classList.remove("small-word");
+        el("gamePage_explanationWord").classList.remove("medium-word");
         el("gamePage_explanationWord").classList.remove("large-word");
-        if (word.length > 15) {
+        if (word.length > 14) {
+            el("gamePage_explanationWord").classList.add("small-word");
+        } else if (word.length > 9) {
+            el("gamePage_explanationWord").classList.add("medium-word");
+        } else {
             el("gamePage_explanationWord").classList.add("large-word");
-        } else if (word.length > 10) {
-            el("gamePage_explanationWord").classList.add("big-word");
         }
     }   
 
