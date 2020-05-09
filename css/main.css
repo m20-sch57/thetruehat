@@ -160,11 +160,15 @@ button, input {
     color: red;
 }
 
-.big-word {
+.large-word {
+    font-size: 40px;
+}
+
+.medium-word {
     font-size: 30px;
 }
 
-.large-word {
+.small-word {
     font-size: 20px;
 }
 
@@ -513,7 +517,6 @@ button, input {
     width: 100%;
     text-transform: uppercase;
     text-align: center;
-    font-size: 40px;
     font-weight: lighter;
     margin-top: auto;
     margin-bottom: 0;
