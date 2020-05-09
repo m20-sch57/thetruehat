@@ -64,6 +64,28 @@ button, input {
     background-color: lightgrey;
 }
 
+.small-white-button {
+    padding: 10px 15px 10px 15px;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 22px;
+    font-size: 15px;
+}
+
+.small-white-button:hover:enabled {
+    background-color: rgb(233, 233, 233);
+    box-shadow: 1px 1px 5px grey;
+}
+
+.small-white-button:active:enabled {
+    background-color: lightgrey;
+}
+
+.small-white-button:disabled {
+    background-color: lightgrey;
+}
+
 .medium-input {
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
@@ -278,7 +300,7 @@ button, input {
 }
 
 #joinPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 #joinPage_inputKey {
@@ -315,7 +337,7 @@ button, input {
 }
 
 #rulesPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 /* Preparation page */
@@ -343,7 +365,7 @@ button, input {
 }
 
 #preparationPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 #preparationPage_usersTable {
@@ -580,6 +602,72 @@ button, input {
     #gamePage_explanationActions {
         padding: 0 30px 0 30px;
     }
+}
+
+/* Edit page */
+
+#editPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#editPage_title {
+    font-weight: lighter;
+    margin-bottom: 0;
+}
+
+#editPage_body {
+    width: 100%;
+    padding: 0 30px 30px 30px;
+}
+
+#editPage_list .edit-item {
+    margin-bottom: 10px;
+}
+
+#editPage_list .word {
+    text-align: center;
+    font-size: 25px;
+    font-weight: lighter;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#editPage_list .explained {
+    width: 33.33%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#editPage_list .explained-selected {
+    background-color: lightgreen;
+}
+
+#editPage_list .not-explained {
+    width: 33.33%;
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+#editPage_list .not-explained-selected {
+    background-color: lightblue;
+}
+
+#editPage_list .mistake {
+    width: 33.33%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+#editPage_list .mistake-selected {
+    background-color: lightcoral;
+}
+
+#editPage_confirm {
+    width: 100%;
+    margin-top: 20px;
 }
 
 /* Results page */

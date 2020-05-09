@@ -158,6 +158,55 @@
             </div>
         </div>
     </div>
+    <div class="page" id="editPage">
+        <button class="white-bubble go-back" id="editPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="editPage_viewRules">
+        </button>
+        <div class="content-small">
+            <div id="editPage_header">
+                <h1 id="editPage_title">Редактирование</h1>
+                <p class="hint">Слов за раунд: <span id="editPage_wordsCnt">
+                    3
+                </span></p>
+            </div>
+            <div id="editPage_body">
+                <div id="editPage_list">
+                    <div class="edit-item">
+                        <h1 class="word">Слово</h1>
+                        <button class="small-white-button explained explained-selected" disabled>
+                            Угадал
+                        </button><button class="small-white-button not-explained">
+                            Не угадал
+                        </button><button class="small-white-button mistake">
+                            Ошибка
+                        </button>
+                    </div>
+                    <div class="edit-item">
+                        <h1 class="word">Ещёслово</h1>
+                        <button class="small-white-button explained">
+                            Объяснил
+                        </button><button class="small-white-button not-explained not-explained-selected" disabled>
+                            Не угадал
+                        </button><button class="small-white-button mistake">
+                            Ошибка
+                        </button>
+                    </div>
+                    <div class="edit-item">
+                        <h1 class="word">Оченьдлинноеслово</h1>
+                        <button class="small-white-button explained">
+                            Объяснил
+                        </button><button class="small-white-button not-explained">
+                            Не угадал
+                        </button><button class="small-white-button mistake mistake-selected" disabled>
+                            Ошибка
+                        </button>
+                    </div>
+                </div>
+                <button class="medium-button bg-green" id="editPage_confirm">Подтверждаю</button>
+            </div>
+        </div>
+    </div>
     <div class="page" id="resultsPage" style="display: none;">
         <button class="white-bubble go-back" id="resultsPage_goBack">
             <span class="fa fa-chevron-left"></span>
