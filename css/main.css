@@ -169,7 +169,7 @@ button, input {
 }
 
 .small-word {
-    font-size: 20px;
+    font-size: 25px;
 }
 
 /* Main page */
@@ -310,8 +310,6 @@ button, input {
     margin-top: -75px;
     background-image: url(\hat.png);
     background-size: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 #rulesPage_body {
@@ -369,6 +367,8 @@ button, input {
     margin-right: -20px;
     background-image: url(\hat.png);
     background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #preparationPage_users .you::after {
