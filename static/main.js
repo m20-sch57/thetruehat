@@ -4,7 +4,7 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const PORT = 3005;
+const PORT = 2005;
 
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
@@ -14,7 +14,7 @@ const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 
 
-const TIME_SYNC_DELTA = 1200000;
+const TIME_SYNC_DELTA = 60000;
 
 
 let delta = 0;
@@ -24,10 +24,9 @@ function getTime() {
 }
 
 async function getDelta() {
-    let zero = performance.now();
-    time = (await (await fetch("http://zadachi.mccme.ru/misc/time/getTime.cgi")).json()).time;
+    let response = await fetch("getTime", {"headers": {"X-Client-Timestamp": performance.now()}});
     let now = performance.now();
-    delta = time + (now - zero) / 2 - now;
+    delta = response.headers.get("X-Server-Timestamp") / 1.0 + (now - response.headers.get("X-Client-Timestamp")) / 2 - now;
 }
 
 async function maintainDelta() {
@@ -243,7 +242,7 @@ class App {
     }
 
     generateKey() {
-        fetch("/getFreeKey")
+        fetch("/api/getFreeKey")
             .then(response => response.json())
             .then(result => el("joinPage_inputKey").value = result.key)
     }
@@ -289,7 +288,7 @@ class App {
             console.log("Empty room key");
             return;
         }
-        fetch(`/getRoomInfo?key=${this.myRoomKey}`)
+        fetch(`/api/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(result => {
             if (!result.success) {

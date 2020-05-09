@@ -1,5 +1,5 @@
 {
-    "port": 3005,
+    "port": 2005,
     "wordsPath": "./words/all.json",
     "transferTime": 1,
     "delayTime": 3,

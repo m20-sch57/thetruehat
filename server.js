@@ -29,14 +29,6 @@ const io = require("socket.io")(server);
 server.listen(PORT);
 console.log("Listening on port " + PORT);
 
-// Serving static files
-app.use(express.static("static"));
-
-// Serving page of the game by default address
-app.get("/", function(req, res) {
-    res.sendFile(__dirname + "/index.html");
-});
-
 //----------------------------------------------------------
 // Handy functions
 
