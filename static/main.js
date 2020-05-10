@@ -493,6 +493,7 @@ class App {
             if (data.editWords) {
                 Pages.go(Pages.edit.speaker);
                 this.wordStates = {}
+                el("editPage_list").innerHTML = "";
                 data.editWords.forEach((wordObj) => {
                     this.wordStates[wordObj.word] = wordObj.wordState;
                     el("editPage_list").appendChild(Template.editWord(wordObj));
@@ -683,6 +684,7 @@ class App {
         this.socket.on("sWordsToEdit", function(data) {
             Pages.go(Pages.edit.speaker)
             _this.wordStates = {}
+            el("editPage_list").innerHTML = "";
             data.editWords.forEach((wordObj) => {
                 _this.wordStates[wordObj.word] = wordObj.wordState;
                 el("editPage_list").appendChild(Template.editWord(wordObj));
