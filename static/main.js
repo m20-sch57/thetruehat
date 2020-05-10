@@ -494,6 +494,7 @@ class App {
                 Pages.go(Pages.edit.speaker);
                 this.wordStates = {}
                 el("editPage_list").innerHTML = "";
+                el("editPage_wordsCnt").innerText = data.editWords.length;
                 data.editWords.forEach((wordObj) => {
                     this.wordStates[wordObj.word] = wordObj.wordState;
                     el("editPage_list").appendChild(Template.editWord(wordObj));
@@ -685,6 +686,7 @@ class App {
             Pages.go(Pages.edit.speaker)
             _this.wordStates = {}
             el("editPage_list").innerHTML = "";
+            el("editPage_wordsCnt").innerText = data.editWords.length;
             data.editWords.forEach((wordObj) => {
                 _this.wordStates[wordObj.word] = wordObj.wordState;
                 el("editPage_list").appendChild(Template.editWord(wordObj));
