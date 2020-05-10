@@ -770,6 +770,8 @@ class App {
                     "wordState": this.wordStates[x],
                 }})
             });
+        el("resultsPage_viewRules").onclick = () => Pages.go(Pages.rules);
+        el("resultsPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("resultsPage_newGame").onclick = () => {
