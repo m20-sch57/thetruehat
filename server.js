@@ -13,8 +13,6 @@ const EXPLANATION_LENGTH = config.explanationTime; // length of explanation
 const PRE = config.delayTime; // delay for transfer
 const POST = config.aftermathTime; // time for guess
 
-const allWords = require(config.wordsPath).words;
-
 const express = require("express");
 const app = express();
 const server = new (require("http").Server)(app);
@@ -135,13 +133,25 @@ function getRoom(socket) {
 }
 
 /**
+ * Get all words from DB.
+ *
+ * @return All words in DB.
+ */
+function getAllWords() {
+    db.all("SELECT Word FROM Words WHERE Tags != \"-deleted\"", function (err, rows) {
+        return rows.map((row) => (row["Word"]));
+    })
+}
+
+/**
  * Generate word list
  *
  * @return list of words
  */
 function generateWords() {
-    let words = [];
-    let used = {};
+    const allWords = getAllWords();
+    const words = [];
+    const used = {};
     const numberOfAllWords = allWords.length;
     while (words.length < WORD_NUMBER) {
         const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
