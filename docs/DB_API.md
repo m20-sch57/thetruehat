@@ -79,6 +79,24 @@ Used to contain games' infos.
 #### Indices
 - INDEX Games_State_Index (?):
     - State
+    
+### Rooms
+Used to find game ID by room key.
+
+#### Columns
+- **RoomKey** : **TEXT** - key of the room.
+    - PRIMARY KEY Rooms_PK
+- **GameID** : *INTEGER* - ID of the game
+    - FOREIGN KEY GameID REFERENCES Games
+    - NOT NULL (?)
+
+#### Keys
+- PRIMARY KEY Rooms_PK:
+    - RoomKey
+- FOREIGN KEY GameID REFERENCES Games:
+    - GameID
+
+### Indices
 
 ### ExplanationRecords
 Used to contain explanation records.

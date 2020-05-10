@@ -33,7 +33,7 @@ app.get("/", function(req, res) {
 
 // Connecting DB
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('DB.db');
+const DB = new sqlite3.Database('DB.db');
 
 //----------------------------------------------------------
 // Handy functions
@@ -502,35 +502,44 @@ app.get("/getRoomInfo", function(req, res) {
         return;
     }
 
-    // Case of nonexistent room
-    if (!(key in rooms)) {
-        res.json({"success": true,
-                  "state": "wait",
-                  "playerList": [],
-                  "host": ""});
-        return;
-    }
+    DB.all("SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ?)", key,
+        function (err, rows) {
+            // Case of nonexistent room
+            if (rows.length === 0) {
+                res.json({"success": true,
+                    "state": "wait",
+                    "playerList": [],
+                    "host": ""});
+                return;
+            }
 
-    const room = rooms[key]; // The room
-    switch (room.state) {
-        case "wait":
-        case "play":
-            res.json({"success": true,
-                      "state": "wait",
-                      "playerList": getPlayerList(room),
-                      "host": room.users[findFirstPos(room.users, "online", true)]});
-            break;
+            // If something goes wrong
+            if (rows.length > 2) {
+                console.warn("getRoomInfo: There are 2 or more games in room by the key.")
+            }
 
-        case "end":
-            // TODO Implement
-            res.json({"success": true, "state": "end"});
-            console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
-            break;
+            const game = rows[0]; // The room
+            const players = JSON.parse(game["Players"]); // Players in the game
+            switch (game["State"]) {
+                case "wait":
+                case "play":
+                    res.json({"success": true,
+                        "state": game["State"],
+                        "playerList": players.map(el => {return {"username": el.username, "online": el.online};}),
+                        "host": game["Host"]});
+                    break;
 
-        default:
-            console.log(room);
-            break;
-    }
+                case "end":
+                    res.json({"success": true, "state": "end"});
+                    console.warn("getRoomInfo: Ended game is not removed from the room.")
+                    break;
+
+                default:
+                    console.warn("getRoomInfo: Game state is incorrect.")
+                    break;
+            }
+        }
+    )
 });
 
 //----------------------------------------------------------
