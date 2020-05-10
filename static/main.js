@@ -13,31 +13,7 @@ const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 
-
 const TIME_SYNC_DELTA = 1200000;
-
-let delta = 0;
-
-function getTime() {
-    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        return (new Date).getTime();
-    } else {
-        return performance.now() + delta;
-    }
-}
-
-async function getDelta() {
-    let zero = performance.now();
-    time = (await (await fetch("http://zadachi.mccme.ru/misc/time/getTime.cgi")).json()).time;
-    let now = performance.now();
-    delta = time + (now - zero) / 2 - now;
-}
-
-async function maintainDelta() {
-    setTimeout(maintainDelta, TIME_SYNC_DELTA);
-    getDelta();
-    console.log((new Date).getTime() - getTime());
-}
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -46,7 +22,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
     return new Promise(function(resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
-            time = getTime();
+            time = timeSync.getTime();
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
 
@@ -67,28 +43,8 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
     })
 }
 
-function explanationTimeFormat(sec) {
-    let min = Math.floor(sec / 60);
-    sec -= 60 * min;
-    if (sec < 10) sec = "0" + String(sec);
-    if (min < 10) min = "0" + String(min);
-    return `${min}:${sec}`;
-}
-
-function aftermathTimeFormat(msec) {
-    let sec = Math.floor(msec / 10);
-    msec -= 10 * sec;
-    return `${sec}.${msec}`;
-}
-
 function el(id) {   
     return document.getElementById(id);
-}
-
-function readLocationHash() {
-    console.log(location);
-    if (location.hash == "") return "";
-    return decodeURIComponent(location.hash.slice(1));
 }
 
 function deleteNode(node) {
@@ -113,6 +69,26 @@ function enable(id) {
     el(id).removeAttribute("disabled");
 }
 
+function readLocationHash() {
+    console.log(location);
+    if (location.hash == "") return "";
+    return decodeURIComponent(location.hash.slice(1));
+}
+
+function explanationTimeFormat(sec) {
+    let min = Math.floor(sec / 60);
+    sec -= 60 * min;
+    if (sec < 10) sec = "0" + String(sec);
+    if (min < 10) min = "0" + String(min);
+    return `${min}:${sec}`;
+}
+
+function aftermathTimeFormat(msec) {
+    let sec = Math.floor(msec / 10);
+    msec -= 10 * sec;
+    return `${sec}.${msec}`;
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -127,29 +103,95 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
-function template(templateName, data) {
-    switch (templateName) {
-    case "preparationPage_user":
-        let div = document.createElement("div");
-        div.innerText = data.username;
-        div.classList.add("user-item");
-        div.setAttribute("id", `user_${data.username}`);
-        return div;
-    case "resultPage_results":
+class TimeSync {
+    constructor(syncInterval) {
+        this.syncInterval = syncInterval;
+        this.delta = 0;
+        this.maintainDelta();
+    }
+
+    getTime() {
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+            return (new Date).getTime();
+        } else {
+            return performance.now() + this.delta;
+        }
+    }
+
+    async getDelta() {
+        let zero = performance.now();
+        let time = (await (await fetch("http://zadachi.mccme.ru/misc/time/getTime.cgi")).json()).time;
+        let now = performance.now();
+        this.delta = time + (now - zero) / 2 - now;
+    }    
+
+    async maintainDelta() {
+        setTimeout(() => this.maintainDelta(), this.syncInterval);
+        this.getDelta();
+        console.log("New time delta:", this.delta);
+    }
+}
+
+class Template {
+    static user({username}) {
+        let elem = document.createElement("div");
+        elem.innerText = username;
+        elem.classList.add("user-item");
+        elem.setAttribute("id", `user_${username}`);
+        return elem;
+    }
+
+    static result({username, scoreExplained, scoreGuessed}) {
         let elem = document.createElement("tr");
-        let username = document.createElement("td");
-        username.innerText = data.username;
-        let scoreExplained = document.createElement("td");
-        scoreExplained.innerText = data.scoreExplained;
-        let scoreGuessed = document.createElement("td");
-        scoreGuessed.innerText = data.scoreGuessed;
-        let score = document.createElement("td");
-        score.innerText = data.scoreGuessed + data.scoreExplained;
-        score.classList.add("sum");
-        elem.appendChild(username);
-        elem.appendChild(scoreExplained);
-        elem.appendChild(scoreGuessed);
-        elem.appendChild(score);
+        let eUsername = document.createElement("td");
+        eUsername.innerText = username;
+        let eScoreExplained = document.createElement("td");
+        eScoreExplained.innerText = scoreExplained;
+        let eScoreGuessed = document.createElement("td");
+        eScoreGuessed.innerText = scoreGuessed;
+        let eScore = document.createElement("td");
+        eScore.innerText = scoreGuessed + scoreExplained;
+        eScore.classList.add("sum");
+        elem.appendChild(eUsername);
+        elem.appendChild(eScoreExplained);
+        elem.appendChild(eScoreGuessed);
+        elem.appendChild(eScore);
+        return elem;
+    }
+
+    static editWord({word, wordState}) {
+        let elem = document.createElement("div");
+        elem.classList.add("edit-item");
+        elem.setAttribute("id", `editPage_word_${word}`);
+        let eWord = document.createElement("h1");
+        eWord.classList.add("word");
+        eWord.innerText = word;
+        let eExplained = document.createElement("button");
+        eExplained.classList.add("small-white-button");
+        eExplained.classList.add("explained");
+        eExplained.innerText = "объяснил";
+        eExplained.setAttribute("id", `editPage_${word}_explained`);
+        let eNotExplained = document.createElement("button");
+        eNotExplained.classList.add("small-white-button");
+        eNotExplained.classList.add("not-explained");
+        eNotExplained.innerText = "не объяснил";
+        eNotExplained.setAttribute("id", `editPage_${word}_notExplained`);
+        let eMistake = document.createElement("button");
+        eMistake.classList.add("small-white-button");
+        eMistake.classList.add("mistake");
+        eMistake.innerText = "ошибка";
+        eMistake.setAttribute("id", `editPage_${word}_mistake`);
+        elem.appendChild(eWord);
+        elem.appendChild(eExplained);
+        elem.appendChild(eNotExplained);
+        elem.appendChild(eMistake);
+        let selected = {
+            "explained": eExplained,
+            "notExplained": eNotExplained,
+            "mistake": eMistake
+        }[wordState];
+        selected.classList.add("selected");
+        selected.setAttribute("disabled", "");
         return elem;
     }
 }
@@ -168,18 +210,95 @@ class Sound {
 
     playSound(sound, startTime) {
         this.currentSound = el(sound);
-        if (getTime() < startTime) {
+        if (timeSync.getTime() < startTime) {
             setTimeout(() => {
                 this.killSound();
                 this.currentSound.play();
-            }, startTime - getTime());
-        } else if (getTime() - startTime < 
+            }, startTime - timeSync.getTime());
+        } else if (timeSync.getTime() - startTime < 
                 this.currentSound.duration * 1000){
-            this.currentSound.currentTime = (getTime() - startTime) / 
+            this.currentSound.currentTime = (timeSync.getTime() - startTime) / 
                 1000;
             this.currentSound.play();
         }
     }
+}
+
+let Pages = {
+    _visibleElements: [],
+    _pageLog: [],
+
+    main: ["mainPage"],
+    join: ["joinPage"],
+    rules: ["rulesPage"],
+    preparation: ["preparationPage"],
+    wait: {
+        observer: ["gamePage", "gamePage_speakerListener"],
+        speaker: ["gamePage", "gamePage_speakerListener",
+            "gamePage_speakerReadyBox"],
+        listener: ["gamePage", "gamePage_speakerListener",
+            "gamePage_listenerReadyBox"],
+    },
+    delay: ["gamePage", "gamePage_explanationDelayBox"],
+    explanation: {
+        observer: ["gamePage", "gamePage_speakerListener",
+            "gamePage_observerBox"],
+        speaker: ["gamePage", "gamePage_explanationBox"],
+        listener: ["gamePage", "gamePage_speakerListener",
+            "gamePage_observerBox"],
+    },
+    edit: {
+        default: ["gamePage", "gamePage_speakerListener"],
+        speaker: ["editPage"],
+    },
+    results: ["resultsPage"],
+
+    getPage: function (page) {
+        if (page instanceof Array) {
+            return page
+        } else {
+            return this.getPage(page.default);
+        }
+    },
+
+    hidePage: function () {
+        if (this._pageLog.length >= 1) {
+            this._pageLog.last().forEach((elemId) => {
+                hide(elemId);
+            })
+        }
+    },
+
+    showPage: function (page) {
+        page.forEach((elemId) => {
+            show(elemId);
+        })
+    },
+
+    go: function (page) {
+        page = this.getPage(page);
+        console.log("go:", page);
+        this.hidePage();
+        this.showPage(page);
+        this._pageLog.push(page);
+    },
+
+    goBack: function () {
+        console.log("goBack");
+        this.hidePage();
+        this._pageLog.pop();
+        if (this._pageLog.length >= 1) {
+            this.showPage(this._pageLog.last());
+        } else {
+            this._pageLog = [this.main];
+            this.showPage(this.main);
+        }
+    },
+
+    leave: function () {
+        this._pageLog = [];
+        this.go(this.join);
+    },
 }
 
 class App {
@@ -188,7 +307,7 @@ class App {
 
         this.socket = io.connect(`http://${document.domain}:${PORT}`);
 
-        this.pageLog = [];
+        // this.pageLog = [];
         this.myUsername = "";
         this.myRole = "";
         this.setKey(readLocationHash());
@@ -200,9 +319,9 @@ class App {
         this.setSocketioEventListeners();
 
         if (this.myRoomKey != "") {
-            this.showPage("joinPage");
+            Pages.go(Pages.join);
         } else {
-            this.showPage("mainPage");
+            Pages.go(Pages.main);
         }
 
         this.sound = new Sound();
@@ -215,30 +334,9 @@ class App {
         }
     }
 
-    showPage(page) {
-        if (this.pageLog.length >= 1) {
-            hide(this.pageLog.last());
-        }
-        el(page).style.display = "";
-        this.pageLog.push(page);
-    }
-
-    goBack() {
-        hide(this.pageLog.pop());
-        if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
-        show(this.pageLog.last());
-    }
-
     leaveRoom() {
         this.emit("cLeaveRoom");
-        hide(this.pageLog.pop());
-        while (this.pageLog.length > 0 && ["preparationPage", "gamePage"].indexOf(
-            this.pageLog.last()) != -1) {
-            hide(this.pageLog.pop());
-        }
-        if (this.pageLog.length == 0) this.pageLog = ["mainPage"];
-        show(this.pageLog.last());
-
+        Pages.leave();
     }
 
     setPlayers(usernames, host) {
@@ -254,7 +352,7 @@ class App {
 
     addPlayer(username) {
         el("preparationPage_users").appendChild(
-            template("preparationPage_user", {"username": username}));
+            Template.user({"username": username}));
         if (username == this.myUsername) {
             el(`user_${username}`).classList.add("you");
         }
@@ -309,7 +407,6 @@ class App {
 
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
-            // el("joinPage_pasteKey").style.display = "none";
             disable("joinPage_pasteKey");
         }
         if (!(navigator.clipboard && navigator.clipboard.writeText)) {
@@ -356,29 +453,19 @@ class App {
     }
 
     setGameState(state, data) {
+        if (data.speaker) {
+            el("gamePage_speaker").innerText = data.speaker;
+            el("gamePage_listener").innerText = data.listener;
+            this.myRole = (data.listener == this.myUsername) ? "listener" :
+                (data.speaker == this.myUsername) ? "speaker" : "observer";
+        }
         switch(state) {
         case "wait":
-            this.hideAllGameActions()
             enable("gamePage_listenerReadyButton");
             el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
             enable("gamePage_speakerReadyButton");
             el("gamePage_speakerReadyButton").innerText = SPEAKER_READY;
-            switch (this.myUsername) {
-            case data.listener:
-                show("gamePage_listenerReadyBox");
-                this.myRole = "listener";
-                break;
-            case data.speaker:
-                show("gamePage_speakerReadyBox");
-                this.myRole = "speaker";
-                break;
-            default:
-                this.myRole = "observer";
-                break;
-            }
-            show("gamePage_speakerListener");
-            el("gamePage_speaker").innerText = data.speaker;
-            el("gamePage_listener").innerText = data.listener;
+            Pages.go(Pages.wait[this.myRole]);
             break;
         case "explanation":
             let roundId = this.roundId;
@@ -387,55 +474,38 @@ class App {
                     console.log("WARN: empty role");
                     return;
                 }
-                this.hideAllGameActions();
-                console.log("sound time:", performance.now());
-                switch (this.myRole) {
-                case "speaker":
-                    show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
-                    .then(() => {
-                        hide("gamePage_explanationDelayBox");
-                        show("gamePage_explanationBox");
+                Pages.go(Pages.delay);
+                this.animateDelay(data.startTime - DELAY_TIME, roundId)
+                .then(() => {
+                    if (this.roundId == roundId) {
+                        Pages.go(Pages.explanation[this.myRole]);
                         this.animateTimer(data.startTime, roundId)
                         .then(() => {
                             this.animateAftermath(data.startTime + 
                                 EXPLANATION_TIME, roundId);
                         })
-                    })
-                    break;
-                case "observer":
-                case "listener":
-                    show("gamePage_explanationDelayBox");
-                    this.animateDelay(data.startTime - DELAY_TIME, roundId)
-                    .then(() => {
-                        hide("gamePage_explanationDelayBox");
-                        show("gamePage_speakerListener");
-                        show("gamePage_observerBox");
-                        show("gamePage_observerTimer");
-                        this.animateTimer(data.startTime, roundId)
-                        .then(() => {
-                            this.animateAftermath(data.startTime + 
-                                EXPLANATION_TIME, roundId);
-                        })
-                    })
-                    break;
-                // case "observer":
-                //     show("gamePage_speakerListener");
-                //     this.animateDelay(data.startTime - DELAY_TIME, roundId)
-                //     .then(() => {
-                //         show("gamePage_speakerListener");
-                //         show("gamePage_observerBox");
-                //         show("gamePage_observerTimer");
-                //         this.animateTimer(data.startTime, roundId)
-                //         .then(() => {
-                //             this.animateAftermath(data.startTime + 
-                //                 EXPLANATION_TIME, roundId);
-                //         })
-                //     })
-                //     break;
-                }
+                    }
+                })
 
-            }, data.startTime - getTime() - DELAY_TIME);
+            }, data.startTime - timeSync.getTime() - DELAY_TIME);
+            break;
+        case "edit":
+            if (data.editWords) {
+                Pages.go(Pages.edit.speaker);
+                this.wordStates = {}
+                data.editWords.forEach((wordObj) => {
+                    this.wordStates[wordObj.word] = wordObj.wordState;
+                    el("editPage_list").appendChild(Template.editWord(wordObj));
+                    el(`editPage_${wordObj.word}_explained`).onclick = 
+                            () => this.changeWordState(wordObj.word, "explained");
+                    el(`editPage_${wordObj.word}_notExplained`).onclick = 
+                            () => this.changeWordState(wordObj.word, "notExplained");
+                    el(`editPage_${wordObj.word}_mistake`).onclick = 
+                            () => this.changeWordState(wordObj.word, "mistake");
+                });
+            } else {
+                Pages.go(Pages.edit);
+            }
             break;
         }
     }
@@ -508,16 +578,6 @@ class App {
         })
     }
 
-    hideAllGameActions() {
-        hide("gamePage_speakerListener");
-        hide("gamePage_speakerReadyBox");
-        hide("gamePage_listenerReadyBox");
-        hide("gamePage_observerBox");
-        hide("gamePage_explanationBox");
-        hide("gamePage_observerTimer");
-        hide("gamePage_explanationDelayBox");
-    }
-
     listenerReady() {
         this.emit("cListenerReady");
         disable("gamePage_listenerReadyButton");
@@ -531,12 +591,19 @@ class App {
     }
 
     showResults(results) {
-        this.showPage("resultsPage");
         el("resultPage_results").innerHTML = "";
         results.forEach((result) => {
-            el("resultPage_results").appendChild(template(
-                "resultPage_results", result));
+            el("resultPage_results").appendChild(Template.result(result));
         })
+    }
+
+    changeWordState(word, newState) {
+        el(`editPage_${word}_${this.wordStates[word]}`).classList.remove(
+            "selected");
+        enable(`editPage_${word}_${this.wordStates[word]}`);
+        el(`editPage_${word}_${newState}`).classList.add("selected");
+        disable(`editPage_${word}_${newState}`);
+        this.wordStates[word] = newState;
     }
 
     setSocketioEventListeners() {
@@ -580,7 +647,7 @@ class App {
                 _this.setPlayers(data.playerList.filter(user => user.online)
                     .map(user => user.username), data.host);
                 _this.showStartAction(data.host);
-                _this.showPage("preparationPage");
+                Pages.go(Pages.preparation);
                 if (data.playerList.filter(user => user.online).length > 1) {
                     enable("preparationPage_start");
                 } else {
@@ -592,12 +659,13 @@ class App {
                 el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
                 el("gamePage_title").innerText = _this.myUsername;
-                _this.setWord(data.word);
+                if (data.word) {
+                    _this.setWord(data.word);
+                }
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
                     "observer";
                 _this.setGameState(data.substate, data);
-                _this.showPage("gamePage");
                 break;
             }
         })
@@ -605,7 +673,6 @@ class App {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
             el("gamePage_title").innerText = _this.myUsername;
             _this.setGameState("wait", data);
-            _this.showPage("gamePage");
         })
         this.socket.on("sExplanationStarted", function(data) {
             _this.setGameState("explanation", data);
@@ -614,16 +681,28 @@ class App {
             _this.setWord(data.word);
         })
         this.socket.on("sWordsToEdit", function(data) {
-            _this.emit("cWordsEdited", data);
+            Pages.go(Pages.edit.speaker)
+            _this.wordStates = {}
+            data.editWords.forEach((wordObj) => {
+                _this.wordStates[wordObj.word] = wordObj.wordState;
+                el("editPage_list").appendChild(Template.editWord(wordObj));
+                el(`editPage_${wordObj.word}_explained`).onclick = 
+                        () => _this.changeWordState(wordObj.word, "explained");
+                el(`editPage_${wordObj.word}_notExplained`).onclick = 
+                        () => _this.changeWordState(wordObj.word, "notExplained");
+                el(`editPage_${wordObj.word}_mistake`).onclick = 
+                        () => _this.changeWordState(wordObj.word, "mistake");
+            });
         })
         this.socket.on("sNextTurn", function(data) {
             _this.setGameState("wait", data);
-            _this.roundId += 1;
         })
         this.socket.on("sWordExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
         })
         this.socket.on("sExplanationEnded", function(data) {
+            _this.roundId += 1;
+            Pages.go(Pages.edit);
             el("gamePage_wordsCnt").innerText = data.wordsCount;
         })
         this.socket.on("sPlayerJoined", function(data) {
@@ -637,6 +716,7 @@ class App {
             _this.showStartAction(data.host);
         })
         this.socket.on("sGameEnded", function(data) {
+            Pages.go(Pages.results);
             _this.showResults(data.results);
         })
     }
@@ -644,15 +724,15 @@ class App {
     setDOMEventListeners() {
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
-            this.showPage('joinPage');
+            Pages.go(Pages.join);
         }
         el("mainPage_joinRoom").onclick = () => {
             el("joinPage_inputKey").value = this.myRoomKey;
-            this.showPage('joinPage');
+            Pages.go(Pages.join);
         }
-        el("mainPage_viewRules").onclick = () => this.showPage('rulesPage');
-        el("joinPage_goBack").onclick = () => this.goBack();
-        el("joinPage_viewRules").onclick = () => this.showPage('rulesPage');
+        el("mainPage_viewRules").onclick = () => Pages.go(Pages.rules);
+        el("joinPage_goBack").onclick = () => Pages.goBack();
+        el("joinPage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
         el("joinPage_generateKey").onclick = () => this.generateKey();
         el("joinPage_go").onclick = () => {
@@ -660,7 +740,7 @@ class App {
             this.setMyUsername(el("joinPage_inputName").value);
             this.enterRoom();
         }
-        el("rulesPage_goBack").onclick = () => this.goBack();
+        el("rulesPage_goBack").onclick = () => Pages.goBack();
         el("preparationPage_viewRules").onclick = () => 
             this.showPage('rulesPage');
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
@@ -670,7 +750,7 @@ class App {
         el("gamePage_listenerReadyButton").onclick = () => 
             this.listenerReady();
         el("gamePage_speakerReadyButton").onclick = () => 
-        this.speakerReady();
+            this.speakerReady();
         el("gamePage_explanationSuccess").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "explained"});
         el("gamePage_explanationFailed").onclick = () => this.emit(
@@ -678,19 +758,25 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        el("gamePage_viewRules").onclick = () => this.showPage("rulesPage");
+        el("gamePage_viewRules").onclick = () => Pages.go(Pages.rules);
+        el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
+            {"editWords": Object.keys(this.wordStates).map(x => 
+                {return{
+                    "word": x, 
+                    "wordState": this.wordStates[x],
+                }})
+            });
         el("resultsPage_goBack").onclick = () => this.leaveRoom();
-        el("resultsPage_viewRules").onclick = () => this.showPage("rulesPage");
+        el("resultsPage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
-            this.showPage("joinPage");
+            Pages.go(Pages.join);
         }
     }
 }
 
+timeSync = new TimeSync(TIME_SYNC_DELTA);
 let app;
 window.onload = function() {
-    maintainDelta().then(function () {
-        app = new App();
-    });
+    app = new App();
 }
