@@ -637,6 +637,8 @@ button, input {
 
 #editPage_list .explained {
     width: 33.33%;
+    padding-left: 0;
+    padding-right: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
@@ -647,6 +649,8 @@ button, input {
 
 #editPage_list .not-explained {
     width: 33.33%;
+    padding-left: 0;
+    padding-right: 0;
     border-radius: 0;
     margin-left: -1px;
 }
@@ -657,6 +661,8 @@ button, input {
 
 #editPage_list .mistake {
     width: 33.33%;
+    padding-left: 0;
+    padding-right: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: -1px;
@@ -668,7 +674,7 @@ button, input {
 
 #editPage_confirm {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 /* Results page */
