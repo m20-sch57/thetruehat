@@ -312,6 +312,7 @@ class Signals {
      */
     static sYouJoined(socket, key) {
         const room = rooms[key];
+        const name = room.users[findFirstSidPos(room.users, socket.id)].username;
         let joinObj = {
             "key": key,
             "playerList": getPlayerList(room),
