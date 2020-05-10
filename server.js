@@ -342,7 +342,11 @@ class Signals {
                         break;
                     case "edit":
                         joinObj.substate = "edit";
-                        joinObj.editWords = [];
+                        joinObj.speaker = room.speaker;
+                        joinObj.listener = room.listener;
+                        if (joinObj.speaker === name) {
+                            joinObj.editWords = room.editWords;
+                        }
                         break;
                     default:
                         console.log(room);
