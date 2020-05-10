@@ -2,8 +2,10 @@
 
 "use strict"
 
+// Loading configuration file
 const config = require("./config.json");
 
+// Loading constants
 const PORT = config.port;
 const WORD_NUMBER = config.wordNumber;
 const DELAY = config.transferTime; // given delay for client reaction
@@ -28,6 +30,10 @@ app.use(express.static("static"));
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/index.html");
 });
+
+// Connecting DB
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('DB.db');
 
 //----------------------------------------------------------
 // Handy functions
@@ -262,10 +268,6 @@ function endGame(key) {
 }
 
 class Signals {
-    static emit(socket, event, args) {
-        socket.emit(event, args);
-    }
-
     /**
      * Implementation of sPlayerJoined signal
      * @see API.md
