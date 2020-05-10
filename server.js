@@ -343,8 +343,8 @@ class Signals {
                         break;
                     case "edit":
                         joinObj.substate = "edit";
-                        joinObj.speaker = room.speaker;
-                        joinObj.listener = room.listener;
+                        joinObj.speaker = room.users[room.speaker].username;
+                        joinObj.listener = room.users[room.listener].username;
                         if (joinObj.speaker === name) {
                             joinObj.editWords = room.editWords;
                         }
