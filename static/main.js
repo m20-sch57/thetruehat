@@ -191,7 +191,6 @@ class Template {
             "mistake": eMistake
         }[wordState];
         selected.classList.add("selected");
-        selected.setAttribute("disabled", "");
         return elem;
     }
 }
@@ -602,9 +601,7 @@ class App {
     changeWordState(word, newState) {
         el(`editPage_${word}_${this.wordStates[word]}`).classList.remove(
             "selected");
-        enable(`editPage_${word}_${this.wordStates[word]}`);
         el(`editPage_${word}_${newState}`).classList.add("selected");
-        disable(`editPage_${word}_${newState}`);
         this.wordStates[word] = newState;
     }
 
