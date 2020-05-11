@@ -538,7 +538,7 @@ button, input {
     height: calc(100% - 125px);
 }
 
-#gamePage_explanationWord {
+#gamePage_explanationWordParent {
     width: 100%;
     text-transform: uppercase;
     text-align: center;

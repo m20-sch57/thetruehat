@@ -371,17 +371,22 @@ class App {
 
     setWord(word) {
         el("gamePage_explanationWord").innerText = word;
-        el("gamePage_explanationWord").classList.remove("small-word");
-        el("gamePage_explanationWord").classList.remove("medium-word");
-        el("gamePage_explanationWord").classList.remove("large-word");
-        if (word.length > 14) {
-            el("gamePage_explanationWord").classList.add("small-word");
-        } else if (word.length > 9) {
-            el("gamePage_explanationWord").classList.add("medium-word");
-        } else {
-            el("gamePage_explanationWord").classList.add("large-word");
-        }
+        this.sizeWord();
     }   
+
+    sizeWord() {
+        let eWord = el("gamePage_explanationWord");
+        let eWordParent = el("gamePage_explanationBox");
+        if (!eWord.innerText) {
+            return;
+        }
+        let baseWidth = 15;
+        eWord.style["font-size"] = `${baseWidth}px`
+        let wordWidth = eWord.getBoundingClientRect().width;
+        let parentWidth = eWordParent.getBoundingClientRect().width;
+        eWord.style["font-size"] = `${Math.min(40, 
+            baseWidth * parentWidth / wordWidth)}px`;
+    }
 
     generateKey() {
         fetch("/getFreeKey")
@@ -478,6 +483,11 @@ class App {
                 .then(() => {
                     if (this.roundId == roundId) {
                         Pages.go(Pages.explanation[this.myRole]);
+                        if (data.word) {
+                            this.setWord(data.word);
+                        } else {
+                            this.sizeWord();
+                        }
                         this.animateTimer(data.startTime, roundId)
                         .then(() => {
                             this.animateAftermath(data.startTime + 
@@ -658,9 +668,6 @@ class App {
                 el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
                 el("gamePage_title").innerText = _this.myUsername;
-                if (data.word) {
-                    _this.setWord(data.word);
-                }
                 _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
                     (data.listener == _this.myUsername) ? "listener" : 
                     "observer";
