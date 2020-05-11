@@ -398,7 +398,8 @@ class Signals {
         io.sockets.to(key).emit("sNextTurn", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
-            "words": words});
+            "words": words,
+            "wordsCount": rooms[key].freshWords.length});
     }
 
     /**
