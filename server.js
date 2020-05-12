@@ -31,7 +31,7 @@ app.get("/", function(req, res) {
 
 // Connecting DB
 const sqlite3 = require('sqlite3').verbose();
-const DB = new sqlite3.Database('DB.db');
+const db = new sqlite3.Database('DB.db');
 
 //----------------------------------------------------------
 // Handy functions
