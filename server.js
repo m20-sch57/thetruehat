@@ -151,7 +151,7 @@ function getRoom(socket) {
  * @return All words in DB.
  */
 async function getAllWords() {
-    const res = await db.query("SELECT Word FROM Words WHERE Tags != \"-deleted\"");
+    const res = await db.query("SELECT Word FROM Words WHERE Tags != \"-deleted\";");
     return res.rows;
 }
 
@@ -495,21 +495,28 @@ class Signals {
  * Implementation of getFreeKey function
  * @see API.md
  */
-app.get("/getFreeKey", function(req, res) {
-    // getting the settings
-    const minKeyLength = config.minKeyLength;
-    const maxKeyLength = config.maxKeyLength;
-    const keyConsonant = config.keyConsonant;
-    const keyVowels = config.keyVowels;
-    // getting the key length
-    const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
-    // generating the key
-    let key = "";
-    for (let i = 0; i < keyLength; ++i) {
-        const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
-        key += charList[Math.floor(Math.random() * charList.length)];
+app.get("/getFreeKey", async function(req, res) {
+    while (true) {
+        // getting the settings
+        const minKeyLength = config.minKeyLength;
+        const maxKeyLength = config.maxKeyLength;
+        const keyConsonant = config.keyConsonant;
+        const keyVowels = config.keyVowels;
+        // getting the key length
+        const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
+        // generating the key
+        let key = "";
+        for (let i = 0; i < keyLength; ++i) {
+            const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
+            key += charList[Math.floor(Math.random() * charList.length)];
+        }
+        const qRes = await db.query(`SELECT count(GameID) FROM Rooms WHERE RoomKey;`);
+        if (qRes.rows[0]["count(GameID)"] !== 0) {
+            continue;
+        }
+        res.json({"key": key});
+        return;
     }
-    res.json({"key": key});
 });
 
 /**
@@ -524,7 +531,7 @@ app.get("/getRoomInfo", async function(req, res) {
         return;
     }
 
-    const qRes = await db.query(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ${key})`);
+    const qRes = await db.query(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ${key});`);
     const rows = qRes.rows;
     // Case of nonexistent room
     if (rows.length === 0) {
