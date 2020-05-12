@@ -1,9 +1,9 @@
 {
     "port": 2005,
-    "wordsPath": "./words/all.json",
+    "wordsPath": "./words/words_100_tmp.json",
     "transferTime": 1,
     "delayTime": 3,
-    "explanationTime": 30,
+    "explanationTime": 40,
     "aftermathTime": 3,
     "wordNumber": 100,
     "minKeyLength": 6,

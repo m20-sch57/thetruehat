@@ -405,6 +405,7 @@ const rooms = {};
 // Socket.IO functions
 
 io.on("connection", function(socket) {
+    console.log(socket.id, "connection", undefined);
 
     /**
      * Implementation of cJoinRoom function

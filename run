@@ -1,6 +1,7 @@
 #!/bin/sh
 
 if [ -f "server.pid" ]; then
+    echo Failed to run, delete server.pid
     exit 1;
 else
     ./server.js \&> server.log &

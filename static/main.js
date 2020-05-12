@@ -4,11 +4,11 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const PORT = 2005;
+const PORT = 3005;
 
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-const EXPLANATION_TIME = 30000;
+const EXPLANATION_TIME = 40000;
 const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
@@ -153,7 +153,7 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`http://${document.domain}:${PORT}`);
+        this.socket = io.connect(`https://${document.domain}:${PORT}`);
 
         this.pageLog = [];
         this.myUsername = "";
@@ -252,7 +252,7 @@ class App {
     }
 
     copyLink() {
-        navigator.clipboard.writeText(`http://${document.domain}:5000/#${
+        navigator.clipboard.writeText(`https://${document.domain}:${PORT}/#${
             this.myRoomKey}`);
     }
 
