@@ -33,6 +33,19 @@ app.get("/", function(req, res) {
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('DB.db');
 
+db.query = function(sql) {
+    var that = this;
+    return new Promise(function(resolve, reject) {
+        that.all(sql, function(err, rows) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({"rows": rows});
+            }
+        });
+    });
+}
+
 //----------------------------------------------------------
 // Handy functions
 
@@ -137,10 +150,9 @@ function getRoom(socket) {
  *
  * @return All words in DB.
  */
-function getAllWords() {
-    db.all("SELECT Word FROM Words WHERE Tags != \"-deleted\"", function (err, rows) {
-        return rows.map((row) => (row["Word"]));
-    })
+async function getAllWords() {
+    const res = await db.query("SELECT Word FROM Words WHERE Tags != \"-deleted\"");
+    return res.rows;
 }
 
 /**
@@ -148,8 +160,8 @@ function getAllWords() {
  *
  * @return list of words
  */
-function generateWords() {
-    const allWords = getAllWords();
+async function generateWords() {
+    const allWords = await getAllWords();
     const words = [];
     const used = {};
     const numberOfAllWords = allWords.length;
@@ -504,7 +516,7 @@ app.get("/getFreeKey", function(req, res) {
  * Implementation of getRoomInfo function
  * @see API.md
  */
-app.get("/getRoomInfo", function(req, res) {
+app.get("/getRoomInfo", async function(req, res) {
     const key = req.query.key; // The key of the room
 
     if (key === "") {
@@ -512,44 +524,42 @@ app.get("/getRoomInfo", function(req, res) {
         return;
     }
 
-    DB.all("SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ?)", key,
-        function (err, rows) {
-            // Case of nonexistent room
-            if (rows.length === 0) {
-                res.json({"success": true,
-                    "state": "wait",
-                    "playerList": [],
-                    "host": ""});
-                return;
-            }
+    const qRes = await db.query(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ${key})`);
+    const rows = qRes.rows;
+    // Case of nonexistent room
+    if (rows.length === 0) {
+        res.json({"success": true,
+            "state": "wait",
+            "playerList": [],
+            "host": ""});
+        return;
+    }
 
-            // If something goes wrong
-            if (rows.length > 2) {
-                console.warn("getRoomInfo: There are 2 or more games in room by the key.")
-            }
+    // If something goes wrong
+    if (rows.length > 2) {
+        console.warn("getRoomInfo: There are 2 or more games in room by the key.")
+    }
 
-            const game = rows[0]; // The room
-            const players = JSON.parse(game["Players"]); // Players in the game
-            switch (game["State"]) {
-                case "wait":
-                case "play":
-                    res.json({"success": true,
-                        "state": game["State"],
-                        "playerList": players.map(el => {return {"username": el.username, "online": el.online};}),
-                        "host": game["Host"]});
-                    break;
+    const game = rows[0]; // The room
+    const players = JSON.parse(game["Players"]); // Players in the game
+    switch (game["State"]) {
+        case "wait":
+        case "play":
+            res.json({"success": true,
+                "state": game["State"],
+                "playerList": players.map(el => {return {"username": el.username, "online": el.online};}),
+                "host": game["Host"]});
+            break;
 
-                case "end":
-                    res.json({"success": true, "state": "end"});
-                    console.warn("getRoomInfo: Ended game is not removed from the room.")
-                    break;
+        case "end":
+            res.json({"success": true, "state": "end"});
+            console.warn("getRoomInfo: Ended game is not removed from the room.")
+            break;
 
-                default:
-                    console.warn("getRoomInfo: Game state is incorrect.")
-                    break;
-            }
-        }
-    )
+        default:
+            console.warn("getRoomInfo: Game state is incorrect.")
+            break;
+    }
 });
 
 //----------------------------------------------------------
@@ -583,12 +593,12 @@ class Room {
     /**
      * Preparing room for the game
      */
-    gamePrepare() {
+    async gamePrepare() {
         // changing state to 'play'
         this.state = "play";
 
         // generating word list (later key can affect word list)
-        this.freshWords = generateWords();
+        this.freshWords = await generateWords();
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -601,6 +611,8 @@ class Room {
         this.listener = numberOfPlayers - 2;
 
         this.roundPrepare()
+
+        return;
     }
 
     /**
@@ -964,7 +976,7 @@ class Callbacks {
         Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
     }
 
-    static cStartGame(socket, key) {
+    static async cStartGame(socket, key) {
         /**
          * kicking off offline users
          */
@@ -981,9 +993,13 @@ class Callbacks {
         // removing offline users
         rooms[key].users = onlineUsers;
 
-        rooms[key].gamePrepare();
+        await rooms[key].gamePrepare();
 
         Signals.sGameStarted(key);
+
+        console.log(rooms[key].freshWords);
+
+        return;
     }
 
     static cEndWordExplanation(socket, key, cause) {
@@ -1190,7 +1206,7 @@ io.on("connection", function(socket) {
      * Implementation of cStartGame function
      * @see API.md
      */
-    socket.on("cStartGame", function() {
+    socket.on("cStartGame", async function() {
         const key = getRoom(socket); // key of the room
 
         // checking signal conditions
@@ -1198,7 +1214,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        Callbacks.cStartGame(socket, key);
+        await Callbacks.cStartGame(socket, key);
     });
 
     /**
