@@ -312,6 +312,7 @@ class Signals {
      */
     static sYouJoined(socket, key) {
         const room = rooms[key];
+        const name = room.users[findFirstSidPos(room.users, socket.id)].username;
         let joinObj = {
             "key": key,
             "playerList": getPlayerList(room),
@@ -342,7 +343,11 @@ class Signals {
                         break;
                     case "edit":
                         joinObj.substate = "edit";
-                        joinObj.editWords = [];
+                        joinObj.speaker = room.users[room.speaker].username;
+                        joinObj.listener = room.users[room.listener].username;
+                        if (joinObj.speaker === name) {
+                            joinObj.editWords = room.editWords;
+                        }
                         break;
                     default:
                         console.log(room);
@@ -393,7 +398,8 @@ class Signals {
         io.sockets.to(key).emit("sNextTurn", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
-            "words": words});
+            "words": words,
+            "wordsCount": rooms[key].freshWords.length});
     }
 
     /**
@@ -426,7 +432,8 @@ class Signals {
     static sWordExplanationEnded(key, cause) {
         io.sockets.to(key).emit("sWordExplanationEnded", {
             "cause": cause,
-            "wordsCount": rooms[key].freshWords.length});
+            "wordsCount": rooms[key].freshWords.length +
+            ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
     }
 
     /**

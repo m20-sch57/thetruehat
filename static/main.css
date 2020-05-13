@@ -3,11 +3,12 @@
 }
 
 html {
-    height: 100%;
+    min-height: 100%;
+    display: flex;
 }
 
 body {
-    height: 100%;
+    flex: 1;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
 }
@@ -35,6 +36,7 @@ button, input {
 
 .small-button {
     padding: 10px 15px 10px 15px;
+    color: rgba(0, 0, 0, 0.85);
     border: 1px solid grey;
     border-radius: 22px;
     font-size: 15px;
@@ -42,6 +44,7 @@ button, input {
 
 .medium-button {
     padding: 15px 20px 15px 20px;
+    color: rgba(0, 0, 0, 0.85);
     border: 1px solid grey;
     border-radius: 25px;
     font-size: 20px;
@@ -59,6 +62,28 @@ button, input {
 }
 
 .small-button:disabled, .medium-button:disabled {
+    background-color: lightgrey;
+}
+
+.small-white-button {
+    padding: 10px 15px 10px 15px;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 22px;
+    font-size: 15px;
+}
+
+.small-white-button:hover:enabled {
+    background-color: rgb(233, 233, 233);
+    box-shadow: 1px 1px 5px grey;
+}
+
+.small-white-button:active:enabled {
+    background-color: lightgrey;
+}
+
+.small-white-button:disabled {
     background-color: lightgrey;
 }
 
@@ -158,6 +183,18 @@ button, input {
 
 .timer-aftermath {
     color: red;
+}
+
+.large-word {
+    font-size: 40px;
+}
+
+.medium-word {
+    font-size: 30px;
+}
+
+.small-word {
+    font-size: 25px;
 }
 
 /* Main page */
@@ -264,7 +301,7 @@ button, input {
 }
 
 #joinPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 #joinPage_inputKey {
@@ -298,12 +335,10 @@ button, input {
     margin-top: -75px;
     background-image: url(\hat.png);
     background-size: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 #rulesPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 /* Preparation page */
@@ -331,7 +366,7 @@ button, input {
 }
 
 #preparationPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 #preparationPage_usersTable {
@@ -357,6 +392,8 @@ button, input {
     margin-right: -20px;
     background-image: url(\hat.png);
     background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #preparationPage_users .you::after {
@@ -498,14 +535,13 @@ button, input {
 #gamePage_explanationWordTimer {
     display: flex;
     flex-flow: column;
-    height: calc(100% - 105px);
+    height: calc(100% - 125px);
 }
 
-#gamePage_explanationWord {
+#gamePage_explanationWordParent {
     width: 100%;
     text-transform: uppercase;
     text-align: center;
-    font-size: 40px;
     font-weight: lighter;
     margin-top: auto;
     margin-bottom: 0;
@@ -522,20 +558,22 @@ button, input {
 }
 
 #gamePage_explanationActions {
-    height: 105px;
+    height: 125px;
 }
 
 #gamePage_explanationSuccess {
+    height: 75px;
     width: 100%;
     margin-top: auto;
-    border-radius: 10px;
+    font-size: 30px;
+    border-radius: 15px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
 #gamePage_explanationFailed {
     width: calc(50% + 0.5px);
-    border-radius: 10px;
+    border-radius: 15px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -544,7 +582,7 @@ button, input {
 
 #gamePage_explanationMistake {
     width: calc(50% + 0.5px);
-    border-radius: 10px;
+    border-radius: 15px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -565,6 +603,78 @@ button, input {
     #gamePage_explanationActions {
         padding: 0 30px 0 30px;
     }
+}
+
+/* Edit page */
+
+#editPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#editPage_title {
+    font-weight: lighter;
+    margin-bottom: 0;
+}
+
+#editPage_body {
+    width: 100%;
+    padding: 0 30px 30px 30px;
+}
+
+#editPage_list .edit-item {
+    margin-bottom: 10px;
+}
+
+#editPage_list .word {
+    text-align: center;
+    font-size: 25px;
+    font-weight: lighter;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#editPage_list .explained {
+    width: 33.33%;
+    padding-left: 0;
+    padding-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#editPage_list .explained.selected {
+    background-color: lightgreen;
+}
+
+#editPage_list .not-explained {
+    width: 33.33%;
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+#editPage_list .not-explained.selected {
+    background-color: lightblue;
+}
+
+#editPage_list .mistake {
+    width: 33.33%;
+    padding-left: 0;
+    padding-right: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+#editPage_list .mistake.selected {
+    background-color: lightcoral;
+}
+
+#editPage_confirm {
+    width: 100%;
+    margin-top: 30px;
 }
 
 /* Results page */
