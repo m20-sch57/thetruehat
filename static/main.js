@@ -467,6 +467,7 @@ class App {
         }
         switch(state) {
         case "wait":
+            el("gamePage_wordsCnt").innerText = data.wordsCount;
             enable("gamePage_listenerReadyButton");
             el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
             enable("gamePage_speakerReadyButton");
@@ -657,7 +658,6 @@ class App {
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
-                el("gamePage_wordsCnt").innerText = data.wordsCount;
                 _this.setPlayers(data.playerList.filter(user => user.online)
                     .map(user => user.username), data.host);
                 _this.showStartAction(data.host);
