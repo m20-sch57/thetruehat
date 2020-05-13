@@ -657,6 +657,7 @@ class App {
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
+                el("gamePage_wordsCnt").innerText = data.wordsCount;
                 _this.setPlayers(data.playerList.filter(user => user.online)
                     .map(user => user.username), data.host);
                 _this.showStartAction(data.host);
@@ -668,6 +669,7 @@ class App {
                 }
                 break;
             case "play":
+                _this.roundId = 0;
                 el("gamePage_speaker").innerText = data.speaker;
                 el("gamePage_listener").innerText = data.listener;
                 el("gamePage_wordsCnt").innerText = data.wordsCount;
