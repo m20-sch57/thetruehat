@@ -4,8 +4,6 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const PORT = 5000;
-
 const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const EXPLANATION_TIME = 20000;
@@ -305,9 +303,9 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`http://${document.domain}:${PORT}`);
+        console.log(`${window.location.protocol}//${window.location.host}`);
+        this.socket = io.connect(`${window.location.protocol}//${window.location.host}`);
 
-        // this.pageLog = [];
         this.myUsername = "";
         this.myRole = "";
         this.setKey(readLocationHash());
@@ -401,8 +399,8 @@ class App {
     }
 
     copyLink() {
-        navigator.clipboard.writeText(`http://${document.domain}:${PORT}/#${
-            this.myRoomKey}`);
+        navigator.clipboard.writeText(`${window.location.protocol}//${
+            window.location.host}/#${this.myRoomKey}`);
     }
 
     pasteKey() {
