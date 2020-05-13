@@ -86,6 +86,7 @@
                     <div class="spacer"></div>
                 </div>
                 <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
+                <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
                 <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
             </div>
         </div>
@@ -163,7 +164,7 @@
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="editPage_viewRules">
         </button>
-        <div class="content-small">
+        <div class="content-medium">
             <div id="editPage_header">
                 <h1 id="editPage_title">Редактирование</h1>
                 <p class="hint">Слов за раунд: <span id="editPage_wordsCnt">
@@ -171,7 +172,7 @@
                 </span></p>
             </div>
             <div id="editPage_body">
-                <div id="editPage_list">
+                <div id="editPage_list" class="wrap">
                     <div class="edit-item">
                         <h1 class="word">Слово</h1>
                         <button class="small-white-button explained selected">
@@ -185,7 +186,7 @@
                     <div class="edit-item">
                         <h1 class="word">Ещёслово</h1>
                         <button class="small-white-button explained">
-                            Объяснил
+                            Угадал
                         </button><button class="small-white-button not-explained selected">
                             Не угадал
                         </button><button class="small-white-button mistake">
@@ -195,7 +196,7 @@
                     <div class="edit-item">
                         <h1 class="word">Оченьдлинноеслово</h1>
                         <button class="small-white-button explained">
-                            Объяснил
+                            Угадал
                         </button><button class="small-white-button not-explained">
                             Не угадал
                         </button><button class="small-white-button mistake selected">
