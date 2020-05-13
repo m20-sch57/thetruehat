@@ -53,7 +53,7 @@ db.exec = function(sql) {
             if (err) {
                 reject(err);
             } else {
-                resolve();
+                resolve({"lastID": this.lastID});
             }
         });
     });
@@ -544,7 +544,7 @@ app.get("/getRoomInfo", async function(req, res) {
         return;
     }
 
-    const qRes = await db.query(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ${key});`);
+    const qRes = await db.query(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = \"${key}\");`);
     const rows = qRes.rows;
     // Case of nonexistent room
     if (rows.length === 0) {
@@ -959,9 +959,18 @@ class Callbacks {
         }
 
         // If room isn't saved in main dictionary, let's save it and create info about it
+        let gameID = -1;
         if (!(key in rooms)) {
             rooms[key] = new Room()
-            await db.exec(`INSERT INTO Games(Sent) VALUES (0);`);
+            const resp = await db.exec(`INSERT INTO Games(Sent) VALUES (0);`);
+            gameID = resp.lastID;
+        } else {
+            const resp = await db.query(`SELECT GameID FROM Rooms WHERE RoomKey = \"${key}\";`);
+            if (resp.rows.length !== 1) {
+                console.log("Incorrect number of rows!");
+                // TODO return or something else
+            }
+            gameID = resp.rows[0];
         }
 
         // Adding the user to the room info
@@ -975,7 +984,9 @@ class Callbacks {
             rooms[key].users[pos].online = true;
         }
 
-        await db.exec(`UPDATE Games SET `)
+        // updating players and host
+        const resp = await db.query(``);
+        await db.exec(`UPDATE Games SET Players = `)
 
         Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
 
