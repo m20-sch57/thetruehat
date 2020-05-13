@@ -528,7 +528,7 @@ class App {
 
     animateDelay(startTime, roundId) {
         let _this = this;
-        this.sound.playSound("delayTimer", startTime);
+        // this.sound.playSound("delayTimer", startTime);
         return animate({
             startTime,
             duration: DELAY_TIME,
@@ -539,9 +539,9 @@ class App {
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
             },
             stopCondition: () => {
-                if (_this.roundId != roundId) {
-                    this.sound.killSound();
-                }
+                // if (_this.roundId != roundId) {
+                //     this.sound.killSound();
+                // }
                 return _this.roundId != roundId;
             }
         })
