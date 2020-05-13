@@ -426,3 +426,4 @@ gen
 
 # Caddy server
 Caddyfile
+runCaddy
