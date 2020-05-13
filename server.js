@@ -46,6 +46,19 @@ db.query = function(sql) {
     });
 }
 
+db.exec = function(sql) {
+    var that = this;
+    return new Promise(function(resolve, reject) {
+        that.run(sql, function(err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 //----------------------------------------------------------
 // Handy functions
 
@@ -929,7 +942,7 @@ class CheckConditions {
 }
 
 class Callbacks {
-    static joinRoomCallback(socket, data, err) {
+    static async joinRoomCallback(socket, data, err) {
         const key = data.key.toLowerCase(); // key of the room
         const name = data.username; // name of the user
 
@@ -948,6 +961,7 @@ class Callbacks {
         // If room isn't saved in main dictionary, let's save it and create info about it
         if (!(key in rooms)) {
             rooms[key] = new Room()
+            await db.exec(`INSERT INTO Games(Sent) VALUES (0);`);
         }
 
         // Adding the user to the room info
@@ -960,6 +974,8 @@ class Callbacks {
             rooms[key].users[pos].sids = [socket.id];
             rooms[key].users[pos].online = true;
         }
+
+        await db.exec(`UPDATE Games SET `)
 
         Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
 
