@@ -295,6 +295,7 @@ let Pages = {
     },
 
     leave: function () {
+        this.hidePage();
         this._pageLog = [];
         this.go(this.join);
     },
@@ -334,6 +335,7 @@ class App {
     }
 
     leaveRoom() {
+        this.roundId = -1;
         this.emit("cLeaveRoom");
         Pages.leave();
     }
@@ -478,7 +480,9 @@ class App {
                     console.log("WARN: empty role");
                     return;
                 }
-                Pages.go(Pages.delay);
+                if (this.roundId == roundId) {
+                    Pages.go(Pages.delay);
+                }
                 this.animateDelay(data.startTime - DELAY_TIME, roundId)
                 .then(() => {
                     if (this.roundId == roundId) {
