@@ -409,8 +409,13 @@ button, input {
     width: 100%;
 }
 
+#preparationPage_startHint {
+    text-align: center;
+}
+
 #preparationPage_startLabel {
     width: 100%;
+    font-size: 25px;
     font-weight: lighter;
     text-align: center;
 }
@@ -620,11 +625,12 @@ button, input {
 
 #editPage_body {
     width: 100%;
+    text-align: center;
     padding: 0 30px 30px 30px;
 }
 
-#editPage_list .edit-item {
-    margin-bottom: 10px;
+#editPage_list {
+    margin-bottom: 30px;
 }
 
 #editPage_list .word {
@@ -637,8 +643,8 @@ button, input {
 
 #editPage_list .explained {
     width: 33.33%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 5px;
+    padding-right: 5px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
@@ -649,8 +655,8 @@ button, input {
 
 #editPage_list .not-explained {
     width: 33.33%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 5px;
+    padding-right: 5px;
     border-radius: 0;
     margin-left: -1px;
 }
@@ -661,8 +667,8 @@ button, input {
 
 #editPage_list .mistake {
     width: 33.33%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 5px;
+    padding-right: 5px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: -1px;
@@ -674,7 +680,6 @@ button, input {
 
 #editPage_confirm {
     width: 100%;
-    margin-top: 30px;
 }
 
 /* Results page */

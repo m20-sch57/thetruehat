@@ -176,7 +176,7 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + (PRE + DELAY) * 1000;
+    rooms[key].startTime = currentTime + (PRE + DELAY);
     rooms[key].word = rooms[key].freshWords.pop();
     /*
     const numberOfTurn = rooms[key].numberOfTurn;
@@ -188,9 +188,9 @@ function startExplanation(key) {
         if (rooms[key].numberOfTurn === numberOfTurn) {
             finishExplanation(key);
         }
-    }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
+    }, (PRE + EXPLANATION_LENGTH + POST + DELAY));
     */
-    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY) * 1000);
+    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY));
     Signals.sExplanationStarted(key)
 }
 
@@ -316,7 +316,12 @@ class Signals {
         let joinObj = {
             "key": key,
             "playerList": getPlayerList(room),
-            "host": room.users[findFirstPos(room.users, "online", true)].username
+            "host": room.users[findFirstPos(room.users, "online", true)].username,
+            "settings": {
+                "delayTime": config.delayTime,
+                "explanationTime": config.explanationTime,
+                "aftermathTime": config.aftermathTime
+            }
         };
         switch (room.state) {
             case "wait":
@@ -987,7 +992,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
+                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_LENGTH) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;

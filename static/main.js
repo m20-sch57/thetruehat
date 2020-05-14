@@ -4,12 +4,12 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-const EXPLANATION_TIME = 20000;
-const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
+const EXPLAINED_WORD_STATE = "угадал";
+const NOT_EXPLAINED_WORD_STATE = "не угадал";
+const MISTAKE_WORD_STATE = "ошибка";
 
 const TIME_SYNC_DELTA = 1200000;
 
@@ -73,7 +73,7 @@ function readLocationHash() {
     return decodeURIComponent(location.hash.slice(1));
 }
 
-function explanationTimeFormat(sec) {
+function minSec(sec) {
     let min = Math.floor(sec / 60);
     sec -= 60 * min;
     if (sec < 10) sec = "0" + String(sec);
@@ -81,7 +81,7 @@ function explanationTimeFormat(sec) {
     return `${min}:${sec}`;
 }
 
-function aftermathTimeFormat(msec) {
+function secMsec(msec) {
     let sec = Math.floor(msec / 10);
     msec -= 10 * sec;
     return `${sec}.${msec}`;
@@ -167,17 +167,17 @@ class Template {
         let eExplained = document.createElement("button");
         eExplained.classList.add("small-white-button");
         eExplained.classList.add("explained");
-        eExplained.innerText = "объяснил";
+        eExplained.innerText = EXPLAINED_WORD_STATE;
         eExplained.setAttribute("id", `editPage_${word}_explained`);
         let eNotExplained = document.createElement("button");
         eNotExplained.classList.add("small-white-button");
         eNotExplained.classList.add("not-explained");
-        eNotExplained.innerText = "не объяснил";
+        eNotExplained.innerText = NOT_EXPLAINED_WORD_STATE;
         eNotExplained.setAttribute("id", `editPage_${word}_notExplained`);
         let eMistake = document.createElement("button");
         eMistake.classList.add("small-white-button");
         eMistake.classList.add("mistake");
-        eMistake.innerText = "ошибка";
+        eMistake.innerText = MISTAKE_WORD_STATE;
         eMistake.setAttribute("id", `editPage_${word}_mistake`);
         elem.appendChild(eWord);
         elem.appendChild(eExplained);
@@ -251,6 +251,7 @@ let Pages = {
     results: ["resultsPage"],
 
     getPage: function (page) {
+        console.log(page);
         if (page instanceof Array) {
             return page
         } else {
@@ -310,6 +311,7 @@ class App {
         this.myRole = "";
         this.setKey(readLocationHash());
         this.roundId = 0;
+        this.gameSettings = {};
 
         this.checkClipboard();
 
@@ -338,27 +340,18 @@ class App {
         Pages.leave();
     }
 
-    setPlayers(usernames, host) {
-        el("preparationPage_users").innerHTML = "";
-        el("preparationPage_playersCnt").innerText = 
-            `${usernames.length} ${wordPlayers(usernames.length)}`;
-        let _this = this;
-        usernames.forEach(username => _this.addPlayer(username));
-        if (host) {
-            el(`user_${host}`).classList.add("host");
-        }
-    }
-
-    addPlayer(username) {
-        el("preparationPage_users").appendChild(
-            Template.user({"username": username}));
-        if (username == this.myUsername) {
-            el(`user_${username}`).classList.add("you");
-        }
-    }
-
     setMyUsername(username) {
         this.myUsername = username;
+    }
+
+    setMyRole({speaker, listener}) {
+        if (this.myUsername == speaker) {
+            this.myRole = "speaker";
+        } else if (this.myUsername == listener) {
+            this.myRole = "listener"
+        } else {
+            this.myRole = "observer";
+        }
     }
 
     setKey(value) {
@@ -367,6 +360,124 @@ class App {
         location.hash = value;
         el("joinPage_inputKey").value = this.myRoomKey;
         el("preparationPage_title").innerText = this.myRoomKey;
+    }
+
+    setGameSettings({settings}) {
+        this.gameSettings = settings;
+    }
+
+    enterRoom() {
+        if (this.myRoomKey == "") {
+            console.error("Attemt to enter room with empty key");
+            return;
+        }
+        fetch(`/getRoomInfo?key=${this.myRoomKey}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.log("Invalid room key");
+                return;
+            };
+            if (["wait", "play"].indexOf(data.state) != -1) {
+                this.emit("cJoinRoom", 
+                    {"username": this.myUsername,
+                     "key": this.myRoomKey
+                });
+            } else if (data.state == "end") {
+                console.log("Results in MVP-next.");
+            } else {
+                console.error("GetRoomInfo. Incorrect state.", data);
+            }
+        })
+    }
+
+    renderPreparationPage({playerList, host}) {
+        let usernames = playerList.filter(user => user.online)
+            .map(user => user.username)
+        el("preparationPage_users").innerHTML = "";
+        el("preparationPage_playersCnt").innerText = 
+            `${usernames.length} ${wordPlayers(usernames.length)}`;
+        let _this = this;
+        usernames.forEach(username => {
+            el("preparationPage_users").appendChild(
+                Template.user({"username": username}));
+            if (username == this.myUsername) {
+                el(`user_${username}`).classList.add("you");
+            }
+        });
+        if (host) {
+            el(`user_${host}`).classList.add("host");
+        }
+        if (host != this.myUsername) {
+            hide("preparationPage_start");
+            show("preparationPage_startLabel");
+        } else {
+            show("preparationPage_start");
+            hide("preparationPage_startLabel");
+        }
+        if (usernames.length > 1) {
+            enable("preparationPage_start");
+            hide("preparationPage_startHint");
+        } else {
+            disable("preparationPage_start");
+            show("preparationPage_startHint");
+        }
+    }
+
+    renderWaitPage({speaker, listener, wordsCount}) {
+        el("gamePage_speaker").innerText = speaker;
+        el("gamePage_listener").innerText = listener;
+        el("gamePage_wordsCnt").innerText = wordsCount
+        el("gamePage_wordsCnt").innerText =  wordsCount;
+        el("gamePage_title").innerText = this.myUsername;
+        enable("gamePage_listenerReadyButton");
+        el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
+        enable("gamePage_speakerReadyButton");
+        el("gamePage_speakerReadyButton").innerText = SPEAKER_READY;
+    }
+
+    renderExplanationPage({startTime}) {
+        let roundId = this.roundId;
+        setTimeout(() => {
+            if (this.roundId != roundId) return;
+            Pages.go(Pages.delay);
+            this.animateDelayTimer(startTime - this.gameSettings.delayTime, 
+                roundId)
+            .then(() => {
+                if (this.roundId != roundId) return;
+                Pages.go(Pages.explanation[this.myRole]);
+                this.sizeWord();
+                this.animateExplanationTimer(startTime, roundId)
+                .then(() => {
+                    this.animateAftermathTimer(startTime + 
+                        this.gameSettings.explanationTime, roundId);
+                })
+            })
+
+        }, startTime - timeSync.getTime() - this.gameSettings.delayTime);
+    }
+
+    renderEditPage({editWords}) {
+        this.wordStates = {}
+        el("editPage_list").innerHTML = "";
+        el("editPage_wordsCnt").innerText = editWords.length;
+        editWords.forEach((word) => {
+            this.wordStates[word.word] = word.wordState;
+            el("editPage_list").appendChild(Template.editWord(word));
+            el(`editPage_${word.word}_explained`).onclick = 
+                    () => this.changeWordState(word.word, "explained");
+            el(`editPage_${word.word}_notExplained`).onclick = 
+                    () => this.changeWordState(word.word, "notExplained");
+            el(`editPage_${word.word}_mistake`).onclick = 
+                    () => this.changeWordState(word.word, "mistake");
+        });
+    }
+
+    renderResultsPage({results}) {
+        el("resultsPage_results").innerHTML = "";
+        results.forEach((result) => {
+            el("resultsPage_results").appendChild(Template.result(result));
+        })
     }
 
     setWord(word) {
@@ -419,120 +530,44 @@ class App {
         }
     }
 
-    showStartAction(host) {
-        if (host != this.myUsername) {
-            hide("preparationPage_start");
-            show("preparationPage_startLabel");
-        } else {
-            show("preparationPage_start");
-            hide("preparationPage_startLabel");
-        }
+    listenerReady() {
+        this.emit("cListenerReady");
+        disable("gamePage_listenerReadyButton");
+        el("gamePage_listenerReadyButton").innerText = "Подожди напарника";
     }
 
-    enterRoom() {
-        if (this.myRoomKey == "") {
-            console.log("Empty room key");
-            return;
-        }
-        fetch(`/getRoomInfo?key=${this.myRoomKey}`)
-        .then(response => response.json())
-        .then(result => {
-            if (!result.success) {
-                console.log("Invalid room key");
-                return;
-            };
-            switch(result.state) {
-            case "wait":
-            case "play":
-                this.emit("cJoinRoom", 
-                    {"username": this.myUsername,
-                     "key": this.myRoomKey
-                });
-                break; 
-            case "end":
-                console.log("Results in MVP-next.");
-                break;
-            }
-        })
+    speakerReady() {
+        this.emit("cSpeakerReady");
+        disable("gamePage_speakerReadyButton");
+        el("gamePage_speakerReadyButton").innerText = "Подожди напарника";
     }
 
-    setGameState(state, data) {
-        if (data.speaker) {
-            el("gamePage_speaker").innerText = data.speaker;
-            el("gamePage_listener").innerText = data.listener;
-            this.myRole = (data.listener == this.myUsername) ? "listener" :
-                (data.speaker == this.myUsername) ? "speaker" : "observer";
-        }
-        switch(state) {
-        case "wait":
-            el("gamePage_wordsCnt").innerText = data.wordsCount;
-            enable("gamePage_listenerReadyButton");
-            el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
-            enable("gamePage_speakerReadyButton");
-            el("gamePage_speakerReadyButton").innerText = SPEAKER_READY;
-            Pages.go(Pages.wait[this.myRole]);
-            break;
-        case "explanation":
-            let roundId = this.roundId;
-            setTimeout(() => {
-                if (this.myRole == "") {
-                    console.log("WARN: empty role");
-                    return;
+    changeWordState(word, newState) {
+        el(`editPage_${word}_${this.wordStates[word]}`).classList.remove(
+            "selected");
+        el(`editPage_${word}_${newState}`).classList.add("selected");
+        this.wordStates[word] = newState;
+    }
+
+    editedWordsObject() {
+        return {"editWords": Object.keys(this.wordStates)
+            .map(x => {
+                return {
+                    "word": x, 
+                    "wordState": this.wordStates[x],
                 }
-                if (this.roundId == roundId) {
-                    Pages.go(Pages.delay);
-                }
-                this.animateDelay(data.startTime - DELAY_TIME, roundId)
-                .then(() => {
-                    if (this.roundId == roundId) {
-                        Pages.go(Pages.explanation[this.myRole]);
-                        if (data.word) {
-                            this.setWord(data.word);
-                        } else {
-                            this.sizeWord();
-                        }
-                        this.animateTimer(data.startTime, roundId)
-                        .then(() => {
-                            this.animateAftermath(data.startTime + 
-                                EXPLANATION_TIME, roundId);
-                        })
-                    }
-                })
-
-            }, data.startTime - timeSync.getTime() - DELAY_TIME);
-            break;
-        case "edit":
-            if (data.editWords) {
-                Pages.go(Pages.edit.speaker);
-                this.wordStates = {}
-                el("editPage_list").innerHTML = "";
-                el("editPage_wordsCnt").innerText = data.editWords.length;
-                data.editWords.forEach((wordObj) => {
-                    this.wordStates[wordObj.word] = wordObj.wordState;
-                    el("editPage_list").appendChild(Template.editWord(wordObj));
-                    el(`editPage_${wordObj.word}_explained`).onclick = 
-                            () => this.changeWordState(wordObj.word, "explained");
-                    el(`editPage_${wordObj.word}_notExplained`).onclick = 
-                            () => this.changeWordState(wordObj.word, "notExplained");
-                    el(`editPage_${wordObj.word}_mistake`).onclick = 
-                            () => this.changeWordState(wordObj.word, "mistake");
-                });
-            } else {
-                Pages.go(Pages.edit);
-            }
-            break;
-        }
+            })}
     }
 
-    animateDelay(startTime, roundId) {
+    animateDelayTimer(startTime, roundId) {
         let _this = this;
         // this.sound.playSound("delayTimer", startTime);
         return animate({
             startTime,
-            duration: DELAY_TIME,
+            duration: this.gameSettings.delayTime,
             draw: (progress) => {
                 el("gamePage_explanationDelayTimer").innerText = 
-                    Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
+                    Math.floor((1 - progress) / 1000 * this.gameSettings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
             },
@@ -545,16 +580,16 @@ class App {
         })
     }
 
-    animateTimer(startTime, roundId) {
+    animateExplanationTimer(startTime, roundId) {
         el("gamePage_explanationTimer").classList.remove("timer-aftermath");
         el("gamePage_observerTimer").classList.remove("timer-aftermath");
         let _this = this;
         let animation = animate({
             startTime,
-            duration: EXPLANATION_TIME,
+            duration: this.gameSettings.explanationTime,
             draw: (progress) => {
-                let time = explanationTimeFormat(Math.floor((1 - progress) / 
-                    1000 * EXPLANATION_TIME) + 1);
+                let time = minSec(Math.floor((1 - progress) / 
+                    1000 * this.gameSettings.explanationTime) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
@@ -568,17 +603,17 @@ class App {
         })
     }
 
-    animateAftermath(startTime, roundId) {
+    animateAftermathTimer(startTime, roundId) {
         let _this = this;
         el("gamePage_explanationTimer").classList.add("timer-aftermath");
         el("gamePage_observerTimer").classList.add("timer-aftermath");
         let animation =  animate({
             startTime,
-            duration: AFTERMATH_TIME,
+            duration: this.gameSettings.aftermathTime,
             draw: (progress) => {
                 let msec = (Math.floor((1 - progress) / 
-                    100 * AFTERMATH_TIME) + 1);
-                let time = aftermathTimeFormat(msec);
+                    100 * this.gameSettings.aftermathTime) + 1);
+                let time = secMsec(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
@@ -590,32 +625,6 @@ class App {
             el("gamePage_explanationTimer").innerText = "0";
             el("gamePage_observerTimer").innerText = "0";
         })
-    }
-
-    listenerReady() {
-        this.emit("cListenerReady");
-        disable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innerText = "Подожди напарника";
-    }
-
-    speakerReady() {
-        this.emit("cSpeakerReady");
-        disable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innerText = "Подожди напарника";
-    }
-
-    showResults(results) {
-        el("resultPage_results").innerHTML = "";
-        results.forEach((result) => {
-            el("resultPage_results").appendChild(Template.result(result));
-        })
-    }
-
-    changeWordState(word, newState) {
-        el(`editPage_${word}_${this.wordStates[word]}`).classList.remove(
-            "selected");
-        el(`editPage_${word}_${newState}`).classList.add("selected");
-        this.wordStates[word] = newState;
     }
 
     setSocketioEventListeners() {
@@ -633,103 +642,78 @@ class App {
             })
         }
 
-        this.socket.on("sPlayerJoined", function(data) {
-            _this.setPlayers(data.playerList.filter(user => user.online)
-                .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
-            if (data.playerList.filter(user => user.online).length > 1) {
-                enable("preparationPage_start");
-            } else {
-                disable("preparationPage_start");
-            }
-        })
-        this.socket.on("sPlayerLeft", function(data) {
-            _this.setPlayers(data.playerList.filter(user => user.online)
-                .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
-            if (data.playerList.filter(user => user.online).length > 1) {
-                enable("preparationPage_start");
-            } else {
-                disable("preparationPage_start");
-            }
-        })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
-                _this.setPlayers(data.playerList.filter(user => user.online)
-                    .map(user => user.username), data.host);
-                _this.showStartAction(data.host);
+                _this.setGameSettings(data); // Потом тут этого не должно быть
+                _this.renderPreparationPage(data)
                 Pages.go(Pages.preparation);
-                if (data.playerList.filter(user => user.online).length > 1) {
-                    enable("preparationPage_start");
-                } else {
-                    disable("preparationPage_start");
-                }
                 break;
             case "play":
                 _this.roundId = 0;
-                el("gamePage_speaker").innerText = data.speaker;
-                el("gamePage_listener").innerText = data.listener;
-                el("gamePage_wordsCnt").innerText = data.wordsCount;
-                el("gamePage_title").innerText = _this.myUsername;
-                _this.myRole = (data.speaker == _this.myUsername) ? "speaker" :
-                    (data.listener == _this.myUsername) ? "listener" : 
-                    "observer";
-                _this.setGameState(data.substate, data);
+                _this.setMyRole(data);
+                _this.setGameSettings(data);
+                switch(data.substate) {
+                case "wait":
+                    _this.renderWaitPage(data);
+                    Pages.go(Pages.wait[_this.myRole]);
+                    break;
+                case "explanation":
+                    _this.setWord(data.word);
+                    _this.renderExplanationPage(data);
+                    break;
+                case "edit":
+                    if (data.editWords) {
+                        _this.renderEditPage(data);
+                        Pages.go(Pages.edit.speaker);
+                    } else {
+                        Pages.go(Pages.edit);
+                    }
+                    break;
+                }
+                break;
+            case "end":
                 break;
             }
         })
-        this.socket.on("sGameStarted", function(data) {    
-            el("gamePage_wordsCnt").innerText = data.wordsCount;
-            el("gamePage_title").innerText = _this.myUsername;
-            _this.setGameState("wait", data);
+        this.socket.on("sPlayerJoined", function(data) {
+            _this.renderPreparationPage(data)
+        })
+        this.socket.on("sPlayerLeft", function(data) {
+            _this.renderPreparationPage(data)
+        })
+        this.socket.on("sGameStarted", function(data) {
+            _this.setMyRole(data);
+            // _this.setGameSettings(data); // А вот тут, как раз, должно.
+            _this.renderWaitPage(data);
+            Pages.go(Pages.wait[_this.myRole]);
         })
         this.socket.on("sExplanationStarted", function(data) {
-            _this.setGameState("explanation", data);
+            _this.renderExplanationPage(data);
         })
         this.socket.on("sNewWord", function(data) {
             _this.setWord(data.word);
         })
         this.socket.on("sWordsToEdit", function(data) {
             Pages.go(Pages.edit.speaker)
-            _this.wordStates = {}
-            el("editPage_list").innerHTML = "";
-            el("editPage_wordsCnt").innerText = data.editWords.length;
-            data.editWords.forEach((wordObj) => {
-                _this.wordStates[wordObj.word] = wordObj.wordState;
-                el("editPage_list").appendChild(Template.editWord(wordObj));
-                el(`editPage_${wordObj.word}_explained`).onclick = 
-                        () => _this.changeWordState(wordObj.word, "explained");
-                el(`editPage_${wordObj.word}_notExplained`).onclick = 
-                        () => _this.changeWordState(wordObj.word, "notExplained");
-                el(`editPage_${wordObj.word}_mistake`).onclick = 
-                        () => _this.changeWordState(wordObj.word, "mistake");
-            });
+            _this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", function(data) {
-            _this.setGameState("wait", data);
+            _this.setMyRole(data);
+            _this.renderWaitPage(data);
+            Pages.go(Pages.wait[_this.myRole]);
         })
         this.socket.on("sWordExplanationEnded", function(data) {
             el("gamePage_wordsCnt").innerText = data.wordsCount;
         })
         this.socket.on("sExplanationEnded", function(data) {
+            el("gamePage_wordsCnt").innerText = data.wordsCount;
             _this.roundId += 1;
             Pages.go(Pages.edit);
-            el("gamePage_wordsCnt").innerText = data.wordsCount;
-        })
-        this.socket.on("sPlayerJoined", function(data) {
-            _this.setPlayers(data.playerList.filter(user => user.online)
-                .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
-        })
-        this.socket.on("sPlayerLeft", function(data) {
-            _this.setPlayers(data.playerList.filter(user => user.online)
-                .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
         })
         this.socket.on("sGameEnded", function(data) {
+            _this.renderResultsPage(data);
             Pages.go(Pages.results);
-            _this.showResults(data.results);
         })
     }
 
@@ -772,12 +756,7 @@ class App {
         el("gamePage_goBack").onclick = () => this.leaveRoom();
         el("gamePage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
-            {"editWords": Object.keys(this.wordStates).map(x => 
-                {return{
-                    "word": x, 
-                    "wordState": this.wordStates[x],
-                }})
-            });
+            this.editedWordsObject());
         el("editPage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("editPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_goBack").onclick = () => this.leaveRoom();

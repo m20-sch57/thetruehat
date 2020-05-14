@@ -80,7 +80,8 @@
                     <div id="preparationPage_users"></div>
                     <div class="spacer"></div>
                 </div>
-                <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
+                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">Начать игру</button>
+                <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
                 <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
             </div>
         </div>
@@ -162,8 +163,7 @@
                 </span></p>
             </div>
             <div id="editPage_body">
-                <div id="editPage_list">
-                </div>
+                <div id="editPage_list"></div>
                 <button class="medium-button bg-green" id="editPage_confirm">Подтверждаю</button>
             </div>
         </div>
@@ -185,7 +185,7 @@
                     <th>Угадано</th>
                     <th>Сумма</th>
                 </thead>
-                <tbody id="resultPage_results">
+                <tbody id="resultsPage_results">
                 </tbody>
                 </table>
                 <button class="medium-button bg-green" id="resultsPage_newGame">Новая игра</button>
