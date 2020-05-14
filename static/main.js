@@ -7,6 +7,9 @@ Array.prototype.last = function() {
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
+const EXPLAINED_WORD_STATE = "угадал";
+const NOT_EXPLAINED_WORD_STATE = "не угадал";
+const MISTAKE_WORD_STATE = "ошибка";
 
 const TIME_SYNC_DELTA = 1200000;
 
@@ -164,17 +167,17 @@ class Template {
         let eExplained = document.createElement("button");
         eExplained.classList.add("small-white-button");
         eExplained.classList.add("explained");
-        eExplained.innerText = "объяснил";
+        eExplained.innerText = EXPLAINED_WORD_STATE;
         eExplained.setAttribute("id", `editPage_${word}_explained`);
         let eNotExplained = document.createElement("button");
         eNotExplained.classList.add("small-white-button");
         eNotExplained.classList.add("not-explained");
-        eNotExplained.innerText = "не объяснил";
+        eNotExplained.innerText = NOT_EXPLAINED_WORD_STATE;
         eNotExplained.setAttribute("id", `editPage_${word}_notExplained`);
         let eMistake = document.createElement("button");
         eMistake.classList.add("small-white-button");
         eMistake.classList.add("mistake");
-        eMistake.innerText = "ошибка";
+        eMistake.innerText = MISTAKE_WORD_STATE;
         eMistake.setAttribute("id", `editPage_${word}_mistake`);
         elem.appendChild(eWord);
         elem.appendChild(eExplained);
