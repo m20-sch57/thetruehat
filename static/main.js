@@ -636,17 +636,22 @@ class App {
     setSocketioEventListeners() {
         let _this = this;
 
-        if (this.debug) {
-            let events = ["sPlayerJoined", "sPlayerLeft", "sFailure",
-            "sYouJoined", "sGameStarted", "sExplanationStarted",
-            "sExplanationEnded", "sNextTurn", "sNewWord", 
-            "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
-            events.forEach((event) => {
-                _this.socket.on(event, function(data) {
+        let events = ["sPlayerJoined", "sPlayerLeft",
+        "sYouJoined", "sGameStarted", "sExplanationStarted",
+        "sExplanationEnded", "sNextTurn", "sNewWord", 
+        "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
+        events.forEach((event) => {
+            _this.socket.on(event, function(data) {
+                if (_this.debug) {
                     console.log(event, data);
-                })
+                }
             })
-        }
+        })
+        this.socket.on("sFailure", function(data) {
+            if (_this.debug) {
+                console.warn("sFailure", data);
+            }
+        })
 
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
