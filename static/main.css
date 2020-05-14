@@ -730,7 +730,7 @@ button, input {
     width: calc(100% - 60px);
     max-width: 440px;
     left: 50%;
-    bottom: 10px;
+    top: 10px;
     transform: translateX(-50%);
     background-color: coral;
     border-radius: 25px;
