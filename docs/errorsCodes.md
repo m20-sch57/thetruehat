@@ -34,5 +34,7 @@ Code | Signal | Description
 `0504` | `cEndWordExplanation` | Too early
 ||
 `0600` | `cWordsEdited` | Game ended
-`0601` | `cWordsEdited` | Game state isn't `edit`
-`0602` | `cWordsEdited` | Sender is not speaker
+`0601` | `cWordsEdited` | Game state isn't `play`
+`0602` | `cWordsEdited` | Game substate isn't `edit`
+`0603` | `cWordsEdited` | Sender is not speaker
+`0604` | `cWordsEdited` | Incorrect word set
