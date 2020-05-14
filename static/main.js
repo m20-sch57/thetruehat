@@ -4,10 +4,7 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-const EXPLANATION_TIME = 20000;
-const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 
@@ -311,6 +308,7 @@ class App {
         this.myRole = "";
         this.setKey(readLocationHash());
         this.roundId = 0;
+        this.gameSettings = {};
 
         this.checkClipboard();
 
@@ -359,6 +357,10 @@ class App {
         location.hash = value;
         el("joinPage_inputKey").value = this.myRoomKey;
         el("preparationPage_title").innerText = this.myRoomKey;
+    }
+
+    setGameSettings({settings}) {
+        this.gameSettings = settings;
     }
 
     enterRoom() {
@@ -436,7 +438,8 @@ class App {
         setTimeout(() => {
             if (this.roundId != roundId) return;
             Pages.go(Pages.delay);
-            this.animateDelayTimer(startTime - DELAY_TIME, roundId)
+            this.animateDelayTimer(startTime - this.gameSettings.delayTime, 
+                roundId)
             .then(() => {
                 if (this.roundId != roundId) return;
                 Pages.go(Pages.explanation[this.myRole]);
@@ -444,11 +447,11 @@ class App {
                 this.animateExplanationTimer(startTime, roundId)
                 .then(() => {
                     this.animateAftermathTimer(startTime + 
-                        EXPLANATION_TIME, roundId);
+                        this.gameSettings.explanationTime, roundId);
                 })
             })
 
-        }, startTime - timeSync.getTime() - DELAY_TIME);
+        }, startTime - timeSync.getTime() - this.gameSettings.delayTime);
     }
 
     renderEditPage({editWords}) {
@@ -558,10 +561,10 @@ class App {
         // this.sound.playSound("delayTimer", startTime);
         return animate({
             startTime,
-            duration: DELAY_TIME,
+            duration: this.gameSettings.delayTime,
             draw: (progress) => {
                 el("gamePage_explanationDelayTimer").innerText = 
-                    Math.floor((1 - progress) / 1000 * DELAY_TIME) + 1;
+                    Math.floor((1 - progress) / 1000 * this.gameSettings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
             },
@@ -580,10 +583,10 @@ class App {
         let _this = this;
         let animation = animate({
             startTime,
-            duration: EXPLANATION_TIME,
+            duration: this.gameSettings.explanationTime,
             draw: (progress) => {
                 let time = minSec(Math.floor((1 - progress) / 
-                    1000 * EXPLANATION_TIME) + 1);
+                    1000 * this.gameSettings.explanationTime) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
@@ -603,10 +606,10 @@ class App {
         el("gamePage_observerTimer").classList.add("timer-aftermath");
         let animation =  animate({
             startTime,
-            duration: AFTERMATH_TIME,
+            duration: this.gameSettings.aftermathTime,
             draw: (progress) => {
                 let msec = (Math.floor((1 - progress) / 
-                    100 * AFTERMATH_TIME) + 1);
+                    100 * this.gameSettings.aftermathTime) + 1);
                 let time = secMsec(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
@@ -639,12 +642,14 @@ class App {
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
+                _this.setGameSettings(data); // Потом тут этого не должно быть
                 _this.renderPreparationPage(data)
                 Pages.go(Pages.preparation);
                 break;
             case "play":
                 _this.roundId = 0;
                 _this.setMyRole(data);
+                _this.setGameSettings(data);
                 switch(data.substate) {
                 case "wait":
                     _this.renderWaitPage(data);
@@ -676,6 +681,7 @@ class App {
         })
         this.socket.on("sGameStarted", function(data) {
             _this.setMyRole(data);
+            // _this.setGameSettings(data); // А вот тут, как раз, должно.
             _this.renderWaitPage(data);
             Pages.go(Pages.wait[_this.myRole]);
         })
