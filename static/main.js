@@ -368,7 +368,7 @@ class App {
 
     enterRoom() {
         if (this.myRoomKey == "") {
-            console.error("Attemt to enter room with empty key");
+            this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
         }
         fetch(`/getRoomInfo?key=${this.myRoomKey}`)
@@ -422,6 +422,7 @@ class App {
             disable("preparationPage_start");
             show("preparationPage_startHint");
         }
+        hide("joinPage_goHint");
     }
 
     renderWaitPage({speaker, listener, wordsCount}) {
@@ -627,6 +628,11 @@ class App {
         })
     }
 
+    failedToJoin(msg) {
+        el("joinPage_goHint").innerText = msg;
+        show("joinPage_goHint");
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -714,6 +720,25 @@ class App {
         this.socket.on("sGameEnded", function(data) {
             _this.renderResultsPage(data);
             Pages.go(Pages.results);
+        })
+        this.socket.on("sFailure", function(data) {
+            switch(data.code) {
+            case 101:
+                _this.failedToJoin("Пустой ключ комнаты - низзя");
+                break;
+            case 102:
+                _this.failedToJoin("Нужно представиться");
+                break;
+            case 103:
+                _this.failedToJoin("Ой. Это имя занято :(");
+                break;
+            case 104:
+                _this.failedToJoin("Вы точно с таким именем играли?");
+                break;
+            case 105:
+                _this.failedToJoin("Ой. Что-то пошло не так :(");
+                break;
+            }
         })
     }
 
