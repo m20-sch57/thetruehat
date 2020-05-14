@@ -277,7 +277,7 @@ let Pages = {
     },
 
     showPage: function (page) {
-        hideError();
+        // hideError();
         page.forEach((elemId) => {
             show(elemId);
         })
@@ -652,7 +652,10 @@ class App {
             })
         }
 
-        this.socket.on("sFailure", (data) => showError(data.msg));
+        this.socket.on("sFailure", (data) => {
+            showError(data.msg);
+            setTimeout(hideError, 4000);
+        });
         this.socket.on("disconnect", () => showError("Нет соединения, перезагрузите страницу"));
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
@@ -730,9 +733,7 @@ class App {
     }
 
     setDOMEventListeners() {
-        el("failureClose").onclick = () => {
-            hideError();
-        }
+        el("failureClose").onclick = hideError
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
             Pages.go(Pages.join);
