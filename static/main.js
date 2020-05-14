@@ -68,7 +68,6 @@ function enable(id) {
 }
 
 function readLocationHash() {
-    console.log(location);
     if (location.hash == "") return "";
     return decodeURIComponent(location.hash.slice(1));
 }
@@ -251,7 +250,6 @@ let Pages = {
     results: ["resultsPage"],
 
     getPage: function (page) {
-        console.log(page);
         if (page instanceof Array) {
             return page
         } else {
@@ -275,14 +273,12 @@ let Pages = {
 
     go: function (page) {
         page = this.getPage(page);
-        console.log("go:", page);
         this.hidePage();
         this.showPage(page);
         this._pageLog.push(page);
     },
 
     goBack: function () {
-        console.log("goBack");
         this.hidePage();
         this._pageLog.pop();
         if (this._pageLog.length >= 1) {
@@ -304,7 +300,6 @@ class App {
     constructor() {
         this.debug = true;
 
-        console.log(`${window.location.protocol}//${window.location.host}`);
         this.socket = io.connect(`${window.location.protocol}//${window.location.host}`);
 
         this.myUsername = "";
