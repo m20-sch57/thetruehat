@@ -1,9 +1,7 @@
-https://m20-sch57.site:3005 {
+http://m20-sch57.site:3005 {
     root    /home/adanni/thetruehat/static
     log     /home/adanni/thehatServer/access.log
     errors  /home/adanni/thehatServer/errors.log
-
-    tls on
 
     header / Cache-Control no-cache
 
@@ -27,6 +25,6 @@ https://m20-sch57.site:3005 {
     gzip
 }
 
-https://www.m20-sch57.site:3005 {
+http://www.m20-sch57.site:3005 {
     redir https://m20-sch57.site:3005{uri}
 }

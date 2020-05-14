@@ -153,7 +153,7 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`https://${document.domain}:${PORT}`);
+        this.socket = io.connect(`http://${document.domain}:${PORT}`);
 
         this.pageLog = [];
         this.myUsername = "";
@@ -252,7 +252,7 @@ class App {
     }
 
     copyLink() {
-        navigator.clipboard.writeText(`https://${document.domain}:${PORT}/#${
+        navigator.clipboard.writeText(`http://${document.domain}:${PORT}/#${
             this.myRoomKey}`);
     }
 
