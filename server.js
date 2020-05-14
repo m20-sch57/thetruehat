@@ -962,7 +962,7 @@ class Callbacks {
         let gameID = -1;
         if (!(key in rooms)) {
             rooms[key] = new Room()
-            const resp = await db.exec(`INSERT INTO Games(Sent) VALUES (0);`);
+            const resp = await db.runAsync(`INSERT INTO Games(Sent) VALUES (0);`);
             gameID = resp.lastID;
         } else {
             const resp = await db.query(`SELECT GameID FROM Rooms WHERE RoomKey = \"${key}\";`);
@@ -987,7 +987,7 @@ class Callbacks {
         // updating players and host
         const players = JSON.stringify(getPlayerList(rooms[key]));
         const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
-        await db.exec(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomID = ${RoomID};`);
+        await db.runAsync(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomID = ${RoomID};`);
 
         Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
 
@@ -1016,7 +1016,7 @@ class Callbacks {
             console.log("Incorrect number of rows!");
         }
         const roomID = resp.rows[0];
-        await db.exec(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomId = ${roomID};`);
+        await db.runAsync(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomId = ${roomID};`);
 
         Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
     }
