@@ -320,6 +320,10 @@ button, input {
     margin-top: 10px;
 }
 
+#joinPage_goHint {
+    color: red;
+}
+
 /* Rules page */
 
 #rulesPage_header {
