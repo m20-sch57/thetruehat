@@ -419,13 +419,21 @@ class App {
         }
     }
 
-    showStartAction(host) {
-        if (host != this.myUsername) {
+    showStartAction(data) {
+        if (data.host != this.myUsername) {
             hide("preparationPage_start");
             show("preparationPage_startLabel");
         } else {
             show("preparationPage_start");
             hide("preparationPage_startLabel");
+        }
+        if (data.playerList.filter(user => user.online).length > 1) {
+            enable("preparationPage_start");
+            hide("preparationPage_startHint");
+        } else {
+            disable("preparationPage_start");
+            show("preparationPage_startHint");
+
         }
     }
 
@@ -507,6 +515,11 @@ class App {
                 this.wordStates = {}
                 el("editPage_list").innerHTML = "";
                 el("editPage_wordsCnt").innerText = data.editWords.length;
+                if (data.editWords.length >= 6) {
+                    el("editPage_list").classList.add("wrap");
+                } else {
+                    el("editPage_list").classList.remove("wrap");
+                }
                 data.editWords.forEach((wordObj) => {
                     this.wordStates[wordObj.word] = wordObj.wordState;
                     el("editPage_list").appendChild(Template.editWord(wordObj));
@@ -636,35 +649,20 @@ class App {
         this.socket.on("sPlayerJoined", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
-            if (data.playerList.filter(user => user.online).length > 1) {
-                enable("preparationPage_start");
-            } else {
-                disable("preparationPage_start");
-            }
+            _this.showStartAction(data);
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
-            if (data.playerList.filter(user => user.online).length > 1) {
-                enable("preparationPage_start");
-            } else {
-                disable("preparationPage_start");
-            }
+            _this.showStartAction(data);
         })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
                 _this.setPlayers(data.playerList.filter(user => user.online)
                     .map(user => user.username), data.host);
-                _this.showStartAction(data.host);
+                _this.showStartAction(data);
                 Pages.go(Pages.preparation);
-                if (data.playerList.filter(user => user.online).length > 1) {
-                    enable("preparationPage_start");
-                } else {
-                    disable("preparationPage_start");
-                }
                 break;
             case "play":
                 _this.roundId = 0;
@@ -695,6 +693,11 @@ class App {
             _this.wordStates = {}
             el("editPage_list").innerHTML = "";
             el("editPage_wordsCnt").innerText = data.editWords.length;
+            if (data.editWords.length >= 6) {
+                el("editPage_list").classList.add("wrap");
+            } else {
+                el("editPage_list").classList.remove("wrap");
+            }
             data.editWords.forEach((wordObj) => {
                 _this.wordStates[wordObj.word] = wordObj.wordState;
                 el("editPage_list").appendChild(Template.editWord(wordObj));
@@ -720,12 +723,12 @@ class App {
         this.socket.on("sPlayerJoined", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
+            _this.showStartAction(data);
         })
         this.socket.on("sPlayerLeft", function(data) {
             _this.setPlayers(data.playerList.filter(user => user.online)
                 .map(user => user.username), data.host);
-            _this.showStartAction(data.host);
+            _this.showStartAction(data);
         })
         this.socket.on("sGameEnded", function(data) {
             Pages.go(Pages.results);
