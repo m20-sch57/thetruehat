@@ -59,6 +59,15 @@ function show(id) {
     // console.log("Show", id);
 }
 
+function showError(msg) {
+    el("failureMsg").innerText = msg;
+    show("failure");
+}
+
+function hideError() {
+    hide("failure");
+}
+
 function disable(id) {
     el(id).setAttribute("disabled", "");
 }
@@ -268,6 +277,7 @@ let Pages = {
     },
 
     showPage: function (page) {
+        hideError();
         page.forEach((elemId) => {
             show(elemId);
         })
@@ -638,19 +648,12 @@ class App {
             events.forEach((event) => {
                 _this.socket.on(event, function(data) {
                     console.log(event, data);
-
                 })
             })
         }
 
-        this.socket.on("sFailure", function(data) {
-            el("failureMsg").innerText = data.msg;
-            show("failure");
-        })
-        this.socket.on("disconnect", function() {
-            el("failureMsg").innerText = "Socket disconnected, try reloading the page";
-            show("failure");
-        })
+        this.socket.on("sFailure", (data) => showError(data.msg));
+        this.socket.on("disconnect", () => showError("Нет соединения, перезагрузите страницу"));
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
@@ -704,7 +707,7 @@ class App {
             _this.setWord(data.word);
         })
         this.socket.on("sWordsToEdit", function(data) {
-            Pages.go(Pages.edit.speaker)
+            Pages.go(Pages.edit.speaker);
             _this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", function(data) {
@@ -728,7 +731,7 @@ class App {
 
     setDOMEventListeners() {
         el("failureClose").onclick = () => {
-            hide("failure");
+            hideError();
         }
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
