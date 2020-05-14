@@ -638,10 +638,19 @@ class App {
             events.forEach((event) => {
                 _this.socket.on(event, function(data) {
                     console.log(event, data);
+
                 })
             })
         }
 
+        this.socket.on("sFailure", function(data) {
+            el("failureMsg").innerText = data.msg;
+            show("failure");
+        })
+        this.socket.on("disconnect", function() {
+            el("failureMsg").innerText = "Socket disconnected, try reloading the page";
+            show("failure");
+        })
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
             case "wait":
@@ -718,6 +727,9 @@ class App {
     }
 
     setDOMEventListeners() {
+        el("failureClose").onclick = () => {
+            hide("failure");
+        }
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
             Pages.go(Pages.join);

@@ -320,9 +320,9 @@ button, input {
     margin-top: 10px;
 }
 
-#joinPage_goHint {
+/* #joinPage_goHint {
     color: red;
-}
+} */
 
 /* Rules page */
 
@@ -720,4 +720,47 @@ button, input {
 #resultsPage_newGame {
     width: 100%;
     margin-top: 30px;
+}
+
+/* Failure message */
+
+#failure {
+    display: flex;
+    position: absolute;
+    width: calc(100% - 60px);
+    max-width: 440px;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    background-color: coral;
+    border-radius: 25px;
+    padding: 15px 20px 15px 20px;
+    box-shadow: 2px 2px 7px grey;
+}
+
+#failureMsg {
+    margin-right: auto;
+    font-size: 18px;
+    font-weight: lighter;
+    line-height: 20px;
+}
+
+#failureClose {
+    flex-shrink: 0;
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 19px;
+    line-height: 19px;
+}
+
+#failureClose:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+#failureClose:active {
+    background-color: rgba(0, 0, 0, 0.4);
 }

@@ -42,7 +42,7 @@
                 <input class="medium-input" id="joinPage_inputName" placeholder="Введи своё имя">
                 <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
                 <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
-                <p class="hint" id="joinPage_goHint" style="display: none;"></p>
+                <!-- <p class="hint" id="joinPage_goHint" style="display: none;"></p> -->
             </div>
         </div>
     </div>
@@ -191,6 +191,10 @@
                 <button class="medium-button bg-green" id="resultsPage_newGame">Новая игра</button>
             </div>
         </div>
+    </div>
+    <div id="failure" style="display: none;">
+        <span id="failureMsg"></span>
+        <button id="failureClose">&times;</button>
     </div>
     <audio src="delayTimer.mp3", id="delayTimer"></audio>
     <script src="/main.js"></script>
