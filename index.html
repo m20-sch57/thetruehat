@@ -80,7 +80,8 @@
                     <div id="preparationPage_users"></div>
                     <div class="spacer"></div>
                 </div>
-                <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
+                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">Начать игру</button>
+                <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
                 <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
             </div>
         </div>
@@ -154,7 +155,7 @@
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="editPage_viewRules">
         </button>
-        <div class="content-small">
+        <div class="content-medium">
             <div id="editPage_header">
                 <h1 id="editPage_title">Редактирование</h1>
                 <p class="hint">Слов за раунд: <span id="editPage_wordsCnt">
@@ -162,8 +163,7 @@
                 </span></p>
             </div>
             <div id="editPage_body">
-                <div id="editPage_list">
-                </div>
+                <div id="editPage_list"></div>
                 <button class="medium-button bg-green" id="editPage_confirm">Подтверждаю</button>
             </div>
         </div>

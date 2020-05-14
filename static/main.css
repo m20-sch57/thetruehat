@@ -34,6 +34,14 @@ button, input {
     max-width: 500px;
 }
 
+.content-medium {
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
+    width: 100%;
+    max-width: 800px;
+}
+
 .small-button {
     padding: 10px 15px 10px 15px;
     color: rgba(0, 0, 0, 0.85);
@@ -409,8 +417,13 @@ button, input {
     width: 100%;
 }
 
+#preparationPage_startHint {
+    text-align: center;
+}
+
 #preparationPage_startLabel {
     width: 100%;
+    font-size: 25px;
     font-weight: lighter;
     text-align: center;
 }
@@ -620,11 +633,26 @@ button, input {
 
 #editPage_body {
     width: 100%;
+    text-align: center;
     padding: 0 30px 30px 30px;
 }
 
+#editPage_list {
+    margin: 10px 0 10px 0;
+}
+
+#editPage_list.wrap {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
 #editPage_list .edit-item {
-    margin-bottom: 10px;
+    flex-grow: 1;
+    min-width: 300px;
+    max-width: 370px;
+    padding: 3px;
+    margin: 0 auto 5px auto;
 }
 
 #editPage_list .word {
@@ -637,8 +665,8 @@ button, input {
 
 #editPage_list .explained {
     width: 33.33%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 5px;
+    padding-right: 5px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
@@ -649,8 +677,8 @@ button, input {
 
 #editPage_list .not-explained {
     width: 33.33%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 5px;
+    padding-right: 5px;
     border-radius: 0;
     margin-left: -1px;
 }
@@ -661,8 +689,8 @@ button, input {
 
 #editPage_list .mistake {
     width: 33.33%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 5px;
+    padding-right: 5px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: -1px;
@@ -674,6 +702,7 @@ button, input {
 
 #editPage_confirm {
     width: 100%;
+    max-width: 370px;
     margin-top: 30px;
 }
 
