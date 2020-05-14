@@ -46,7 +46,7 @@ db.query = function(sql) {
     });
 }
 
-db.exec = function(sql) {
+db.runAsync = function(sql) {
     var that = this;
     return new Promise(function(resolve, reject) {
         that.run(sql, function(err) {
@@ -568,7 +568,7 @@ app.get("/getRoomInfo", async function(req, res) {
             res.json({"success": true,
                 "state": game["State"],
                 "playerList": players.map(el => {return {"username": el.username, "online": el.online};}),
-                "host": game["Host"]});
+                "host": game["Host"]}); // getPlayerList?
             break;
 
         case "end":
@@ -985,15 +985,16 @@ class Callbacks {
         }
 
         // updating players and host
-        const resp = await db.query(``);
-        await db.exec(`UPDATE Games SET Players = `)
+        const players = JSON.stringify(getPlayerList(rooms[key]));
+        const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
+        await db.exec(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomID = ${RoomID};`);
 
         Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
 
         Signals.sYouJoined(socket, key);
     }
 
-    static leaveRoomCallback(socket, key, err) {
+    static async leaveRoomCallback(socket, key, err) {
         const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
         const username = rooms[key].users[usernamePos].username;
 
@@ -1006,6 +1007,16 @@ class Callbacks {
         // Removing the user from the room info
         rooms[key].users[usernamePos].online = false;
         rooms[key].users[usernamePos].sids = [];
+
+        // updating players and host
+        const players = JSON.stringify(getPlayerList(rooms[key]));
+        const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
+        const resp = await db.query(`SELECT RoomID FROM Rooms WHERE key = ${key};`);
+        if (resp.rows.length !== 1) {
+            console.log("Incorrect number of rows!");
+        }
+        const roomID = resp.rows[0];
+        await db.exec(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomId = ${roomID};`);
 
         Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
     }
