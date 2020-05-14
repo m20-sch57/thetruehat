@@ -455,11 +455,6 @@ class App {
         this.wordStates = {}
         el("editPage_list").innerHTML = "";
         el("editPage_wordsCnt").innerText = editWords.length;
-        if (editWords.length >= 6) {
-            el("editPage_list").classList.add("wrap");
-        } else {
-            el("editPage_list").classList.remove("wrap");
-        }
         editWords.forEach((word) => {
             this.wordStates[word.word] = word.wordState;
             el("editPage_list").appendChild(Template.editWord(word));
