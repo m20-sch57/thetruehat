@@ -31,12 +31,12 @@ app.get("/", function(req, res) {
 
 // Connecting DB
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('DB.db');
+const DB = new sqlite3.Database('DB.db');
 
-db.query = function(sql) {
-    var that = this;
+DB.allAsync = function(sql, params) {
+    let that = this;
     return new Promise(function(resolve, reject) {
-        that.all(sql, function(err, rows) {
+        that.all(sql, params, function(err, rows) {
             if (err) {
                 reject(err);
             } else {
@@ -46,14 +46,14 @@ db.query = function(sql) {
     });
 }
 
-db.runAsync = function(sql) {
-    var that = this;
+DB.runAsync = function(sql, params) {
+    let that = this;
     return new Promise(function(resolve, reject) {
-        that.run(sql, function(err) {
+        that.run(sql, params, function(err) {
             if (err) {
                 reject(err);
             } else {
-                resolve({"lastID": this.lastID});
+                resolve(this);
             }
         });
     });
@@ -162,10 +162,11 @@ function getRoom(socket) {
  * Get all words from DB.
  *
  * @return All words in DB.
+ * TODO: Rewrite using less segment. Feature.
  */
 async function getAllWords() {
-    const res = await db.query("SELECT Word FROM Words WHERE Tags != \"-deleted\";");
-    return res.rows;
+    const res = await DB.allAsync("SELECT Word FROM Words WHERE Tags != ?;", "-deleted");
+    return res.rows.map((row) => (row["Word"]));
 }
 
 /**
@@ -509,12 +510,13 @@ class Signals {
  * @see API.md
  */
 app.get("/getFreeKey", async function(req, res) {
+    // getting the settings
+    const minKeyLength = config.minKeyLength;
+    const maxKeyLength = config.maxKeyLength;
+    const keyConsonant = config.keyConsonant;
+    const keyVowels = config.keyVowels;
+
     while (true) {
-        // getting the settings
-        const minKeyLength = config.minKeyLength;
-        const maxKeyLength = config.maxKeyLength;
-        const keyConsonant = config.keyConsonant;
-        const keyVowels = config.keyVowels;
         // getting the key length
         const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
         // generating the key
@@ -523,8 +525,8 @@ app.get("/getFreeKey", async function(req, res) {
             const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
             key += charList[Math.floor(Math.random() * charList.length)];
         }
-        const qRes = await db.query(`SELECT count(GameID) FROM Rooms WHERE RoomKey;`);
-        if (qRes.rows[0]["count(GameID)"] !== 0) {
+        const qRes = await DB.allAsync(`SELECT COUNT(RoomKey) FROM Rooms WHERE RoomKey;`);
+        if (qRes.rows[0]["count(RoomKey)"] !== 0) {
             continue;
         }
         res.json({"key": key});
@@ -544,7 +546,7 @@ app.get("/getRoomInfo", async function(req, res) {
         return;
     }
 
-    const qRes = await db.query(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = \"${key}\");`);
+    const qRes = await DB.allAsync("SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ?);", key);
     const rows = qRes.rows;
     // Case of nonexistent room
     if (rows.length === 0) {
@@ -568,7 +570,7 @@ app.get("/getRoomInfo", async function(req, res) {
             res.json({"success": true,
                 "state": game["State"],
                 "playerList": players.map(el => {return {"username": el.username, "online": el.online};}),
-                "host": game["Host"]}); // getPlayerList?
+                "host": game["Host"]});
             break;
 
         case "end":
@@ -959,13 +961,14 @@ class Callbacks {
         }
 
         // If room isn't saved in main dictionary, let's save it and create info about it
+        // TODO: Аккуратная проверка ключа комнаты и ID игры.
         let gameID = -1;
         if (!(key in rooms)) {
             rooms[key] = new Room()
-            const resp = await db.runAsync(`INSERT INTO Games(Sent) VALUES (0);`);
+            const resp = await DB.runAsync(`INSERT INTO Games DEFAULT VALUES;`);
             gameID = resp.lastID;
         } else {
-            const resp = await db.query(`SELECT GameID FROM Rooms WHERE RoomKey = \"${key}\";`);
+            const resp = await DB.allAsync(`SELECT GameID FROM Rooms WHERE RoomKey = ?;`, key);
             if (resp.rows.length !== 1) {
                 console.log("Incorrect number of rows!");
                 // TODO return or something else
@@ -987,7 +990,12 @@ class Callbacks {
         // updating players and host
         const players = JSON.stringify(getPlayerList(rooms[key]));
         const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
-        await db.runAsync(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomID = ${RoomID};`);
+        await db.runAsync("UPDATE Games SET Players = $Players, Host = $Host WHERE GameID = $GameID;",
+            {
+                $Players: players,
+                $Host: host,
+                $GameID: gameID
+            });
 
         Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
 
@@ -1011,12 +1019,17 @@ class Callbacks {
         // updating players and host
         const players = JSON.stringify(getPlayerList(rooms[key]));
         const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
-        const resp = await db.query(`SELECT RoomID FROM Rooms WHERE key = ${key};`);
+        const resp = await db.query("SELECT GameID FROM Rooms WHERE RoomKey = ?;", key);
         if (resp.rows.length !== 1) {
             console.log("Incorrect number of rows!");
         }
-        const roomID = resp.rows[0];
-        await db.runAsync(`UPDATE Games SET Players = \"${players}\", Host = \"${host}\" WHERE RoomId = ${roomID};`);
+        const gameID = resp.rows[0];
+        await db.runAsync("UPDATE Games SET Players = $Players, Host = $Host WHERE GameID = $GameID;",
+            {
+                $Players: players,
+                $Host: host,
+                $GameID: gameID
+            });
 
         Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
     }

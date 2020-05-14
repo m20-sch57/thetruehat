@@ -55,21 +55,24 @@ Used to contain games' infos.
     - DEFAULT "{}"
     - NOT NULL
 - **WordsList** : *TEXT* - JSON with list of words.
-    - DEFAULT "{}"
+    - DEFAULT "[]"
     - NOT NULL
 - **State** : *TEXT* - state of the room: "wait", "play", or "end".
     - DEFAULT "wait"
     - INDEX Games_State_Index (?)
     - NOT NULL
 - **Players** : *TEXT* - JSON with list of players' usernames.
-    - DEFAULT "{}"
+    - DEFAULT "[]"
     - NOT NULL
-- **Host** : *TEXT* - username of the room host. NULL if it's undefined.
+- **Host** : *TEXT* - username of the room host.
+    - DEFAULT ""
+    - NOT NULL
 - **StartTime** : *INTEGER* - UNIX timestamp in milliseconds of the game start. NULL if it's undefined.
 - **EndTime** : *INTEGER* - UNIX timestamp in milliseconds of the game end. NULL if it's undefined.
 - **TimeZoneOffSet** (! Заменить на / добавить пользовательские) : *TEXT* - JSON with ??? NULL if it's undefined.
 - **Results** : *TEXT* - JSON with the results. See ???.md NULL if it's undefined.
-- **Sent** (?) : *INTEGER* - 1 if it was sent to Sombrero else 0.
+- **Sent** : *INTEGER* - 1 if it was sent to Sombrero else 0.
+    - DEFAULT 0
     - NOT NULL
 
 #### Keys
@@ -84,7 +87,7 @@ Used to contain games' infos.
 Used to find game ID by room key.
 
 #### Columns
-- **RoomKey** : **TEXT** - key of the room.
+- **RoomKey** : *TEXT* - key of the room.
     - PRIMARY KEY Rooms_PK
 - **GameID** : *INTEGER* - ID of the game
     - FOREIGN KEY GameID REFERENCES Games
