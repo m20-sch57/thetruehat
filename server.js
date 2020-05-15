@@ -262,10 +262,6 @@ function endGame(key) {
 }
 
 class Signals {
-    static emit(socket, event, args) {
-        socket.emit(event, args);
-    }
-
     /**
      * Implementation of sPlayerJoined signal
      * @see API.md
