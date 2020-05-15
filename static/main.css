@@ -339,6 +339,8 @@ button, input {
     margin-top: -75px;
     background-image: url(\hat.png);
     background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #rulesPage_body {
