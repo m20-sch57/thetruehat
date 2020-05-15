@@ -590,8 +590,12 @@ app.get("/getRoomInfo", async function(req, res) {
  * Room class
  *
  * Room's info is an object that has fields:
+ *     - gameID --- ID of game in the room
+ *     - TODO: settings --- settings of the room:
+ *         - ???
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
+ *
  * if state === "play":
  *     - substate --- substate of the room,
  *     - freshWords --- list of words in hat,
@@ -677,6 +681,7 @@ class Room {
  *     - online --- whether the player is online,
  *     - scoreExplained --- no comments,
  *     - scoreGuessed --- no comments,
+ *     - TODO: TimeZoneOffset
  */
 class User {
     constructor(username, sids, online=true) {
