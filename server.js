@@ -70,11 +70,25 @@ function checkObject(object, pattern) {
  * Returns playerList structure,
  * @see API.md
  *
- * @param room Room object
+ * @param room users list
  * @return list of players
  */
-function getPlayerList(room) {
-    return room.users.map(el => {return {"username": el.username, "online": el.online};});
+function getPlayerList(users) {
+    return users.map(el => {return {"username": el.username, "online": el.online};});
+}
+
+/**
+ * Returns host username
+ *
+ * @param users list of users
+ * @return host username
+ */
+function getHostUsername(users) {
+    const pos = findFirstPos(users, "online", true);
+    if (pos === -1) {
+        return "";
+    }
+    return users[pos].username;
 }
 
 /**
@@ -277,8 +291,8 @@ class Signals {
     static sPlayerJoined(socket, room, username) {
         socket.emit(
             "sPlayerJoined", {
-                "username": username, "playerList": getPlayerList(room),
-                "host": room.users[findFirstPos(room.users, "online", true)].username
+                "username": username, "playerList": getPlayerList(room.users),
+                "host": getHostUsername(room.users)
             });
     }
 
@@ -292,14 +306,9 @@ class Signals {
      */
     static sPlayerLeft(socket, room, username) {
         // Sending new state of the room.
-        let host = "";
-        const pos = findFirstPos(room.users, "online", true);
-        if (pos !== -1) {
-            host = room.users[pos].username;
-        }
         socket.emit("sPlayerLeft", {
-            "username": username, "playerList": getPlayerList(room),
-            "host": host
+            "username": username, "playerList": getPlayerList(room.users),
+            "host": getHostUsername(room.users)
         });
     }
 
@@ -315,8 +324,8 @@ class Signals {
         const name = room.users[findFirstSidPos(room.users, socket.id)].username;
         let joinObj = {
             "key": key,
-            "playerList": getPlayerList(room),
-            "host": room.users[findFirstPos(room.users, "online", true)].username,
+            "playerList": getPlayerList(room.users),
+            "host": getHostUsername(room.users),
             "settings": {
                 "delayTime": config.delayTime,
                 "explanationTime": config.explanationTime,
@@ -505,7 +514,7 @@ app.get("/getFreeKey", function(req, res) {
  * @see API.md
  */
 app.get("/getRoomInfo", function(req, res) {
-    const key = req.query.key; // The key of the room
+    const key = req.query.key.toLowerCase(); // The key of the room
 
     if (key === "") {
         res.json({"success": false});
@@ -526,9 +535,9 @@ app.get("/getRoomInfo", function(req, res) {
         case "wait":
         case "play":
             res.json({"success": true,
-                      "state": "wait",
-                      "playerList": getPlayerList(room),
-                      "host": room.users[findFirstPos(room.users, "online", true)]});
+                      "state": room.state,
+                      "playerList": getPlayerList(room.users),
+                      "host": getHostUsername(room.users)});
             break;
 
         case "end":
@@ -743,8 +752,8 @@ class CheckConditions {
         }
 
         // checking whether signal owner is host
-        const hostPos = findFirstPos(rooms[key].users, "online", true);
-        if (hostPos === -1) {
+        const host = getHostUsername(rooms[key].users);
+        if (host === "") {
             // very strange case, probably something went wrong, let's log it!
             Signals.sFailure(socket, "cStartGame", 302, "Everyone is offline");
             return false;
