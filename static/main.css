@@ -169,6 +169,10 @@ button, input {
     background-color: lightcoral;
 }
 
+.bg-grey {
+    background-color: lightgrey;
+}
+
 .timer-green {
     background-color: forestgreen;
 }
@@ -428,20 +432,47 @@ button, input {
 
 /* Game page */
 
-#gamePage_header {
-    width: 100%;
-    text-align: center;
-    padding: 0 30px 0 30px;
+#gamePage_hatPicture {
+    position: absolute;
+    top: 10px;
+    left: calc(50% - 25px);
+    height: 50px;
+    width: 50px;
+    background-image: url(\hat.png);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-#gamePage_title {
-    font-weight: lighter;
-    margin-bottom: 0;
+#gamePage_hatText {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #gamePage_wordsCnt {
     font-style: italic;
     font-weight: bold;
+}
+
+#gamePage_header {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#gamePage_defaultTitle, #gamePage_speakerTitle, #gamePage_listenerTitle {
+    min-width: 300px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px auto 0 auto;
+    font-size: 20px;
+    font-weight: lighter;
+    line-height: 20px;
+    box-shadow: 0 0 4px grey;
 }
 
 #gamePage_body {

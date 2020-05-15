@@ -90,13 +90,22 @@
     <div class="page" id="gamePage" style="display: none;">
         <button class="white-bubble go-back" id="gamePage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="gamePage_viewRules">
         </button>
+        <div id="gamePage_hatPicture"></div>
+        <div id="gamePage_hatText">
+            Слов в шляпе: <span id="gamePage_wordsCnt"></span>
+        </div>
         <div class="content-small">
             <div id="gamePage_header">
-                <h1 id="gamePage_title"></h1>
-                <p class="hint">Слов в шляпе: <span id="gamePage_wordsCnt">
-                </span></p>
+                <h1 class="bg-grey" id="gamePage_defaultTitle" style="display: none;">
+                    Идёт объяснение
+                </h1>
+                <h1 class="bg-green" id="gamePage_speakerTitle" style="display: none;">
+                    Ты сейчас объясняешь
+                </h1>
+                <h1 class="bg-blue" id="gamePage_listenerTitle" style="display: none;">
+                    Ты сейчас отгадываешь
+                </h1>
             </div>
             <div id="gamePage_body">
                 <div id="gamePage_speakerListener" style="display: none;">

@@ -439,7 +439,6 @@ class App {
         el("gamePage_listener").innerText = listener;
         el("gamePage_wordsCnt").innerText = wordsCount
         el("gamePage_wordsCnt").innerText =  wordsCount;
-        el("gamePage_title").innerText = this.myUsername;
         enable("gamePage_listenerReadyButton");
         el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
         enable("gamePage_speakerReadyButton");
@@ -790,7 +789,6 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        el("gamePage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
             this.editedWordsObject());
         el("editPage_viewRules").onclick = () => Pages.go(Pages.rules);
