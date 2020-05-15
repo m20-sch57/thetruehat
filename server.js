@@ -6,10 +6,10 @@ const config = require("./config.json");
 
 const PORT = config.port;
 const WORD_NUMBER = config.wordNumber;
-const DELAY = config.transferTime; // given delay for client reaction
-const EXPLANATION_LENGTH = config.explanationTime; // length of explanation
-const PRE = config.delayTime; // delay for transfer
-const POST = config.aftermathTime; // time for guess
+const TRANSFER_TIME = config.transferTime; // delay for transfer
+const EXPLANATION_TIME = config.explanationTime; // length of explanation
+const DELAY_TIME = config.delayTime; // given delay for client reaction
+const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
 const allWords = require(config.wordsPath).words;
 
@@ -70,11 +70,40 @@ function checkObject(object, pattern) {
  * Returns playerList structure,
  * @see API.md
  *
- * @param room Room object
+ * @param room users list
  * @return list of players
  */
-function getPlayerList(room) {
-    return room.users.map(el => {return {"username": el.username, "online": el.online};});
+function getPlayerList(users) {
+    return users.map(el => {return {"username": el.username, "online": el.online};});
+}
+
+/**
+ * Returns host username
+ *
+ * @param users list of users
+ * @return host username
+ */
+function getHostUsername(users) {
+    const pos = findFirstPos(users, "online", true);
+    if (pos === -1) {
+        return "";
+    }
+    return users[pos].username;
+}
+
+/**
+ * Rerurns random number from interval [a, b)
+ * 
+ * @param a lower bound
+ * @param b upper bound
+ * @return random integer from [a, b)
+ */
+function randrange(a = 0, b = 0) {
+    if (arguments.length === 1) {
+        b = a;
+        a = 0;
+    }
+    return Math.floor(a + (b - a) * Math.random());
 }
 
 /**
@@ -138,7 +167,7 @@ function generateWords() {
     let used = {};
     const numberOfAllWords = allWords.length;
     while (words.length < WORD_NUMBER) {
-        const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
+        const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
             words.push(allWords[pos]);
@@ -176,7 +205,7 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + (PRE + DELAY);
+    rooms[key].startTime = currentTime + (DELAY_TIME + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
     /*
     const numberOfTurn = rooms[key].numberOfTurn;
@@ -188,9 +217,9 @@ function startExplanation(key) {
         if (rooms[key].numberOfTurn === numberOfTurn) {
             finishExplanation(key);
         }
-    }, (PRE + EXPLANATION_LENGTH + POST + DELAY));
+    }, (DELAY_TIME + EXPLANATION_TIME + AFTERMATH_TIME + TRANSFER_TIME));
     */
-    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY));
+    setTimeout(() => Signals.sNewWord(key), (DELAY_TIME + TRANSFER_TIME));
     Signals.sExplanationStarted(key)
 }
 
@@ -277,8 +306,8 @@ class Signals {
     static sPlayerJoined(socket, room, username) {
         socket.emit(
             "sPlayerJoined", {
-                "username": username, "playerList": getPlayerList(room),
-                "host": room.users[findFirstPos(room.users, "online", true)].username
+                "username": username, "playerList": getPlayerList(room.users),
+                "host": getHostUsername(room.users)
             });
     }
 
@@ -292,14 +321,9 @@ class Signals {
      */
     static sPlayerLeft(socket, room, username) {
         // Sending new state of the room.
-        let host = "";
-        const pos = findFirstPos(room.users, "online", true);
-        if (pos !== -1) {
-            host = room.users[pos].username;
-        }
         socket.emit("sPlayerLeft", {
-            "username": username, "playerList": getPlayerList(room),
-            "host": host
+            "username": username, "playerList": getPlayerList(room.users),
+            "host": getHostUsername(room.users)
         });
     }
 
@@ -315,8 +339,8 @@ class Signals {
         const name = room.users[findFirstSidPos(room.users, socket.id)].username;
         let joinObj = {
             "key": key,
-            "playerList": getPlayerList(room),
-            "host": room.users[findFirstPos(room.users, "online", true)].username,
+            "playerList": getPlayerList(room.users),
+            "host": getHostUsername(room.users),
             "settings": {
                 "delayTime": config.delayTime,
                 "explanationTime": config.explanationTime,
@@ -490,12 +514,12 @@ app.get("/getFreeKey", function(req, res) {
     const keyConsonant = config.keyConsonant;
     const keyVowels = config.keyVowels;
     // getting the key length
-    const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
+    const keyLength = randrange(minKeyLength, maxKeyLength + 1);
     // generating the key
     let key = "";
     for (let i = 0; i < keyLength; ++i) {
         const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
-        key += charList[Math.floor(Math.random() * charList.length)];
+        key += charList[randrange(charList.length)];
     }
     res.json({"key": key});
 });
@@ -505,7 +529,7 @@ app.get("/getFreeKey", function(req, res) {
  * @see API.md
  */
 app.get("/getRoomInfo", function(req, res) {
-    const key = req.query.key; // The key of the room
+    const key = req.query.key.toLowerCase(); // The key of the room
 
     if (key === "") {
         res.json({"success": false});
@@ -526,9 +550,9 @@ app.get("/getRoomInfo", function(req, res) {
         case "wait":
         case "play":
             res.json({"success": true,
-                      "state": "wait",
-                      "playerList": getPlayerList(room),
-                      "host": room.users[findFirstPos(room.users, "online", true)]});
+                      "state": room.state,
+                      "playerList": getPlayerList(room.users),
+                      "host": getHostUsername(room.users)});
             break;
 
         case "end":
@@ -992,7 +1016,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_LENGTH) {
+                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_TIME) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
@@ -1080,7 +1104,7 @@ class Callbacks {
                     "wordState": rooms[key].editWords[i].wordState});
             } else {
                 rooms[key].freshWords.splice(
-                    Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+                    randrange(rooms[key].freshWords.length),
                     0, rooms[key].editWords[i].word);
             }
         }
