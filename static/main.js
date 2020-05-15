@@ -376,6 +376,10 @@ class App {
             this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
         }
+        if (this.myUsername.trim() == "") {
+            this.failedToJoin("Нужно представиться");
+            return;
+        }
         fetch(`/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(data => {
@@ -658,10 +662,6 @@ class App {
             }
         })
 
-        this.socket.on("sFailure", (data) => {
-            showError(data.msg);
-            setTimeout(hideError, 4000);
-        });
         this.socket.on("disconnect", () => showError("Нет соединения, перезагрузите страницу"));
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
@@ -738,20 +738,15 @@ class App {
         })
         this.socket.on("sFailure", function(data) {
             switch(data.code) {
-            case 101:
-                _this.failedToJoin("Пустой ключ комнаты - низзя");
-                break;
-            case 102:
-                _this.failedToJoin("Нужно представиться");
-                break;
             case 103:
                 _this.failedToJoin("Ой. Это имя занято :(");
                 break;
             case 104:
                 _this.failedToJoin("Вы точно с таким именем играли?");
                 break;
-            case 105:
-                _this.failedToJoin("Ой. Что-то пошло не так :(");
+            default:
+                showError(data.msg, "code:", data.code);
+                setTimeout(hideError, 4000);
                 break;
             }
         })
