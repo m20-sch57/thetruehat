@@ -68,7 +68,6 @@ function enable(id) {
 }
 
 function readLocationHash() {
-    console.log(location);
     if (location.hash == "") return "";
     return decodeURIComponent(location.hash.slice(1));
 }
@@ -251,7 +250,6 @@ let Pages = {
     results: ["resultsPage"],
 
     getPage: function (page) {
-        console.log(page);
         if (page instanceof Array) {
             return page
         } else {
@@ -275,14 +273,12 @@ let Pages = {
 
     go: function (page) {
         page = this.getPage(page);
-        console.log("go:", page);
         this.hidePage();
         this.showPage(page);
         this._pageLog.push(page);
     },
 
     goBack: function () {
-        console.log("goBack");
         this.hidePage();
         this._pageLog.pop();
         if (this._pageLog.length >= 1) {
@@ -304,7 +300,6 @@ class App {
     constructor() {
         this.debug = true;
 
-        console.log(`${window.location.protocol}//${window.location.host}`);
         this.socket = io.connect(`${window.location.protocol}//${window.location.host}`);
 
         this.myUsername = "";
@@ -368,7 +363,7 @@ class App {
 
     enterRoom() {
         if (this.myRoomKey == "") {
-            console.error("Attemt to enter room with empty key");
+            this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
         }
         fetch(`/getRoomInfo?key=${this.myRoomKey}`)
@@ -422,6 +417,7 @@ class App {
             disable("preparationPage_start");
             show("preparationPage_startHint");
         }
+        hide("joinPage_goHint");
     }
 
     renderWaitPage({speaker, listener, wordsCount}) {
@@ -627,20 +623,30 @@ class App {
         })
     }
 
+    failedToJoin(msg) {
+        el("joinPage_goHint").innerText = msg;
+        show("joinPage_goHint");
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
-        if (this.debug) {
-            let events = ["sPlayerJoined", "sPlayerLeft", "sFailure",
-            "sYouJoined", "sGameStarted", "sExplanationStarted",
-            "sExplanationEnded", "sNextTurn", "sNewWord", 
-            "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
-            events.forEach((event) => {
-                _this.socket.on(event, function(data) {
+        let events = ["sPlayerJoined", "sPlayerLeft",
+        "sYouJoined", "sGameStarted", "sExplanationStarted",
+        "sExplanationEnded", "sNextTurn", "sNewWord", 
+        "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
+        events.forEach((event) => {
+            _this.socket.on(event, function(data) {
+                if (_this.debug) {
                     console.log(event, data);
-                })
+                }
             })
-        }
+        })
+        this.socket.on("sFailure", function(data) {
+            if (_this.debug) {
+                console.warn("sFailure", data);
+            }
+        })
 
         this.socket.on("sYouJoined", function(data) {
             switch (data.state) {
@@ -714,6 +720,25 @@ class App {
         this.socket.on("sGameEnded", function(data) {
             _this.renderResultsPage(data);
             Pages.go(Pages.results);
+        })
+        this.socket.on("sFailure", function(data) {
+            switch(data.code) {
+            case 101:
+                _this.failedToJoin("Пустой ключ комнаты - низзя");
+                break;
+            case 102:
+                _this.failedToJoin("Нужно представиться");
+                break;
+            case 103:
+                _this.failedToJoin("Ой. Это имя занято :(");
+                break;
+            case 104:
+                _this.failedToJoin("Вы точно с таким именем играли?");
+                break;
+            case 105:
+                _this.failedToJoin("Ой. Что-то пошло не так :(");
+                break;
+            }
         })
     }
 
