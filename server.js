@@ -218,7 +218,7 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + (PRE + DELAY) * 1000;
+    rooms[key].startTime = currentTime + (PRE + DELAY);
     rooms[key].word = rooms[key].freshWords.pop();
     /*
     const numberOfTurn = rooms[key].numberOfTurn;
@@ -230,9 +230,9 @@ function startExplanation(key) {
         if (rooms[key].numberOfTurn === numberOfTurn) {
             finishExplanation(key);
         }
-    }, (PRE + EXPLANATION_LENGTH + POST + DELAY) * 1000);
+    }, (PRE + EXPLANATION_LENGTH + POST + DELAY));
     */
-    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY) * 1000);
+    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY));
     Signals.sExplanationStarted(key)
 }
 
@@ -350,10 +350,16 @@ class Signals {
      */
     static sYouJoined(socket, key) {
         const room = rooms[key];
+        const name = room.users[findFirstSidPos(room.users, socket.id)].username;
         let joinObj = {
             "key": key,
             "playerList": getPlayerList(room),
-            "host": room.users[findFirstPos(room.users, "online", true)].username
+            "host": room.users[findFirstPos(room.users, "online", true)].username,
+            "settings": {
+                "delayTime": config.delayTime,
+                "explanationTime": config.explanationTime,
+                "aftermathTime": config.aftermathTime
+            }
         };
         switch (room.state) {
             case "wait":
@@ -380,7 +386,11 @@ class Signals {
                         break;
                     case "edit":
                         joinObj.substate = "edit";
-                        joinObj.editWords = [];
+                        joinObj.speaker = room.users[room.speaker].username;
+                        joinObj.listener = room.users[room.listener].username;
+                        if (joinObj.speaker === name) {
+                            joinObj.editWords = room.editWords;
+                        }
                         break;
                     default:
                         console.log(room);
@@ -403,8 +413,8 @@ class Signals {
      * @param request Request that is failed
      * @param msg Message to send
      */
-    static sFailure(socket, request, msg) {
-        socket.emit("sFailure", {"request": request, "msg": msg});
+    static sFailure(socket, request, code, msg) {
+        socket.emit("sFailure", {"request": request, "msg": msg, "code": code});
     }
 
     /**
@@ -431,7 +441,8 @@ class Signals {
         io.sockets.to(key).emit("sNextTurn", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
-            "words": words});
+            "words": words,
+            "wordsCount": rooms[key].freshWords.length});
     }
 
     /**
@@ -464,7 +475,8 @@ class Signals {
     static sWordExplanationEnded(key, cause) {
         io.sockets.to(key).emit("sWordExplanationEnded", {
             "cause": cause,
-            "wordsCount": rooms[key].freshWords.length});
+            "wordsCount": rooms[key].freshWords.length +
+            ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
     }
 
     /**
@@ -704,7 +716,7 @@ const rooms = {};
 
 function checkInputFormat(socket, data, format, signal) {
     if (!checkObject(data, format)) {
-        Signals.sFailure(socket, signal, "Invalid format");
+        Signals.sFailure(socket, signal, 0, "Invalid format");
         return false;
     }
     return true;
@@ -717,17 +729,17 @@ class CheckConditions {
 
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
-            Signals.sFailure(socket, "cJoinRoom", "You are in room now");
+            Signals.sFailure(socket, "cJoinRoom", 100, "You are in room now");
             return false;
         }
 
         // If key is "" or name is "", it will be an error
         if (key === "") {
-            Signals.sFailure(socket, "cJoinRoom", "Invalid key of room");
+            Signals.sFailure(socket, "cJoinRoom", 101, "Invalid key of room");
             return false;
         }
         if (name === "") {
-            Signals.sFailure(socket, "cJoinRoom", "Invalid username");
+            Signals.sFailure(socket, "cJoinRoom", 102, "Invalid username");
             return false;
         }
 
@@ -737,13 +749,13 @@ class CheckConditions {
 
             // If username is used, it will be an error
             if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
-                Signals.sFailure(socket, "cJoinRoom", "Username is already used");
+                Signals.sFailure(socket, "cJoinRoom", 103, "Username is already used");
                 return false;
             }
 
             // If game has started, only logging in can be performed
             if (rooms[key].state === "play" && pos === -1) {
-                Signals.sFailure(socket, "cJoinRoom", "Game have started, only logging in can be performed");
+                Signals.sFailure(socket, "cJoinRoom", 104, "Game have started, only logging in can be performed");
                 return false;
             }
         }
@@ -754,7 +766,7 @@ class CheckConditions {
     static cLeaveRoom(socket, key) {
         // If user is only in his own room
         if (key === socket.id) {
-            Signals.sFailure(socket, "cLeaveRoom", "You aren't in the room");
+            Signals.sFailure(socket, "cLeaveRoom", 200, "You aren't in the room");
             return false;
         }
 
@@ -771,7 +783,7 @@ class CheckConditions {
 
         // if username is ""
         if (username === "") {
-            Signals.sFailure(socket, "cLeaveRoom", "You aren't in the room");
+            Signals.sFailure(socket, "cLeaveRoom", 200, "You aren't in the room");
             return false;
         }
         return true;
@@ -780,13 +792,13 @@ class CheckConditions {
     static cStartGame(socket, key) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cStartGame", "Game ended");
+            Signals.sFailure(socket, "cStartGame", 300, "Game ended");
             return false;
         }
 
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "wait") {
-            Signals.sFailure(socket, "cStartGame", "Game have already started");
+            Signals.sFailure(socket, "cStartGame", 301, "Game have already started");
             return false;
         }
 
@@ -794,11 +806,11 @@ class CheckConditions {
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
-            Signals.sFailure(socket, "cStartGame", "Everyone is offline");
+            Signals.sFailure(socket, "cStartGame", 302, "Everyone is offline");
             return false;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cStartGame", "Only host can start the game");
+            Signals.sFailure(socket, "cStartGame", 303, "Only host can start the game");
             return false;
         }
 
@@ -810,7 +822,7 @@ class CheckConditions {
             }
         }
         if (cnt < 2) {
-            Signals.sFailure(socket,"cStartGame",
+            Signals.sFailure(socket,"cStartGame", 302,
                 "Not enough online users to start the game (at least two required)");
             return false;
         }
@@ -820,31 +832,31 @@ class CheckConditions {
     static cSpeakerReady(socket, key) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cSpeakerReady", "Game ended");
+            Signals.sFailure(socket, "cSpeakerReady", 400, "Game ended");
             return false;
         }
 
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cSpeakerReady", "Game state isn't 'play'");
+            Signals.sFailure(socket, "cSpeakerReady", 401, "Game state isn't 'play'");
             return false;
         }
 
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket, "cSpeakerReady", "Game substate isn't 'wait'");
+            Signals.sFailure(socket, "cSpeakerReady", 402, "Game substate isn't 'wait'");
             return false;
         }
 
         // check whether the client is speaker
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cSpeakerReady", "You aren't a speaker");
+            Signals.sFailure(socket, "cSpeakerReady", 403, "You aren't a speaker");
             return false;
         }
 
         // check if speaker isn't already ready
         if (rooms[key].speakerReady) {
-            Signals.sFailure(socket, "cSpeakerReady","Speaker is already ready");
+            Signals.sFailure(socket, "cSpeakerReady", 404, "Speaker is already ready");
             return false;
         }
         return true;
@@ -853,31 +865,31 @@ class CheckConditions {
     static cListenerReady(socket, key) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cListenerReady", "Game ended");
+            Signals.sFailure(socket, "cListenerReady", 500, "Game ended");
             return false;
         }
 
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cListenerReady", "Game state isn't 'play'");
+            Signals.sFailure(socket, "cListenerReady", 501, "Game state isn't 'play'");
             return false;
         }
 
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket, "cListenerReady", "Game substate isn't 'wait'");
+            Signals.sFailure(socket, "cListenerReady", 502, "Game substate isn't 'wait'");
             return false;
         }
 
         // check whether the client is listener
         if (rooms[key].users[rooms[key].listener].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cListenerReady", "You aren't a listener");
+            Signals.sFailure(socket, "cListenerReady", 503, "You aren't a listener");
             return false;
         }
 
         // check if listener isn't already ready
         if (rooms[key].listenerReady) {
-            Signals.sFailure(socket, "cListenerReady", "Listener is already ready");
+            Signals.sFailure(socket, "cListenerReady", 504, "Listener is already ready");
             return false;
         }
         return true;
@@ -886,29 +898,29 @@ class CheckConditions {
     static cEndWordExplanation(socket, key) {
         // checking if room exists
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cEndWordExplanation", "Game ended");
+            Signals.sFailure(socket, "cEndWordExplanation", 600, "Game ended");
             return false;
         }
 
         // checking if proper state and substate
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cEndWordExplanation","Game state isn't 'play'");
+            Signals.sFailure(socket, "cEndWordExplanation", 601, "Game state isn't 'play'");
             return false;
         }
         if (rooms[key].substate !== "explanation") {
-            Signals.sFailure(socket, "cEndWordExplanation", "Game substate isn't 'explanation'");
+            Signals.sFailure(socket, "cEndWordExplanation", 602, "Game substate isn't 'explanation'");
             return false;
         }
 
         // checking if speaker send this
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cEndWordExplanation", "You aren't a listener");
+            Signals.sFailure(socket, "cEndWordExplanation", 603, "You aren't a speaker");
             return false;
         }
 
         // checking if time is correct
         if ((new Date).getTime() < rooms[key].startTime) {
-            Signals.sFailure(socket, "cEndWordExplanation", "Too early");
+            Signals.sFailure(socket, "cEndWordExplanation", 604, "Too early");
             return false;
         }
         return true;
@@ -917,31 +929,31 @@ class CheckConditions {
     static cWordsEdited(socket, key, editWords) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket,"cWordsEdited", "Game ended");
+            Signals.sFailure(socket, "cWordsEdited", 700, "Game ended");
             return false;
         }
 
         // check if game state is 'edit'
-        if (rooms[key].state === "edit") {
-            Signals.sFailure(socket, "cWordsEdited", "Game state isn't 'edit'")
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket, "cWordsEdited", 701, "Game state isn't 'play'")
             return false;
         }
 
         // check if game substate is 'edit'
         if (rooms[key].substate !== "edit") {
-            Signals.sFailure(socket,"cWordsEdited","Game substate isn't 'edit'")
+            Signals.sFailure(socket, "cWordsEdited", 702, "Game substate isn't 'edit'")
             return false;
         }
 
         // check if speaker send this signal
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket,"cWordsEdited", "Only speaker can send this signal");
+            Signals.sFailure(socket, "cWordsEdited", 703, "Only speaker can send this signal");
             return false;
         }
 
         // comparing the length of serer editWords and client editWords
         if (editWords.length !== rooms[key].editWords.length) {
-            Signals.sFailure(socket,"cWordsEdited", "Incorrect number of words");
+            Signals.sFailure(socket,"cWordsEdited", 704, "Incorrect number of words");
             return false;
         }
         return true;
@@ -955,13 +967,13 @@ class Callbacks {
 
         // If any error happened
         if (err) {
-            Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
+            Signals.sFailure(socket, "сJoinRoom", 105, "Failed to join the room");
             return;
         }
 
         // If user haven't joined the room
         if (getRoom(socket) !== key) {
-            Signals.sFailure(socket, "sJoinRoom", "Failed to join the room");
+            Signals.sFailure(socket, "сJoinRoom", 105, "Failed to join the room");
             return;
         }
 
@@ -1013,7 +1025,7 @@ class Callbacks {
 
         // If any error happened
         if (err) {
-            Signals.sFailure(socket,"cLeaveRoom", "Failed to leave the room");
+            Signals.sFailure(socket,"cLeaveRoom", 201, "Failed to leave the room");
             return;
         }
 
@@ -1080,7 +1092,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + 1000 * EXPLANATION_LENGTH) {
+                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_LENGTH) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
@@ -1134,7 +1146,7 @@ class Callbacks {
             
             // checking matching of information
             if (word.word !== editWords[i].word) {
-                Signals.sFailure(socket,"cWordsEdited", `Incorrect word at position ${i}`);
+                Signals.sFailure(socket,"cWordsEdited", 704, `Incorrect word at position ${i}`);
                 return;
             }
 
