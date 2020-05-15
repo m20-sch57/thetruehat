@@ -6,9 +6,9 @@ const config = require("./config.json");
 
 const PORT = config.port;
 const WORD_NUMBER = config.wordNumber;
-const TRANSFER_TIME = config.transferTime; // given delay for client reaction
+const TRANSFER_TIME = config.transferTime; // delay for transfer
 const EXPLANATION_TIME = config.explanationTime; // length of explanation
-const DELAY_TIME = config.delayTime; // delay for transfer
+const DELAY_TIME = config.delayTime; // given delay for client reaction
 const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
 const allWords = require(config.wordsPath).words;
