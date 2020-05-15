@@ -774,7 +774,7 @@ class App {
         }
         el("rulesPage_goBack").onclick = () => Pages.goBack();
         el("preparationPage_viewRules").onclick = () => 
-            this.showPage('rulesPage');
+            Pages.go(Pages.rules); 
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
