@@ -70,7 +70,7 @@ function checkObject(object, pattern) {
  * Returns playerList structure,
  * @see API.md
  *
- * @param room users list
+ * @param users list of users
  * @return list of players
  */
 function getPlayerList(users) {
