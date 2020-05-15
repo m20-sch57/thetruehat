@@ -666,7 +666,6 @@ class CheckConditions {
     static cJoinRoom(socket, data) {
         const key = data.key.toLowerCase(); // key of the room
         const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
-        console.log(name);
 
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
