@@ -92,6 +92,21 @@ function getHostUsername(users) {
 }
 
 /**
+ * Rerurns random number from interval [a, b)
+ * 
+ * @param a lower bound
+ * @param b upper bound
+ * @return random integer from [a, b)
+ */
+function randrange(a = 0, b = 0) {
+    if (arguments.length === 1) {
+        b = a;
+        a = 0;
+    }
+    return Math.floor(a + (b - a) * Math.random());
+}
+
+/**
  * Finds first position in users array where element has attribute with given value
  *
  * @param users The users array
@@ -152,7 +167,7 @@ function generateWords() {
     let used = {};
     const numberOfAllWords = allWords.length;
     while (words.length < WORD_NUMBER) {
-        const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
+        const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
             words.push(allWords[pos]);
@@ -499,12 +514,12 @@ app.get("/getFreeKey", function(req, res) {
     const keyConsonant = config.keyConsonant;
     const keyVowels = config.keyVowels;
     // getting the key length
-    const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
+    const keyLength = randrange(minKeyLength, maxKeyLength + 1);
     // generating the key
     let key = "";
     for (let i = 0; i < keyLength; ++i) {
         const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
-        key += charList[Math.floor(Math.random() * charList.length)];
+        key += charList[randrange(charList.length)];
     }
     res.json({"key": key});
 });
@@ -1089,7 +1104,7 @@ class Callbacks {
                     "wordState": rooms[key].editWords[i].wordState});
             } else {
                 rooms[key].freshWords.splice(
-                    Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+                    randrange(rooms[key].freshWords.length),
                     0, rooms[key].editWords[i].word);
             }
         }
