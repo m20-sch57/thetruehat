@@ -6,10 +6,10 @@ const config = require("./config.json");
 
 const PORT = config.port;
 const WORD_NUMBER = config.wordNumber;
-const DELAY = config.transferTime; // given delay for client reaction
-const EXPLANATION_LENGTH = config.explanationTime; // length of explanation
-const PRE = config.delayTime; // delay for transfer
-const POST = config.aftermathTime; // time for guess
+const TRANSFER_TIME = config.transferTime; // given delay for client reaction
+const EXPLANATION_TIME = config.explanationTime; // length of explanation
+const DELAY_TIME = config.delayTime; // delay for transfer
+const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
 const allWords = require(config.wordsPath).words;
 
@@ -190,7 +190,7 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + (PRE + DELAY);
+    rooms[key].startTime = currentTime + (DELAY_TIME + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
     /*
     const numberOfTurn = rooms[key].numberOfTurn;
@@ -202,9 +202,9 @@ function startExplanation(key) {
         if (rooms[key].numberOfTurn === numberOfTurn) {
             finishExplanation(key);
         }
-    }, (PRE + EXPLANATION_LENGTH + POST + DELAY));
+    }, (DELAY_TIME + EXPLANATION_TIME + AFTERMATH_TIME + TRANSFER_TIME));
     */
-    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY));
+    setTimeout(() => Signals.sNewWord(key), (DELAY_TIME + TRANSFER_TIME));
     Signals.sExplanationStarted(key)
 }
 
@@ -752,8 +752,8 @@ class CheckConditions {
         }
 
         // checking whether signal owner is host
-        const host = getHostUsername(rooms[key].users);
-        if (host === "") {
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
             Signals.sFailure(socket, "cStartGame", 302, "Everyone is offline");
             return false;
@@ -1001,7 +1001,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_LENGTH) {
+                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_TIME) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
