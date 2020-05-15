@@ -665,9 +665,8 @@ function checkInputFormat(socket, data, format, signal) {
 class CheckConditions {
     static cJoinRoom(socket, data) {
         const key = data.key.toLowerCase(); // key of the room
-        const name = data.username; // name of the user
-        name = name.trim();
-        name.replace(/\s+/g, ' ');
+        const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
+        console.log(name);
 
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
@@ -905,7 +904,7 @@ class CheckConditions {
 class Callbacks {
     static joinRoomCallback(socket, data, err) {
         const key = data.key.toLowerCase(); // key of the room
-        const name = data.username; // name of the user
+        const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
 
         // If any error happened
         if (err) {
