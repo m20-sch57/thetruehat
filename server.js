@@ -194,7 +194,9 @@ function getRoom(socket) {
  * TODO: Rewrite using less segment. Feature.
  */
 async function getAllWords() {
-    const res = await DB.allAsync("SELECT Word FROM Words WHERE Tags != ?;", "-deleted");
+    const res = await DB.allAsync(`SELECT Word
+                                   FROM Words
+                                   WHERE Tags != ?;`, "-deleted");
     return res.rows.map((row) => (row["Word"]));
 }
 
@@ -319,9 +321,21 @@ function endGame(key) {
     });
 
     Signals.sGameEnded(key, results)
+    DB.run(`UPDATE Games
+            SET Results = $Results
+            WHERE GameID =
+                  (SELECT GameID
+                  FROM Rooms
+                  WHERE RoomKey = $RoomKey);`,
+        {
+            $Results: JSON.stringify(results),
+            $RoomKey: key
+        })
 
     // removing room
     delete rooms[key];
+    DB.run(`DELETE FROM Rooms
+                WHERE RoomKey = ?`, key)
 
     // removing users from room
     io.sockets.in(key).clients(function(err, clients) {
@@ -435,6 +449,7 @@ class Signals {
      *
      * @param socket Socket to emit
      * @param request Request that is failed
+     * @param code Failure code. See errorsCodes.md
      * @param msg Message to send
      */
     static sFailure(socket, request, code, msg) {
@@ -561,7 +576,9 @@ app.get("/getFreeKey", async function(req, res) {
             const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
             key += charList[randrange(charList.length)];
         }
-        const qRes = await DB.allAsync(`SELECT COUNT(RoomKey) FROM Rooms WHERE RoomKey;`);
+        const qRes = await DB.allAsync(`SELECT COUNT(RoomKey)
+                                        FROM Rooms
+                                        WHERE RoomKey = ?;`, key);
         if (qRes.rows[0]["count(RoomKey)"] !== 0) {
             continue;
         }
@@ -582,7 +599,12 @@ app.get("/getRoomInfo", async function(req, res) {
         return;
     }
 
-    const qRes = await DB.allAsync("SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ?);", key);
+    const qRes = await DB.allAsync(`SELECT *
+                                    FROM Games
+                                    WHERE GameID =
+                                          (SELECT GameID
+                                          FROM Rooms
+                                          WHERE RoomKey = ?);`, key);
     const rows = qRes.rows;
     // Case of nonexistent room
     if (rows.length === 0) {
@@ -644,7 +666,7 @@ app.get("/getRoomInfo", async function(req, res) {
  *     - listenerReady --- bool,
  *     - word --- current word,
  *     - startTime --- UTC time of start of explanation (in milliseconds).
- *     - editWords --- list of words to edit
+ *     - editWords --- list of words to edit TODO: description of content
  *     - numberOfTurn --- number of turn
  */
 class Room {
@@ -672,6 +694,37 @@ class Room {
         const numberOfPlayers = this.users.length;
         this.speaker = numberOfPlayers - 1;
         this.listener = numberOfPlayers - 2;
+
+        DB.run(`UPDATE Games
+               SET Settings = $Settings,
+                   WordsList = $WordsList,
+                   State = $State,
+                   Players = $Players,
+                   Host = $Host,
+                   StartTime = $StartTime,
+                   TimeZoneOffSet = $TimeZoneOffSet
+               WHERE GameID = $GameID;`,
+            {
+                $Settings: JSON.stringify({} ? false : this.settings),
+                $WordsList: this.freshWords,
+                $State: this.state,
+                $Players: this.users,
+                $Host: getHostUsername(this),
+                $StartTime: Date.now(),
+                $TimeZoneOffSet: JSON([]),
+                $GameID: this.gameID
+            })
+        // TODO: Turn on when IDs will be ready
+        /*
+        this.users.forEach(function (user) {
+            DB.run(`INSERT INTO Participating
+                    VALUES ($GameID, $UserID)`,
+                {
+                    $GameID: this.gameID,
+                    $UserID: user.ID
+                })
+        })
+        */
 
         this.roundPrepare()
     }
@@ -712,6 +765,8 @@ class Room {
  *
  * User is an object that has fields:
  *     - username --- no comments,
+ *     - TODO: ID
+ *     - TODO: login
  *     - sids --- socket ids,
  *     - online --- whether the player is online,
  *     - scoreExplained --- no comments,
@@ -721,6 +776,7 @@ class Room {
 class User {
     constructor(username, sids, online=true) {
         this.username = username;
+        this.ID = null;
         this.sids = sids;
         this.online = online;
         this.scoreExplained = 0;
@@ -1008,7 +1064,9 @@ class Callbacks {
             const resp = await DB.runAsync(`INSERT INTO Games DEFAULT VALUES;`);
             gameID = resp.lastID;
         } else {
-            const resp = await DB.allAsync(`SELECT GameID FROM Rooms WHERE RoomKey = ?;`, key);
+            const resp = await DB.allAsync(`SELECT GameID
+                                            FROM Rooms
+                                            WHERE RoomKey = ?;`, key);
             if (resp.rows.length !== 1) {
                 console.log("Incorrect number of rows!");
                 // TODO return or something else
@@ -1030,7 +1088,10 @@ class Callbacks {
         // updating players and host
         const players = JSON.stringify(getPlayerList(rooms[key]));
         const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
-        await db.runAsync("UPDATE Games SET Players = $Players, Host = $Host WHERE GameID = $GameID;",
+        await DB.runAsync(`UPDATE Games
+                           SET Players = $Players,
+                               Host = $Host
+                           WHERE GameID = $GameID;`,
             {
                 $Players: players,
                 $Host: host,
@@ -1059,12 +1120,17 @@ class Callbacks {
         // updating players and host
         const players = JSON.stringify(getPlayerList(rooms[key]));
         const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
-        const resp = await db.query("SELECT GameID FROM Rooms WHERE RoomKey = ?;", key);
+        const resp = await DB.allAsync(`SELECT GameID
+                                        FROM Rooms
+                                        WHERE RoomKey = ?;`, key);
         if (resp.rows.length !== 1) {
             console.log("Incorrect number of rows!");
         }
         const gameID = resp.rows[0];
-        await db.runAsync("UPDATE Games SET Players = $Players, Host = $Host WHERE GameID = $GameID;",
+        await DB.runAsync(`UPDATE Games
+                           SET Players = $Players,
+                               Host = $Host
+                           WHERE GameID = $GameID;`,
             {
                 $Players: players,
                 $Host: host,
@@ -1096,8 +1162,6 @@ class Callbacks {
         Signals.sGameStarted(key);
 
         console.log(rooms[key].freshWords);
-
-        return;
     }
 
     static cEndWordExplanation(socket, key, cause) {
@@ -1186,6 +1250,29 @@ class Callbacks {
                     rooms[key].editWords[i].transfer = false;
                     break;
             }
+
+            DB.run(`INSERT INTO ExplanationRecords
+                    VALUES ($GameID,
+                            DEFAULT,
+                            $Speaker,
+                            $SpeakerID,
+                            $Listener,
+                            $ListenerID,
+                            $Word,
+                            $Time,
+                            $ExtraTime,
+                            $Outcome);`,
+                {
+                    $GameID: rooms[key].gameID,
+                    $Speaker: rooms[key].users[rooms[key].speaker].username,
+                    $SpeakerID: rooms[key].users[rooms[key].speaker].ID,
+                    $Listener: rooms[key].users[rooms[key].listener].username,
+                    $ListenerID: rooms[key].users[rooms[key].listener].ID,
+                    $Word: word.word,
+                    $Time: 0, // TODO: implement
+                    $ExtraTime: 0, // TODO: implement
+                    $Outcome: editWords[i].wordState
+                })
         }
 
         // transferring round info
