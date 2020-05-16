@@ -61,7 +61,7 @@ Used to contain games' infos.
     - DEFAULT "wait"
     - INDEX Games_State_Index (?)
     - NOT NULL
-- **Players** : *TEXT* - JSON with list of players' usernames.
+- **Players** : *TEXT* - JSON with list of players with `username` and `online`.
     - DEFAULT "[]"
     - NOT NULL
 - **Host** : *TEXT* - username of the room host.

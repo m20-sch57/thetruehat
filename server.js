@@ -330,8 +330,11 @@ function endGame(key) {
 
     // removing room
     delete rooms[key];
-    DB.run(`DELETE FROM Rooms
+    if (config.cleanRooms) {
+        DB.run(`DELETE
+                FROM Rooms
                 WHERE RoomKey = ?`, key)
+    }
 
     // removing users from room
     io.sockets.in(key).clients(function(err, clients) {
@@ -710,7 +713,7 @@ class Room {
                 $Settings: JSON.stringify(this.settings),
                 $WordsList: JSON.stringify(this.freshWords),
                 $State: this.state,
-                $Players: JSON.stringify(this.users.map((user) => user.username)),
+                $Players: JSON.stringify(getPlayerList(this.users)),
                 $Host: getHostUsername(this),
                 $StartTime: Date.now(),
                 $TimeZoneOffSet: JSON.stringify([]), // TODO: implement
@@ -1095,7 +1098,7 @@ class Callbacks {
                                Host = $Host
                            WHERE GameID = $GameID;`,
             {
-                $Players: JSON.stringify(rooms[key].users.map((user) => user.username)),
+                $Players: JSON.stringify(getPlayerList(rooms[key].users)),
                 $Host: getHostUsername(rooms[key].users),
                 $GameID: gameID
             });
@@ -1132,7 +1135,7 @@ class Callbacks {
                                Host = $Host
                            WHERE GameID = $GameID;`,
             {
-                $Players: JSON.stringify(rooms[key].users.map((user) => user.username)),
+                $Players: JSON.stringify(getPlayerList(rooms[key].users)),
                 $Host: getHostUsername(rooms[key].users),
                 $GameID: gameID
             });

@@ -3,4 +3,4 @@
 Sorry, documentation is in work at the moment. You can watch at contributors' files:
 * [MVP](MVP.md) (on russian language)
 * [API](Web_API.md) (on russian language)
-* [other agreements](API_agreements.md) (on russian language)
+* [other agreements](main_agreements.md) (on russian language)
