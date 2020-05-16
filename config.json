@@ -1,11 +1,11 @@
 {
-    "port": 2005,
-    "wordsPath": "./words/words_100_tmp.json",
-    "transferTime": 1,
-    "delayTime": 3,
-    "explanationTime": 40,
-    "aftermathTime": 3,
-    "wordNumber": 100,
+    "port": 5000,
+    "wordsPath": "./words/easy.json",
+    "transferTime": 1000,
+    "delayTime": 3000,
+    "explanationTime": 20000,
+    "aftermathTime": 3000,
+    "wordNumber": 40,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [

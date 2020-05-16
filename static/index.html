@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -42,6 +42,7 @@
                 <input class="medium-input" id="joinPage_inputName" placeholder="Введи своё имя">
                 <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
                 <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+                <p class="hint" id="joinPage_goHint" style="display: none;"></p>
             </div>
         </div>
     </div>
@@ -80,7 +81,8 @@
                     <div id="preparationPage_users"></div>
                     <div class="spacer"></div>
                 </div>
-                <button class="medium-button bg-green" id="preparationPage_start">Начать игру</button>
+                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">Начать игру</button>
+                <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
                 <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
             </div>
         </div>
@@ -92,7 +94,7 @@
         </button>
         <div class="content-small">
             <div id="gamePage_header">
-                <h1 id="gamePage_title">Федро Губкин</h1>
+                <h1 id="gamePage_title"></h1>
                 <p class="hint">Слов в шляпе: <span id="gamePage_wordsCnt">
                 </span></p>
             </div>
@@ -129,7 +131,8 @@
                 </div>
                 <div id="gamePage_explanationBox" style="display: none;">
                     <div id="gamePage_explanationWordTimer">
-                        <h1 id="gamePage_explanationWord">
+                        <h1 id="gamePage_explanationWordParent">
+                            <span id="gamePage_explanationWord"></span>
                         </h1>
                         <h1 id="gamePage_explanationTimer">
                         </h1>
@@ -145,6 +148,23 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="editPage" style="display: none;">
+        <button class="white-bubble go-back" id="editPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="editPage_viewRules">
+        </button>
+        <div class="content-small">
+            <div id="editPage_header">
+                <h1 id="editPage_title">Редактирование</h1>
+                <p class="hint">Слов за раунд: <span id="editPage_wordsCnt">
+                </span></p>
+            </div>
+            <div id="editPage_body">
+                <div id="editPage_list"></div>
+                <button class="medium-button bg-green" id="editPage_confirm">Подтверждаю</button>
             </div>
         </div>
     </div>
@@ -165,13 +185,14 @@
                     <th>Угадано</th>
                     <th>Сумма</th>
                 </thead>
-                <tbody id="resultPage_results">
+                <tbody id="resultsPage_results">
                 </tbody>
                 </table>
                 <button class="medium-button bg-green" id="resultsPage_newGame">Новая игра</button>
             </div>
         </div>
     </div>
+    <audio src="delayTimer.mp3", id="delayTimer"></audio>
     <script src="/main.js"></script>
 </body>
 
