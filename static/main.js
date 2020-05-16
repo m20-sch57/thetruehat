@@ -4,10 +4,7 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
-const DELAY_TIME = 3000;
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-const EXPLANATION_TIME = 40000;
-const AFTERMATH_TIME = 3000;
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 const EXPLAINED_WORD_STATE = "угадал";
