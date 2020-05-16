@@ -112,6 +112,18 @@ button, input {
     color: transparent;
 }
 
+.highlight-title {
+    min-width: 300px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 10px;
+    margin: 20px auto 0 auto;
+    font-size: 20px;
+    font-weight: lighter;
+    line-height: 20px;
+    box-shadow: 0 0 4px grey;
+}
+
 .hint {
     margin: 5px 20px 15px 20px;
 }
@@ -171,6 +183,10 @@ button, input {
 
 .bg-grey {
     background-color: lightgrey;
+}
+
+.bg-white {
+    background-color: white;
 }
 
 .timer-green {
@@ -435,9 +451,9 @@ button, input {
 #gamePage_hatPicture {
     position: absolute;
     top: 10px;
-    left: calc(50% - 25px);
-    height: 50px;
-    width: 50px;
+    left: calc(50% - 30px);
+    height: 60px;
+    width: 60px;
     background-image: url(\hat.png);
     background-size: 100%;
     background-position: center;
@@ -461,18 +477,6 @@ button, input {
     width: 100%;
     text-align: center;
     padding: 0 30px 0 30px;
-}
-
-#gamePage_defaultTitle, #gamePage_speakerTitle, #gamePage_listenerTitle {
-    min-width: 300px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    padding: 10px;
-    margin: 20px auto 0 auto;
-    font-size: 20px;
-    font-weight: lighter;
-    line-height: 20px;
-    box-shadow: 0 0 4px grey;
 }
 
 #gamePage_body {
@@ -632,6 +636,79 @@ button, input {
     margin-left: -1px;
 }
 
+#gamePage_editBox {
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+#gamePage_editList {
+    position: relative;
+    flex-grow: 1;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#gamePage_editListScrollable {
+    position: absolute;
+    overflow-y: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding-bottom: 10px;
+}
+
+#gamePage_editList .word {
+    text-align: center;
+    font-size: 25px;
+    font-weight: lighter;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#gamePage_editList .explained {
+    width: 33.33%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#gamePage_editList .explained.selected {
+    background-color: lightgreen;
+}
+
+#gamePage_editList .not-explained {
+    width: 33.33%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+#gamePage_editList .not-explained.selected {
+    background-color: lightblue;
+}
+
+#gamePage_editList .mistake {
+    width: 33.33%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+#gamePage_editList .mistake.selected {
+    background-color: lightcoral;
+}
+
+#gamePage_editConfirm {
+    width: 100%;
+}
+
 @media (min-width: 500px) {
     #gamePage_speakerListener {
         height: 250px;
@@ -645,78 +722,13 @@ button, input {
     #gamePage_explanationActions {
         padding: 0 30px 0 30px;
     }
-}
-
-/* Edit page */
-
-#editPage_header {
-    width: 100%;
-    text-align: center;
-    padding: 0 30px 0 30px;
-}
-
-#editPage_title {
-    font-weight: lighter;
-    margin-bottom: 0;
-}
-
-#editPage_body {
-    width: 100%;
-    text-align: center;
-    padding: 0 30px 30px 30px;
-}
-
-#editPage_list {
-    margin-bottom: 30px;
-}
-
-#editPage_list .word {
-    text-align: center;
-    font-size: 25px;
-    font-weight: lighter;
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-#editPage_list .explained {
-    width: 33.33%;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-#editPage_list .explained.selected {
-    background-color: lightgreen;
-}
-
-#editPage_list .not-explained {
-    width: 33.33%;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-radius: 0;
-    margin-left: -1px;
-}
-
-#editPage_list .not-explained.selected {
-    background-color: lightblue;
-}
-
-#editPage_list .mistake {
-    width: 33.33%;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-left: -1px;
-}
-
-#editPage_list .mistake.selected {
-    background-color: lightcoral;
-}
-
-#editPage_confirm {
-    width: 100%;
+    #gamePage_editList {
+        flex-grow: 0;
+    }
+    #gamePage_editListScrollable {
+        position: relative;
+        max-height: 470px;
+    }
 }
 
 /* Results page */
