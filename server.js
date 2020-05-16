@@ -247,8 +247,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
  */
 function startExplanation(key) {
     rooms[key].substate = "explanation";
-    const date = new Date();
-    const currentTime = date.getTime();
+    const currentTime = Date.now();
     rooms[key].startTime = currentTime + (DELAY_TIME + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
     /*
@@ -323,13 +322,10 @@ function endGame(key) {
     Signals.sGameEnded(key, results)
     DB.run(`UPDATE Games
             SET Results = $Results
-            WHERE GameID =
-                  (SELECT GameID
-                  FROM Rooms
-                  WHERE RoomKey = $RoomKey);`,
+            WHERE GameID = $GameID;`,
         {
             $Results: JSON.stringify(results),
-            $RoomKey: key
+            $GameID: rooms[key].gameID
         })
 
     // removing room
@@ -393,11 +389,7 @@ class Signals {
             "key": key,
             "playerList": getPlayerList(room.users),
             "host": getHostUsername(room.users),
-            "settings": {
-                "delayTime": config.delayTime,
-                "explanationTime": config.explanationTime,
-                "aftermathTime": config.aftermathTime
-            }
+            "settings": room.settings
         };
         switch (room.state) {
             case "wait":
@@ -579,7 +571,7 @@ app.get("/getFreeKey", async function(req, res) {
         const qRes = await DB.allAsync(`SELECT COUNT(RoomKey)
                                         FROM Rooms
                                         WHERE RoomKey = ?;`, key);
-        if (qRes.rows[0]["count(RoomKey)"] !== 0) {
+        if (qRes.rows[0]["COUNT(RoomKey)"] !== 0) {
             continue;
         }
         res.json({"key": key});
@@ -627,7 +619,7 @@ app.get("/getRoomInfo", async function(req, res) {
         case "play":
             res.json({"success": true,
                 "state": game["State"],
-                "playerList": getPlayerList(players),
+                "playerList": getPlayerList(players), // TODO: Bug that caused by disparity of Web API and DB API.
                 "host": game["Host"]});
             break;
 
@@ -650,8 +642,11 @@ app.get("/getRoomInfo", async function(req, res) {
  *
  * Room's info is an object that has fields:
  *     - gameID --- ID of game in the room
- *     - TODO: settings --- settings of the room:
- *         - ???
+ *     - settings --- settings of the room:
+ *         - delayTime --- delay for transfer
+ *         - explanationTime --- length of explanation
+ *         - aftermathTime --- time for guess
+ *         - wordNumber --- number of words in game
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *
@@ -670,7 +665,14 @@ app.get("/getRoomInfo", async function(req, res) {
  *     - numberOfTurn --- number of turn
  */
 class Room {
-    constructor() {
+    constructor(gameID) {
+        this.gameID = gameID;
+        this.settings = {
+            "delayTime": config.delayTime,
+            "explanationTime": config.explanationTime,
+            "aftermathTime": config.aftermathTime,
+            "wordNumber": config.wordNumber
+        };
         this.state = "wait";
         this.users = [];
     }
@@ -705,24 +707,27 @@ class Room {
                    TimeZoneOffSet = $TimeZoneOffSet
                WHERE GameID = $GameID;`,
             {
-                $Settings: JSON.stringify({} ? false : this.settings),
-                $WordsList: this.freshWords,
+                $Settings: JSON.stringify(this.settings),
+                $WordsList: JSON.stringify(this.freshWords),
                 $State: this.state,
-                $Players: this.users,
+                $Players: JSON.stringify(this.users.map((user) => user.username)),
                 $Host: getHostUsername(this),
                 $StartTime: Date.now(),
-                $TimeZoneOffSet: JSON([]),
+                $TimeZoneOffSet: JSON.stringify([]), // TODO: implement
                 $GameID: this.gameID
             })
         // TODO: Turn on when IDs will be ready
         /*
         this.users.forEach(function (user) {
-            DB.run(`INSERT INTO Participating
+            if (user.ID) {
+                DB.run(`INSERT INTO Participating
                     VALUES ($GameID, $UserID)`,
-                {
-                    $GameID: this.gameID,
-                    $UserID: user.ID
-                })
+                    {
+                        $GameID: this.gameID,
+                        $UserID: user.ID
+                    }
+                )
+            }
         })
         */
 
@@ -765,7 +770,7 @@ class Room {
  *
  * User is an object that has fields:
  *     - username --- no comments,
- *     - TODO: ID
+ *     - ID --- user's ID in the DB
  *     - TODO: login
  *     - sids --- socket ids,
  *     - online --- whether the player is online,
@@ -998,7 +1003,7 @@ class CheckConditions {
         }
 
         // checking if time is correct
-        if ((new Date).getTime() < rooms[key].startTime) {
+        if (Date.now() < rooms[key].startTime) {
             Signals.sFailure(socket, "cEndWordExplanation", 604, "Too early");
             return false;
         }
@@ -1057,21 +1062,20 @@ class Callbacks {
         }
 
         // If room isn't saved in main dictionary, let's save it and create info about it
-        // TODO: Аккуратная проверка ключа комнаты и ID игры.
         let gameID = -1;
         if (!(key in rooms)) {
-            rooms[key] = new Room()
+            // TODO: Возможны проблемы с асинхронностью.
             const resp = await DB.runAsync(`INSERT INTO Games DEFAULT VALUES;`);
             gameID = resp.lastID;
+            rooms[key] = new Room(gameID)
+            DB.run(`INSERT INTO Rooms
+                        VALUES ($RoomKey, $GameID)`,
+                {
+                    $RoomKey: key,
+                    $GameID: gameID
+                })
         } else {
-            const resp = await DB.allAsync(`SELECT GameID
-                                            FROM Rooms
-                                            WHERE RoomKey = ?;`, key);
-            if (resp.rows.length !== 1) {
-                console.log("Incorrect number of rows!");
-                // TODO return or something else
-            }
-            gameID = resp.rows[0];
+            gameID = rooms[key].gameID;
         }
 
         // Adding the user to the room info
@@ -1086,15 +1090,13 @@ class Callbacks {
         }
 
         // updating players and host
-        const players = JSON.stringify(getPlayerList(rooms[key]));
-        const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
         await DB.runAsync(`UPDATE Games
                            SET Players = $Players,
                                Host = $Host
                            WHERE GameID = $GameID;`,
             {
-                $Players: players,
-                $Host: host,
+                $Players: JSON.stringify(rooms[key].users.map((user) => user.username)),
+                $Host: getHostUsername(rooms[key].users),
                 $GameID: gameID
             });
 
@@ -1118,8 +1120,6 @@ class Callbacks {
         rooms[key].users[usernamePos].sids = [];
 
         // updating players and host
-        const players = JSON.stringify(getPlayerList(rooms[key]));
-        const host = rooms[key].users[findFirstPos(rooms[key].users, "online", true)];
         const resp = await DB.allAsync(`SELECT GameID
                                         FROM Rooms
                                         WHERE RoomKey = ?;`, key);
@@ -1132,8 +1132,8 @@ class Callbacks {
                                Host = $Host
                            WHERE GameID = $GameID;`,
             {
-                $Players: players,
-                $Host: host,
+                $Players: JSON.stringify(rooms[key].users.map((user) => user.username)),
+                $Host: getHostUsername(rooms[key].users),
                 $GameID: gameID
             });
 
@@ -1161,7 +1161,7 @@ class Callbacks {
 
         Signals.sGameStarted(key);
 
-        console.log(rooms[key].freshWords);
+        console.log(rooms[key].freshWords); // TODO: What is this? Why is this?
     }
 
     static cEndWordExplanation(socket, key, cause) {
@@ -1179,7 +1179,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_TIME) {
+                if (Date.now() > rooms[key].startTime + EXPLANATION_TIME) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
@@ -1251,9 +1251,18 @@ class Callbacks {
                     break;
             }
 
-            DB.run(`INSERT INTO ExplanationRecords
+            DB.run(`INSERT INTO ExplanationRecords(
+                               GameID,
+                               Speaker,
+                               SpeakerID,
+                               Listener,
+                               ListenerID,
+                               Word,
+                               Time,
+                               ExtraTime,
+                               Outcome
+                    )
                     VALUES ($GameID,
-                            DEFAULT,
                             $Speaker,
                             $SpeakerID,
                             $Listener,
