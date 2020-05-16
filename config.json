@@ -1,11 +1,11 @@
 {
-    "port": 5000,
+    "port": 2005,
     "wordsPath": "./words/easy.json",
     "defaultSettings": {
         "delayTime": 3000,
-        "explanationTime": 20000,
+        "explanationTime": 3600000,
         "aftermathTime": 3000,
-        "wordNumber": 5,
+        "wordNumber": 8,
         "strictMode": false
     },
     "transferTime": 1000,
