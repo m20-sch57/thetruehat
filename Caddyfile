@@ -1,0 +1,30 @@
+http://m20-sch57.site:3005 {
+    root    /home/adanni/thetruehat/static
+    log     /home/adanni/thehatServer/access.log
+    errors  /home/adanni/thehatServer/errors.log
+
+    header / Cache-Control no-cache
+
+    header /getTime {
+        X-Server-Timestamp {when_unix_ms}
+        X-Client-Timestamp {>X-Client-Timestamp}
+    }
+    status 200 /getTime
+
+    proxy /socket.io localhost:2005 {
+        websocket
+        transparent
+    }
+
+    proxy /api localhost:2005 {
+        transparent
+        without /api
+    }
+    redir /api /api/
+
+    gzip
+}
+
+http://www.m20-sch57.site:3005 {
+    redir https://m20-sch57.site:3005{uri}
+}
