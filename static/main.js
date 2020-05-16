@@ -16,24 +16,6 @@ const MISTAKE_WORD_STATE = "ошибка";
 
 const TIME_SYNC_DELTA = 60000;
 
-let delta = 0;
-
-function getTime() {
-    return performance.now() + delta;
-}
-
-async function getDelta() {
-    let response = await fetch("getTime", {"headers": {"X-Client-Timestamp": performance.now()}});
-    let now = performance.now();
-    delta = response.headers.get("X-Server-Timestamp") / 1.0 + (now - response.headers.get("X-Client-Timestamp")) / 2 - now;
-}
-
-async function maintainDelta() {
-    setTimeout(maintainDelta, TIME_SYNC_DELTA);
-    getDelta();
-    console.log((new Date).getTime() - getTime());
-}
-
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
     timing = timing || (time => time);
@@ -129,24 +111,20 @@ class TimeSync {
     }
 
     getTime() {
-        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-            return (new Date).getTime();
-        } else {
-            return performance.now() + this.delta;
-        }
+        return performance.now() + this.delta;
     }
 
     async getDelta() {
-        let zero = performance.now();
-        let time = (await (await fetch("http://zadachi.mccme.ru/misc/time/getTime.cgi")).json()).time;
+        let response = await fetch("getTime", {"headers": {"X-Client-Timestamp": performance.now()}});
         let now = performance.now();
-        this.delta = time + (now - zero) / 2 - now;
-    }    
+        delta = response.headers.get("X-Server-Timestamp") / 1.0 + (now - response.headers.get("X-Client-Timestamp")) / 2 - now;
+    }
 
     async maintainDelta() {
         setTimeout(() => this.maintainDelta(), this.syncInterval);
-        this.getDelta();
+        await this.getDelta();
         console.log("New time delta:", this.delta);
+        console.log("Diff with local time:", this.getTime() - (new Date()).getTime());
     }
 }
 
