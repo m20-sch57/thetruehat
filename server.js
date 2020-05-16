@@ -2,6 +2,14 @@
 
 "use strict"
 
+const process = require("process");
+const fs = require("fs");
+fs.writeFile("server.pid", process.pid.toString(), function(err, data) {
+    if (err) {
+        console.log(err);
+    }
+});
+
 const config = require("./config.json");
 
 const PORT = config.port;
@@ -20,14 +28,6 @@ const io = require("socket.io")(server);
 
 server.listen(PORT);
 console.log("Listening on port " + PORT);
-
-// Serving static files
-app.use(express.static("static"));
-
-// Serving page of the game by default address
-app.get("/", function(req, res) {
-    res.sendFile(__dirname + "/index.html");
-});
 
 //----------------------------------------------------------
 // Handy functions
