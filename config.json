@@ -1,11 +1,14 @@
 {
     "port": 5000,
     "wordsPath": "./words/easy.json",
+    "defaultSettings": {
+        "delayTime": 3000,
+        "explanationTime": 20000,
+        "aftermathTime": 3000,
+        "wordNumber": 5,
+        "strictMode": false
+    },
     "transferTime": 1000,
-    "delayTime": 3000,
-    "explanationTime": 20000,
-    "aftermathTime": 3000,
-    "wordNumber": 40,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [

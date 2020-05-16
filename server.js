@@ -7,11 +7,7 @@ const config = require("./config.json");
 
 // Loading constants
 const PORT = config.port;
-const WORD_NUMBER = config.wordNumber;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
-const EXPLANATION_TIME = config.explanationTime; // length of explanation
-const DELAY_TIME = config.delayTime; // given delay for client reaction
-const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
 const express = require("express");
 const app = express();
@@ -205,12 +201,12 @@ async function getAllWords() {
  *
  * @return list of words
  */
-async function generateWords() {
+async function generateWords(word_number) {
     const allWords = await getAllWords();
     const words = [];
     const used = {};
     const numberOfAllWords = allWords.length;
-    while (words.length < WORD_NUMBER) {
+    while (words.length < word_number) {
         const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
@@ -246,23 +242,24 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
  * @param key --- key of the room
  */
 function startExplanation(key) {
+    const settings = rooms[key].settings;
     rooms[key].substate = "explanation";
     const currentTime = Date.now();
-    rooms[key].startTime = currentTime + (DELAY_TIME + TRANSFER_TIME);
+    rooms[key].startTime = currentTime + (settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
-    /*
-    const numberOfTurn = rooms[key].numberOfTurn;
-    setTimeout(function() {
-        // if explanation hasn't finished yet
-        if (!( key in rooms)) {
-            return;
-        }
-        if (rooms[key].numberOfTurn === numberOfTurn) {
-            finishExplanation(key);
-        }
-    }, (DELAY_TIME + EXPLANATION_TIME + AFTERMATH_TIME + TRANSFER_TIME));
-    */
-    setTimeout(() => Signals.sNewWord(key), (DELAY_TIME + TRANSFER_TIME));
+    if (settings.strictMode) {
+        const numberOfTurn = rooms[key].numberOfTurn;
+        setTimeout(function () {
+            // if explanation hasn't finished yet
+            if (!(key in rooms)) {
+                return;
+            }
+            if (rooms[key].numberOfTurn === numberOfTurn) {
+                finishExplanation(key);
+            }
+        }, (settings.delayTime + settings.explanationTime + settings.aftermathTime + TRANSFER_TIME));
+    }
+    setTimeout(() => Signals.sNewWord(key), (settings.delayTime + TRANSFER_TIME));
     Signals.sExplanationStarted(key)
 }
 
@@ -670,12 +667,7 @@ app.get("/getRoomInfo", async function(req, res) {
 class Room {
     constructor(gameID) {
         this.gameID = gameID;
-        this.settings = {
-            "delayTime": config.delayTime,
-            "explanationTime": config.explanationTime,
-            "aftermathTime": config.aftermathTime,
-            "wordNumber": config.wordNumber
-        };
+        this.settings = Object.assign({}, config.defaultSettings);
         this.state = "wait";
         this.users = [];
     }
@@ -688,7 +680,7 @@ class Room {
         this.state = "play";
 
         // generating word list (later key can affect word list)
-        this.freshWords = await generateWords();
+        this.freshWords = await generateWords(this.settings.wordNumber);
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -1182,7 +1174,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if (Date.now() > rooms[key].startTime + EXPLANATION_TIME) {
+                if (Date.now() > rooms[key].startTime + rooms[key].settings.explanationTime) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
