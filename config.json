@@ -1,5 +1,6 @@
 {
     "port": 2005,
+    "environ": "staging",
     "wordsPath": "./words/easy.json",
     "transferTime": 1000,
     "delayTime": 3000,
@@ -17,5 +18,8 @@
     "keyVowels": [
         "а", "е", "и", "о", "у",
         "э", "ю", "я"
-    ]
+    ],
+    "DEVEL": "devel",
+    "STAGING": "staging",
+    "PROD": "prod"
 }
