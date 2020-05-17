@@ -2,6 +2,14 @@
 
 "use strict"
 
+const process = require("process");
+const fs = require("fs");
+fs.writeFile("server.pid", process.pid.toString(), function(err, data) {
+    if (err) {
+        console.log(err);
+    }
+});
+
 const config = require("./config.json");
 
 const PORT = config.port;
@@ -20,14 +28,6 @@ const io = require("socket.io")(server);
 
 server.listen(PORT);
 console.log("Listening on port " + PORT);
-
-// Serving static files
-app.use(express.static("static"));
-
-// Serving page of the game by default address
-app.get("/", function(req, res) {
-    res.sendFile(__dirname + "/index.html");
-});
 
 //----------------------------------------------------------
 // Handy functions
@@ -70,7 +70,7 @@ function checkObject(object, pattern) {
  * Returns playerList structure,
  * @see API.md
  *
- * @param room users list
+ * @param users list of users
  * @return list of players
  */
 function getPlayerList(users) {
@@ -291,10 +291,6 @@ function endGame(key) {
 }
 
 class Signals {
-    static emit(socket, event, args) {
-        socket.emit(event, args);
-    }
-
     /**
      * Implementation of sPlayerJoined signal
      * @see API.md
@@ -689,7 +685,7 @@ function checkInputFormat(socket, data, format, signal) {
 class CheckConditions {
     static cJoinRoom(socket, data) {
         const key = data.key.toLowerCase(); // key of the room
-        const name = data.username; // name of the user
+        const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
 
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
@@ -927,7 +923,7 @@ class CheckConditions {
 class Callbacks {
     static joinRoomCallback(socket, data, err) {
         const key = data.key.toLowerCase(); // key of the room
-        const name = data.username; // name of the user
+        const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
 
         // If any error happened
         if (err) {

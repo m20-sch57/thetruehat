@@ -11,7 +11,7 @@ const EXPLAINED_WORD_STATE = "угадал";
 const NOT_EXPLAINED_WORD_STATE = "не угадал";
 const MISTAKE_WORD_STATE = "ошибка";
 
-const TIME_SYNC_DELTA = 1200000;
+const TIME_SYNC_DELTA = 60000;
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -106,24 +106,20 @@ class TimeSync {
     }
 
     getTime() {
-        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-            return (new Date).getTime();
-        } else {
-            return performance.now() + this.delta;
-        }
+        return performance.now() + this.delta;
     }
 
     async getDelta() {
-        let zero = performance.now();
-        let time = (await (await fetch("http://zadachi.mccme.ru/misc/time/getTime.cgi")).json()).time;
+        let response = await fetch("getTime", {"headers": {"X-Client-Timestamp": performance.now()}});
         let now = performance.now();
-        this.delta = time + (now - zero) / 2 - now;
-    }    
+        this.delta = response.headers.get("X-Server-Timestamp") / 1.0 + (now - response.headers.get("X-Client-Timestamp")) / 2 - now;
+    }
 
     async maintainDelta() {
         setTimeout(() => this.maintainDelta(), this.syncInterval);
-        this.getDelta();
+        await this.getDelta();
         console.log("New time delta:", this.delta);
+        console.log("Diff with local time:", this.getTime() - (new Date()).getTime());
     }
 }
 
@@ -371,7 +367,7 @@ class App {
             this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
         }
-        fetch(`/getRoomInfo?key=${this.myRoomKey}`)
+        fetch(`/api/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
@@ -514,7 +510,7 @@ class App {
     }
 
     generateKey() {
-        fetch("/getFreeKey")
+        fetch("/api/getFreeKey")
             .then(response => response.json())
             .then(result => el("joinPage_inputKey").value = result.key);
     }
