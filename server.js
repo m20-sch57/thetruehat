@@ -13,7 +13,7 @@ fs.writeFile("server.pid", process.pid.toString(), function(err, data) {
 const config = require("./config.json");
 
 const PORT = config.port;
-const WRITE_LOGS = (config.environ === config.DEVEL) ? false : true;
+const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const WORD_NUMBER = config.wordNumber;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 const EXPLANATION_TIME = config.explanationTime; // length of explanation
@@ -1352,7 +1352,7 @@ io.on("connection", function(socket) {
         Callbacks.cWordsEdited(socket, key, data.editWords);
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", function() {
         if (WRITE_LOGS) {
             console.log(socket.id, "disconnect", undefined);
         }

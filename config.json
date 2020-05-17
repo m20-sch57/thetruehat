@@ -1,6 +1,6 @@
 {
     "port": 2005,
-    "environ": "staging",
+    "env": "staging",
     "wordsPath": "./words/easy.json",
     "transferTime": 1000,
     "delayTime": 3000,
