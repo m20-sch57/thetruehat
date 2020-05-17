@@ -28,9 +28,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
 
             draw(progress);
 
-            if (stopCondition()) {
-                return;
-            }
+            if (stopCondition()) return;
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -204,15 +202,22 @@ class Sound {
         }
     }
 
-    playSound(sound, startTime) {
-        this.currentSound = el(sound);
+    playSound(sound, startTime, stopCondition) {
+        startTime = startTime || timeSync.getTime();
+        stopCondition = stopCondition || (() => false);
+        let shift = el(sound).getAttribute("shift");
+        if (shift) startTime += +shift;
         if (timeSync.getTime() < startTime) {
             setTimeout(() => {
+                if (stopCondition()) return;
                 this.killSound();
+                this.currentSound = el(sound);
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime < 
-                this.currentSound.duration * 1000){
+                el(sound).duration * 1000){
+            this.killSound();
+            this.currentSound = el(sound);
             this.currentSound.currentTime = (timeSync.getTime() - startTime) / 
                 1000;
             this.currentSound.play();
@@ -440,7 +445,6 @@ class App {
             this.animateDelayTimer(startTime - this.gameSettings.delayTime, 
                 roundId)
             .then(() => {
-                if (this.roundId != roundId) return;
                 Pages.go(Pages.explanation[this.myRole]);
                 this.sizeWord();
                 this.animateExplanationTimer(startTime, roundId)
@@ -474,6 +478,20 @@ class App {
         results.forEach((result) => {
             el("resultsPage_results").appendChild(Template.result(result));
         })
+    }
+
+    playExplanationSounds({startTime}) {
+        let roundId = this.roundId;
+        let stopCondition = () => roundId != this.roundId;
+        this.sound.playSound("start", startTime, stopCondition);
+        this.sound.playSound("final", startTime + 
+            this.gameSettings.explanationTime, stopCondition);  
+        this.sound.playSound("final+", startTime + 
+            this.gameSettings.explanationTime +
+            this.gameSettings.aftermathTime, stopCondition);
+        for (let i = 1; i <= Math.floor(this.gameSettings.delayTime / 1000); i++) {
+            this.sound.playSound("countdown", startTime - 1000 * i, stopCondition);
+        }
     }
 
     setWord(word) {
@@ -557,20 +575,18 @@ class App {
 
     animateDelayTimer(startTime, roundId) {
         let _this = this;
-        // this.sound.playSound("delayTimer", startTime);
         return animate({
             startTime,
             duration: this.gameSettings.delayTime,
             draw: (progress) => {
+                let  newTimeLeft = Math.floor((1 - progress) / 1000 * 
+                    this.gameSettings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").innerText = 
                     Math.floor((1 - progress) / 1000 * this.gameSettings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
             },
             stopCondition: () => {
-                // if (_this.roundId != roundId) {
-                //     this.sound.killSound();
-                // }
                 return _this.roundId != roundId;
             }
         })
@@ -667,6 +683,7 @@ class App {
                 case "explanation":
                     _this.setWord(data.word);
                     _this.renderExplanationPage(data);
+                    _this.playExplanationSounds(data);
                     break;
                 case "edit":
                     if (data.editWords) {
@@ -696,6 +713,7 @@ class App {
         })
         this.socket.on("sExplanationStarted", function(data) {
             _this.renderExplanationPage(data);
+            _this.playExplanationSounds(data);
         })
         this.socket.on("sNewWord", function(data) {
             _this.setWord(data.word);
