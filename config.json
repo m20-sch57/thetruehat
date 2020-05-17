@@ -1,6 +1,11 @@
 {
     "port": 2005,
+    "feedbackPort": 7005,
+    "serverPIDPath": "./server.pid",
+    "feedbackPIDPath": "./feedback.pid",
     "wordsPath": "./words/easy.json",
+    "feedbackPath": "./feedback.log",
+    "env": "staging",
     "defaultSettings": {
         "delayTime": 3000,
         "explanationTime": 3600000,
@@ -22,4 +27,8 @@
         "э", "ю", "я"
     ],
     "cleanRooms": false
+    ],
+    "DEVEL": "devel",
+    "STAGING": "staging",
+    "PROD": "prod"
 }
