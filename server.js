@@ -291,21 +291,22 @@ function endGame(key) {
     });
 }
 
-/**
- * Send a signal to room
- * 
- * @param roomId id of room
- * @param signal signal to send
- * @param data data to send
- */
-function emit(roomId, signal, data) {
-    if (WRITE_LOGS) {
-        console.log(roomId, signal, data);
-    }
-    io.sockets.to(roomId).emit(signal, data);
-}
 
 class Signals {
+    /**
+     * Send a signal to room
+     *
+     * @param roomId id of room
+     * @param signal signal to send
+     * @param data data to send
+     */
+    static emit(roomId, signal, data) {
+        if (WRITE_LOGS) {
+            console.log(roomId, signal, data);
+        }
+        io.sockets.to(roomId).emit(signal, data);
+    }
+
     /**
      * Implementation of sPlayerJoined signal
      * @see API.md
@@ -315,7 +316,7 @@ class Signals {
      * @param username User's name
      */
     static sPlayerJoined(sid, room, username) {
-        emit(sid, "sPlayerJoined", {
+        Signals.emit(sid, "sPlayerJoined", {
                 "username": username, "playerList": getPlayerList(room.users),
                 "host": getHostUsername(room.users)
             });
@@ -325,13 +326,13 @@ class Signals {
      * Implementation of sPlayerLeft signal
      * @see API.md
      *
-     * @param socket Id of socket to emit
+     * @param sid Id of socket to emit
      * @param room Room object
      * @param username User's name
      */
     static sPlayerLeft(sid, room, username) {
         // Sending new state of the room.
-        emit(sid, "sPlayerLeft", {
+        Signals.emit(sid, "sPlayerLeft", {
             "username": username, "playerList": getPlayerList(room.users),
             "host": getHostUsername(room.users)
         });
@@ -397,7 +398,7 @@ class Signals {
                 console.log(rooms[key]);
                 break;
         }
-        emit(sid, "sYouJoined", joinObj);
+        Signals.emit(sid, "sYouJoined", joinObj);
     }
 
     /**
@@ -410,7 +411,7 @@ class Signals {
      * @param msg Message to send
      */
     static sFailure(sid, request, code, msg) {
-        emit(sid, "sFailure", {"request": request, "msg": msg, "code": code});
+        Signals.emit(sid, "sFailure", {"request": request, "msg": msg, "code": code});
     }
 
     /**
@@ -420,7 +421,7 @@ class Signals {
      * @param key Key of the Room
      */
     static sGameStarted(key) {
-        emit(key, "sGameStarted", {
+        Signals.emit(key, "sGameStarted", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
             "wordsCount": rooms[key].freshWords.length});
@@ -434,7 +435,7 @@ class Signals {
      * @param words Words' statistic
      */
     static sNextTurn(key, words) {
-        emit(key, "sNextTurn", {
+        Signals.emit(key, "sNextTurn", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
             "words": words,
@@ -448,7 +449,7 @@ class Signals {
      * @param key Key of the room
      */
     static sExplanationStarted(key) {
-        emit(key, "sExplanationStarted", {"startTime": rooms[key].startTime});
+        Signals.emit(key, "sExplanationStarted", {"startTime": rooms[key].startTime});
     }
 
     /**
@@ -458,7 +459,7 @@ class Signals {
      * @param key Key of the room
      */
     static sNewWord(key) {
-        emit(rooms[key].users[rooms[key].speaker].sids[0], "sNewWord", {"word": rooms[key].word});
+        Signals.emit(rooms[key].users[rooms[key].speaker].sids[0], "sNewWord", {"word": rooms[key].word});
     }
 
     /**
@@ -469,7 +470,7 @@ class Signals {
      * @param cause Result of word explanation
      */
     static sWordExplanationEnded(key, cause) {
-        emit(key, "sWordExplanationEnded", {
+        Signals.emit(key, "sWordExplanationEnded", {
             "cause": cause,
             "wordsCount": rooms[key].freshWords.length +
             ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
@@ -482,7 +483,7 @@ class Signals {
      * @param key Key of the room
      */
     static sExplanationEnded(key) {
-        emit(key, "sExplanationEnded", {
+        Signals.emit(key, "sExplanationEnded", {
             "wordsCount": rooms[key].freshWords.length +
             ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
     }
@@ -495,7 +496,7 @@ class Signals {
      * @param editWords List of words to edit
      */
     static sWordsToEdit(key, editWords) {
-        emit(rooms[key].users[rooms[key].speaker].sids[0],
+        Signals.emit(rooms[key].users[rooms[key].speaker].sids[0],
             "sWordsToEdit", {"editWords": editWords});
     }
 
@@ -507,7 +508,7 @@ class Signals {
      * @param results Results of the game
      */
     static sGameEnded(key, results) {
-        emit(key, "sGameEnded", {"results": results});
+        Signals.emit(key, "sGameEnded", {"results": results});
     }
 }
 //----------------------------------------------------------
