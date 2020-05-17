@@ -1,6 +1,10 @@
 {
     "port": 2005,
+    "feedbackPort": 7005,
+    "serverPIDPath": "./server.pid",
+    "feedbackPIDPath": "./feedback.pid",
     "wordsPath": "./words/easy.json",
+    "feedbackPath": "./feedback.log",
     "transferTime": 1000,
     "delayTime": 3000,
     "explanationTime": 40000,
