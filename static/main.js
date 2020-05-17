@@ -575,8 +575,6 @@ class App {
             startTime,
             duration: this.gameSettings.delayTime,
             draw: (progress) => {
-                let  newTimeLeft = Math.floor((1 - progress) / 1000 * 
-                    this.gameSettings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").innerText = 
                     Math.floor((1 - progress) / 1000 * this.gameSettings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").style.background = 
