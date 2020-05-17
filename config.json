@@ -26,8 +26,7 @@
         "а", "е", "и", "о", "у",
         "э", "ю", "я"
     ],
-    "cleanRooms": false
-    ],
+    "cleanRooms": false,
     "DEVEL": "devel",
     "STAGING": "staging",
     "PROD": "prod"
