@@ -638,9 +638,6 @@ button, input {
 
 #gamePage_editTitle {
     width: 100%;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    box-shadow: 0 1px 5px grey;
     z-index: 1;
 }
 
@@ -654,10 +651,6 @@ button, input {
 #gamePage_editList {
     position: relative;
     flex-grow: 1;
-    background-color: rgb(250, 250, 250);
-    margin-top: -1px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 5px grey;
 }
 
 #gamePage_editListScrollable {
@@ -667,7 +660,7 @@ button, input {
     left: 0;
     bottom: 0;
     right: 0;
-    padding: 0 10px 25px 10px;
+    padding: 10px 15px 25px 15px;
 }
 
 #gamePage_editList .word {
@@ -720,12 +713,9 @@ button, input {
 
 #gamePage_editConfirm {
     width: 100%;
-    margin-top: -1px;
     border-color: rgba(0, 0, 0, 0.2);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    box-shadow: 0 -1px 8px grey;
-    z-index: 10;
+    box-shadow: 0 0 10px grey;
+    z-index: 1;
 }
 
 @media (min-width: 500px) {
@@ -741,13 +731,13 @@ button, input {
     #gamePage_explanationActions {
         padding: 0 30px 0 30px;
     }
-    /* #gamePage_editList {
+    #gamePage_editList {
         flex-grow: 0;
     }
     #gamePage_editListScrollable {
         position: relative;
         max-height: 470px;
-    } */
+    }
 }
 
 /* Results page */
