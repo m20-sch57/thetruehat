@@ -5,6 +5,7 @@
     "feedbackPIDPath": "./feedback.pid",
     "wordsPath": "./words/easy.json",
     "feedbackPath": "./feedback.log",
+    "env": "staging",
     "transferTime": 1000,
     "delayTime": 3000,
     "explanationTime": 40000,
@@ -21,5 +22,8 @@
     "keyVowels": [
         "а", "е", "и", "о", "у",
         "э", "ю", "я"
-    ]
+    ],
+    "DEVEL": "devel",
+    "STAGING": "staging",
+    "PROD": "prod"
 }
