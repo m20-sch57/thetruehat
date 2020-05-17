@@ -425,7 +425,4 @@ out
 gen
 
 # Caddy server
-Caddyfile
-runCaddy
-run
-stop
+caddy/
