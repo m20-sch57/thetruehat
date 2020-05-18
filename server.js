@@ -120,7 +120,7 @@ function getHostUsername(users) {
 }
 
 /**
- * Rerurns random number from interval [a, b)
+ * Returns random number from interval [a, b)
  *
  * @param a lower bound
  * @param b upper bound
@@ -682,7 +682,7 @@ app.get("/getRoomInfo", async function(req, res) {
  *         - explanationTime --- length of explanation
  *         - aftermathTime --- time for guess
  *         - wordNumber --- number of words in game
-*      - lastExplNo --- last number of any explanation (from 0 to ...)
+*      - explCount --- last number of any explanation (from 1 to ...)
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *
@@ -704,7 +704,7 @@ class Room {
     constructor(gameID) {
         this.gameID = gameID;
         this.settings = Object.assign({}, config.defaultSettings);
-        this.lastExplNo = 0;
+        this.explCount = 0;
         this.state = "wait";
         this.users = [];
     }
@@ -1307,7 +1307,7 @@ class Callbacks {
                             $Outcome);`,
                 {
                     $GameID: rooms[key].gameID,
-                    $ExplNo: ++ (rooms[key].lastExplNo),
+                    $ExplNo: ++ (rooms[key].explCount),
                     $Speaker: rooms[key].users[rooms[key].speaker].username,
                     $SpeakerID: rooms[key].users[rooms[key].speaker].ID,
                     $Listener: rooms[key].users[rooms[key].listener].username,

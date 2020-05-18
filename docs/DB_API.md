@@ -112,7 +112,7 @@ Used to contain explanation records.
     - FOREIGN KEY GameID REFERENCES Games
     - INDEX ER_GameID_Index
     - UNIQUE INDEX ER_GameID_ExplNo_UIndex
-- **ExplNo** : *INTEGER* - Number of explanation in the game. Start at 0 (?).
+- **ExplNo** : *INTEGER* - Number of explanation in the game. Start at 1.
     - UNIQUE INDEX ER_GameID_ExplNo_UIndex
 - **Speaker** : *TEXT* - Speaker's name.
     - NOT NULL
