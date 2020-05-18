@@ -29,7 +29,7 @@ app.post("/feedback", function (req, res) {
     res.end();
     res.status(200);
 
-    fs.writeFile(config.feedbackPath,
+    fs.appendFile(config.feedbackPath,
         JSON.stringify(feedback, {}, "    ") + "\n",
         (err, data) => {if (err) {console.warn(err);}})
 })
