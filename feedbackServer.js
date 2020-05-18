@@ -24,7 +24,6 @@ app.use(bodyParser.json());
 app.post("/feedback", function (req, res) {
     // Getting feedback
     const feedback = req.body;
-    console.log(feedback)
 
     // Approving
     res.end();
