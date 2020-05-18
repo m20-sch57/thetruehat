@@ -296,7 +296,7 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`${window.location.protocol}//${window.location.host}`);
+        this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
 
         this.myUsername = "";
         this.myRole = "";
@@ -362,7 +362,7 @@ class App {
             this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
         }
-        fetch(`/api/getRoomInfo?key=${this.myRoomKey}`)
+        fetch(`api/getRoomInfo?key=${this.myRoomKey}`)
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
@@ -492,7 +492,7 @@ class App {
     }
 
     generateKey() {
-        fetch("/api/getFreeKey")
+        fetch("api/getFreeKey")
             .then(response => response.json())
             .then(result => el("joinPage_inputKey").value = result.key);
     }
@@ -502,8 +502,7 @@ class App {
     }
 
     copyLink() {
-        navigator.clipboard.writeText(`${window.location.protocol}//${
-            window.location.host}/#${this.myRoomKey}`);
+        navigator.clipboard.writeText(window.location);
     }
 
     pasteKey() {
