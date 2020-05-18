@@ -10,6 +10,7 @@ const PORT = config.port;
 const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
+// Saving PID
 const fs = require("fs");
 fs.writeFile(config.serverPIDPath, process.pid.toString(), function(err, data) {
     if (err) {
@@ -17,6 +18,7 @@ fs.writeFile(config.serverPIDPath, process.pid.toString(), function(err, data) {
     }
 });
 
+// Setting up express
 const express = require("express");
 const app = express();
 const server = new (require("http").Server)(app);
@@ -200,6 +202,7 @@ async function getAllWords() {
  * Generate word list
  *
  * @return list of words
+ * TODO: Rewrite using less segment. Feature.
  */
 async function generateWords(word_number) {
     const allWords = await getAllWords();
@@ -243,10 +246,13 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
  */
 function startExplanation(key) {
     const settings = rooms[key].settings;
-    rooms[key].substate = "explanation";
     const currentTime = Date.now();
+
+    // Updating room info.
+    rooms[key].substate = "explanation";
     rooms[key].startTime = currentTime + (settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
+
     if (settings.strictMode) {
         const numberOfTurn = rooms[key].numberOfTurn;
         setTimeout(function () {
@@ -626,6 +632,7 @@ app.get("/getRoomInfo", async function(req, res) {
                                           FROM Rooms
                                           WHERE RoomKey = ?);`, key);
     const rows = qRes.rows;
+
     // Case of nonexistent room
     if (rows.length === 0) {
         sendResponse(req, res, {"success": true,
@@ -675,6 +682,7 @@ app.get("/getRoomInfo", async function(req, res) {
  *         - explanationTime --- length of explanation
  *         - aftermathTime --- time for guess
  *         - wordNumber --- number of words in game
+*      - lastExplNo --- last number of any explanation (from 0 to ...)
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *
@@ -696,6 +704,7 @@ class Room {
     constructor(gameID) {
         this.gameID = gameID;
         this.settings = Object.assign({}, config.defaultSettings);
+        this.lastExplNo = 0;
         this.state = "wait";
         this.users = [];
     }
@@ -799,12 +808,12 @@ class Room {
  *     - online --- whether the player is online,
  *     - scoreExplained --- no comments,
  *     - scoreGuessed --- no comments,
- *     - TODO: TimeZoneOffset
+ *     - TODO: timeZoneOffset
  */
 class User {
     constructor(username, sids, online=true) {
         this.username = username;
-        this.ID = null;
+        this.ID = null; // TODO: Enable when authorisation will be added.
         this.sids = sids;
         this.online = online;
         this.scoreExplained = 0;
@@ -1276,6 +1285,7 @@ class Callbacks {
 
             DB.run(`INSERT INTO ExplanationRecords(
                                GameID,
+                               ExplNo,
                                Speaker,
                                SpeakerID,
                                Listener,
@@ -1286,6 +1296,7 @@ class Callbacks {
                                Outcome
                     )
                     VALUES ($GameID,
+                            $ExplNo,
                             $Speaker,
                             $SpeakerID,
                             $Listener,
@@ -1296,6 +1307,7 @@ class Callbacks {
                             $Outcome);`,
                 {
                     $GameID: rooms[key].gameID,
+                    $ExplNo: ++ (rooms[key].lastExplNo),
                     $Speaker: rooms[key].users[rooms[key].speaker].username,
                     $SpeakerID: rooms[key].users[rooms[key].speaker].ID,
                     $Listener: rooms[key].users[rooms[key].listener].username,

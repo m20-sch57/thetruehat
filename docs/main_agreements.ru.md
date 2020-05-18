@@ -1,14 +1,14 @@
-<span style="color: red;">Пробная версия. Требуется доработка.</span>
-
 ## Соглашения по игре.
-1. Characteristics of any word:
-    - `word (string)` - the word itself.
-    - `difficult (int)` - its difficulty from 0 to 100.
-    - `used (int)` - number of uses.
-    - `tags (string?)` - JSON with tags:
-        - `"-deleted"` - "the word was deleted from public dictionary".
+1. В каждой игре участвуют только игроки, вошедшие в комнату и находящиеся онлайн в момент старта игры.
+1. Время всегда мерится и определяется в мс (миллисекундах). Моменты времени определяются по стандарту UTC+0, с начала Эпохи.
+1. Характеристики каждого слова:
+    - `word (string)` - само слово.
+    - `difficult (int)` - сложность слова от 0 до 100.
+    - `used (int)` - кол-во "использований".
+    - `tags (string?)` - JSON с тегами:
+        - `"-deleted"` - "слово удалено из словаря общего пользования".
 1. Характеристики каждой попытки объяснения:
-    - `gameID (int)` - ID of the game in the system.
+    - `gameID (int)` - ID игры в системе.
     - `explNo (int)` - порядковый номер объяснения в игре.
     - `speaker` - объясняющий.
     - `listener` - угадывающий.

@@ -1,3 +1,6 @@
+## Agreements about common objects
+TODO
+
 ## Tables
 ### Players
 Used to contain players' information.
