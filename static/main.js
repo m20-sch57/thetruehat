@@ -380,7 +380,7 @@ class Game {
     }
 
     leave() {
-        this.roundId = -1;
+        this.roundId += 1;
     }
 }
 
@@ -732,7 +732,6 @@ class App {
                 _this.pages.go(["preparationPage"]);
                 break;
             case "play":
-                _this.game.roundId = 0;
                 _this.pages.go(["gamePage"]);
                 switch(data.substate) {
                 case "wait":
