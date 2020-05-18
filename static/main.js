@@ -656,8 +656,10 @@ class App {
     }
 
     sendFeedback() {
-        let feedback = this.buildFeedback(el("feedbackPage_textarea").value, 
+        let feedbackTextarea = el("feedbackPage_textarea");
+        let feedback = this.buildFeedback(feedbackTextarea.value, 
             el("feedbackPage_clientInfoCheckbox").checked)
+        feedbackTextarea.value = "";
         fetch("feedback", {
             method: "POST",
             headers: {
@@ -665,6 +667,7 @@ class App {
             },
             body: JSON.stringify(feedback)
         });
+        Pages.goBack();
     }
 
     setSocketioEventListeners() {
