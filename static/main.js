@@ -418,6 +418,11 @@ class App {
         this.emit("cLeaveRoom");
     }
 
+    leaveResultsPage() {
+        this.game.leave();
+        this.pages.leave();        
+    }
+
     setKey(value) {
         value = value.toUpperCase();
         this.game.key = value;
@@ -800,7 +805,7 @@ class App {
             this.game.editedWordsObject());
         el("editPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("editPage_goBack").onclick = () => this.leaveRoom();
-        el("resultsPage_goBack").onclick = () => this.leaveRoom();
+        el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
