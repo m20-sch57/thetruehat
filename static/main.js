@@ -386,7 +386,7 @@ class App {
     constructor() {
         this.debug = true;
 
-        this.socket = io.connect(`${window.location.protocol}//${window.location.host}`);
+        this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game();
         this.pages = new Pages(["mainPage"], ["joinPage"]);
@@ -436,7 +436,7 @@ class App {
             this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
         }
-        fetch(`/api/getRoomInfo?key=${this.game.key}`)
+        fetch(`api/getRoomInfo?key=${this.game.key}`)
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
@@ -544,7 +544,7 @@ class App {
     }
 
     generateKey() {
-        fetch("/api/getFreeKey")
+        fetch("api/getFreeKey")
             .then(response => response.json())
             .then(result => el("joinPage_inputKey").value = result.key);
     }
@@ -554,8 +554,7 @@ class App {
     }
 
     copyLink() {
-        navigator.clipboard.writeText(`${window.location.protocol}//${
-            window.location.host}/#${this.game.key}`);
+        navigator.clipboard.writeText(window.location);
     }
 
     pasteKey() {

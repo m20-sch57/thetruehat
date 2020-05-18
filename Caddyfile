@@ -3,8 +3,6 @@ https://m20-sch57.site:3005 {
     log     /home/adanni/thehatServer/access.log
     errors  /home/adanni/thehatServer/errors.log
 
-    tls on
-
     header / Cache-Control no-cache
 
     header /getTime {
@@ -23,7 +21,12 @@ https://m20-sch57.site:3005 {
         transparent
         without /api
     }
+
     redir /api /api/
+
+    proxy /feedback localhost:7005 {
+        transparent
+    }
 
     gzip
 }
