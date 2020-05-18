@@ -257,7 +257,7 @@ class Pages {
     leave() {
         this.hideLastPage();
         this.pageLog = [];
-        this.go(this.defaulLeavePage);
+        this.go(this.defaultLeavePage);
     }
 }
 
@@ -310,7 +310,7 @@ class Game {
             this.settings = data.settings;
         }
 
-        if (data.resulta) {
+        if (data.results) {
             this.results = data.results;
         }
 
