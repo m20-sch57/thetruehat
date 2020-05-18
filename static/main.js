@@ -673,7 +673,6 @@ class App {
         result.cookieEnabled = navigator.cookieEnabled;
         result.platform = navigator.platform;
         result.product = navigator.product;
-        result.userAgent = navigator.userAgent;
     }
 
     buildFeedback(message, collectBrowserData) {
@@ -681,6 +680,7 @@ class App {
         if (collectBrowserData) {
             this.addBrowserData(result);
         }
+        result.userAgent = navigator.userAgent;
         result.SID = app.socket.id
         result.message = message
         result.gameLog = this.gameLog
