@@ -701,7 +701,7 @@ class App {
             },
             body: JSON.stringify(feedback)
         });
-        Pages.goBack();
+        this.pages.goBack();
     }
 
     setSocketioEventListeners() {
@@ -862,8 +862,8 @@ class App {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
-        els("feedbackButton").forEach((it) => it.onclick = () => Pages.go(Pages.feedback));
-        el("feedbackPage_goBack").onclick = () => Pages.goBack();
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+        el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
     }
 }
