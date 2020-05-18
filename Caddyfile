@@ -26,10 +26,7 @@ https://m20-sch57.site:3005 {
 
     proxy /feedback localhost:7005 {
         transparent
-        without /feedback
     }
-
-    redir /feedback /feedback/
 
     gzip
 }
