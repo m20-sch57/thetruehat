@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/usr/local/bin/caddy -agree=true -http-port 8005 -https-port 3005 -conf=/home/adanni/thehatServer/Caddyfile -pidfile=/home/adanni/thehatServer/caddy.pid -root=/var/tmp &

@@ -6,11 +6,11 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/main.css">
-    <link rel="shortcut icon" href="/hat.png">
+    <link rel="stylesheet" href="main.css">
+    <link rel="shortcut icon" href="hat.png">
 
     <title>Шляпа</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="socket.io/socket.io.js"></script>
 </head>
 <body>
     <div class="page" id="mainPage" style="display: none;">
@@ -27,6 +27,8 @@
         <button class="white-bubble go-back" id="joinPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="joinPage_viewRules">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
             <div id="joinPage_header">
@@ -49,6 +51,8 @@
     <div class="page" id="rulesPage" style="display: none;">
         <button class="white-bubble go-back" id="rulesPage_goBack">
             <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
             <div id="rulesPage_header">
@@ -63,6 +67,8 @@
         <button class="white-bubble go-back" id="preparationPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="preparationPage_viewRules">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
             <div id="preparationPage_header">
@@ -91,6 +97,8 @@
         <button class="white-bubble go-back" id="gamePage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="gamePage_viewRules">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
             <div id="gamePage_header">
@@ -155,6 +163,8 @@
         <button class="white-bubble go-back" id="editPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="editPage_viewRules">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
             <div id="editPage_header">
@@ -172,6 +182,8 @@
         <button class="white-bubble go-back" id="resultsPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-rules" id="resultsPage_viewRules">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
             <div id="resultsPage_header">
@@ -192,11 +204,31 @@
             </div>
         </div>
     </div>
+    <div class="page" id="feedbackPage" style="display: none;">
+        <button class="white-bubble go-back" id="feedbackPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-rules" id="feedbackPage_viewRules">
+        </button>
+        <div class="content-medium">
+            <div id="feedbackPage_header">
+                <h1 id="feedbackPage_title">Обратная связь</h1>
+            </div>
+            <div id="feedbackPage_body">
+                <textarea class="default-textarea" id="feedbackPage_textarea" placeholder="Напишите свой отзыв здесь"></textarea>
+                <div id="feedbackPage_clientInfo">
+                    <input type="checkbox" id="feedbackPage_clientInfoCheckbox" checked>
+                    <label for="feedbackPage_clientInfoCheckbox"><span class="fa fa-check"></span></label>
+                    <label for="feedbackPage_clientInfoCheckbox">Отправить дополнительные сведения</label>
+                </div>
+                <button class="medium-button bg-green" id="feedbackPage_submit">Отправить отзыв</button>
+            </div>
+        </div>
+    </div>
     <audio src="sounds/start.mp3" id="start" shift="-200"></audio>
     <audio src="sounds/final.mp3" id="final"></audio>
     <audio src="sounds/final+.mp3" id="final+" shift="-200"></audio>
     <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
-    <script src="/main.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
