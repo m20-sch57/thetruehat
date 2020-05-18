@@ -636,12 +636,12 @@ class App {
                 el("gamePage_observerTimer").innerText = time;
             },
             stopCondition: () => {
-                return _this.roundId != roundId;
+                return _this.game.roundId != roundId;
             }
         })
         return animation.then(() => {
-            el("gamePage_explanationTimer").innerText = "0";
-            el("gamePage_observerTimer").innerText = "0";
+            el("gamePage_explanationTimer").innerText = "0.0";
+            el("gamePage_observerTimer").innerText = "0.0";
         })
     }
 
