@@ -45,6 +45,10 @@ function el(id) {
     return document.getElementById(id);
 }
 
+function els(name) {
+    return document.getElementsByName(name);
+}
+
 function deleteNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -793,7 +797,7 @@ class App {
             Pages.go(Pages.join);
         }
         el("mainPage_viewRules").onclick = () => Pages.go(Pages.rules);
-        el("mainPage_leaveFeedback").onclick = () => Pages.go(Pages.feedback);
+        // el("mainPage_leaveFeedback").onclick = () => Pages.go(Pages.feedback);
         el("joinPage_goBack").onclick = () => Pages.goBack();
         el("joinPage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
@@ -832,6 +836,7 @@ class App {
             this.generateKey();
             Pages.go(Pages.join);
         }
+        els("feedbackButton").forEach((it) => it.onclick = () => Pages.go(Pages.feedback));
         el("feedbackPage_goBack").onclick = () => Pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
     }
