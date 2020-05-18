@@ -395,8 +395,6 @@ class App {
         this.gamePages = new Pages();
 
         this.setKey(readLocationHash());
-        this.roundId = 0;
-        this.gameSettings = {};
         this.gameLog = []
 
         this.checkClipboard();
