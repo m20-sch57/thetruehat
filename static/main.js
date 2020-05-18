@@ -321,13 +321,11 @@ class App {
     }
 
     addToLog(event, data) {
-        console.log('kekke');
         this.gameLog.push({
             'event': event,
             'data': data,
             'time': timeSync.getTime()
         });
-        console.log('lol')
     }
 
     emit(event, data) {
@@ -654,7 +652,6 @@ class App {
         result.SID = app.socket.id
         result.message = message
         result.gameLog = this.gameLog
-        console.log(result)
     }
 
     sendFeedback() {
