@@ -378,7 +378,7 @@ class Game {
     }
 
     leave() {
-        this.roundId = -1;
+        this.roundId += 1;
     }
 }
 
