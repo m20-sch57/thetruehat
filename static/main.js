@@ -45,6 +45,10 @@ function el(id) {
     return document.getElementById(id);
 }
 
+function els(name) {
+    return document.getElementsByName(name);
+}
+
 function deleteNode(node) {
     node.parentNode.removeChild(node);
 }
@@ -325,7 +329,6 @@ class Game {
         el("gamePage_wordsCnt").innerText = this.wordsCount;
         el("gamePage_title").innerText = this.myUsername;
         el("editPage_wordsCnt").innerText = this.editWordsCount;
-
         el("preparationPage_users").innerHTML = "";
         this.players.forEach(username => {
             el("preparationPage_users").appendChild(
@@ -335,8 +338,7 @@ class Game {
             }
         });
 
-        el("preparationPage_playersCnt").innerText = 
-            `${this.players.length} ${
+        el("preparationPage_playersCnt").innerText = `${this.players.length} ${
             wordPlayers(this.players.length)}`;
 
         if (this.host) {
@@ -346,11 +348,11 @@ class Game {
         el("editPage_list").innerHTML = "";
         this.editWords.forEach((word) => {
             el("editPage_list").appendChild(Template.editWord(word));
-            el(`editPage_${word.word}_explained`).onclick = 
+            el(`editPage_${word.word}_explained`).onclick =
                     () => this.changeWordState(word.word, "explained");
-            el(`editPage_${word.word}_notExplained`).onclick = 
+            el(`editPage_${word.word}_notExplained`).onclick =
                     () => this.changeWordState(word.word, "notExplained");
-            el(`editPage_${word.word}_mistake`).onclick = 
+            el(`editPage_${word.word}_mistake`).onclick =
                     () => this.changeWordState(word.word, "mistake");
         });
 
@@ -371,14 +373,14 @@ class Game {
         return {"editWords": Object.keys(this.wordStates)
             .map(x => {
                 return {
-                    "word": x, 
+                    "word": x,
                     "wordState": this.wordStates[x],
                 }
             })}
     }
 
     leave() {
-        this.roundId = -1;
+        this.roundId += 1;
     }
 }
 
@@ -393,6 +395,8 @@ class App {
         this.gamePages = new Pages();
 
         this.setKey(readLocationHash());
+        this.gameLog = []
+
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
@@ -405,8 +409,17 @@ class App {
 
     }
 
+    addToLog(event, data) {
+        this.gameLog.push({
+            'event': event,
+            'data': data,
+            'time': timeSync.getTime()
+        });
+    }
+
     emit(event, data) {
         this.socket.emit(event, data);
+        this.addToLog(event, data);
         if (this.debug) {
             console.log(event, data);
         }
@@ -420,7 +433,7 @@ class App {
 
     leaveResultsPage() {
         this.game.leave();
-        this.pages.leave();        
+        this.pages.leave();
     }
 
     setKey(value) {
@@ -495,7 +508,7 @@ class App {
         setTimeout(() => {
             if (this.game.roundId != roundId) return;
             this.gamePages.go(["gamePage_explanationDelayBox"]);
-            this.animateDelayTimer(startTime - this.game.settings.delayTime, 
+            this.animateDelayTimer(startTime - this.game.settings.delayTime,
                 roundId)
             .then(() => {
                 if (this.game.roundId != roundId) return;
@@ -654,6 +667,50 @@ class App {
         show("joinPage_goHint");
     }
 
+    addBrowserData(result) {
+        result.appName = navigator.appName;
+        result.appVersion = navigator.appVersion;
+        result.cookieEnabled = navigator.cookieEnabled;
+        result.platform = navigator.platform;
+        result.product = navigator.product;
+        result.userAgent = navigator.userAgent;
+    }
+
+    buildFeedback(message, collectBrowserData) {
+        let result = {};
+        if (collectBrowserData) {
+            this.addBrowserData(result);
+        }
+        result.SID = app.socket.id
+        result.message = message
+        result.gameLog = this.gameLog
+        return result
+    }
+
+    clientInfoChange() {
+        let buttonId = "feedbackPage_submit";
+        if (el("feedbackPage_clientInfoCheckbox").checked) {
+            enable(buttonId);
+        } else {
+            disable(buttonId);
+        }
+    }
+
+    sendFeedback() {
+        let feedbackTextarea = el("feedbackPage_textarea");
+        let feedback = this.buildFeedback(feedbackTextarea.value, 
+            true);
+        feedbackTextarea.value = "";
+        fetch("feedback", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            },
+            body: JSON.stringify(feedback)
+        });
+        this.pages.goBack();
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -663,12 +720,14 @@ class App {
         "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
         events.forEach((event) => {
             _this.socket.on(event, function(data) {
+                _this.addToLog(event, data);
                 if (_this.debug) {
                     console.log(event, data);
                 }
             })
         })
         this.socket.on("sFailure", function(data) {
+            _this.addToLog("sFailure", data);
             if (_this.debug) {
                 console.warn("sFailure", data);
             }
@@ -682,7 +741,6 @@ class App {
                 _this.pages.go(["preparationPage"]);
                 break;
             case "play":
-                _this.game.roundId = 0;
                 _this.pages.go(["gamePage"]);
                 switch(data.substate) {
                 case "wait":
@@ -810,6 +868,10 @@ class App {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+        el("feedbackPage_goBack").onclick = () => this.pages.goBack();
+        el("feedbackPage_submit").onclick = () => this.sendFeedback();
+        el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
     }
 }
 
