@@ -547,11 +547,11 @@ class App {
         let stopCondition = () => roundId != this.roundId;
         this.sound.playSound("start", startTime, stopCondition);
         this.sound.playSound("final", startTime + 
-            this.gameSettings.explanationTime, stopCondition);  
+            this.game.settings.explanationTime, stopCondition);  
         this.sound.playSound("final+", startTime + 
-            this.gameSettings.explanationTime +
-            this.gameSettings.aftermathTime, stopCondition);
-        for (let i = 1; i <= Math.floor(this.gameSettings.delayTime / 1000); i++) {
+            this.game.settings.explanationTime +
+            this.game.settings.aftermathTime, stopCondition);
+        for (let i = 1; i <= Math.floor(this.game.settings.delayTime / 1000); i++) {
             this.sound.playSound("countdown", startTime - 1000 * i, stopCondition);
         }
     }
