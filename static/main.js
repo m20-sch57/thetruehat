@@ -543,8 +543,8 @@ class App {
     }
 
     playExplanationSounds({startTime}) {
-        let roundId = this.roundId;
-        let stopCondition = () => roundId != this.roundId;
+        let roundId = this.game.roundId;
+        let stopCondition = () => roundId != this.game.roundId;
         this.sound.playSound("start", startTime, stopCondition);
         this.sound.playSound("final", startTime + 
             this.game.settings.explanationTime, stopCondition);  
