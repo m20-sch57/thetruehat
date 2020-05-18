@@ -652,13 +652,17 @@ class App {
         result.SID = app.socket.id
         result.message = message
         result.gameLog = this.gameLog
+        return result
     }
 
     sendFeedback() {
         let feedback = this.buildFeedback(el("feedbackPage_textarea").value, 
             el("feedbackPage_clientInfoCheckbox").checked)
-        fetch('/feedback', {
-            method: 'POST',
+        fetch("feedback", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            },
             body: JSON.stringify(feedback)
         });
     }
