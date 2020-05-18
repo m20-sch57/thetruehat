@@ -1,7 +1,11 @@
 {
     "port": 2005,
-    "env": "staging",
+    "feedbackPort": 7005,
+    "serverPIDPath": "./server.pid",
+    "feedbackPIDPath": "./feedback.pid",
     "wordsPath": "./words/easy.json",
+    "feedbackPath": "./feedback.log",
+    "env": "staging",
     "transferTime": 1000,
     "delayTime": 3000,
     "explanationTime": 40000,

@@ -2,13 +2,6 @@
 
 "use strict"
 
-const fs = require("fs");
-fs.writeFile("server.pid", process.pid.toString(), function(err, data) {
-    if (err) {
-        console.log(err);
-    }
-});
-
 const config = require("./config.json");
 
 const PORT = config.port;
@@ -20,6 +13,13 @@ const DELAY_TIME = config.delayTime; // given delay for client reaction
 const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
 const allWords = require(config.wordsPath).words;
+
+const fs = require("fs");
+fs.writeFile(config.serverPIDPath, process.pid.toString(), function(err, data) {
+    if (err) {
+        console.log(err);
+    }
+});
 
 const express = require("express");
 const app = express();
@@ -515,7 +515,7 @@ class Signals {
 
 /**
  * Send response
- * 
+ *
  * @param req request object
  * @param res object to send response
  * @param data data

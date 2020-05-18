@@ -244,6 +244,7 @@ let Pages = {
         speaker: ["editPage"],
     },
     results: ["resultsPage"],
+    feedback: ["feedbackPage"],
 
     getPage: function (page) {
         if (page instanceof Array) {
@@ -303,6 +304,7 @@ class App {
         this.setKey(readLocationHash());
         this.roundId = 0;
         this.gameSettings = {};
+        this.gameLog = []
 
         this.checkClipboard();
 
@@ -318,8 +320,17 @@ class App {
         this.sound = new Sound();
     }
 
+    addToLog(event, data) {
+        this.gameLog.push({
+            'event': event,
+            'data': data,
+            'time': timeSync.getTime()
+        });
+    }
+
     emit(event, data) {
         this.socket.emit(event, data);
+        this.addToLog(event, data);
         if (this.debug) {
             console.log(event, data);
         }
@@ -624,6 +635,38 @@ class App {
         show("joinPage_goHint");
     }
 
+    addBrowserData(result) {
+        result.appName = navigator.appName;
+        result.appVersion = navigator.appVersion;
+        result.cookieEnabled = navigator.cookieEnabled;
+        result.platform = navigator.platform;
+        result.product = navigator.product;
+        result.userAgent = navigator.userAgent;
+    }
+
+    buildFeedback(message, collectBrowserData) {
+        let result = {};
+        if (collectBrowserData) {
+            this.addBrowserData(result);
+        }
+        result.SID = app.socket.id
+        result.message = message
+        result.gameLog = this.gameLog
+        return result
+    }
+
+    sendFeedback() {
+        let feedback = this.buildFeedback(el("feedbackPage_textarea").value, 
+            el("feedbackPage_clientInfoCheckbox").checked)
+        fetch("feedback", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            },
+            body: JSON.stringify(feedback)
+        });
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -633,12 +676,14 @@ class App {
         "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
         events.forEach((event) => {
             _this.socket.on(event, function(data) {
+                _this.addToLog(event, data);
                 if (_this.debug) {
                     console.log(event, data);
                 }
             })
         })
         this.socket.on("sFailure", function(data) {
+            _this.addToLog("sFailure", data);
             if (_this.debug) {
                 console.warn("sFailure", data);
             }
@@ -748,6 +793,7 @@ class App {
             Pages.go(Pages.join);
         }
         el("mainPage_viewRules").onclick = () => Pages.go(Pages.rules);
+        el("mainPage_leaveFeedback").onclick = () => Pages.go(Pages.feedback);
         el("joinPage_goBack").onclick = () => Pages.goBack();
         el("joinPage_viewRules").onclick = () => Pages.go(Pages.rules);
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
@@ -786,6 +832,8 @@ class App {
             this.generateKey();
             Pages.go(Pages.join);
         }
+        el("feedbackPage_goBack").onclick = () => Pages.goBack();
+        el("feedbackPage_submit").onclick = () => this.sendFeedback();
     }
 }
 
