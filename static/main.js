@@ -249,8 +249,8 @@ class Pages {
         if (this.pageLog.length >= 1) {
             this.showPage(this.pageLog.last());
         } else {
-            this.pageLog = [[this.defaultBackPage]];
-            this.showPage(this.defaultBackPage);
+            this.pageLog = [[this.defaultStartPage]];
+            this.showPage(this.defaultStartPage);
         }
     }
 
