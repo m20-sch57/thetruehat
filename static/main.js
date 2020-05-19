@@ -393,6 +393,8 @@ class App {
         this.game = new Game();
         this.pages = new Pages(["mainPage"], ["joinPage"]);
         this.gamePages = new Pages();
+        this.helpPages = new Pages();
+        this.helpPages.go(["helpPage_rulesBox"]);
 
         this.setKey(readLocationHash());
         this.gameLog = []
@@ -711,6 +713,12 @@ class App {
         this.pages.goBack();
     }
 
+    deactiveteHelpOptions() {
+        el("helpPage_rulesOption").classList.remove("active");
+        el("helpPage_faqOption").classList.remove("active");
+        el("helpPage_aboutOption").classList.remove("active");
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -860,11 +868,23 @@ class App {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage", "helpPage_rulesBox"]));
-        el("helpPage_goBack").onclick = () => this.pages.goBack(); // not working! My idea is to add attribute --add-to-stack for pages.go
-        el("helpPage_rulesOption").onclick = () => this.pages.go(["helpPage", "helpPage_rulesBox"]); // Add highlighting
-        el("helpPage_faqOption").onclick = () => this.pages.go(["helpPage", "helpPage_faqBox"]);
-        el("helpPage_aboutOption").onclick = () => this.pages.go(["helpPage", "helpPage_aboutBox"]);
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        el("helpPage_goBack").onclick = () => this.pages.goBack();
+        el("helpPage_rulesOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_rulesOption").classList.add("active");
+            this.helpPages.go(["helpPage_rulesBox"]);
+        }
+        el("helpPage_faqOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_faqOption").classList.add("active");
+            this.helpPages.go(["helpPage_faqBox"]);
+        }
+        el("helpPage_aboutOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_aboutOption").classList.add("active");
+            this.helpPages.go(["helpPage_aboutBox"]);
+        }
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
