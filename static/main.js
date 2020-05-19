@@ -829,9 +829,8 @@ class App {
             el("joinPage_inputKey").value = this.game.key;
             this.pages.go(["joinPage"]);
         }
-        el("mainPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
+        els("rulesButton").forEach((it) => it.onclick = () => this.pages.go(["rulesPage"]));
         el("joinPage_goBack").onclick = () => this.pages.goBack();
-        el("joinPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
         el("joinPage_generateKey").onclick = () => this.generateKey();
         el("joinPage_go").onclick = () => {
@@ -840,8 +839,6 @@ class App {
             this.enterRoom();
         }
         el("rulesPage_goBack").onclick = () => this.pages.goBack();
-        el("preparationPage_viewRules").onclick = () => 
-            this.showPage('rulesPage');
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
@@ -857,13 +854,10 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        el("gamePage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
             this.game.editedWordsObject());
-        el("editPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("editPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
-        el("resultsPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
             this.pages.go(["joinPage"]);
