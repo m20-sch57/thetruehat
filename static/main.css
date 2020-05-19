@@ -121,7 +121,7 @@ button, input {
     font-size: 20px;
     font-weight: lighter;
     line-height: 20px;
-    box-shadow: 0 0 4px grey;
+    box-shadow: 0 1px 4px grey;
 }
 
 .hint {
@@ -660,7 +660,7 @@ button, input {
     left: 0;
     bottom: 0;
     right: 0;
-    padding: 10px 15px 25px 15px;
+    padding: 10px 15px 30px 15px;
 }
 
 #gamePage_editList .word {
