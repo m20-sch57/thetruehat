@@ -829,7 +829,6 @@ class App {
             el("joinPage_inputKey").value = this.game.key;
             this.pages.go(["joinPage"]);
         }
-        els("rulesButton").forEach((it) => it.onclick = () => this.pages.go(["rulesPage"]));
         el("joinPage_goBack").onclick = () => this.pages.goBack();
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
         el("joinPage_generateKey").onclick = () => this.generateKey();
@@ -838,7 +837,6 @@ class App {
             this.game.myUsername = el("joinPage_inputName").value;
             this.enterRoom();
         }
-        el("rulesPage_goBack").onclick = () => this.pages.goBack();
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
@@ -862,6 +860,11 @@ class App {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage", "helpPage_rulesBox"]));
+        el("helpPage_goBack").onclick = () => this.pages.goBack(); // not working! My idea is to add attribute --add-to-stack for pages.go
+        el("helpPage_rulesOption").onclick = () => this.pages.go(["helpPage", "helpPage_rulesBox"]); // Add highlighting
+        el("helpPage_faqOption").onclick = () => this.pages.go(["helpPage", "helpPage_faqBox"]);
+        el("helpPage_aboutOption").onclick = () => this.pages.go(["helpPage", "helpPage_aboutBox"]);
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
