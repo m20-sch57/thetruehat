@@ -13,9 +13,50 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
-button, input {
+button, input, textarea {
+    resize: none;
     font-family: inherit;
     outline: 0;
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+input[type=checkbox] + label {
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 50%;
+}
+
+input[type=checkbox]:checked + label {
+    color: white;
+    background-color: rgb(65, 193, 225);
+    border-color: transparent;
+    padding-left: 4px;
+    padding-top: 5px;
+    font-size: 14px;
+    line-height: 14px;
+    box-shadow: 0 0 5px grey;
+}
+
+input[type=checkbox] + label:hover {
+    background-color: lightgrey;
+}
+
+input[type=checkbox]:checked + label:hover {
+    background-color: rgb(42, 149, 175);
+}
+
+input[type=checkbox] + label span {
+    visibility: hidden;
+}
+
+input[type=checkbox]:checked + label span {
+    visibility: visible;
 }
 
 /* Common classes */
@@ -32,6 +73,14 @@ button, input {
     margin: 100px auto 30px auto;
     width: 100%;
     max-width: 500px;
+}
+
+.content-medium {
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
+    width: 100%;
+    max-width: 700px;
 }
 
 .small-button {
@@ -87,6 +136,17 @@ button, input {
     background-color: lightgrey;
 }
 
+.flat-button {
+    padding: 0;
+    background-color: inherit;
+    border: none;
+}
+
+.flat-button:hover:enabled {
+    color: deepskyblue;
+    cursor: pointer;
+}
+
 .medium-input {
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
@@ -104,7 +164,15 @@ button, input {
     line-height: 40px;
 }
 
-.medium-input:focus, .large-input:focus {
+.default-textarea {
+    padding: 15px;
+    border: 1px solid grey;
+    border-radius: 15px;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.medium-input:focus, .large-input:focus, .default-textarea:focus {
     border-color: skyblue;
 }
 
@@ -147,15 +215,15 @@ button, input {
 
 .go-back {
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 20px;
+    left: 20px;
     height: 60px;
     width: 60px;
     font-size: 20px;
     padding-left: 2px;
 }
 
-.view-rules {
+.view-help {
     position: absolute;
     top: -75px;
     left: calc(50% - 75px);
@@ -167,6 +235,16 @@ button, input {
     background-size: 35%;
     background-position: center 85px;
     background-repeat: no-repeat;
+}
+
+.feedback {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    height: 60px;
+    width: 60px;
+    font-size: 20px;
+    padding-left: 5px;
 }
 
 .bg-blue {
@@ -262,7 +340,7 @@ button, input {
     z-index: 10;
 }
 
-#mainPage_viewRules {
+#mainPage_viewHelp {
     position: absolute;
     top: calc(50% - 100px);
     left: calc(50% - 100px);
@@ -279,7 +357,7 @@ button, input {
     background-repeat: no-repeat;
 }
 
-#mainPage_viewRules:hover {
+#mainPage_viewHelp:hover {
     background-color: rgb(223, 216, 128);
 }
 
@@ -342,29 +420,6 @@ button, input {
 
 #joinPage_goHint {
     color: red;
-}
-
-/* Rules page */
-
-#rulesPage_header {
-    width: 100%;
-    text-align: center;
-    padding-bottom: 30px;
-}
-
-#rulesPage_hatPicture {
-    display: inline-block;
-    height: 200px;
-    width: 200px;
-    margin-top: -75px;
-    background-image: url(\hat.png);
-    background-size: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-#rulesPage_body {
-    padding: 0 30px 30px 30px;
 }
 
 /* Preparation page */
@@ -774,6 +829,64 @@ button, input {
 #resultsPage_newGame {
     width: 100%;
     margin-top: 30px;
+}
+
+/* Help page */
+
+#helpPage_header {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+#helpPage_navigation {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 25px 100px 0 100px;
+    margin-top: -100px;
+}
+
+#helpPage_navigation .option {
+    padding-bottom: 5px;
+    margin: 10px;
+    font-size: 22px;
+}
+
+#helpPage_navigation .option.active {
+    color: rgb(33, 164, 216);
+    border-bottom: 2px solid rgb(33, 164, 216);
+}
+
+#helpPage_body {
+    padding: 0 30px 30px 30px;
+}
+
+/* Feedback page */
+
+#feedbackPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#feedbackPage_title {
+    font-weight: lighter;
+}
+
+#feedbackPage_body {
+    width: 100%;
+    padding: 0 30px 30px 30px;
+}
+
+#feedbackPage_textarea {
+    width: 100%;
+    height: 270px;
+}
+
+#feedbackPage_submit {
+    margin-top: 20px;
 }
 
 /* Failure message */

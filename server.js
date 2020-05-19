@@ -5,13 +5,21 @@
 const config = require("./config.json");
 
 const PORT = config.port;
+const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const WORD_NUMBER = config.wordNumber;
-const DELAY = config.transferTime; // given delay for client reaction
-const EXPLANATION_LENGTH = config.explanationTime; // length of explanation
-const PRE = config.delayTime; // delay for transfer
-const POST = config.aftermathTime; // time for guess
+const TRANSFER_TIME = config.transferTime; // delay for transfer
+const EXPLANATION_TIME = config.explanationTime; // length of explanation
+const DELAY_TIME = config.delayTime; // given delay for client reaction
+const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
 const allWords = require(config.wordsPath).words;
+
+const fs = require("fs");
+fs.writeFile(config.serverPIDPath, process.pid.toString(), function(err, data) {
+    if (err) {
+        console.log(err);
+    }
+});
 
 const express = require("express");
 const app = express();
@@ -20,14 +28,6 @@ const io = require("socket.io")(server);
 
 server.listen(PORT);
 console.log("Listening on port " + PORT);
-
-// Serving static files
-app.use(express.static("static"));
-
-// Serving page of the game by default address
-app.get("/", function(req, res) {
-    res.sendFile(__dirname + "/index.html");
-});
 
 //----------------------------------------------------------
 // Handy functions
@@ -70,11 +70,40 @@ function checkObject(object, pattern) {
  * Returns playerList structure,
  * @see API.md
  *
- * @param room Room object
+ * @param users list of users
  * @return list of players
  */
-function getPlayerList(room) {
-    return room.users.map(el => {return {"username": el.username, "online": el.online};});
+function getPlayerList(users) {
+    return users.map(el => {return {"username": el.username, "online": el.online};});
+}
+
+/**
+ * Returns host username
+ *
+ * @param users list of users
+ * @return host username
+ */
+function getHostUsername(users) {
+    const pos = findFirstPos(users, "online", true);
+    if (pos === -1) {
+        return "";
+    }
+    return users[pos].username;
+}
+
+/**
+ * Rerurns random number from interval [a, b)
+ * 
+ * @param a lower bound
+ * @param b upper bound
+ * @return random integer from [a, b)
+ */
+function randrange(a = 0, b = 0) {
+    if (arguments.length === 1) {
+        b = a;
+        a = 0;
+    }
+    return Math.floor(a + (b - a) * Math.random());
 }
 
 /**
@@ -122,7 +151,7 @@ function getRoom(socket) {
     // Searching for the game room with the user
     for (let i = 0; i < roomsList.length; ++i) {
         if (roomsList[i] !== sid) {
-            return roomsList[i]; // It's found and  returning
+            return roomsList[i]; // It's found and returning
         }
     }
     return socket.id; // Nothing found. User's own room is returning
@@ -138,7 +167,7 @@ function generateWords() {
     let used = {};
     const numberOfAllWords = allWords.length;
     while (words.length < WORD_NUMBER) {
-        const pos = Math.floor(Math.random() * (numberOfAllWords - 1));
+        const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
             words.push(allWords[pos]);
@@ -176,7 +205,7 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + (PRE + DELAY);
+    rooms[key].startTime = currentTime + (DELAY_TIME + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
     /*
     const numberOfTurn = rooms[key].numberOfTurn;
@@ -188,9 +217,9 @@ function startExplanation(key) {
         if (rooms[key].numberOfTurn === numberOfTurn) {
             finishExplanation(key);
         }
-    }, (PRE + EXPLANATION_LENGTH + POST + DELAY));
+    }, (DELAY_TIME + EXPLANATION_TIME + AFTERMATH_TIME + TRANSFER_TIME));
     */
-    setTimeout(() => Signals.sNewWord(key), (PRE + DELAY));
+    setTimeout(() => Signals.sNewWord(key), TRANSFER_TIME);
     Signals.sExplanationStarted(key)
 }
 
@@ -261,24 +290,34 @@ function endGame(key) {
     });
 }
 
+
 class Signals {
-    static emit(socket, event, args) {
-        socket.emit(event, args);
+    /**
+     * Send a signal to room
+     *
+     * @param roomId id of room
+     * @param signal signal to send
+     * @param data data to send
+     */
+    static emit(roomId, signal, data) {
+        if (WRITE_LOGS) {
+            console.log(roomId, signal, data);
+        }
+        io.sockets.to(roomId).emit(signal, data);
     }
 
     /**
      * Implementation of sPlayerJoined signal
      * @see API.md
      *
-     * @param socket Socket to emit
+     * @param sid Id of socket to emit
      * @param room Room object
      * @param username User's name
      */
-    static sPlayerJoined(socket, room, username) {
-        socket.emit(
-            "sPlayerJoined", {
-                "username": username, "playerList": getPlayerList(room),
-                "host": room.users[findFirstPos(room.users, "online", true)].username
+    static sPlayerJoined(sid, room, username) {
+        Signals.emit(sid, "sPlayerJoined", {
+                "username": username, "playerList": getPlayerList(room.users),
+                "host": getHostUsername(room.users)
             });
     }
 
@@ -286,20 +325,15 @@ class Signals {
      * Implementation of sPlayerLeft signal
      * @see API.md
      *
-     * @param socket Socket to emit
+     * @param sid Id of socket to emit
      * @param room Room object
      * @param username User's name
      */
-    static sPlayerLeft(socket, room, username) {
+    static sPlayerLeft(sid, room, username) {
         // Sending new state of the room.
-        let host = "";
-        const pos = findFirstPos(room.users, "online", true);
-        if (pos !== -1) {
-            host = room.users[pos].username;
-        }
-        socket.emit("sPlayerLeft", {
-            "username": username, "playerList": getPlayerList(room),
-            "host": host
+        Signals.emit(sid, "sPlayerLeft", {
+            "username": username, "playerList": getPlayerList(room.users),
+            "host": getHostUsername(room.users)
         });
     }
 
@@ -307,16 +341,16 @@ class Signals {
      * Implementation of sYouJoined signal
      * @see API.md
      *
-     * @param socket Socket to emit
+     * @param sid Id of socket to emit
      * @param key Key of the room
      */
-    static sYouJoined(socket, key) {
+    static sYouJoined(sid, key) {
         const room = rooms[key];
-        const name = room.users[findFirstSidPos(room.users, socket.id)].username;
+        const name = room.users[findFirstSidPos(room.users, sid)].username;
         let joinObj = {
             "key": key,
-            "playerList": getPlayerList(room),
-            "host": room.users[findFirstPos(room.users, "online", true)].username,
+            "playerList": getPlayerList(room.users),
+            "host": getHostUsername(room.users),
             "settings": {
                 "delayTime": config.delayTime,
                 "explanationTime": config.explanationTime,
@@ -363,7 +397,7 @@ class Signals {
                 console.log(rooms[key]);
                 break;
         }
-        socket.emit("sYouJoined", joinObj);
+        Signals.emit(sid, "sYouJoined", joinObj);
     }
 
     /**
@@ -371,12 +405,12 @@ class Signals {
      * @see API.md
      *
      *
-     * @param socket Socket to emit
+     * @param sid Id of socket to emit
      * @param request Request that is failed
      * @param msg Message to send
      */
-    static sFailure(socket, request, code, msg) {
-        socket.emit("sFailure", {"request": request, "msg": msg, "code": code});
+    static sFailure(sid, request, code, msg) {
+        Signals.emit(sid, "sFailure", {"request": request, "msg": msg, "code": code});
     }
 
     /**
@@ -386,7 +420,7 @@ class Signals {
      * @param key Key of the Room
      */
     static sGameStarted(key) {
-        io.sockets.to(key).emit("sGameStarted", {
+        Signals.emit(key, "sGameStarted", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
             "wordsCount": rooms[key].freshWords.length});
@@ -400,7 +434,7 @@ class Signals {
      * @param words Words' statistic
      */
     static sNextTurn(key, words) {
-        io.sockets.to(key).emit("sNextTurn", {
+        Signals.emit(key, "sNextTurn", {
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
             "words": words,
@@ -414,7 +448,7 @@ class Signals {
      * @param key Key of the room
      */
     static sExplanationStarted(key) {
-        io.sockets.to(key).emit("sExplanationStarted", {"startTime": rooms[key].startTime});
+        Signals.emit(key, "sExplanationStarted", {"startTime": rooms[key].startTime});
     }
 
     /**
@@ -424,7 +458,7 @@ class Signals {
      * @param key Key of the room
      */
     static sNewWord(key) {
-        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit("sNewWord", {"word": rooms[key].word});
+        Signals.emit(rooms[key].users[rooms[key].speaker].sids[0], "sNewWord", {"word": rooms[key].word});
     }
 
     /**
@@ -435,7 +469,7 @@ class Signals {
      * @param cause Result of word explanation
      */
     static sWordExplanationEnded(key, cause) {
-        io.sockets.to(key).emit("sWordExplanationEnded", {
+        Signals.emit(key, "sWordExplanationEnded", {
             "cause": cause,
             "wordsCount": rooms[key].freshWords.length +
             ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
@@ -448,7 +482,7 @@ class Signals {
      * @param key Key of the room
      */
     static sExplanationEnded(key) {
-        io.sockets.to(key).emit("sExplanationEnded", {
+        Signals.emit(key, "sExplanationEnded", {
             "wordsCount": rooms[key].freshWords.length +
             ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
     }
@@ -461,7 +495,7 @@ class Signals {
      * @param editWords List of words to edit
      */
     static sWordsToEdit(key, editWords) {
-        io.sockets.to(rooms[key].users[rooms[key].speaker].sids[0]).emit(
+        Signals.emit(rooms[key].users[rooms[key].speaker].sids[0],
             "sWordsToEdit", {"editWords": editWords});
     }
 
@@ -473,11 +507,25 @@ class Signals {
      * @param results Results of the game
      */
     static sGameEnded(key, results) {
-        io.sockets.to(key).emit("sGameEnded", {"results": results});
+        Signals.emit(key, "sGameEnded", {"results": results});
     }
 }
 //----------------------------------------------------------
 // HTTP functions
+
+/**
+ * Send response
+ *
+ * @param req request object
+ * @param res object to send response
+ * @param data data
+ */
+function sendResponse(req, res, data) {
+    if (WRITE_LOGS) {
+        console.log(req.originalUrl, data);
+    }
+    res.json(data);
+}
 
 /**
  * Implementation of getFreeKey function
@@ -490,14 +538,14 @@ app.get("/getFreeKey", function(req, res) {
     const keyConsonant = config.keyConsonant;
     const keyVowels = config.keyVowels;
     // getting the key length
-    const keyLength = Math.floor(minKeyLength + Math.random() * (maxKeyLength - minKeyLength));
+    const keyLength = randrange(minKeyLength, maxKeyLength + 1);
     // generating the key
     let key = "";
     for (let i = 0; i < keyLength; ++i) {
         const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
-        key += charList[Math.floor(Math.random() * charList.length)];
+        key += charList[randrange(charList.length)];
     }
-    res.json({"key": key});
+    sendResponse(req, res, {"key": key});
 });
 
 /**
@@ -505,16 +553,16 @@ app.get("/getFreeKey", function(req, res) {
  * @see API.md
  */
 app.get("/getRoomInfo", function(req, res) {
-    const key = req.query.key; // The key of the room
+    const key = req.query.key.toLowerCase(); // The key of the room
 
     if (key === "") {
-        res.json({"success": false});
+        sendResponse(req, res, {"success": false});
         return;
     }
 
     // Case of nonexistent room
     if (!(key in rooms)) {
-        res.json({"success": true,
+        sendResponse(req, res, {"success": true,
                   "state": "wait",
                   "playerList": [],
                   "host": ""});
@@ -525,15 +573,15 @@ app.get("/getRoomInfo", function(req, res) {
     switch (room.state) {
         case "wait":
         case "play":
-            res.json({"success": true,
-                      "state": "wait",
-                      "playerList": getPlayerList(room),
-                      "host": room.users[findFirstPos(room.users, "online", true)]});
+            sendResponse(req, res, {"success": true,
+                      "state": room.state,
+                      "playerList": getPlayerList(room.users),
+                      "host": getHostUsername(room.users)});
             break;
 
         case "end":
             // TODO Implement
-            res.json({"success": true, "state": "end"});
+            sendResponse(req, res, {"success": true, "state": "end"});
             console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
             break;
 
@@ -656,7 +704,7 @@ const rooms = {};
 
 function checkInputFormat(socket, data, format, signal) {
     if (!checkObject(data, format)) {
-        Signals.sFailure(socket, signal, 0, "Invalid format");
+        Signals.sFailure(socket.id, signal, 0, "Invalid format");
         return false;
     }
     return true;
@@ -665,21 +713,21 @@ function checkInputFormat(socket, data, format, signal) {
 class CheckConditions {
     static cJoinRoom(socket, data) {
         const key = data.key.toLowerCase(); // key of the room
-        const name = data.username; // name of the user
+        const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
 
         // If user is not in his own room, it will be an error
         if (getRoom(socket) !== socket.id) {
-            Signals.sFailure(socket, "cJoinRoom", 100, "You are in room now");
+            Signals.sFailure(socket.id, "cJoinRoom", 100, "You are in room now");
             return false;
         }
 
         // If key is "" or name is "", it will be an error
         if (key === "") {
-            Signals.sFailure(socket, "cJoinRoom", 101, "Invalid key of room");
+            Signals.sFailure(socket.id, "cJoinRoom", 101, "Invalid key of room");
             return false;
         }
         if (name === "") {
-            Signals.sFailure(socket, "cJoinRoom", 102, "Invalid username");
+            Signals.sFailure(socket.id, "cJoinRoom", 102, "Invalid username");
             return false;
         }
 
@@ -689,13 +737,13 @@ class CheckConditions {
 
             // If username is used, it will be an error
             if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
-                Signals.sFailure(socket, "cJoinRoom", 103, "Username is already used");
+                Signals.sFailure(socket.id, "cJoinRoom", 103, "Username is already used");
                 return false;
             }
 
             // If game has started, only logging in can be performed
             if (rooms[key].state === "play" && pos === -1) {
-                Signals.sFailure(socket, "cJoinRoom", 104, "Game have started, only logging in can be performed");
+                Signals.sFailure(socket.id, "cJoinRoom", 104, "Game have started, only logging in can be performed");
                 return false;
             }
         }
@@ -706,7 +754,7 @@ class CheckConditions {
     static cLeaveRoom(socket, key) {
         // If user is only in his own room
         if (key === socket.id) {
-            Signals.sFailure(socket, "cLeaveRoom", 200, "You aren't in the room");
+            Signals.sFailure(socket.id, "cLeaveRoom", 200, "You aren't in the room");
             return false;
         }
 
@@ -723,7 +771,7 @@ class CheckConditions {
 
         // if username is ""
         if (username === "") {
-            Signals.sFailure(socket, "cLeaveRoom", 200, "You aren't in the room");
+            Signals.sFailure(socket.id, "cLeaveRoom", 200, "You aren't in the room");
             return false;
         }
         return true;
@@ -732,13 +780,13 @@ class CheckConditions {
     static cStartGame(socket, key) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cStartGame", 300, "Game ended");
+            Signals.sFailure(socket.id, "cStartGame", 300, "Game ended");
             return false;
         }
 
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "wait") {
-            Signals.sFailure(socket, "cStartGame", 301, "Game have already started");
+            Signals.sFailure(socket.id, "cStartGame", 301, "Game have already started");
             return false;
         }
 
@@ -746,11 +794,11 @@ class CheckConditions {
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
-            Signals.sFailure(socket, "cStartGame", 302, "Everyone is offline");
+            Signals.sFailure(socket.id, "cStartGame", 302, "Everyone is offline");
             return false;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cStartGame", 303, "Only host can start the game");
+            Signals.sFailure(socket.id, "cStartGame", 303, "Only host can start the game");
             return false;
         }
 
@@ -762,7 +810,7 @@ class CheckConditions {
             }
         }
         if (cnt < 2) {
-            Signals.sFailure(socket,"cStartGame", 302,
+            Signals.sFailure(socket.id,"cStartGame", 302,
                 "Not enough online users to start the game (at least two required)");
             return false;
         }
@@ -772,31 +820,31 @@ class CheckConditions {
     static cSpeakerReady(socket, key) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cSpeakerReady", 400, "Game ended");
+            Signals.sFailure(socket.id, "cSpeakerReady", 400, "Game ended");
             return false;
         }
 
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cSpeakerReady", 401, "Game state isn't 'play'");
+            Signals.sFailure(socket.id, "cSpeakerReady", 401, "Game state isn't 'play'");
             return false;
         }
 
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket, "cSpeakerReady", 402, "Game substate isn't 'wait'");
+            Signals.sFailure(socket.id, "cSpeakerReady", 402, "Game substate isn't 'wait'");
             return false;
         }
 
         // check whether the client is speaker
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cSpeakerReady", 403, "You aren't a speaker");
+            Signals.sFailure(socket.id, "cSpeakerReady", 403, "You aren't a speaker");
             return false;
         }
 
         // check if speaker isn't already ready
         if (rooms[key].speakerReady) {
-            Signals.sFailure(socket, "cSpeakerReady", 404, "Speaker is already ready");
+            Signals.sFailure(socket.id, "cSpeakerReady", 404, "Speaker is already ready");
             return false;
         }
         return true;
@@ -805,31 +853,31 @@ class CheckConditions {
     static cListenerReady(socket, key) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cListenerReady", 500, "Game ended");
+            Signals.sFailure(socket.id, "cListenerReady", 500, "Game ended");
             return false;
         }
 
         // the game must be in 'play' state
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cListenerReady", 501, "Game state isn't 'play'");
+            Signals.sFailure(socket.id, "cListenerReady", 501, "Game state isn't 'play'");
             return false;
         }
 
         // the game substate must be 'wait'
         if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket, "cListenerReady", 502, "Game substate isn't 'wait'");
+            Signals.sFailure(socket.id, "cListenerReady", 502, "Game substate isn't 'wait'");
             return false;
         }
 
         // check whether the client is listener
         if (rooms[key].users[rooms[key].listener].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cListenerReady", 503, "You aren't a listener");
+            Signals.sFailure(socket.id, "cListenerReady", 503, "You aren't a listener");
             return false;
         }
 
         // check if listener isn't already ready
         if (rooms[key].listenerReady) {
-            Signals.sFailure(socket, "cListenerReady", 504, "Listener is already ready");
+            Signals.sFailure(socket.id, "cListenerReady", 504, "Listener is already ready");
             return false;
         }
         return true;
@@ -838,29 +886,29 @@ class CheckConditions {
     static cEndWordExplanation(socket, key) {
         // checking if room exists
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cEndWordExplanation", 600, "Game ended");
+            Signals.sFailure(socket.id, "cEndWordExplanation", 600, "Game ended");
             return false;
         }
 
         // checking if proper state and substate
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cEndWordExplanation", 601, "Game state isn't 'play'");
+            Signals.sFailure(socket.id, "cEndWordExplanation", 601, "Game state isn't 'play'");
             return false;
         }
         if (rooms[key].substate !== "explanation") {
-            Signals.sFailure(socket, "cEndWordExplanation", 602, "Game substate isn't 'explanation'");
+            Signals.sFailure(socket.id, "cEndWordExplanation", 602, "Game substate isn't 'explanation'");
             return false;
         }
 
         // checking if speaker send this
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cEndWordExplanation", 603, "You aren't a speaker");
+            Signals.sFailure(socket.id, "cEndWordExplanation", 603, "You aren't a speaker");
             return false;
         }
 
         // checking if time is correct
         if ((new Date).getTime() < rooms[key].startTime) {
-            Signals.sFailure(socket, "cEndWordExplanation", 604, "Too early");
+            Signals.sFailure(socket.id, "cEndWordExplanation", 604, "Too early");
             return false;
         }
         return true;
@@ -869,31 +917,31 @@ class CheckConditions {
     static cWordsEdited(socket, key, editWords) {
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket, "cWordsEdited", 700, "Game ended");
+            Signals.sFailure(socket.id, "cWordsEdited", 700, "Game ended");
             return false;
         }
 
         // check if game state is 'edit'
         if (rooms[key].state !== "play") {
-            Signals.sFailure(socket, "cWordsEdited", 701, "Game state isn't 'play'")
+            Signals.sFailure(socket.id, "cWordsEdited", 701, "Game state isn't 'play'")
             return false;
         }
 
         // check if game substate is 'edit'
         if (rooms[key].substate !== "edit") {
-            Signals.sFailure(socket, "cWordsEdited", 702, "Game substate isn't 'edit'")
+            Signals.sFailure(socket.id, "cWordsEdited", 702, "Game substate isn't 'edit'")
             return false;
         }
 
         // check if speaker send this signal
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket, "cWordsEdited", 703, "Only speaker can send this signal");
+            Signals.sFailure(socket.id, "cWordsEdited", 703, "Only speaker can send this signal");
             return false;
         }
 
         // comparing the length of serer editWords and client editWords
         if (editWords.length !== rooms[key].editWords.length) {
-            Signals.sFailure(socket,"cWordsEdited", 704, "Incorrect number of words");
+            Signals.sFailure(socket.id, "cWordsEdited", 704, "Incorrect number of words");
             return false;
         }
         return true;
@@ -903,17 +951,17 @@ class CheckConditions {
 class Callbacks {
     static joinRoomCallback(socket, data, err) {
         const key = data.key.toLowerCase(); // key of the room
-        const name = data.username; // name of the user
+        const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
 
         // If any error happened
         if (err) {
-            Signals.sFailure(socket, "сJoinRoom", 105, "Failed to join the room");
+            Signals.sFailure(socket.id, "сJoinRoom", 105, "Failed to join the room");
             return;
         }
 
         // If user haven't joined the room
         if (getRoom(socket) !== key) {
-            Signals.sFailure(socket, "сJoinRoom", 105, "Failed to join the room");
+            Signals.sFailure(socket.id, "сJoinRoom", 105, "Failed to join the room");
             return;
         }
 
@@ -933,9 +981,9 @@ class Callbacks {
             rooms[key].users[pos].online = true;
         }
 
-        Signals.sPlayerJoined(io.sockets.to(key), rooms[key], name);
+        Signals.sPlayerJoined(key, rooms[key], name);
 
-        Signals.sYouJoined(socket, key);
+        Signals.sYouJoined(socket.id, key);
     }
 
     static leaveRoomCallback(socket, key, err) {
@@ -944,7 +992,7 @@ class Callbacks {
 
         // If any error happened
         if (err) {
-            Signals.sFailure(socket,"cLeaveRoom", 201, "Failed to leave the room");
+            Signals.sFailure(socket.id, "cLeaveRoom", 201, "Failed to leave the room");
             return;
         }
 
@@ -952,7 +1000,7 @@ class Callbacks {
         rooms[key].users[usernamePos].online = false;
         rooms[key].users[usernamePos].sids = [];
 
-        Signals.sPlayerLeft(io.sockets.to(key), rooms[key], username);
+        Signals.sPlayerLeft(key, rooms[key], username);
     }
 
     static cStartGame(socket, key) {
@@ -992,7 +1040,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_LENGTH) {
+                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_TIME) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
@@ -1046,7 +1094,7 @@ class Callbacks {
             
             // checking matching of information
             if (word.word !== editWords[i].word) {
-                Signals.sFailure(socket,"cWordsEdited", 704, `Incorrect word at position ${i}`);
+                Signals.sFailure(socket.id, "cWordsEdited", 704, `Incorrect word at position ${i}`);
                 return;
             }
 
@@ -1080,7 +1128,7 @@ class Callbacks {
                     "wordState": rooms[key].editWords[i].wordState});
             } else {
                 rooms[key].freshWords.splice(
-                    Math.floor(Math.random() * Math.max(rooms[key].freshWords.length - 1, 0)),
+                    randrange(rooms[key].freshWords.length),
                     0, rooms[key].editWords[i].word);
             }
         }
@@ -1132,7 +1180,7 @@ class Callbacks {
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
 
-            Signals.sPlayerLeft(io.sockets.to(_key), rooms[_key], _username);
+            Signals.sPlayerLeft(_key, rooms[_key], _username);
         }
     }
 }
@@ -1141,12 +1189,19 @@ class Callbacks {
 // Socket.IO functions
 
 io.on("connection", function(socket) {
+    if (WRITE_LOGS) {
+        console.log(socket.id, "connection", undefined);
+    }
 
     /**
      * Implementation of cJoinRoom function
      * @see API.md
      */
     socket.on("cJoinRoom", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cJoinRoom", data);
+        }
+
         // Checking input format
         if (!checkInputFormat(socket, data, {"key": "string", "username": "string"}, "cJoinRoom")) {
             return;
@@ -1166,6 +1221,10 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cLeaveRoom", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cLeaveRoom", undefined);
+        }
+
         const key = getRoom(socket); // key of the room
 
         // Checking signal conditions
@@ -1182,6 +1241,10 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cStartGame", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cStartGame", undefined);
+        }
+
         const key = getRoom(socket); // key of the room
 
         // checking signal conditions
@@ -1197,6 +1260,10 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cSpeakerReady", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cSpeakerReady", undefined);
+        }
+
         const key = getRoom(socket); // key of room
 
         if (!CheckConditions.cSpeakerReady(socket, key)) {
@@ -1217,6 +1284,10 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cListenerReady", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cListenerReady", undefined);
+        }
+
         const key = getRoom(socket); // key of room
 
         if (!CheckConditions.cListenerReady(socket, key)) {
@@ -1237,6 +1308,10 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cEndWordExplanation", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cEndWordExplanation", data);
+        }
+
         const key = getRoom(socket); // key of the room
 
         // checking input format
@@ -1257,6 +1332,10 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cWordsEdited", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cWordsEdited", data)
+        }
+
         const key = getRoom(socket); // key of the room
 
         // checking input format
@@ -1272,5 +1351,11 @@ io.on("connection", function(socket) {
         Callbacks.cWordsEdited(socket, key, data.editWords);
     });
 
-    socket.on("disconnect", () => Callbacks.disconnect(socket));
+    socket.on("disconnect", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "disconnect", undefined);
+        }
+
+        Callbacks.disconnect(socket)
+    });
 });
