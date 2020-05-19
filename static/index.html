@@ -20,14 +20,14 @@
             </button><button id="mainPage_joinRoom">
                 Войти
             </button>
-            <button id="mainPage_viewRules" name="rulesButton"></button>
+            <button id="mainPage_viewHelp" name="helpButton"></button>
         </div>
     </div>
     <div class="page" id="joinPage" style="display: none;">
         <button class="white-bubble go-back" id="joinPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="joinPage_viewRules" name="rulesButton">
-        </button><button class="white-bubble feedback" id="joinPage_feedbackButton" name="feedbackButton">
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
@@ -48,26 +48,11 @@
             </div>
         </div>
     </div>
-    <div class="page" id="rulesPage" style="display: none;">
-        <button class="white-bubble go-back" id="rulesPage_goBack">
-            <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble feedback" id="rulesPage_feedbackButton" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
-        </button>
-        <div class="content-small">
-            <div id="rulesPage_header">
-                <span id="rulesPage_hatPicture"></span>
-            </div>
-            <div id="rulesPage_body">
-                Здесь будут располагаться правила игры "Шляпа"
-            </div>
-        </div>
-    </div>
     <div class="page" id="preparationPage" style="display: none;">
         <button class="white-bubble go-back" id="preparationPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="preparationPage_viewRules" name="rulesButton">
-        </button><button class="white-bubble feedback" id="preparationPage_feedbackButton" name="feedbackButton">
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
@@ -96,8 +81,8 @@
     <div class="page" id="gamePage" style="display: none;">
         <button class="white-bubble go-back" id="gamePage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="gamePage_viewRules" name="rulesButton">
-        </button><button class="white-bubble feedback" id="gamePage_feedbackButton" name="feedbackButton">
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
@@ -162,8 +147,8 @@
     <div class="page" id="editPage" style="display: none;">
         <button class="white-bubble go-back" id="editPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="editPage_viewRules" name="rulesButton">
-        </button><button class="white-bubble feedback" id="editPage_feedbackButton" name="feedbackButton">
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
@@ -181,8 +166,8 @@
     <div class="page" id="resultsPage" style="display: none;">
         <button class="white-bubble go-back" id="resultsPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="resultsPage_viewRules" name="rulesButton">
-        </button><button class="white-bubble feedback" id="resultsPage_feedbackButton" name="feedbackButton">
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
         <div class="content-small">
@@ -204,10 +189,37 @@
             </div>
         </div>
     </div>
+    <div class="page" id="helpPage" style="display: none;">
+        <button class="white-bubble go-back" id="helpPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
+        </button>
+        <div class="content-small">
+            <div id="helpPage_header">
+                <div id="helpPage_navigation">
+                    <button class="flat-button option active" id="helpPage_rulesOption">Правила</button>
+                    <button class="flat-button option" id="helpPage_faqOption">FAQ</button>
+                    <button class="flat-button option" id="helpPage_aboutOption">О нас</button>
+                </div>
+            </div>
+            <div id="helpPage_body">
+                <div id="helpPage_rulesBox" style="display: none;">
+                    Здесь будут располагаться правила игры
+                </div>
+                <div id="helpPage_faqBox" style="display: none;">
+                    Здесь будут находиться ответы на часто задаваемые вопросы
+                </div>
+                <div id="helpPage_aboutBox" style="display: none;">
+                    Здесь будет размещена информация о нас
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page" id="feedbackPage" style="display: none;">
         <button class="white-bubble go-back" id="feedbackPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="feedbackPage_viewRules" name="rulesButton">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button>
         <div class="content-medium">
             <div id="feedbackPage_header">
