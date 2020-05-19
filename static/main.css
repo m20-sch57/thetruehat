@@ -14,6 +14,7 @@ body {
 }
 
 button, input, textarea {
+    resize: none;
     font-family: inherit;
     outline: 0;
 }
@@ -40,6 +41,14 @@ input[type=checkbox]:checked + label {
     font-size: 14px;
     line-height: 14px;
     box-shadow: 0 0 5px grey;
+}
+
+input[type=checkbox] + label:hover {
+    background-color: lightgrey;
+}
+
+input[type=checkbox]:checked + label:hover {
+    background-color: rgb(42, 149, 175);
 }
 
 input[type=checkbox] + label span {
