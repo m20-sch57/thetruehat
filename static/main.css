@@ -3,18 +3,60 @@
 }
 
 html {
-    height: 100%;
+    min-height: 100%;
+    display: flex;
 }
 
 body {
-    height: 100%;
+    flex: 1;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
 }
 
-button, input {
+button, input, textarea {
+    resize: none;
     font-family: inherit;
     outline: 0;
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+input[type=checkbox] + label {
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 50%;
+}
+
+input[type=checkbox]:checked + label {
+    color: white;
+    background-color: rgb(65, 193, 225);
+    border-color: transparent;
+    padding-left: 4px;
+    padding-top: 5px;
+    font-size: 14px;
+    line-height: 14px;
+    box-shadow: 0 0 5px grey;
+}
+
+input[type=checkbox] + label:hover {
+    background-color: lightgrey;
+}
+
+input[type=checkbox]:checked + label:hover {
+    background-color: rgb(42, 149, 175);
+}
+
+input[type=checkbox] + label span {
+    visibility: hidden;
+}
+
+input[type=checkbox]:checked + label span {
+    visibility: visible;
 }
 
 /* Common classes */
@@ -33,8 +75,17 @@ button, input {
     max-width: 500px;
 }
 
+.content-medium {
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
+    width: 100%;
+    max-width: 700px;
+}
+
 .small-button {
     padding: 10px 15px 10px 15px;
+    color: rgba(0, 0, 0, 0.85);
     border: 1px solid grey;
     border-radius: 22px;
     font-size: 15px;
@@ -42,6 +93,7 @@ button, input {
 
 .medium-button {
     padding: 15px 20px 15px 20px;
+    color: rgba(0, 0, 0, 0.85);
     border: 1px solid grey;
     border-radius: 25px;
     font-size: 20px;
@@ -62,6 +114,39 @@ button, input {
     background-color: lightgrey;
 }
 
+.small-white-button {
+    padding: 10px 15px 10px 15px;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 22px;
+    font-size: 15px;
+}
+
+.small-white-button:hover:enabled {
+    background-color: rgb(233, 233, 233);
+    box-shadow: 1px 1px 5px grey;
+}
+
+.small-white-button:active:enabled {
+    background-color: lightgrey;
+}
+
+.small-white-button:disabled {
+    background-color: lightgrey;
+}
+
+.flat-button {
+    padding: 0;
+    background-color: inherit;
+    border: none;
+}
+
+.flat-button:hover:enabled {
+    color: deepskyblue;
+    cursor: pointer;
+}
+
 .medium-input {
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
@@ -79,7 +164,15 @@ button, input {
     line-height: 40px;
 }
 
-.medium-input:focus, .large-input:focus {
+.default-textarea {
+    padding: 15px;
+    border: 1px solid grey;
+    border-radius: 15px;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.medium-input:focus, .large-input:focus, .default-textarea:focus {
     border-color: skyblue;
 }
 
@@ -110,15 +203,15 @@ button, input {
 
 .go-back {
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 20px;
+    left: 20px;
     height: 60px;
     width: 60px;
     font-size: 20px;
     padding-left: 2px;
 }
 
-.view-rules {
+.view-help {
     position: absolute;
     top: -75px;
     left: calc(50% - 75px);
@@ -130,6 +223,16 @@ button, input {
     background-size: 35%;
     background-position: center 85px;
     background-repeat: no-repeat;
+}
+
+.feedback {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    height: 60px;
+    width: 60px;
+    font-size: 20px;
+    padding-left: 5px;
 }
 
 .bg-blue {
@@ -158,6 +261,18 @@ button, input {
 
 .timer-aftermath {
     color: red;
+}
+
+.large-word {
+    font-size: 40px;
+}
+
+.medium-word {
+    font-size: 30px;
+}
+
+.small-word {
+    font-size: 25px;
 }
 
 /* Main page */
@@ -205,7 +320,7 @@ button, input {
     z-index: 10;
 }
 
-#mainPage_viewRules {
+#mainPage_viewHelp {
     position: absolute;
     top: calc(50% - 100px);
     left: calc(50% - 100px);
@@ -222,7 +337,7 @@ button, input {
     background-repeat: no-repeat;
 }
 
-#mainPage_viewRules:hover {
+#mainPage_viewHelp:hover {
     background-color: rgb(223, 216, 128);
 }
 
@@ -264,7 +379,7 @@ button, input {
 }
 
 #joinPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 #joinPage_inputKey {
@@ -283,27 +398,8 @@ button, input {
     margin-top: 10px;
 }
 
-/* Rules page */
-
-#rulesPage_header {
-    width: 100%;
-    text-align: center;
-    padding-bottom: 30px;
-}
-
-#rulesPage_hatPicture {
-    display: inline-block;
-    height: 200px;
-    width: 200px;
-    margin-top: -75px;
-    background-image: url(\hat.png);
-    background-size: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-#rulesPage_body {
-    padding: 0 30px 0 30px;
+#joinPage_goHint {
+    color: red;
 }
 
 /* Preparation page */
@@ -331,7 +427,7 @@ button, input {
 }
 
 #preparationPage_body {
-    padding: 0 30px 0 30px;
+    padding: 0 30px 30px 30px;
 }
 
 #preparationPage_usersTable {
@@ -357,6 +453,8 @@ button, input {
     margin-right: -20px;
     background-image: url(\hat.png);
     background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #preparationPage_users .you::after {
@@ -372,8 +470,13 @@ button, input {
     width: 100%;
 }
 
+#preparationPage_startHint {
+    text-align: center;
+}
+
 #preparationPage_startLabel {
     width: 100%;
+    font-size: 25px;
     font-weight: lighter;
     text-align: center;
 }
@@ -498,14 +601,13 @@ button, input {
 #gamePage_explanationWordTimer {
     display: flex;
     flex-flow: column;
-    height: calc(100% - 105px);
+    height: calc(100% - 125px);
 }
 
-#gamePage_explanationWord {
+#gamePage_explanationWordParent {
     width: 100%;
     text-transform: uppercase;
     text-align: center;
-    font-size: 40px;
     font-weight: lighter;
     margin-top: auto;
     margin-bottom: 0;
@@ -522,20 +624,22 @@ button, input {
 }
 
 #gamePage_explanationActions {
-    height: 105px;
+    height: 125px;
 }
 
 #gamePage_explanationSuccess {
+    height: 75px;
     width: 100%;
     margin-top: auto;
-    border-radius: 10px;
+    font-size: 30px;
+    border-radius: 15px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
 #gamePage_explanationFailed {
     width: calc(50% + 0.5px);
-    border-radius: 10px;
+    border-radius: 15px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -544,7 +648,7 @@ button, input {
 
 #gamePage_explanationMistake {
     width: calc(50% + 0.5px);
-    border-radius: 10px;
+    border-radius: 15px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -565,6 +669,78 @@ button, input {
     #gamePage_explanationActions {
         padding: 0 30px 0 30px;
     }
+}
+
+/* Edit page */
+
+#editPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#editPage_title {
+    font-weight: lighter;
+    margin-bottom: 0;
+}
+
+#editPage_body {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 30px 30px;
+}
+
+#editPage_list {
+    margin-bottom: 30px;
+}
+
+#editPage_list .word {
+    text-align: center;
+    font-size: 25px;
+    font-weight: lighter;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#editPage_list .explained {
+    width: 33.33%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#editPage_list .explained.selected {
+    background-color: lightgreen;
+}
+
+#editPage_list .not-explained {
+    width: 33.33%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+#editPage_list .not-explained.selected {
+    background-color: lightblue;
+}
+
+#editPage_list .mistake {
+    width: 33.33%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+#editPage_list .mistake.selected {
+    background-color: lightcoral;
+}
+
+#editPage_confirm {
+    width: 100%;
 }
 
 /* Results page */
@@ -601,4 +777,62 @@ button, input {
 #resultsPage_newGame {
     width: 100%;
     margin-top: 30px;
+}
+
+/* Help page */
+
+#helpPage_header {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+#helpPage_navigation {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 25px 100px 0 100px;
+    margin-top: -100px;
+}
+
+#helpPage_navigation .option {
+    padding-bottom: 5px;
+    margin: 10px;
+    font-size: 22px;
+}
+
+#helpPage_navigation .option.active {
+    color: rgb(33, 164, 216);
+    border-bottom: 2px solid rgb(33, 164, 216);
+}
+
+#helpPage_body {
+    padding: 0 30px 30px 30px;
+}
+
+/* Feedback page */
+
+#feedbackPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0 30px;
+}
+
+#feedbackPage_title {
+    font-weight: lighter;
+}
+
+#feedbackPage_body {
+    width: 100%;
+    padding: 0 30px 30px 30px;
+}
+
+#feedbackPage_textarea {
+    width: 100%;
+    height: 270px;
+}
+
+#feedbackPage_submit {
+    margin-top: 20px;
 }

@@ -423,3 +423,11 @@ tags
 *.iml
 out
 gen
+
+# Caddy server
+Caddyfile
+runCaddy
+run
+stop
+localCaddyfile
+localRunCaddy

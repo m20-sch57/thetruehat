@@ -1,10 +1,15 @@
 {
-    "port": 5000,
+    "port": 2005,
+    "feedbackPort": 7005,
+    "serverPIDPath": "./server.pid",
+    "feedbackPIDPath": "./feedback.pid",
     "wordsPath": "./words/easy.json",
-    "transferTime": 1,
-    "delayTime": 3,
-    "explanationTime": 20,
-    "aftermathTime": 3,
+    "feedbackPath": "./feedback.log",
+    "env": "staging",
+    "transferTime": 1000,
+    "delayTime": 3000,
+    "explanationTime": 40000,
+    "aftermathTime": 3000,
     "wordNumber": 40,
     "minKeyLength": 6,
     "maxKeyLength": 11,
@@ -17,5 +22,8 @@
     "keyVowels": [
         "а", "е", "и", "о", "у",
         "э", "ю", "я"
-    ]
+    ],
+    "DEVEL": "devel",
+    "STAGING": "staging",
+    "PROD": "prod"
 }
