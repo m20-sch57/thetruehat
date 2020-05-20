@@ -355,16 +355,16 @@ class Game {
             el(`user_${this.host}`).classList.add("host");
         }
 
-        // el("editPage_list").innerHTML = "";
-        // this.editWords.forEach((word) => {
-        //     el("editPage_list").appendChild(Template.editWord(word));
-        //     el(`editPage_${word.word}_explained`).onclick =
-        //             () => this.changeWordState(word.word, "explained");
-        //     el(`editPage_${word.word}_notExplained`).onclick =
-        //             () => this.changeWordState(word.word, "notExplained");
-        //     el(`editPage_${word.word}_mistake`).onclick =
-        //             () => this.changeWordState(word.word, "mistake");
-        // });
+        el("gamePage_editListScrollable").innerHTML = "";
+        this.editWords.forEach((word) => {
+            el("gamePage_editListScrollable").appendChild(Template.editWord(word));
+            el(`editPage_${word.word}_explained`).onclick =
+                    () => this.changeWordState(word.word, "explained");
+            el(`editPage_${word.word}_notExplained`).onclick =
+                    () => this.changeWordState(word.word, "notExplained");
+            el(`editPage_${word.word}_mistake`).onclick =
+                    () => this.changeWordState(word.word, "mistake");
+        });
 
         el("resultsPage_results").innerHTML = "";
         this.results.forEach((result) => {
@@ -512,9 +512,12 @@ class App {
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
             page.push("gamePage_speakerReadyBox");
-        }
-        if (this.game.myRole == "listener") {
+            page.push("gamePage_speakerTitle");
+        } else if (this.game.myRole == "listener") {
             page.push("gamePage_listenerReadyBox");
+            page.push("gamePage_listenerTitle");
+        } else {
+            page.push("gamePage_waitTitle");
         }
         this.gamePages.go(page);
     }
@@ -523,16 +526,28 @@ class App {
         let roundId = this.game.roundId;
         setTimeout(() => {
             if (this.game.roundId != roundId) return;
-            this.gamePages.go(["gamePage_explanationDelayBox"]);
+            let page = ["gamePage_explanationDelayBox"];
+            if (this.game.myRole == "speaker") {
+                page.push("gamePage_speakerTitle");
+            } else if (this.game.myRole == "listener") {
+                page.push("gamePage_listenerTitle");
+            } else {
+                page.push("gamePage_explanationTitle")
+            }
+            this.gamePages.go(page);
             this.animateDelayTimer(startTime - this.game.settings.delayTime,
                 roundId)
             .then(() => {
                 if (this.game.roundId != roundId) return;
                 if (this.game.myRole == "speaker") {
-                    this.gamePages.go(["gamePage_explanationBox"]);
+                    this.gamePages.go(["gamePage_explanationBox", 
+                        "gamePage_speakerTitle"]);
+                } else if (this.game.myRole == "listener") {
+                    this.gamePages.go(["gamePage_speakerListener",
+                        "gamePage_observerBox", "gamePage_listenerTitle"]);
                 } else {
                     this.gamePages.go(["gamePage_speakerListener",
-                        "gamePage_observerBox"])
+                        "gamePage_observerBox", "gamePage_explanationTitle"]);
                 }
                 this.sizeWord();
                 this.animateExplanationTimer(startTime, roundId)
@@ -547,9 +562,9 @@ class App {
 
     renderEditPage() {
         if (this.game.myRole == "speaker") {
-            this.pages.go(["editPage"]);
+            this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
         } else {
-            this.gamePages.go(["gamePage_speakerListener"])
+            this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
         }
     }
 
@@ -808,7 +823,6 @@ class App {
             _this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", function(data) {
-            _this.pages.go(["gamePage"])
             _this.game.update(data);
             _this.renderWaitPage();
         })
@@ -872,9 +886,8 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        // el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
-        //     this.game.editedWordsObject());
-        // el("editPage_goBack").onclick = () => this.leaveRoom();
+        el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited", 
+            this.game.editedWordsObject());
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
