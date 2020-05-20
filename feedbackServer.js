@@ -5,8 +5,17 @@
 const config = require("./config.json");
 const PORT = config.feedbackPort;
 
+const argv = require("yargs")
+    .option('pidfile', {
+        default: config.feedbackPIDPath
+    })
+    .option('logfile', {
+        default: config.feedbackPath
+    })    
+    .argv;
+
 const fs = require("fs");
-fs.writeFile(config.feedbackPIDPath, process.pid.toString(), function(err, data) {
+fs.writeFile(argv.pidfile, process.pid.toString(), function(err, data) {
     if (err) {
         console.log(err);
     }
@@ -29,7 +38,7 @@ app.post("/feedback", function (req, res) {
     res.end();
     res.status(200);
 
-    fs.appendFile(config.feedbackPath,
+    fs.appendFile(argv.logfile,
         JSON.stringify(feedback, {}, "    ") + "\n",
         (err, data) => {if (err) {console.warn(err);}})
 })
