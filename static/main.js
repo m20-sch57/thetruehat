@@ -230,9 +230,8 @@ class Sound {
 }
 
 class Pages {
-    constructor(startPage, leavePage) {
-        this.defaultStartPage = startPage || [];
-        this.defaultLeavePage = leavePage || [];
+    constructor(defaultPage) {
+        this.defaultPage = defaultPage || [];
         this.pageLog = [];
     }
 
@@ -262,15 +261,14 @@ class Pages {
         if (this.pageLog.length >= 1) {
             this.showPage(this.pageLog.last());
         } else {
-            this.pageLog = [[this.defaultStartPage]];
-            this.showPage(this.defaultStartPage);
+            this.pageLog = [[this.defaultPage]];
+            this.showPage(this.defaultPage);
         }
     }
 
-    leave() {
+    clear() {
         this.hideLastPage();
         this.pageLog = [];
-        this.go(this.defaultLeavePage);
     }
 }
 
@@ -401,7 +399,7 @@ class App {
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game();
-        this.pages = new Pages(["mainPage"], ["joinPage"]);
+        this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
         this.helpPages.go(["helpPage_rulesBox"]);
@@ -438,14 +436,16 @@ class App {
     }
 
     leaveRoom() {
+        this.pages.clear();
+        this.pages.go(["joinPage"]);
         this.game.leave();
-        this.pages.leave();
         this.emit("cLeaveRoom");
     }
 
     leaveResultsPage() {
         this.game.leave();
-        this.pages.leave();
+        this.pages.clear();
+        this.pages.go(["joinPage"]);
     }
 
     setKey(value) {
@@ -837,6 +837,7 @@ class App {
         this.socket.on("sGameEnded", function(data) {
             _this.game.update(data);
             _this.pages.go(["resultsPage"]);
+            _this.game.leave();
         })
         this.socket.on("sFailure", function(data) {
             switch(data.code) {
