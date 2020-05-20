@@ -143,7 +143,7 @@ input[type=checkbox]:checked + label span {
 }
 
 .flat-button:hover:enabled {
-    color: deepskyblue;
+    color: grey;
     cursor: pointer;
 }
 
