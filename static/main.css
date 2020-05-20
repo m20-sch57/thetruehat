@@ -814,6 +814,11 @@ input[type=checkbox]:checked + label span {
     text-align: justify;
 }
 
+#helpPage_rulesTitle {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
 /* Feedback page */
 
 #feedbackPage_header {
