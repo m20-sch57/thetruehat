@@ -74,6 +74,14 @@ input[type=checkbox]:checked + label span {
     max-width: 700px;
 }
 
+.content-large {
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
+    width: 100%;
+    max-width: 1000px;
+}
+
 .small-button {
     padding: 10px 15px 10px 15px;
     color: rgba(0, 0, 0, 0.85);
@@ -782,7 +790,7 @@ input[type=checkbox]:checked + label span {
     display: flex;
     flex-flow: row;
     flex-wrap: wrap;
-    align-items: center;
+    justify-content: center;
     padding: 25px 100px 0 100px;
     margin-top: -100px;
 }
@@ -800,6 +808,10 @@ input[type=checkbox]:checked + label span {
 
 #helpPage_body {
     padding: 0 30px 30px 30px;
+}
+
+#helpPage_rulesBox {
+    text-align: justify;
 }
 
 /* Feedback page */

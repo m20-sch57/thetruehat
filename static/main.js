@@ -402,6 +402,7 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
+        this.loadContent();
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -889,6 +890,16 @@ class App {
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
+    }
+
+    loadContent() {
+        fetch("rules.html")
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(body) {
+            el("helpPage_rulesBox").innerHTML = body;
+        });
     }
 }
 
