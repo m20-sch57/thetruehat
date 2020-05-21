@@ -28,9 +28,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
 
             draw(progress);
 
-            if (stopCondition()) {
-                return;
-            }
+            if (stopCondition()) return;
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -216,15 +214,22 @@ class Sound {
         }
     }
 
-    playSound(sound, startTime) {
-        this.currentSound = el(sound);
+    playSound(sound, startTime, stopCondition) {
+        startTime = startTime || timeSync.getTime();
+        stopCondition = stopCondition || (() => false);
+        let shift = el(sound).getAttribute("shift");
+        if (shift) startTime += +shift;
         if (timeSync.getTime() < startTime) {
             setTimeout(() => {
+                if (stopCondition()) return;
                 this.killSound();
+                this.currentSound = el(sound);
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime < 
-                this.currentSound.duration * 1000){
+                el(sound).duration * 1000){
+            this.killSound();
+            this.currentSound = el(sound);
             this.currentSound.currentTime = (timeSync.getTime() - startTime) / 
                 1000;
             this.currentSound.play();
@@ -405,6 +410,8 @@ class App {
         this.game = new Game();
         this.pages = new Pages(["mainPage"], ["joinPage"]);
         this.gamePages = new Pages();
+        this.helpPages = new Pages();
+        this.helpPages.go(["helpPage_rulesBox"]);
 
         this.setKey(readLocationHash());
         this.gameLog = []
@@ -546,6 +553,20 @@ class App {
             this.pages.go(["editPage"]);
         } else {
             this.gamePages.go(["gamePage_speakerListener"])
+        }
+    }
+
+    playExplanationSounds({startTime}) {
+        let roundId = this.game.roundId;
+        let stopCondition = () => roundId != this.game.roundId;
+        this.sound.playSound("start", startTime, stopCondition);
+        this.sound.playSound("final", startTime + 
+            this.game.settings.explanationTime, stopCondition);  
+        this.sound.playSound("final+", startTime + 
+            this.game.settings.explanationTime +
+            this.game.settings.aftermathTime, stopCondition);
+        for (let i = 1; i <= Math.floor(this.game.settings.delayTime / 1000); i++) {
+            this.sound.playSound("countdown", startTime - 1000 * i, stopCondition);
         }
     }
 
@@ -723,6 +744,12 @@ class App {
         this.pages.goBack();
     }
 
+    deactiveteHelpOptions() {
+        el("helpPage_rulesOption").classList.remove("active");
+        el("helpPage_faqOption").classList.remove("active");
+        el("helpPage_aboutOption").classList.remove("active");
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -761,6 +788,7 @@ class App {
                 case "explanation":
                     _this.setWord(data.word);
                     _this.renderExplanationPage(data);
+                    _this.playExplanationSounds(data);
                     break;
                 case "edit":
                     _this.renderEditPage()
@@ -787,6 +815,7 @@ class App {
         })
         this.socket.on("sExplanationStarted", function(data) {
             _this.renderExplanationPage(data);
+            _this.playExplanationSounds(data);
         })
         this.socket.on("sNewWord", function(data) {
             _this.setWord(data.word);
@@ -872,11 +901,23 @@ class App {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage", "helpPage_rulesBox"]));
-        el("helpPage_goBack").onclick = () => this.pages.goBack(); // not working! My idea is to add attribute --add-to-stack for pages.go
-        el("helpPage_rulesOption").onclick = () => this.pages.go(["helpPage", "helpPage_rulesBox"]); // Add highlighting
-        el("helpPage_faqOption").onclick = () => this.pages.go(["helpPage", "helpPage_faqBox"]);
-        el("helpPage_aboutOption").onclick = () => this.pages.go(["helpPage", "helpPage_aboutBox"]);
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        el("helpPage_goBack").onclick = () => this.pages.goBack();
+        el("helpPage_rulesOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_rulesOption").classList.add("active");
+            this.helpPages.go(["helpPage_rulesBox"]);
+        }
+        el("helpPage_faqOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_faqOption").classList.add("active");
+            this.helpPages.go(["helpPage_faqBox"]);
+        }
+        el("helpPage_aboutOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_aboutOption").classList.add("active");
+            this.helpPages.go(["helpPage_aboutBox"]);
+        }
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
