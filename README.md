@@ -37,7 +37,7 @@ Warning. Don't use this instruction on production. See our [documentation](docs/
 ### Launching and using
 1. Run in the first console with working directory in project directory
     ```shell script
-    caddy  -pidfile=caddy.pid
+    caddy -pidfile=caddy.pid
     ```
 1. Run in the second console:
     ```shell script
