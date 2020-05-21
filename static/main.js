@@ -188,6 +188,20 @@ class Template {
         selected.classList.add("selected");
         return elem;
     }
+
+    static faq({answer, question}) {
+        let elem = document.createElement("div");
+        let eQuestion = document.createElement("p");
+        eQuestion.classList.add("faq-question");
+        eQuestion.innerText = "Вопрос:\n"+question;
+        console.log(eQuestion.class);
+        let eAnswer = document.createElement("p");
+        eAnswer.innerText = "Ответ:\n"+answer;
+        elem.appendChild(eQuestion);
+        elem.appendChild(eAnswer);
+        elem.appendChild(document.createElement("hr"));
+        return elem;
+    }
 }
 
 class Sound {
@@ -924,8 +938,15 @@ class App {
     }
 }
 
+function renderFAQ() {
+    FAQList.forEach((obj) => {
+        el("helpPage_faqBox").appendChild(Template.faq(obj));
+    })
+}
+
 timeSync = new TimeSync(TIME_SYNC_DELTA);
 let app;
 window.onload = function() {
+    renderFAQ();
     app = new App();
 }

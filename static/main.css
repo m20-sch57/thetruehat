@@ -853,3 +853,7 @@ input[type=checkbox]:checked + label span {
 #feedbackPage_submit {
     margin-top: 20px;
 }
+
+.faq-question {
+    font-weight: bold;
+}
