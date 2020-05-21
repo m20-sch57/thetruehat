@@ -14,6 +14,7 @@ body {
 }
 
 button, input, textarea {
+    resize: none;
     font-family: inherit;
     outline: 0;
 }
@@ -40,6 +41,14 @@ input[type=checkbox]:checked + label {
     font-size: 14px;
     line-height: 14px;
     box-shadow: 0 0 5px grey;
+}
+
+input[type=checkbox] + label:hover {
+    background-color: lightgrey;
+}
+
+input[type=checkbox]:checked + label:hover {
+    background-color: rgb(42, 149, 175);
 }
 
 input[type=checkbox] + label span {
@@ -127,6 +136,17 @@ input[type=checkbox]:checked + label span {
     background-color: lightgrey;
 }
 
+.flat-button {
+    padding: 0;
+    background-color: inherit;
+    border: none;
+}
+
+.flat-button:hover:enabled {
+    color: deepskyblue;
+    cursor: pointer;
+}
+
 .medium-input {
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
@@ -191,7 +211,7 @@ input[type=checkbox]:checked + label span {
     padding-left: 2px;
 }
 
-.view-rules {
+.view-help {
     position: absolute;
     top: -75px;
     left: calc(50% - 75px);
@@ -300,7 +320,7 @@ input[type=checkbox]:checked + label span {
     z-index: 10;
 }
 
-#mainPage_viewRules {
+#mainPage_viewHelp {
     position: absolute;
     top: calc(50% - 100px);
     left: calc(50% - 100px);
@@ -317,7 +337,7 @@ input[type=checkbox]:checked + label span {
     background-repeat: no-repeat;
 }
 
-#mainPage_viewRules:hover {
+#mainPage_viewHelp:hover {
     background-color: rgb(223, 216, 128);
 }
 
@@ -380,27 +400,6 @@ input[type=checkbox]:checked + label span {
 
 #joinPage_goHint {
     color: red;
-}
-
-/* Rules page */
-
-#rulesPage_header {
-    width: 100%;
-    text-align: center;
-    padding-bottom: 30px;
-}
-
-#rulesPage_hatPicture {
-    display: inline-block;
-    height: 200px;
-    width: 200px;
-    margin-top: -75px;
-    background-image: url(\hat.png);
-    background-size: 100%;
-}
-
-#rulesPage_body {
-    padding: 0 30px 30px 30px;
 }
 
 /* Preparation page */
@@ -778,6 +777,38 @@ input[type=checkbox]:checked + label span {
 #resultsPage_newGame {
     width: 100%;
     margin-top: 30px;
+}
+
+/* Help page */
+
+#helpPage_header {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+#helpPage_navigation {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 25px 100px 0 100px;
+    margin-top: -100px;
+}
+
+#helpPage_navigation .option {
+    padding-bottom: 5px;
+    margin: 10px;
+    font-size: 22px;
+}
+
+#helpPage_navigation .option.active {
+    color: rgb(33, 164, 216);
+    border-bottom: 2px solid rgb(33, 164, 216);
+}
+
+#helpPage_body {
+    padding: 0 30px 30px 30px;
 }
 
 /* Feedback page */

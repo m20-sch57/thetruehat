@@ -398,6 +398,8 @@ class App {
         this.game = new Game();
         this.pages = new Pages(["mainPage"], ["joinPage"]);
         this.gamePages = new Pages();
+        this.helpPages = new Pages();
+        this.helpPages.go(["helpPage_rulesBox"]);
 
         this.setKey(readLocationHash());
         this.gameLog = []
@@ -706,10 +708,19 @@ class App {
         return result
     }
 
+    clientInfoChange() {
+        let buttonId = "feedbackPage_submit";
+        if (el("feedbackPage_clientInfoCheckbox").checked) {
+            enable(buttonId);
+        } else {
+            disable(buttonId);
+        }
+    }
+
     sendFeedback() {
         let feedbackTextarea = el("feedbackPage_textarea");
         let feedback = this.buildFeedback(feedbackTextarea.value, 
-            el("feedbackPage_clientInfoCheckbox").checked)
+            true);
         feedbackTextarea.value = "";
         fetch("feedback", {
             method: "POST",
@@ -719,6 +730,12 @@ class App {
             body: JSON.stringify(feedback)
         });
         this.pages.goBack();
+    }
+
+    deactiveteHelpOptions() {
+        el("helpPage_rulesOption").classList.remove("active");
+        el("helpPage_faqOption").classList.remove("active");
+        el("helpPage_aboutOption").classList.remove("active");
     }
 
     setSocketioEventListeners() {
@@ -841,9 +858,7 @@ class App {
             el("joinPage_inputKey").value = this.game.key;
             this.pages.go(["joinPage"]);
         }
-        el("mainPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("joinPage_goBack").onclick = () => this.pages.goBack();
-        el("joinPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
         el("joinPage_generateKey").onclick = () => this.generateKey();
         el("joinPage_go").onclick = () => {
@@ -851,9 +866,6 @@ class App {
             this.game.myUsername = el("joinPage_inputName").value;
             this.enterRoom();
         }
-        el("rulesPage_goBack").onclick = () => this.pages.goBack();
-        el("preparationPage_viewRules").onclick = () => 
-            this.showPage('rulesPage');
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
@@ -869,20 +881,35 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        el("gamePage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
             this.game.editedWordsObject());
-        el("editPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("editPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
-        el("resultsPage_viewRules").onclick = () => this.pages.go(["rulesPage"]);
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        el("helpPage_goBack").onclick = () => this.pages.goBack();
+        el("helpPage_rulesOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_rulesOption").classList.add("active");
+            this.helpPages.go(["helpPage_rulesBox"]);
+        }
+        el("helpPage_faqOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_faqOption").classList.add("active");
+            this.helpPages.go(["helpPage_faqBox"]);
+        }
+        el("helpPage_aboutOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_aboutOption").classList.add("active");
+            this.helpPages.go(["helpPage_aboutBox"]);
+        }
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
+        el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
     }
 }
 
