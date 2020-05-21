@@ -1,53 +1,66 @@
-# thetruehat
+# TheTrueHat
 *Available languages: [in English](README.md), [in Russian](README.ru.md).*
 
 TheTrueHat is a web-application for the game Alias. You can play the Alias with your friends or organise an Alias tournament.
 This project supports a web-interface for the game, and a server that will took responsibility for all technical details.
 
 ## Play now!
-The alpha test is available now [here](http://m20-sch57.site:3005/).
+The beta test is available now [here](m20-sch57.site/thetruehat) or [here](thetruehat.m20-sch57.site).
 
 ## Features
-* Cross-platform. You can set the server up on Windows, Linux and Mac OS X, and web-application supports Google Chrome (PC and Android), Mozilla Firefox (PC and Android), Opera (PC and Android) and Microsoft Edge (PC and Android).
+* Cross-platform. You can set the server up on Windows, Linux and Mac OS X, and web-application supports Google Chrome (PC and Android), Mozilla Firefox (PC and Android) and latest Opera (PC and Android).
 * Easy to start. It's ready to start right now. You don't need to delve into anything and code anything to start play.
 * Good performance: this project is written on Node.js - one of the fastest frameworks.
 
 ## Quick start
-### Installation
-1. Install [Node.js](https://nodejs.org/)
-1. Download the repository.
-1. Run in a console in the repository directory:
-    ```shell script
-    npm install
-    ```
-
-### Launching and using
+Warning. Don't use this instruction on production. See our [documentation](docs/main.md) before.
 
 ### Installation
 1. Install [Node.js](https://nodejs.org/)
+1. Install [Caddy v.1](https://caddyserver.com/v1/)
 1. Download the repository.
 1. Run in a console in the repository directory:
     ```shell script
     npm install
     ```
    
-### Setting up
+### Fast tuning
+1. Modify `Caddyfile` in project directory in such way:
+    1. Replace `<project_dir>` with the project directory.
+    1. Replace `<log_dir>` with directory for Caddy log file (for example, the project directory).
+    1. Replace `<error_dir>` with directory for Caddy error file (for example, the project directory).
+    1. Replace all `<port>` with some vacant port.
+    1. Replace all `<socket_port>` with another vacant port.
+1. Modify `config.json` in project directory in such way:
+    1. Update `"port"` with your `<socket_port>` parameter.
 
-1. Run in a console:
+### Launching and using
+1. Run in the first console with working directory in project directory
+    ```shell script
+    caddy  -pidfile=caddy.pid
+    ```
+1. Run in the second console:
     ```shell script
     node server.js
     ```
-1. Go by the link [http://localhost:5000](http://localhost:5000)
-1. If you need some help with our site, you can use [site map](docs/site_map.md) to play the game.
+1. Go by the link `http://localhost:<port>` with `<port>` replaced by your `<port>` parameter.
 1. Have fun!
 
-### Setting up
-This feature haven't implemented now. It will be in future versions.
-
-Now you may modify file `config.js` with settings of every  game.
+### Stopping
+Just stop processes in both consoles you used to launch project.
 
 ## Documentation
 You can see the documentation [here](docs/main.md).
 
+## Gratitude
+We want to express gratitude for their cooperation to [SCS.Hat and Sombrero projects](https://the-hat.appspot.com/landing). 
+
 ## License
 This project is available by [MIT license](LICENSE).
+
+## Used projects
+- [Caddy v.1](https://caddyserver.com/v1/)
+- [Express](https://expressjs.com/)
+- [Socket.IO](https://socket.io/)
+- [body-parser](https://github.com/expressjs/body-parser#readme)
+- [yargs](https://yargs.js.org/)

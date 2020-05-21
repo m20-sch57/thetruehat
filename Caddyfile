@@ -1,7 +1,7 @@
-https://m20-sch57.site:3005 {
-    root    /home/adanni/thetruehat/static
-    log     /home/adanni/thehatServer/access.log
-    errors  /home/adanni/thehatServer/errors.log
+http://localhost:<port> {
+    root    <project_dir>/static
+    log     <log_dir>/access.log
+    errors  <error_dir>/errors.log
 
     header / Cache-Control no-cache
 
@@ -12,25 +12,17 @@ https://m20-sch57.site:3005 {
     }
     status 200 /getTime
 
-    proxy /socket.io localhost:2005 {
+    proxy /socket.io localhost:<socket_port> {
         websocket
         transparent
     }
 
-    proxy /api localhost:2005 {
+    proxy /api localhost:<socket_port> {
         transparent
         without /api
     }
 
     redir /api /api/
 
-    proxy /feedback localhost:7005 {
-        transparent
-    }
-
     gzip
-}
-
-https://www.m20-sch57.site:3005 {
-    redir https://m20-sch57.site:3005{uri}
 }
