@@ -407,6 +407,7 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
+        this.renderContent();
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -702,10 +703,12 @@ class App {
         if (collectBrowserData) {
             this.addBrowserData(result);
         }
-        result.SID = app.socket.id
-        result.message = message
-        result.gameLog = this.gameLog
-        return result
+        result.SID = app.socket.id;
+        result.version = VERSION;
+        result.hash = HASH;
+        result.message = message;
+        result.gameLog = this.gameLog;
+        return result;
     }
 
     clientInfoChange() {
@@ -910,6 +913,10 @@ class App {
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
+    }
+
+    renderContent() {
+        els("version").forEach((it) => it.innerText = VERSION);
     }
 }
 
