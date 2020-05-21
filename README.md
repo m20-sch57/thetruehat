@@ -58,7 +58,7 @@ We want to express gratitude for their cooperation to [SCS.Hat project](https://
 ## License
 This project is available by [MIT license](LICENSE).
 
-## Used products
+## Used products    
 - [Caddy v.1](https://caddyserver.com/v1/)
 - [Express](https://expressjs.com/)
 - [Socket.IO](https://socket.io/)
