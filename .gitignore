@@ -431,3 +431,7 @@ run
 stop
 localCaddyfile
 localRunCaddy
+
+# versioning
+static/version.js
+
