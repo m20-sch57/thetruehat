@@ -1,0 +1,17 @@
+#!/bin/bash
+
+output=${1:-../static/version.js}
+
+describe=$(git describe --tags --long  --always --match=v[0-9]*.[0-9]*)
+
+hash=${describe##*-}
+version=${describe%-*}
+version=${version/-/.}
+
+cd $(dirname "$0")
+
+echo $version > version.txt
+echo $hash > hash.txt
+
+echo -e "const VERSION = \"${version}\";\nconst HASH = \"${hash}\";\n" > $output
+
