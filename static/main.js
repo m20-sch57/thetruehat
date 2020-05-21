@@ -28,9 +28,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
 
             draw(progress);
 
-            if (stopCondition()) {
-                return;
-            }
+            if (stopCondition()) return;
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -213,15 +211,22 @@ class Sound {
         }
     }
 
-    playSound(sound, startTime) {
-        this.currentSound = el(sound);
+    playSound(sound, startTime, stopCondition) {
+        startTime = startTime || timeSync.getTime();
+        stopCondition = stopCondition || (() => false);
+        let shift = el(sound).getAttribute("shift");
+        if (shift) startTime += +shift;
         if (timeSync.getTime() < startTime) {
             setTimeout(() => {
+                if (stopCondition()) return;
                 this.killSound();
+                this.currentSound = el(sound);
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime < 
-                this.currentSound.duration * 1000){
+                el(sound).duration * 1000){
+            this.killSound();
+            this.currentSound = el(sound);
             this.currentSound.currentTime = (timeSync.getTime() - startTime) / 
                 1000;
             this.currentSound.play();
@@ -410,6 +415,7 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
+        this.renderContent();
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -568,6 +574,20 @@ class App {
         }
     }
 
+    playExplanationSounds({startTime}) {
+        let roundId = this.game.roundId;
+        let stopCondition = () => roundId != this.game.roundId;
+        this.sound.playSound("start", startTime, stopCondition);
+        this.sound.playSound("final", startTime + 
+            this.game.settings.explanationTime, stopCondition);  
+        this.sound.playSound("final+", startTime + 
+            this.game.settings.explanationTime +
+            this.game.settings.aftermathTime, stopCondition);
+        for (let i = 1; i <= Math.floor(this.game.settings.delayTime / 1000); i++) {
+            this.sound.playSound("countdown", startTime - 1000 * i, stopCondition);
+        }
+    }
+
     setWord(word) {
         el("gamePage_explanationWord").innerText = word;
         this.sizeWord();
@@ -712,10 +732,12 @@ class App {
         if (collectBrowserData) {
             this.addBrowserData(result);
         }
-        result.SID = app.socket.id
-        result.message = message
-        result.gameLog = this.gameLog
-        return result
+        result.SID = app.socket.id;
+        result.version = VERSION;
+        result.hash = HASH;
+        result.message = message;
+        result.gameLog = this.gameLog;
+        return result;
     }
 
     clientInfoChange() {
@@ -787,6 +809,7 @@ class App {
                 case "explanation":
                     _this.setWord(data.word);
                     _this.renderExplanationPage(data);
+                    _this.playExplanationSounds(data);
                     break;
                 case "edit":
                     _this.renderEditPage()
@@ -813,6 +836,7 @@ class App {
         })
         this.socket.on("sExplanationStarted", function(data) {
             _this.renderExplanationPage(data);
+            _this.playExplanationSounds(data);
         })
         this.socket.on("sNewWord", function(data) {
             _this.setWord(data.word);
@@ -916,6 +940,10 @@ class App {
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
         el("failureClose").onclick = hideError;
+    }
+
+    renderContent() {
+        els("version").forEach((it) => it.innerText = VERSION);
     }
 }
 
