@@ -407,7 +407,6 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
-<<<<<<< HEAD
         this.loadContent([
             {
                 "pageFile": "rules.html",
@@ -418,9 +417,8 @@ class App {
                 "pageId": "helpPage_aboutBox"
             }
         ]);
-=======
+
         this.renderContent();
->>>>>>> version-display
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
