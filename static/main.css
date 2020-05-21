@@ -631,16 +631,14 @@ input[type=checkbox]:checked + label span {
     height: 75px;
     width: 100%;
     margin-top: auto;
+    margin-bottom: 10px;
     font-size: 30px;
     border-radius: 15px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
 }
 
 #gamePage_explanationFailed {
     width: calc(50% + 0.5px);
     border-radius: 15px;
-    border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     margin-top: -1px;
@@ -649,7 +647,6 @@ input[type=checkbox]:checked + label span {
 #gamePage_explanationMistake {
     width: calc(50% + 0.5px);
     border-radius: 15px;
-    border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-top: -1px;
