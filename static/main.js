@@ -421,7 +421,16 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
-        this.loadContent();
+        this.loadContent([
+            {
+                "pageFile": "rules.html",
+                "pageId": "helpPage_rulesBox"
+            },
+            {
+                "pageFile": "about.html",
+                "pageId": "helpPage_aboutBox"
+            }
+        ]);
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -717,10 +726,12 @@ class App {
         if (collectBrowserData) {
             this.addBrowserData(result);
         }
-        result.SID = app.socket.id
-        result.message = message
-        result.gameLog = this.gameLog
-        return result
+        result.SID = app.socket.id;
+        result.version = VERSION;
+        result.hash = HASH;
+        result.message = message;
+        result.gameLog = this.gameLog;
+        return result;
     }
 
     clientInfoChange() {
@@ -927,14 +938,13 @@ class App {
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
     }
 
-    loadContent() {
-        fetch("rules.html")
-        .then(function(response) {
-            return response.text();
-        })
-        .then(function(body) {
-            el("helpPage_rulesBox").innerHTML = body;
-        });
+    async loadContent(loadablePages) {
+        for (let page of loadablePages) {
+            let response = (await fetch(page["pageFile"])).text();
+            let body = await response;
+            el(page["pageId"]).innerHTML = body;
+        }
+        els("version").forEach((it) => it.innerText = VERSION);
     }
 }
 

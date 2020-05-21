@@ -857,3 +857,7 @@ input[type=checkbox]:checked + label span {
 .faq-question {
     font-weight: bold;
 }
+
+#helpPage_aboutTitle {
+    text-align: left;
+}
