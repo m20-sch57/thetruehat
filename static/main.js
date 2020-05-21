@@ -192,7 +192,9 @@ class Template {
     static faq({answer, question}) {
         let elem = document.createElement("div");
         let eQuestion = document.createElement("p");
+        eQuestion.classList.add("faq-question");
         eQuestion.innerText = "Вопрос:\n"+question;
+        console.log(eQuestion.class);
         let eAnswer = document.createElement("p");
         eAnswer.innerText = "Ответ:\n"+answer;
         elem.appendChild(eQuestion);
