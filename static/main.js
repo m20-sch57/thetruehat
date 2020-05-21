@@ -418,8 +418,6 @@ class App {
             }
         ]);
 
-        this.renderContent();
-
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
         } else {
@@ -926,19 +924,12 @@ class App {
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
     }
 
-    loadContent(loadablePages) {
+    async loadContent(loadablePages) {
         for (let page of loadablePages) {
-            fetch(page["pageFile"])
-            .then(function(response) {
-                return response.text();
-            })
-            .then(function(body) {
-                el(page["pageId"]).innerHTML = body;
-            });
+            let response = (await fetch(page["pageFile"])).text();
+            let body = await response;
+            el(page["pageId"]).innerHTML = body;
         }
-    }  
-
-    renderContent() {
         els("version").forEach((it) => it.innerText = VERSION);
     }
 }
