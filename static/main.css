@@ -624,14 +624,14 @@ input[type=checkbox]:checked + label span {
 }
 
 #gamePage_explanationActions {
-    height: 125px;
+    height: 155px;
 }
 
 #gamePage_explanationSuccess {
     height: 75px;
     width: 100%;
     margin-top: auto;
-    margin-bottom: 10px;
+    margin-top: 25px;
     font-size: 30px;
     border-radius: 15px;
 }
