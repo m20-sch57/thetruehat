@@ -188,21 +188,6 @@ class Template {
         selected.classList.add("selected");
         return elem;
     }
-
-    // static faq({answer, question}) {
-    //     let elem = document.createElement("div");
-    //     let eQuestion = document.createElement("p");
-    //     eQuestion.classList.add("faq-question");
-    //     eQuestion.innerText = question;
-    //     console.log(eQuestion.class);
-    //     let eAnswer = document.createElement("p");
-    //     eAnswer.classList.add("faq-answer");
-    //     eAnswer.innerText = answer;
-    //     elem.appendChild(eQuestion);
-    //     elem.appendChild(eAnswer);
-    //     // elem.appendChild(document.createElement("hr"));
-    //     return elem;
-    // }
 }
 
 class Sound {
@@ -953,7 +938,7 @@ class App {
     }
 }
 
-timeSync = new TimeSync(TIME_SYNC_DELTA);
+let timeSync = new TimeSync(TIME_SYNC_DELTA);
 let app;
 window.onload = function() {
     app = new App();
