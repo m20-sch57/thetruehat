@@ -1,6 +1,3 @@
 ## Error 418: I’m a teapot
 
-Sorry, documentation is in work at the moment. You can watch at contributors' files:
-* [MVP](MVP.md) (on russian language)
-* [API](Web_API.md) (on russian language)
-* [other agreements](main_agreements.ru.md) (on russian language)
+Sorry, documentation is pending at the moment.

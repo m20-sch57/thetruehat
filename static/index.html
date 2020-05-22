@@ -20,13 +20,13 @@
             </button><button id="mainPage_joinRoom">
                 Войти
             </button>
-            <button id="mainPage_viewRules"></button>
+            <button id="mainPage_viewHelp" name="helpButton"></button>
         </div>
     </div>
     <div class="page" id="joinPage" style="display: none;">
         <button class="white-bubble go-back" id="joinPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="joinPage_viewRules">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
@@ -48,25 +48,10 @@
             </div>
         </div>
     </div>
-    <div class="page" id="rulesPage" style="display: none;">
-        <button class="white-bubble go-back" id="rulesPage_goBack">
-            <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
-        </button>
-        <div class="content-small">
-            <div id="rulesPage_header">
-                <span id="rulesPage_hatPicture"></span>
-            </div>
-            <div id="rulesPage_body">
-                Здесь будут располагаться правила игры "Шляпа"
-            </div>
-        </div>
-    </div>
     <div class="page" id="preparationPage" style="display: none;">
         <button class="white-bubble go-back" id="preparationPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="preparationPage_viewRules">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
@@ -96,7 +81,7 @@
     <div class="page" id="gamePage" style="display: none;">
         <button class="white-bubble go-back" id="gamePage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="gamePage_viewRules">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
@@ -146,13 +131,13 @@
                         </h1>
                     </div>
                     <div id="gamePage_explanationActions">
-                        <button class="medium-button bg-green" id="gamePage_explanationSuccess">
-                            Угадал
-                        </button>
                         <button class="medium-button bg-blue" id="gamePage_explanationFailed">
                             Не угадал
                         </button><button class="medium-button bg-red" id="gamePage_explanationMistake">
                             Ошибка
+                        </button>
+                        <button class="medium-button bg-green" id="gamePage_explanationSuccess">
+                            Угадал
                         </button>
                     </div>
                 </div>
@@ -162,7 +147,7 @@
     <div class="page" id="editPage" style="display: none;">
         <button class="white-bubble go-back" id="editPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="editPage_viewRules">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
@@ -181,7 +166,7 @@
     <div class="page" id="resultsPage" style="display: none;">
         <button class="white-bubble go-back" id="resultsPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="resultsPage_viewRules">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
@@ -204,10 +189,37 @@
             </div>
         </div>
     </div>
+    <div class="page" id="helpPage" style="display: none;">
+        <button class="white-bubble go-back" id="helpPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
+        </button>
+        <div class="content-small">
+            <div id="helpPage_header">
+                <div id="helpPage_navigation">
+                    <button class="flat-button option active" id="helpPage_rulesOption">Правила</button>
+                    <button class="flat-button option" id="helpPage_faqOption">FAQ</button>
+                    <button class="flat-button option" id="helpPage_aboutOption">О нас</button>
+                </div>
+            </div>
+            <div id="helpPage_body">
+                <div id="helpPage_rulesBox" style="display: none;">
+                    Здесь будут располагаться правила игры
+                </div>
+                <div id="helpPage_faqBox" style="display: none;">
+                    Здесь будут находиться ответы на часто задаваемые вопросы
+                </div>
+                <div id="helpPage_aboutBox" style="display: none;">
+                    TheTrueHat <span name="version"></span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page" id="feedbackPage" style="display: none;">
         <button class="white-bubble go-back" id="feedbackPage_goBack">
             <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-rules" id="feedbackPage_viewRules">
+        </button><button class="white-bubble view-help" name="helpButton">
         </button>
         <div class="content-medium">
             <div id="feedbackPage_header">
@@ -224,7 +236,11 @@
             </div>
         </div>
     </div>
-    <audio src="delayTimer.mp3", id="delayTimer"></audio>
+    <audio src="sounds/start.mp3" id="start"></audio>
+    <audio src="sounds/final.mp3" id="final"></audio>
+    <audio src="sounds/final+.mp3" id="final+"></audio>
+    <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
+    <script src="version.js"></script>
     <script src="main.js"></script>
 </body>
 
