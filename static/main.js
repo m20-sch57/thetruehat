@@ -61,6 +61,15 @@ function show(id) {
     // console.log("Show", id);
 }
 
+function showError(msg) {
+    el("failureMsg").innerText = msg;
+    show("failure");
+}
+
+function hideError() {
+    hide("failure");
+}
+
 function disable(id) {
     el(id).setAttribute("disabled", "");
 }
@@ -226,9 +235,8 @@ class Sound {
 }
 
 class Pages {
-    constructor(startPage, leavePage) {
-        this.defaultStartPage = startPage || [];
-        this.defaultLeavePage = leavePage || [];
+    constructor(defaultPage) {
+        this.defaultPage = defaultPage || [];
         this.pageLog = [];
     }
 
@@ -258,20 +266,20 @@ class Pages {
         if (this.pageLog.length >= 1) {
             this.showPage(this.pageLog.last());
         } else {
-            this.pageLog = [[this.defaultStartPage]];
-            this.showPage(this.defaultStartPage);
+            this.pageLog = [[this.defaultPage]];
+            this.showPage(this.defaultPage);
         }
     }
 
-    leave() {
+    clear() {
         this.hideLastPage();
         this.pageLog = [];
-        this.go(this.defaultLeavePage);
     }
 }
 
 class Game {
     constructor() {
+        this.myUsername = "";
         this.settings = {};
         this.editWords = [];
         this.results = [];
@@ -332,8 +340,8 @@ class Game {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
         el("gamePage_wordsCnt").innerText = this.wordsCount;
-        el("gamePage_title").innerText = this.myUsername;
-        el("editPage_wordsCnt").innerText = this.editWordsCount;
+        // el("gamePage_title").innerText = this.myUsername;
+        // el("editPage_wordsCnt").innerText = this.editWordsCount;
         el("preparationPage_users").innerHTML = "";
         this.players.forEach(username => {
             el("preparationPage_users").appendChild(
@@ -350,9 +358,9 @@ class Game {
             el(`user_${this.host}`).classList.add("host");
         }
 
-        el("editPage_list").innerHTML = "";
+        el("gamePage_editListScrollable").innerHTML = "";
         this.editWords.forEach((word) => {
-            el("editPage_list").appendChild(Template.editWord(word));
+            el("gamePage_editListScrollable").appendChild(Template.editWord(word));
             el(`editPage_${word.word}_explained`).onclick =
                     () => this.changeWordState(word.word, "explained");
             el(`editPage_${word.word}_notExplained`).onclick =
@@ -396,7 +404,7 @@ class App {
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game();
-        this.pages = new Pages(["mainPage"], ["joinPage"]);
+        this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
         this.helpPages.go(["helpPage_rulesBox"]);
@@ -447,14 +455,16 @@ class App {
     }
 
     leaveRoom() {
+        this.pages.clear();
+        this.pages.go(["joinPage"]);
         this.game.leave();
-        this.pages.leave();
         this.emit("cLeaveRoom");
     }
 
     leaveResultsPage() {
         this.game.leave();
-        this.pages.leave();
+        this.pages.clear();
+        this.pages.go(["joinPage"]);
     }
 
     setKey(value) {
@@ -468,6 +478,10 @@ class App {
     enterRoom() {
         if (this.game.key == "") {
             this.failedToJoin("Пустой ключ комнаты - низзя");
+            return;
+        }
+        if (this.game.myUsername.trim() == "") {
+            this.failedToJoin("Нужно представиться");
             return;
         }
         fetch(`api/getRoomInfo?key=${this.game.key}`)
@@ -517,9 +531,12 @@ class App {
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
             page.push("gamePage_speakerReadyBox");
-        }
-        if (this.game.myRole == "listener") {
+            page.push("gamePage_speakerTitle");
+        } else if (this.game.myRole == "listener") {
             page.push("gamePage_listenerReadyBox");
+            page.push("gamePage_listenerTitle");
+        } else {
+            page.push("gamePage_waitTitle");
         }
         this.gamePages.go(page);
     }
@@ -528,16 +545,28 @@ class App {
         let roundId = this.game.roundId;
         setTimeout(() => {
             if (this.game.roundId != roundId) return;
-            this.gamePages.go(["gamePage_explanationDelayBox"]);
+            let page = ["gamePage_explanationDelayBox"];
+            if (this.game.myRole == "speaker") {
+                page.push("gamePage_speakerTitle");
+            } else if (this.game.myRole == "listener") {
+                page.push("gamePage_listenerTitle");
+            } else {
+                page.push("gamePage_explanationTitle")
+            }
+            this.gamePages.go(page);
             this.animateDelayTimer(startTime - this.game.settings.delayTime,
                 roundId)
             .then(() => {
                 if (this.game.roundId != roundId) return;
                 if (this.game.myRole == "speaker") {
-                    this.gamePages.go(["gamePage_explanationBox"]);
+                    this.gamePages.go(["gamePage_explanationBox", 
+                        "gamePage_speakerTitle"]);
+                } else if (this.game.myRole == "listener") {
+                    this.gamePages.go(["gamePage_speakerListener",
+                        "gamePage_observerBox", "gamePage_listenerTitle"]);
                 } else {
                     this.gamePages.go(["gamePage_speakerListener",
-                        "gamePage_observerBox"])
+                        "gamePage_observerBox", "gamePage_explanationTitle"]);
                 }
                 this.sizeWord();
                 this.animateExplanationTimer(startTime, roundId)
@@ -552,9 +581,9 @@ class App {
 
     renderEditPage() {
         if (this.game.myRole == "speaker") {
-            this.pages.go(["editPage"]);
+            this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
         } else {
-            this.gamePages.go(["gamePage_speakerListener"])
+            this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
         }
     }
 
@@ -776,6 +805,7 @@ class App {
             }
         })
 
+        this.socket.on("disconnect", () => showError("Нет соединения, перезагрузите страницу"));
         this.socket.on("sYouJoined", function(data) {
             _this.game.update(data);
             switch (data.state) {
@@ -825,10 +855,11 @@ class App {
             _this.setWord(data.word);
         })
         this.socket.on("sWordsToEdit", function(data) {
+            //Pages.go(Pages.edit.speaker);
             _this.game.update(data);
+            _this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", function(data) {
-            _this.pages.go(["gamePage"])
             _this.game.update(data);
             _this.renderWaitPage();
         })
@@ -843,23 +874,19 @@ class App {
         this.socket.on("sGameEnded", function(data) {
             _this.game.update(data);
             _this.pages.go(["resultsPage"]);
+            _this.game.leave();
         })
         this.socket.on("sFailure", function(data) {
             switch(data.code) {
-            case 101:
-                _this.failedToJoin("Пустой ключ комнаты - низзя");
-                break;
-            case 102:
-                _this.failedToJoin("Нужно представиться");
-                break;
             case 103:
                 _this.failedToJoin("Ой. Это имя занято :(");
                 break;
             case 104:
                 _this.failedToJoin("Вы точно с таким именем играли?");
                 break;
-            case 105:
-                _this.failedToJoin("Ой. Что-то пошло не так :(");
+            default:
+                showError(data.msg, "code:", data.code);
+                setTimeout(hideError, 4000);
                 break;
             }
         })
@@ -897,9 +924,8 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
+        el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited", 
             this.game.editedWordsObject());
-        el("editPage_goBack").onclick = () => this.leaveRoom();
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
@@ -924,6 +950,7 @@ class App {
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
+        el("failureClose").onclick = hideError;
     }
 
     async loadContent(loadablePages) {
