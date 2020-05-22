@@ -2,6 +2,11 @@
   "name": "thetruehat",
   "description": "The implementation of well-known game Alias.",
   "homepage": "https://github.com/m20-sch57/thetruehat#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m20-sch57/thetruehat.git"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/m20-sch57/thetruehat/issues"
   },
