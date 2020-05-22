@@ -189,19 +189,20 @@ class Template {
         return elem;
     }
 
-    static faq({answer, question}) {
-        let elem = document.createElement("div");
-        let eQuestion = document.createElement("p");
-        eQuestion.classList.add("faq-question");
-        eQuestion.innerText = "Вопрос:\n"+question;
-        console.log(eQuestion.class);
-        let eAnswer = document.createElement("p");
-        eAnswer.innerText = "Ответ:\n"+answer;
-        elem.appendChild(eQuestion);
-        elem.appendChild(eAnswer);
-        elem.appendChild(document.createElement("hr"));
-        return elem;
-    }
+    // static faq({answer, question}) {
+    //     let elem = document.createElement("div");
+    //     let eQuestion = document.createElement("p");
+    //     eQuestion.classList.add("faq-question");
+    //     eQuestion.innerText = question;
+    //     console.log(eQuestion.class);
+    //     let eAnswer = document.createElement("p");
+    //     eAnswer.classList.add("faq-answer");
+    //     eAnswer.innerText = answer;
+    //     elem.appendChild(eQuestion);
+    //     elem.appendChild(eAnswer);
+    //     // elem.appendChild(document.createElement("hr"));
+    //     return elem;
+    // }
 }
 
 class Sound {
@@ -425,6 +426,10 @@ class App {
             {
                 "pageFile": "rules.html",
                 "pageId": "helpPage_rulesBox"
+            },
+            {
+                "pageFile": "faq.html",
+                "pageId": "helpPage_faqBox"
             },
             {
                 "pageFile": "about.html",
@@ -915,7 +920,6 @@ class App {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         el("helpPage_goBack").onclick = () => this.pages.goBack();
         el("helpPage_rulesOption").onclick = () => {
             this.deactiveteHelpOptions();
@@ -932,7 +936,6 @@ class App {
             el("helpPage_aboutOption").classList.add("active");
             this.helpPages.go(["helpPage_aboutBox"]);
         }
-        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
@@ -944,19 +947,14 @@ class App {
             let body = await response;
             el(page["pageId"]).innerHTML = body;
         }
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
     }
-}
-
-function renderFAQ() {
-    FAQList.forEach((obj) => {
-        el("helpPage_faqBox").appendChild(Template.faq(obj));
-    })
 }
 
 timeSync = new TimeSync(TIME_SYNC_DELTA);
 let app;
 window.onload = function() {
-    renderFAQ();
     app = new App();
 }

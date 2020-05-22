@@ -155,6 +155,16 @@ input[type=checkbox]:checked + label span {
     cursor: pointer;
 }
 
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: unset;
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .medium-input {
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
@@ -241,6 +251,18 @@ input[type=checkbox]:checked + label span {
     width: 60px;
     font-size: 20px;
     padding-left: 5px;
+}
+
+.faq-question {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.faq-answer {
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 
 .bg-blue {
@@ -828,15 +850,40 @@ input[type=checkbox]:checked + label span {
     margin-bottom: 30px;
 }
 
+#helpPage_aboutTitle {
+    margin-bottom: 0;
+    font-size: 40px;
+    font-weight: lighter;
+}
+
+#helpPage_aboutVersion {
+    color: grey;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: lighter;
+}
+
 /* Feedback page */
 
 #feedbackPage_header {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
     width: 100%;
     text-align: center;
     padding: 0 30px 0 30px;
 }
 
 #feedbackPage_title {
+    padding: 7px;
+    margin: 0 auto 0 0;
+    font-weight: lighter;
+}
+
+#feedbackPage_version {
+    color: grey;
+    padding: 7px;
+    margin: auto 0 5px 0;
     font-weight: lighter;
 }
 
@@ -852,12 +899,4 @@ input[type=checkbox]:checked + label span {
 
 #feedbackPage_submit {
     margin-top: 20px;
-}
-
-.faq-question {
-    font-weight: bold;
-}
-
-#helpPage_aboutTitle {
-    text-align: left;
 }
