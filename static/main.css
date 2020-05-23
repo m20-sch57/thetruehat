@@ -712,8 +712,11 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editTitle {
     width: 100%;
-    /* box-shadow: 0 5px 5px -5px grey; */
     z-index: 1;
+}
+
+#gamePage_editTitle.shadow {
+     box-shadow: 0 5px 5px -5px grey; 
 }
 
 #gamePage_editBox {
@@ -788,8 +791,11 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editConfirm {
     width: 100%;
-    /* box-shadow: 0 -10px 10px -10px grey; */
     z-index: 1;
+}
+
+#gamePage_editConfirm.shadow {
+     box-shadow: 0 -10px 10px -10px grey; 
 }
 
 @media (min-width: 500px) {

@@ -582,8 +582,25 @@ class App {
     renderEditPage() {
         if (this.game.myRole == "speaker") {
             this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
+            this.editPageUpdateShadows();
         } else {
             this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
+            el("gamePage_editConfirm").classList.remove("shadow");
+            el("gamePage_editTitle").classList.remove("shadow");
+        }
+    }
+
+    editPageUpdateShadows() {
+        let elem = el("gamePage_editListScrollable")
+        if (elem.scrollTop == 0) {
+            el("gamePage_editTitle").classList.remove("shadow");
+        } else {
+            el("gamePage_editTitle").classList.add("shadow");
+        }
+        if (elem.scrollHeight - elem.scrollTop == elem.clientHeight) {
+            el("gamePage_editConfirm").classList.remove("shadow");
+        } else {
+            el("gamePage_editConfirm").classList.add("shadow");
         }
     }
 
@@ -941,6 +958,7 @@ class App {
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("failureClose").onclick = hideError;
+        el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
     }
 
     async loadContent(loadablePages) {
