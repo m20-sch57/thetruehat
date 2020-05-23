@@ -94,7 +94,7 @@ input[type=checkbox]:checked + label span {
 .small-button {
     padding: 10px 15px 10px 15px;
     color: rgba(0, 0, 0, 0.85);
-    border: 1px solid grey;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 22px;
     font-size: 15px;
 }
@@ -102,7 +102,7 @@ input[type=checkbox]:checked + label span {
 .medium-button {
     padding: 15px 20px 15px 20px;
     color: rgba(0, 0, 0, 0.85);
-    border: 1px solid grey;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 25px;
     font-size: 20px;
     line-height: 20px;
@@ -196,18 +196,6 @@ input[type=checkbox]:checked + label span {
 
 .large-input:focus::placeholder {
     color: transparent;
-}
-
-.highlight-title {
-    min-width: 300px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-    padding: 10px;
-    margin: 20px auto 0 auto;
-    font-size: 20px;
-    font-weight: lighter;
-    line-height: 20px;
-    box-shadow: 0 1px 4px grey;
 }
 
 .hint {
@@ -559,9 +547,17 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_header {
     display: flex;
+    flex-flow: row;
+    justify-content: center;
     width: 100%;
     text-align: center;
     padding: 0 30px 0 30px;
+}
+
+#gamePage_header .game-title {
+    margin-bottom: 0;
+    font-size: 27px;
+    font-weight: lighter;
 }
 
 #gamePage_body {
@@ -719,6 +715,7 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editTitle {
     width: 100%;
+    box-shadow: 0 5px 5px -5px grey;
     z-index: 1;
 }
 
@@ -794,8 +791,7 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editConfirm {
     width: 100%;
-    border-color: rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 10px grey;
+    box-shadow: 0 -10px 10px -10px grey;
     z-index: 1;
 }
 
