@@ -444,7 +444,7 @@ class App {
     }
 
     log(data, level) {
-        level = level || "info"
+        level = level || "info";
         this.gameLog.push(data);
         if (this.debug) {
             console[level](data);
@@ -457,7 +457,7 @@ class App {
         this.log({event, data,
             "time": timeSync.getTime(),
             "humanTime": (new Date(timeSync.getTime()).toISOString())
-        }, level)
+        }, level);
     }
 
     emit(event, data) {
