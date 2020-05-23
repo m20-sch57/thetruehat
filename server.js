@@ -786,6 +786,12 @@ class CheckConditions {
     }
 
     static cStartGame(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
+            return false;
+        }
+
         // if game ended
         if (!(key in rooms)) {
             Signals.sFailure(socket.id, "cStartGame", 300, "Игра закончена");
@@ -826,6 +832,12 @@ class CheckConditions {
     }
 
     static cSpeakerReady(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cSpeakerReady", 405, "Вы не в комнате");
+            return false;
+        }
+
         // if game ended
         if (!(key in rooms)) {
             Signals.sFailure(socket.id, "cSpeakerReady", 400, "Игра закончена");
@@ -859,6 +871,12 @@ class CheckConditions {
     }
 
     static cListenerReady(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cListenerReady", 505, "Вы не в комнате");
+            return false;
+        }
+
         // if game ended
         if (!(key in rooms)) {
             Signals.sFailure(socket.id, "cListenerReady", 500, "Игра закончена");
@@ -892,6 +910,12 @@ class CheckConditions {
     }
 
     static cEndWordExplanation(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cEndWordExplanation", 605, "Вы не в комнате");
+            return false;
+        }
+
         // checking if room exists
         if (!(key in rooms)) {
             Signals.sFailure(socket.id, "cEndWordExplanation", 600, "Игра закончена");
@@ -923,6 +947,12 @@ class CheckConditions {
     }
 
     static cWordsEdited(socket, key, editWords) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cWordsEdited", 705, "Вы не в комнате");
+            return false;
+        }
+
         // if game ended
         if (!(key in rooms)) {
             Signals.sFailure(socket.id, "cWordsEdited", 700, "Игра закончена");
