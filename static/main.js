@@ -12,6 +12,7 @@ const NOT_EXPLAINED_WORD_STATE = "не угадал";
 const MISTAKE_WORD_STATE = "ошибка";
 
 const TIME_SYNC_DELTA = 60000;
+const DISCONNECT_TIMEOUT = 5000;
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -284,6 +285,7 @@ class Game {
         this.editWords = [];
         this.results = [];
         this.roundId = 0;
+        this.inGame = false;
     }
 
     update(data) {
@@ -394,12 +396,15 @@ class Game {
 
     leave() {
         this.roundId += 1;
+        this.inGame = false;
     }
 }
 
 class App {
     constructor() {
         this.debug = true;
+
+        this.connected = false;
 
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
@@ -438,20 +443,26 @@ class App {
 
     }
 
-    addToLog(event, data) {
-        this.gameLog.push({
-            'event': event,
-            'data': data,
-            'time': timeSync.getTime()
-        });
+    log(data, level) {
+        level = level || "info";
+        this.gameLog.push(data);
+        if (this.debug) {
+            console[level](data);
+        }
+    }
+
+    logSignal(event, data) {
+        let level = "info";
+        if (event == "sFailure") level = "warn";
+        this.log({event, data,
+            "time": timeSync.getTime(),
+            "humanTime": (new Date(timeSync.getTime()).toISOString())
+        }, level);
     }
 
     emit(event, data) {
         this.socket.emit(event, data);
-        this.addToLog(event, data);
-        if (this.debug) {
-            console.log(event, data);
-        }
+        this.logSignal(event, data);
     }
 
     leaveRoom() {
@@ -795,28 +806,41 @@ class App {
     setSocketioEventListeners() {
         let _this = this;
 
-        let events = ["sPlayerJoined", "sPlayerLeft",
+        let events = ["sFailure", "sPlayerJoined", "sPlayerLeft",
         "sYouJoined", "sGameStarted", "sExplanationStarted",
         "sExplanationEnded", "sNextTurn", "sNewWord", 
         "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
         events.forEach((event) => {
             _this.socket.on(event, function(data) {
-                _this.addToLog(event, data);
-                if (_this.debug) {
-                    console.log(event, data);
-                }
+                _this.logSignal(event, data);
             })
         })
-        this.socket.on("sFailure", function(data) {
-            _this.addToLog("sFailure", data);
-            if (_this.debug) {
-                console.warn("sFailure", data);
+
+        this.socket.on("disconnect", () => {
+            _this.log("Socketio disconnect", "error");
+            _this.connected = false;
+            setTimeout(() => {
+                if (!_this.connected) {
+                    showError("Нет соединения, перезагрузите страницу");
+                }
+            }, DISCONNECT_TIMEOUT);
+        });
+        this.socket.on("reconnect", () => {
+            _this.log("Socketio reconnect", "warn");
+            hideError();
+            _this.connected = true;
+            if (_this.game.inGame) {
+                _this.enterRoom();
             }
+        });
+        this.socket.on("connect", () => {
+            _this.log("Socketio connect");
+            _this.connected = true;
         })
 
-        this.socket.on("disconnect", () => showError("Нет соединения, перезагрузите страницу"));
         this.socket.on("sYouJoined", function(data) {
             _this.game.update(data);
+            _this.game.inGame = true;
             switch (data.state) {
             case "wait":
                 _this.renderPreparationPage()
