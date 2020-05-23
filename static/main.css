@@ -166,20 +166,20 @@ input[type=checkbox]:checked + label span {
 }
 
 .medium-input {
+    height: 52px;
     padding: 15px 20px 15px 20px;
     border: 1px solid grey;
     border-radius: 25px;
     font-size: 18px;
-    line-height: 20px;
 }
 
 .large-input {
-    padding: 10px 20px 10px 20px;
+    height: 55px;
+    padding: 7px 20px 7px 20px;
     background-color: transparent;
     border-width: 0 0 1px 0;
     border-color: grey;
     font-size: 38px;
-    line-height: 40px;
 }
 
 .default-textarea {
