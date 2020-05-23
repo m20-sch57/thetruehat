@@ -555,6 +555,7 @@ input[type=checkbox]:checked + label span {
 }
 
 #gamePage_header .game-title {
+    padding-bottom: 10px;
     margin-bottom: 0;
     font-size: 27px;
     font-weight: lighter;
@@ -662,7 +663,7 @@ input[type=checkbox]:checked + label span {
 #gamePage_explanationWordTimer {
     display: flex;
     flex-flow: column;
-    height: calc(100% - 125px);
+    flex-grow: 1;
 }
 
 #gamePage_explanationWordParent {
@@ -684,14 +685,10 @@ input[type=checkbox]:checked + label span {
     user-select: none;
 }
 
-#gamePage_explanationActions {
-    height: 155px;
-}
-
 #gamePage_explanationSuccess {
     height: 75px;
     width: 100%;
-    margin-top: 25px;
+    margin-top: 20px;
     font-size: 30px;
     border-radius: 15px;
 }
@@ -715,7 +712,7 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editTitle {
     width: 100%;
-    box-shadow: 0 5px 5px -5px grey;
+    /* box-shadow: 0 5px 5px -5px grey; */
     z-index: 1;
 }
 
@@ -738,7 +735,7 @@ input[type=checkbox]:checked + label span {
     left: 0;
     bottom: 0;
     right: 0;
-    padding: 10px 15px 30px 15px;
+    padding: 0 15px 30px 15px;
 }
 
 #gamePage_editList .word {
@@ -791,7 +788,7 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editConfirm {
     width: 100%;
-    box-shadow: 0 -10px 10px -10px grey;
+    /* box-shadow: 0 -10px 10px -10px grey; */
     z-index: 1;
 }
 
@@ -803,6 +800,7 @@ input[type=checkbox]:checked + label span {
         height: 300px;
     }
     #gamePage_explanationWordTimer {
+        flex-grow: 0;
         height: 300px;
     }
     #gamePage_explanationActions {
