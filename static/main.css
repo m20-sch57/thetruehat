@@ -894,7 +894,7 @@ input[type=checkbox]:checked + label span {
     padding: 0 30px 30px 30px;
 }
 
-#helpPage_rulesBox {
+#helpPage_rulesBox .justify {
     text-align: justify;
 }
 
