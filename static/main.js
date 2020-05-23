@@ -12,6 +12,7 @@ const NOT_EXPLAINED_WORD_STATE = "не угадал";
 const MISTAKE_WORD_STATE = "ошибка";
 
 const TIME_SYNC_DELTA = 60000;
+const DISCONNECT_TIMEOUT = 5000;
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -284,6 +285,7 @@ class Game {
         this.editWords = [];
         this.results = [];
         this.roundId = 0;
+        this.inGame = false;
     }
 
     update(data) {
@@ -394,12 +396,15 @@ class Game {
 
     leave() {
         this.roundId += 1;
+        this.inGame = false;
     }
 }
 
 class App {
     constructor() {
         this.debug = true;
+
+        this.connected = false;
 
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
@@ -660,6 +665,7 @@ class App {
 
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
+            navigator.permissions
             disable("joinPage_pasteKey");
         }
         if (!(navigator.clipboard && navigator.clipboard.writeText)) {
@@ -814,9 +820,31 @@ class App {
             }
         })
 
-        this.socket.on("disconnect", () => showError("Нет соединения, перезагрузите страницу"));
+        this.socket.on("disconnect", () => {
+            console.error("Socketio disconnect");
+            this.connected = false;
+            setTimeout(() => {
+                if (!this.connected) {
+                    showError("Нет соединения, перезагрузите страницу");
+                }
+            }, DISCONNECT_TIMEOUT);
+        });
+        this.socket.on("reconnect", () => {
+            console.warn("Socketio reconnect");
+            hideError();
+            this.connected = true;
+            if (this.game.inGame) {
+                this.enterRoom();
+            }
+        });
+        this.socket.on("connect", () => {
+            console.log("Socketio connect");
+            this.connected = true;
+        })
+
         this.socket.on("sYouJoined", function(data) {
             _this.game.update(data);
+            _this.game.inGame = true;
             switch (data.state) {
             case "wait":
                 _this.renderPreparationPage()
