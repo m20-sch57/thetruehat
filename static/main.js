@@ -454,10 +454,9 @@ class App {
     logSignal(event, data) {
         let level = "info";
         if (event == "sFailure") level = "warn";
-        this.log({
-            'event': event,
-            'data': data,
-            'time': timeSync.getTime()
+        this.log({event, data,
+            "time": timeSync.getTime(),
+            "humanTime": (new Date(timeSync.getTime()).toISOString())
         }, level)
     }
 
