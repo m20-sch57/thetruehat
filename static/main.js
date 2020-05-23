@@ -289,7 +289,7 @@ class Game {
     }
 
     update(data) {
-        if (data.speaker) {
+        if ("speaker" in data) {
             this.speaker = data.speaker;
             this.listener = data.listener;
             if (this.myUsername == this.speaker) {
@@ -301,22 +301,22 @@ class Game {
             }
         }
 
-        if (data.playerList) {
+        if ("playerList" in data) {
             this.playerList = data.playerList;
             this.players = data.playerList.filter(user => user.online)
                 .map(user => user.username);
         }
 
-        if (data.wordsCount) {
+        if ("wordsCount" in data) {
             this.wordsCount = data.wordsCount;
         }
 
-        if (data.host) {
+        if ("host" in data) {
             this.host = data.host;
             this.isHost = (data.host == this.myUsername);
         }
 
-        if (data.editWords) {
+        if ("editWords" in data) {
             this.editWords = data.editWords;
             this.editWordsCount = data.editWords.length;
             this.wordStates = {};
@@ -325,11 +325,11 @@ class Game {
             })
         }
 
-        if (data.settings) {
+        if ("settings" in data) {
             this.settings = data.settings;
         }
 
-        if (data.results) {
+        if ("results" in data) {
             this.results = data.results;
         }
 
