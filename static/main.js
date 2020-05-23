@@ -582,6 +582,7 @@ class App {
     renderEditPage() {
         if (this.game.myRole == "speaker") {
             this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
+            el("gamePage_editListScrollable").scrollTop = 0;
             this.editPageUpdateShadows();
         } else {
             this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
@@ -591,7 +592,7 @@ class App {
     }
 
     editPageUpdateShadows() {
-        let elem = el("gamePage_editListScrollable")
+        let elem = el("gamePage_editListScrollable");
         if (elem.scrollTop == 0) {
             el("gamePage_editTitle").classList.remove("shadow");
         } else {
