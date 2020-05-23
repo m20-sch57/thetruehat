@@ -836,6 +836,7 @@ input[type=checkbox]:checked + label span {
 #resultsPage_body {
     width: 100%;
     padding: 0 30px 0 30px;
+    text-align: center;
 }
 
 #resultsPage_table {
@@ -856,6 +857,11 @@ input[type=checkbox]:checked + label span {
     width: 100%;
     margin-top: 30px;
 }
+
+#resultsPage_feedbackLink {
+    margin-top: 15px;
+}
+
 
 /* Help page */
 
