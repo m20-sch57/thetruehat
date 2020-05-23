@@ -665,7 +665,6 @@ class App {
 
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
-            navigator.permissions
             disable("joinPage_pasteKey");
         }
         if (!(navigator.clipboard && navigator.clipboard.writeText)) {
