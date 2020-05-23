@@ -443,20 +443,27 @@ class App {
 
     }
 
-    addToLog(event, data) {
-        this.gameLog.push({
+    log(data, level) {
+        level = level || "info"
+        this.gameLog.push(data);
+        if (this.debug) {
+            console[level](data);
+        }
+    }
+
+    logSignal(event, data) {
+        let level = "info";
+        if (event == "sFailure") level = "warn";
+        this.log({
             'event': event,
             'data': data,
             'time': timeSync.getTime()
-        });
+        }, level)
     }
 
     emit(event, data) {
         this.socket.emit(event, data);
-        this.addToLog(event, data);
-        if (this.debug) {
-            console.log(event, data);
-        }
+        this.logSignal(event, data);
     }
 
     leaveRoom() {
@@ -800,45 +807,36 @@ class App {
     setSocketioEventListeners() {
         let _this = this;
 
-        let events = ["sPlayerJoined", "sPlayerLeft",
+        let events = ["sFailure", "sPlayerJoined", "sPlayerLeft",
         "sYouJoined", "sGameStarted", "sExplanationStarted",
         "sExplanationEnded", "sNextTurn", "sNewWord", 
         "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
         events.forEach((event) => {
             _this.socket.on(event, function(data) {
-                _this.addToLog(event, data);
-                if (_this.debug) {
-                    console.log(event, data);
-                }
+                _this.logSignal(event, data);
             })
-        })
-        this.socket.on("sFailure", function(data) {
-            _this.addToLog("sFailure", data);
-            if (_this.debug) {
-                console.warn("sFailure", data);
-            }
         })
 
         this.socket.on("disconnect", () => {
-            console.error("Socketio disconnect");
-            this.connected = false;
+            _this.log("Socketio disconnect", "error");
+            _this.connected = false;
             setTimeout(() => {
-                if (!this.connected) {
+                if (!_this.connected) {
                     showError("Нет соединения, перезагрузите страницу");
                 }
             }, DISCONNECT_TIMEOUT);
         });
         this.socket.on("reconnect", () => {
-            console.warn("Socketio reconnect");
+            _this.log("Socketio reconnect", "warn");
             hideError();
-            this.connected = true;
-            if (this.game.inGame) {
-                this.enterRoom();
+            _this.connected = true;
+            if (_this.game.inGame) {
+                _this.enterRoom();
             }
         });
         this.socket.on("connect", () => {
-            console.log("Socketio connect");
-            this.connected = true;
+            _this.log("Socketio connect");
+            _this.connected = true;
         })
 
         this.socket.on("sYouJoined", function(data) {
