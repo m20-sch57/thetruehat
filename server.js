@@ -4,6 +4,12 @@
 
 const config = require("./config.json");
 
+const argv = require("yargs")
+    .option('pidfile', {
+        default: config.serverPIDPath
+    })
+    .argv;
+
 const PORT = config.port;
 const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const WORD_NUMBER = config.wordNumber;
@@ -15,7 +21,7 @@ const AFTERMATH_TIME = config.aftermathTime; // time for guess
 const allWords = require(config.wordsPath).words;
 
 const fs = require("fs");
-fs.writeFile(config.serverPIDPath, process.pid.toString(), function(err, data) {
+fs.writeFile(argv.pidfile, process.pid.toString(), function(err, data) {
     if (err) {
         console.log(err);
     }

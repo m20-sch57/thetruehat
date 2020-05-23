@@ -28,9 +28,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
 
             draw(progress);
 
-            if (stopCondition()) {
-                return;
-            }
+            if (stopCondition()) return;
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -213,15 +211,22 @@ class Sound {
         }
     }
 
-    playSound(sound, startTime) {
-        this.currentSound = el(sound);
+    playSound(sound, startTime, stopCondition) {
+        startTime = startTime || timeSync.getTime();
+        stopCondition = stopCondition || (() => false);
+        let shift = el(sound).getAttribute("shift");
+        if (shift) startTime += +shift;
         if (timeSync.getTime() < startTime) {
             setTimeout(() => {
+                if (stopCondition()) return;
                 this.killSound();
+                this.currentSound = el(sound);
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime < 
-                this.currentSound.duration * 1000){
+                el(sound).duration * 1000){
+            this.killSound();
+            this.currentSound = el(sound);
             this.currentSound.currentTime = (timeSync.getTime() - startTime) / 
                 1000;
             this.currentSound.play();
@@ -230,9 +235,8 @@ class Sound {
 }
 
 class Pages {
-    constructor(startPage, leavePage) {
-        this.defaultStartPage = startPage || [];
-        this.defaultLeavePage = leavePage || [];
+    constructor(defaultPage) {
+        this.defaultPage = defaultPage || [];
         this.pageLog = [];
     }
 
@@ -262,15 +266,14 @@ class Pages {
         if (this.pageLog.length >= 1) {
             this.showPage(this.pageLog.last());
         } else {
-            this.pageLog = [[this.defaultStartPage]];
-            this.showPage(this.defaultStartPage);
+            this.pageLog = [[this.defaultPage]];
+            this.showPage(this.defaultPage);
         }
     }
 
-    leave() {
+    clear() {
         this.hideLastPage();
         this.pageLog = [];
-        this.go(this.defaultLeavePage);
     }
 }
 
@@ -355,16 +358,16 @@ class Game {
             el(`user_${this.host}`).classList.add("host");
         }
 
-        // el("editPage_list").innerHTML = "";
-        // this.editWords.forEach((word) => {
-        //     el("editPage_list").appendChild(Template.editWord(word));
-        //     el(`editPage_${word.word}_explained`).onclick =
-        //             () => this.changeWordState(word.word, "explained");
-        //     el(`editPage_${word.word}_notExplained`).onclick =
-        //             () => this.changeWordState(word.word, "notExplained");
-        //     el(`editPage_${word.word}_mistake`).onclick =
-        //             () => this.changeWordState(word.word, "mistake");
-        // });
+        el("gamePage_editListScrollable").innerHTML = "";
+        this.editWords.forEach((word) => {
+            el("gamePage_editListScrollable").appendChild(Template.editWord(word));
+            el(`editPage_${word.word}_explained`).onclick =
+                    () => this.changeWordState(word.word, "explained");
+            el(`editPage_${word.word}_notExplained`).onclick =
+                    () => this.changeWordState(word.word, "notExplained");
+            el(`editPage_${word.word}_mistake`).onclick =
+                    () => this.changeWordState(word.word, "mistake");
+        });
 
         el("resultsPage_results").innerHTML = "";
         this.results.forEach((result) => {
@@ -401,7 +404,7 @@ class App {
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game();
-        this.pages = new Pages(["mainPage"], ["joinPage"]);
+        this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
         this.helpPages.go(["helpPage_rulesBox"]);
@@ -412,6 +415,20 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
+        this.loadContent([
+            {
+                "pageFile": "rules.html",
+                "pageId": "helpPage_rulesBox"
+            },
+            {
+                "pageFile": "faq.html",
+                "pageId": "helpPage_faqBox"
+            },
+            {
+                "pageFile": "about.html",
+                "pageId": "helpPage_aboutBox"
+            }
+        ]);
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -438,14 +455,16 @@ class App {
     }
 
     leaveRoom() {
+        this.pages.clear();
+        this.pages.go(["joinPage"]);
         this.game.leave();
-        this.pages.leave();
         this.emit("cLeaveRoom");
     }
 
     leaveResultsPage() {
         this.game.leave();
-        this.pages.leave();
+        this.pages.clear();
+        this.pages.go(["joinPage"]);
     }
 
     setKey(value) {
@@ -512,9 +531,12 @@ class App {
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
             page.push("gamePage_speakerReadyBox");
-        }
-        if (this.game.myRole == "listener") {
+            page.push("gamePage_speakerTitle");
+        } else if (this.game.myRole == "listener") {
             page.push("gamePage_listenerReadyBox");
+            page.push("gamePage_listenerTitle");
+        } else {
+            page.push("gamePage_waitTitle");
         }
         this.gamePages.go(page);
     }
@@ -523,16 +545,28 @@ class App {
         let roundId = this.game.roundId;
         setTimeout(() => {
             if (this.game.roundId != roundId) return;
-            this.gamePages.go(["gamePage_explanationDelayBox"]);
+            let page = ["gamePage_explanationDelayBox"];
+            if (this.game.myRole == "speaker") {
+                page.push("gamePage_speakerTitle");
+            } else if (this.game.myRole == "listener") {
+                page.push("gamePage_listenerTitle");
+            } else {
+                page.push("gamePage_explanationTitle")
+            }
+            this.gamePages.go(page);
             this.animateDelayTimer(startTime - this.game.settings.delayTime,
                 roundId)
             .then(() => {
                 if (this.game.roundId != roundId) return;
                 if (this.game.myRole == "speaker") {
-                    this.gamePages.go(["gamePage_explanationBox"]);
+                    this.gamePages.go(["gamePage_explanationBox", 
+                        "gamePage_speakerTitle"]);
+                } else if (this.game.myRole == "listener") {
+                    this.gamePages.go(["gamePage_speakerListener",
+                        "gamePage_observerBox", "gamePage_listenerTitle"]);
                 } else {
                     this.gamePages.go(["gamePage_speakerListener",
-                        "gamePage_observerBox"])
+                        "gamePage_observerBox", "gamePage_explanationTitle"]);
                 }
                 this.sizeWord();
                 this.animateExplanationTimer(startTime, roundId)
@@ -547,9 +581,23 @@ class App {
 
     renderEditPage() {
         if (this.game.myRole == "speaker") {
-            this.pages.go(["editPage"]);
+            this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
         } else {
-            this.gamePages.go(["gamePage_speakerListener"])
+            this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
+        }
+    }
+
+    playExplanationSounds({startTime}) {
+        let roundId = this.game.roundId;
+        let stopCondition = () => roundId != this.game.roundId;
+        this.sound.playSound("start", startTime, stopCondition);
+        this.sound.playSound("final", startTime + 
+            this.game.settings.explanationTime, stopCondition);  
+        this.sound.playSound("final+", startTime + 
+            this.game.settings.explanationTime +
+            this.game.settings.aftermathTime, stopCondition);
+        for (let i = 1; i <= Math.floor(this.game.settings.delayTime / 1000); i++) {
+            this.sound.playSound("countdown", startTime - 1000 * i, stopCondition);
         }
     }
 
@@ -697,25 +745,18 @@ class App {
         if (collectBrowserData) {
             this.addBrowserData(result);
         }
-        result.SID = app.socket.id
-        result.message = message
-        result.gameLog = this.gameLog
-        return result
-    }
-
-    clientInfoChange() {
-        let buttonId = "feedbackPage_submit";
-        if (el("feedbackPage_clientInfoCheckbox").checked) {
-            enable(buttonId);
-        } else {
-            disable(buttonId);
-        }
+        result.SID = app.socket.id;
+        result.version = VERSION;
+        result.hash = HASH;
+        result.message = message;
+        result.gameLog = this.gameLog;
+        return result;
     }
 
     sendFeedback() {
         let feedbackTextarea = el("feedbackPage_textarea");
         let feedback = this.buildFeedback(feedbackTextarea.value, 
-            true);
+            el("feedbackPage_clientInfoCheckbox").checked);
         feedbackTextarea.value = "";
         fetch("feedback", {
             method: "POST",
@@ -772,6 +813,7 @@ class App {
                 case "explanation":
                     _this.setWord(data.word);
                     _this.renderExplanationPage(data);
+                    _this.playExplanationSounds(data);
                     break;
                 case "edit":
                     _this.renderEditPage()
@@ -798,6 +840,7 @@ class App {
         })
         this.socket.on("sExplanationStarted", function(data) {
             _this.renderExplanationPage(data);
+            _this.playExplanationSounds(data);
         })
         this.socket.on("sNewWord", function(data) {
             _this.setWord(data.word);
@@ -808,7 +851,6 @@ class App {
             _this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", function(data) {
-            _this.pages.go(["gamePage"])
             _this.game.update(data);
             _this.renderWaitPage();
         })
@@ -823,6 +865,7 @@ class App {
         this.socket.on("sGameEnded", function(data) {
             _this.game.update(data);
             _this.pages.go(["resultsPage"]);
+            _this.game.leave();
         })
         this.socket.on("sFailure", function(data) {
             switch(data.code) {
@@ -872,15 +915,13 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        // el("editPage_confirm").onclick = () => this.emit("cWordsEdited", 
-        //     this.game.editedWordsObject());
-        // el("editPage_goBack").onclick = () => this.leaveRoom();
+        el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited", 
+            this.game.editedWordsObject());
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
             this.pages.go(["joinPage"]);
         }
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         el("helpPage_goBack").onclick = () => this.pages.goBack();
         el("helpPage_rulesOption").onclick = () => {
             this.deactiveteHelpOptions();
@@ -897,15 +938,24 @@ class App {
             el("helpPage_aboutOption").classList.add("active");
             this.helpPages.go(["helpPage_aboutBox"]);
         }
-        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
-        el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
         el("failureClose").onclick = hideError;
+    }
+
+    async loadContent(loadablePages) {
+        for (let page of loadablePages) {
+            let response = (await fetch(page["pageFile"])).text();
+            let body = await response;
+            el(page["pageId"]).innerHTML = body;
+        }
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+        els("version").forEach((it) => it.innerText = VERSION);
     }
 }
 
-timeSync = new TimeSync(TIME_SYNC_DELTA);
+let timeSync = new TimeSync(TIME_SYNC_DELTA);
 let app;
 window.onload = function() {
     app = new App();

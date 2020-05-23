@@ -83,6 +83,14 @@ input[type=checkbox]:checked + label span {
     max-width: 700px;
 }
 
+.content-large {
+    display: flex;
+    flex-flow: column;
+    margin: 100px auto 30px auto;
+    width: 100%;
+    max-width: 1000px;
+}
+
 .small-button {
     padding: 10px 15px 10px 15px;
     color: rgba(0, 0, 0, 0.85);
@@ -143,7 +151,17 @@ input[type=checkbox]:checked + label span {
 }
 
 .flat-button:hover:enabled {
-    color: deepskyblue;
+    color: grey;
+    cursor: pointer;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: unset;
+    color: #069;
+    text-decoration: underline;
     cursor: pointer;
 }
 
@@ -245,6 +263,18 @@ input[type=checkbox]:checked + label span {
     width: 60px;
     font-size: 20px;
     padding-left: 5px;
+}
+
+.faq-question {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.faq-answer {
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 
 .bg-blue {
@@ -659,23 +689,20 @@ input[type=checkbox]:checked + label span {
 }
 
 #gamePage_explanationActions {
-    height: 125px;
+    height: 155px;
 }
 
 #gamePage_explanationSuccess {
     height: 75px;
     width: 100%;
-    margin-top: auto;
+    margin-top: 25px;
     font-size: 30px;
     border-radius: 15px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
 }
 
 #gamePage_explanationFailed {
     width: calc(50% + 0.5px);
     border-radius: 15px;
-    border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     margin-top: -1px;
@@ -684,7 +711,6 @@ input[type=checkbox]:checked + label span {
 #gamePage_explanationMistake {
     width: calc(50% + 0.5px);
     border-radius: 15px;
-    border-top-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-top: -1px;
@@ -843,7 +869,7 @@ input[type=checkbox]:checked + label span {
     display: flex;
     flex-flow: row;
     flex-wrap: wrap;
-    align-items: center;
+    justify-content: center;
     padding: 25px 100px 0 100px;
     margin-top: -100px;
 }
@@ -863,15 +889,49 @@ input[type=checkbox]:checked + label span {
     padding: 0 30px 30px 30px;
 }
 
+#helpPage_rulesBox {
+    text-align: justify;
+}
+
+#helpPage_rulesTitle {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#helpPage_aboutTitle {
+    margin-bottom: 0;
+    font-size: 40px;
+    font-weight: lighter;
+}
+
+#helpPage_aboutVersion {
+    color: grey;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: lighter;
+}
+
 /* Feedback page */
 
 #feedbackPage_header {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
     width: 100%;
     text-align: center;
     padding: 0 30px 0 30px;
 }
 
 #feedbackPage_title {
+    padding: 7px;
+    margin: 0 auto 0 0;
+    font-weight: lighter;
+}
+
+#feedbackPage_version {
+    color: grey;
+    padding: 7px;
+    margin: auto 0 5px 0;
     font-weight: lighter;
 }
 
