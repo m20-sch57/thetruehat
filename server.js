@@ -743,13 +743,13 @@ class CheckConditions {
 
             // If username is used, it will be an error
             if (pos !== -1 && rooms[key].users[pos].sids.length !== 0) {
-                Signals.sFailure(socket.id, "cJoinRoom", 103, "Данное имя уже использовано");
+                Signals.sFailure(socket.id, "cJoinRoom", 103, "Это имя уже использовано");
                 return false;
             }
 
             // If game has started, only logging in can be performed
             if (rooms[key].state === "play" && pos === -1) {
-                Signals.sFailure(socket.id, "cJoinRoom", 104, "Игра уже начата, возможен только вход");
+                Signals.sFailure(socket.id, "cJoinRoom", 104, "Игра уже идёт, возможен только вход");
                 return false;
             }
         }
@@ -908,7 +908,7 @@ class CheckConditions {
 
         // checking if speaker send this
         if (rooms[key].users[rooms[key].speaker].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cEndWordExplanation", 603, "Вы объясняющий");
+            Signals.sFailure(socket.id, "cEndWordExplanation", 603, "Вы не объясняющий");
             return false;
         }
 
@@ -961,13 +961,13 @@ class Callbacks {
 
         // If any error happened
         if (err) {
-            Signals.sFailure(socket.id, "сJoinRoom", 105, "Ошибка при входе в комнату");
+            Signals.sFailure(socket.id, "сJoinRoom", 105, "Не получилось войти в комнату");
             return;
         }
 
         // If user haven't joined the room
         if (getRoom(socket) !== key) {
-            Signals.sFailure(socket.id, "сJoinRoom", 105, "Ошибка при входе в комнату");
+            Signals.sFailure(socket.id, "сJoinRoom", 105, "Не получилось войти в комнату");
             return;
         }
 
@@ -998,7 +998,7 @@ class Callbacks {
 
         // If any error happened
         if (err) {
-            Signals.sFailure(socket.id, "cLeaveRoom", 201, "Ошибка при выходе из комнаты");
+            Signals.sFailure(socket.id, "cLeaveRoom", 201, "Не получилось выйти из комнаты");
             return;
         }
 
