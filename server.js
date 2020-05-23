@@ -352,7 +352,9 @@ class Signals {
      */
     static sYouJoined(sid, key) {
         const room = rooms[key];
-        const name = room.users[findFirstSidPos(room.users, sid)].username;
+        const pos = findFirstSidPos(room.users, sid);
+        if (pos === -1) return;
+        const name = room.users[pos].username;
         let joinObj = {
             "key": key,
             "playerList": getPlayerList(room.users),
@@ -771,15 +773,15 @@ class CheckConditions {
             return false;
         }
 
-        // getting username
+        // Getting username position
         const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
-        const username = rooms[key].users[usernamePos].username;
 
-        // if username is ""
-        if (username === "") {
+        // if username position is -1
+        if (usernamePos === -1) {
             Signals.sFailure(socket.id, "cLeaveRoom", 200, "Вы не в комнате");
             return false;
         }
+
         return true;
     }
 
@@ -994,6 +996,7 @@ class Callbacks {
 
     static leaveRoomCallback(socket, key, err) {
         const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
+        if (usernamePos === -1) return;
         const username = rooms[key].users[usernamePos].username;
 
         // If any error happened
