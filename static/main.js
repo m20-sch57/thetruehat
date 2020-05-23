@@ -753,19 +753,10 @@ class App {
         return result;
     }
 
-    clientInfoChange() {
-        let buttonId = "feedbackPage_submit";
-        if (el("feedbackPage_clientInfoCheckbox").checked) {
-            enable(buttonId);
-        } else {
-            disable(buttonId);
-        }
-    }
-
     sendFeedback() {
         let feedbackTextarea = el("feedbackPage_textarea");
         let feedback = this.buildFeedback(feedbackTextarea.value, 
-            true);
+            el("feedbackPage_clientInfoCheckbox").checked);
         feedbackTextarea.value = "";
         fetch("feedback", {
             method: "POST",
@@ -949,7 +940,6 @@ class App {
         }
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
-        el("feedbackPage_clientInfoCheckbox").onclick = () => this.clientInfoChange();
         el("failureClose").onclick = hideError;
     }
 
