@@ -372,7 +372,7 @@ class Game {
         });
         // Fixed bug with padding in Firefox
         let eDiv = document.createElement("div");
-        eDiv.style.height = "30px";
+        eDiv.style.height = "15px";
         el("gamePage_editListScrollable").appendChild(eDiv);
 
         el("resultsPage_results").innerHTML = "";
