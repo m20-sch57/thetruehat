@@ -25,10 +25,9 @@ input[type=checkbox] {
 
 input[type=checkbox] + label {
     display: flex;
+    flex-shrink: 0;
     height: 25px;
-    min-height: 25px;
     width: 25px;
-    min-width: 25px;
     background-color: white;
     margin-right: 5px;
     border: 1px solid grey;
@@ -227,13 +226,18 @@ input[type=checkbox] + label + label {
 }
 
 .go-back {
+    display: flex;
     position: absolute;
     top: 20px;
     left: 20px;
     height: 60px;
     width: 60px;
+}
+
+.go-back span {
+    padding-right: 4px;
+    margin: auto;
     font-size: 20px;
-    padding-left: 2px;
 }
 
 .view-help {
@@ -251,13 +255,17 @@ input[type=checkbox] + label + label {
 }
 
 .feedback {
+    display: flex;
     position: absolute;
     top: 20px;
     right: 20px;
     height: 60px;
     width: 60px;
+}
+
+.feedback span {
+    margin: auto;
     font-size: 20px;
-    padding-left: 5px;
 }
 
 .faq-question {
