@@ -716,7 +716,8 @@ input[type=checkbox]:checked + label span {
 }
 
 #gamePage_editTitle.shadow {
-     box-shadow: 0 5px 5px -5px grey; 
+     box-shadow: 0 5px 5px -5px grey;
+     z-index: 3;
 }
 
 #gamePage_editBox {
@@ -750,6 +751,7 @@ input[type=checkbox]:checked + label span {
 }
 
 #gamePage_editList .explained {
+    position: relative;
     width: 33.33%;
     padding-left: 5px;
     padding-right: 5px;
@@ -760,9 +762,15 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editList .explained.selected {
     background-color: lightgreen;
+    z-index: 1;
+}
+
+#gamePage_editList .explained:hover {
+    z-index: 2;
 }
 
 #gamePage_editList .not-explained {
+    position: relative;
     width: 33.33%;
     padding-left: 5px;
     padding-right: 5px;
@@ -773,9 +781,15 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editList .not-explained.selected {
     background-color: lightblue;
+    z-index: 1;
+}
+
+#gamePage_editList .not-explained:hover {
+    z-index: 2;
 }
 
 #gamePage_editList .mistake {
+    position: relative;
     width: 33.33%;
     padding-left: 5px;
     padding-right: 5px;
@@ -787,6 +801,11 @@ input[type=checkbox]:checked + label span {
 
 #gamePage_editList .mistake.selected {
     background-color: lightcoral;
+    z-index: 1;
+}
+
+#gamePage_editList .mistake:hover {
+    z-index: 2;
 }
 
 #gamePage_editConfirm {
