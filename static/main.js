@@ -609,7 +609,7 @@ class App {
         } else {
             el("gamePage_editTitle").classList.add("shadow");
         }
-        if (elem.scrollHeight - elem.scrollTop == elem.clientHeight) {
+        if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
             el("gamePage_editConfirm").classList.remove("shadow");
         } else {
             el("gamePage_editConfirm").classList.add("shadow");
