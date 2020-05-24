@@ -738,7 +738,7 @@ input[type=checkbox]:checked + label span {
     left: 0;
     bottom: 0;
     right: 0;
-    padding: 0 15px 30px 15px;
+    padding: 0 15px 0px 15px;
 }
 
 #gamePage_editList .word {
