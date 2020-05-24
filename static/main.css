@@ -716,7 +716,8 @@ input[type=checkbox]:checked + label span {
 }
 
 #gamePage_editTitle.shadow {
-     box-shadow: 0 5px 5px -5px grey; 
+     box-shadow: 0 5px 5px -5px grey;
+     z-index: 3;
 }
 
 #gamePage_editBox {
