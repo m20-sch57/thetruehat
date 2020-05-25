@@ -75,7 +75,7 @@ Used to contain games' infos.
     - NOT NULL
 - **StartTime** : *INTEGER* - UNIX timestamp in milliseconds of the game start. NULL if it's undefined.
 - **EndTime** : *INTEGER* - UNIX timestamp in milliseconds of the game end. NULL if it's undefined.
-- **TimeZoneOffSet** (! Заменить на / добавить пользовательские) : *TEXT* - JSON with ??? NULL if it's undefined.
+- **TimeZoneOffset** (! Заменить на / добавить пользовательские) : *TEXT* - JSON with ??? NULL if it's undefined.
 - **Results** : *TEXT* - JSON with the results. See ???.md NULL if it's undefined.
 - **Sent** : *INTEGER* - 1 if it was sent to Sombrero else 0.
     - DEFAULT 0

@@ -330,10 +330,12 @@ function endGame(key) {
 
     Signals.sGameEnded(key, results)
     DB.run(`UPDATE Games
-            SET Results = $Results
+            SET Results = $Results,
+                EndTime = $EndTime
             WHERE GameID = $GameID;`,
         {
             $Results: JSON.stringify(results),
+            $EndTime: Date.now(),
             $GameID: rooms[key].gameID
         })
 
@@ -744,7 +746,7 @@ class Room {
                    Players = $Players,
                    Host = $Host,
                    StartTime = $StartTime,
-                   TimeZoneOffSet = $TimeZoneOffSet
+                   TimeZoneOffset = $TimeZoneOffset
                WHERE GameID = $GameID;`,
             {
                 $Settings: JSON.stringify(this.settings),
@@ -753,7 +755,7 @@ class Room {
                 $Players: JSON.stringify(getPlayerList(this.users)),
                 $Host: getHostUsername(this),
                 $StartTime: Date.now(),
-                $TimeZoneOffSet: JSON.stringify([]), // TODO: implement
+                $TimeZoneOffset: JSON.stringify([]), // TODO: implement
                 $GameID: this.gameID
             })
         // TODO: Turn on when IDs will be ready
