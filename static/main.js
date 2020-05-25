@@ -673,7 +673,7 @@ class App {
         })
     }
 
-    async checkClipboard() {
+    checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             disable("joinPage_pasteKey");
         } else {
