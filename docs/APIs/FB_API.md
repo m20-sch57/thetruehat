@@ -21,4 +21,15 @@ Also, there are **optional** fields for web client:
 - `userAgent` - content of `navigator.userAgent`.
 
 ## API
-All requests must be sent by HTTP method `POST` with only `JSON` containing FB object.
+1. Sending FB.
+    
+    Request:
+    
+    - by HTTP method `POST`;
+    - to address `http://<document.domain>/feedback`;
+    - with only `JSON` containing FB object.
+    
+    Response:
+    
+    - HTTP code. Typical codes:
+        - `200` - OK. TODO: may be `202` is better?

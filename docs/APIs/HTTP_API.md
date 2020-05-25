@@ -7,7 +7,7 @@ TODO
 ## API
 Mark `GET`/`POST` means that all following functions are requests by `HTTP` protocol with `GET`/`POST` method respectively.
 
-All data is delivered in request body in `JSON` format to address `http://<document.domain>/<function name>`.
+All data is delivered in request body in `JSON` format to address `http://<document.domain>/api/<function name>`.
 
 1. `GET` <a name="getRoomInfo">`getRoomInfo`</a> - function for getting room's info by the room's key.
 
