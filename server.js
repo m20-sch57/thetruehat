@@ -628,7 +628,7 @@ app.get("/getFreeKey", async function(req, res) {
  * @see API.md
  */
 app.get("/getRoomInfo", async function(req, res) {
-    const key = req.query.key.toLowerCase(); // The key of the room
+    const key = req.query.key.toLowerCase().replace(/\s+/g, ""); // The key of the room
 
     if (key === "") {
         sendResponse(req, res, {"success": false});
@@ -850,7 +850,7 @@ function checkInputFormat(socket, data, format, signal) {
 
 class CheckConditions {
     static cJoinRoom(socket, data) {
-        const key = data.key.toLowerCase(); // key of the room
+        const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
         const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
 
         // If user is not in his own room, it will be an error
@@ -1118,7 +1118,7 @@ class CheckConditions {
 
 class Callbacks {
     static async joinRoomCallback(socket, data, err) {
-        const key = data.key.toLowerCase(); // key of the room
+        const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
         const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
 
         // If any error happened
@@ -1460,7 +1460,7 @@ io.on("connection", function(socket) {
         }
 
         // Adding the user to the room
-        socket.join(data.key.toLowerCase(), (err) => Callbacks.joinRoomCallback(socket, data, err));
+        socket.join(data.key.toLowerCase().replace(/\s+/g, ""), (err) => Callbacks.joinRoomCallback(socket, data, err));
     });
 
     /**
