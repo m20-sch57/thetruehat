@@ -483,7 +483,7 @@ class App {
     }
 
     setKey(value) {
-        value = value.toUpperCase();
+        value = value.replace(/\s+/g, "").toUpperCase();
         this.game.key = value;
         location.hash = value;
         el("joinPage_inputKey").value = this.game.key;
