@@ -370,6 +370,10 @@ class Game {
             el(`editPage_${word.word}_mistake`).onclick =
                     () => this.changeWordState(word.word, "mistake");
         });
+        // Fixed bug with padding in Firefox
+        let eDiv = document.createElement("div");
+        eDiv.style.height = "15px";
+        el("gamePage_editListScrollable").appendChild(eDiv);
 
         el("resultsPage_results").innerHTML = "";
         this.results.forEach((result) => {
@@ -609,7 +613,7 @@ class App {
         } else {
             el("gamePage_editTitle").classList.add("shadow");
         }
-        if (elem.scrollHeight - elem.scrollTop == elem.clientHeight) {
+        if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
             el("gamePage_editConfirm").classList.remove("shadow");
         } else {
             el("gamePage_editConfirm").classList.add("shadow");
