@@ -42,7 +42,8 @@ DB.allAsync = function(sql, params) {
     return new Promise(function(resolve, reject) {
         that.all(sql, params, function(err, rows) {
             if (err) {
-                reject(err);
+                console.warn(err);
+                resolve(null);
             } else {
                 resolve({"rows": rows});
             }
@@ -55,7 +56,8 @@ DB.runAsync = function(sql, params) {
     return new Promise(function(resolve, reject) {
         that.run(sql, params, function(err) {
             if (err) {
-                reject(err);
+                console.warn(err);
+                resolve(null);
             } else {
                 resolve(this);
             }
@@ -1140,7 +1142,7 @@ class Callbacks {
             const resp = await DB.runAsync(`INSERT INTO Games DEFAULT VALUES;`);
             gameID = resp.lastID;
             rooms[key] = new Room(gameID)
-            DB.run(`INSERT INTO Rooms
+            await DB.runAsync(`INSERT INTO Rooms
                         VALUES ($RoomKey, $GameID)`,
                 {
                     $RoomKey: key,
