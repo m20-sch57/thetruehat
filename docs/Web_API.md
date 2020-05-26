@@ -119,7 +119,7 @@ __7.__ `io` <a name="sYouJoined">`sYouJoined`</a> - сигнал, посылае
 
 ---
 
-__8.__ `io` <a name="sNewSettings">`sNewSettings`</a> - новые настройки.
+__8.__ `io` <a name="sNewSettings">`sNewSettings`</a> - сигнал, посылаемый сервером всем клиентам в комнате при изменении настроек комнаты.
 
 - `settings` --- словарь с настройками комнаты.
 
