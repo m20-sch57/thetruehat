@@ -828,7 +828,7 @@ class App {
             el(id).setAttribute("placeholder", locale.placeholder[lang][id]);
         }
         for (let name of Object.keys(locale.name[lang])) {
-            els(name).forEach(it => it.innerHTML = locale.name[lang][id]);
+            els(name).forEach(it => it.innerHTML = locale.name[lang][name]);
         }
         this.loadContent([
             {
