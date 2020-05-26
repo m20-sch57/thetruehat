@@ -5,14 +5,10 @@ Array.prototype.last = function() {
 }
 
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-const SPEAKER_READY = "Я готов объяснять";
-const LISTENER_READY = "Я готов отгадывать";
-const EXPLAINED_WORD_STATE = "угадал";
-const NOT_EXPLAINED_WORD_STATE = "не угадал";
-const MISTAKE_WORD_STATE = "ошибка";
 
 const TIME_SYNC_DELTA = 60000;
 const DISCONNECT_TIMEOUT = 5000;
+const LANGS = ["ru", "en-test"];
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -164,7 +160,8 @@ class Template {
         return elem;
     }
 
-    static editWord({word, wordState}) {
+    static editWord({word, wordState, lang}) {
+        console.log(lang);
         let elem = document.createElement("div");
         elem.classList.add("edit-item");
         elem.setAttribute("id", `editPage_word_${word}`);
@@ -174,17 +171,20 @@ class Template {
         let eExplained = document.createElement("button");
         eExplained.classList.add("small-white-button");
         eExplained.classList.add("explained");
-        eExplained.innerText = EXPLAINED_WORD_STATE;
+        eExplained.innerText = locale.name[lang].explainedWordState;
+        eExplained.setAttribute("name", "explainedWordState");
         eExplained.setAttribute("id", `editPage_${word}_explained`);
         let eNotExplained = document.createElement("button");
         eNotExplained.classList.add("small-white-button");
         eNotExplained.classList.add("not-explained");
-        eNotExplained.innerText = NOT_EXPLAINED_WORD_STATE;
+        eNotExplained.innerText = locale.name[lang].notExplainedWordState;
+        eNotExplained.setAttribute("name", "notExplainedWordState");
         eNotExplained.setAttribute("id", `editPage_${word}_notExplained`);
         let eMistake = document.createElement("button");
         eMistake.classList.add("small-white-button");
         eMistake.classList.add("mistake");
-        eMistake.innerText = MISTAKE_WORD_STATE;
+        eMistake.innerText = locale.name[lang].mistakeWordState;
+        eMistake.setAttribute("name", "mistakeWordState");
         eMistake.setAttribute("id", `editPage_${word}_mistake`);
         elem.appendChild(eWord);
         elem.appendChild(eExplained);
@@ -279,13 +279,14 @@ class Pages {
 }
 
 class Game {
-    constructor() {
+    constructor(app) {
         this.myUsername = "";
         this.settings = {};
         this.editWords = [];
         this.results = [];
         this.roundId = 0;
         this.inGame = false;
+        this.app = app;
     }
 
     update(data) {
@@ -362,6 +363,8 @@ class Game {
 
         el("gamePage_editListScrollable").innerHTML = "";
         this.editWords.forEach((word) => {
+            console.log(word);
+            word.lang = this.app.lang;
             el("gamePage_editListScrollable").appendChild(Template.editWord(word));
             el(`editPage_${word.word}_explained`).onclick =
                     () => this.changeWordState(word.word, "explained");
@@ -412,7 +415,7 @@ class App {
 
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
-        this.game = new Game();
+        this.game = new Game(this);
         this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
@@ -424,20 +427,12 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
-        this.loadContent([
-            {
-                "pageFile": "rules.html",
-                "pageId": "helpPage_rulesBox"
-            },
-            {
-                "pageFile": "faq.html",
-                "pageId": "helpPage_faqBox"
-            },
-            {
-                "pageFile": "about.html",
-                "pageId": "helpPage_aboutBox"
-            }
-        ]);
+
+        if (localStorage.preferredLang) {
+            this.setLang(localStorage.preferredLang);
+        } else {
+            this.setLang("ru");
+        }
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -538,10 +533,10 @@ class App {
     }
 
     renderWaitPage() {
-        enable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
-        enable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innerText = SPEAKER_READY;
+        show("gamePage_listenerReadyButton");
+        hide("gamePage_listenerReady");
+        show("gamePage_speakerReadyButton");
+        hide("gamePage_speakerReady");
 
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
@@ -685,14 +680,14 @@ class App {
 
     listenerReady() {
         this.emit("cListenerReady");
-        disable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innerText = "Подожди напарника";
+        hide("gamePage_listenerReadyButton");
+        show("gamePage_listenerReady");
     }
 
     speakerReady() {
         this.emit("cSpeakerReady");
-        disable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innerText = "Подожди напарника";
+        hide("gamePage_speakerReadyButton");
+        show("gamePage_speakerReady");
     }
 
     animateDelayTimer(startTime, roundId) {
@@ -805,6 +800,50 @@ class App {
         el("helpPage_rulesOption").classList.remove("active");
         el("helpPage_faqOption").classList.remove("active");
         el("helpPage_aboutOption").classList.remove("active");
+    }
+
+    async loadContent(loadablePages) {
+        for (let page of loadablePages) {
+            let response = (await fetch(page["pageFile"])).text();
+            let body = await response;
+            el(page["pageId"]).innerHTML = body;
+        }
+        els("version").forEach((it) => it.innerText = VERSION);
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+    }
+
+    setLang(lang) {
+        if (LANGS.indexOf(lang) == -1) {
+            console.error("Incorrect language. Language must be one of", LANGS);
+            return;
+        }
+        if (this.lang && lang == this.lang) return;
+        localStorage.preferredLang = lang; 
+        this.lang = lang;
+        for (let id of Object.keys(locale.id[lang])) {
+            el(id).innerHTML = locale.id[lang][id];
+        }
+        for (let id of Object.keys(locale.placeholder[lang])) {
+            el(id).setAttribute("placeholder", locale.placeholder[lang][id]);
+        }
+        for (let name of Object.keys(locale.name[lang])) {
+            els(name).forEach(it => it.innerHTML = locale.name[lang][id]);
+        }
+        this.loadContent([
+            {
+                "pageFile": `rules.${lang}.html`,
+                "pageId": "helpPage_rulesBox"
+            },
+            {
+                "pageFile": `faq.${lang}.html`,
+                "pageId": "helpPage_faqBox"
+            },
+            {
+                "pageFile": `about.${lang}.html`,
+                "pageId": "helpPage_aboutBox"
+            }
+        ]);
     }
 
     setSocketioEventListeners() {
@@ -988,17 +1027,6 @@ class App {
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("failureClose").onclick = hideError;
         el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
-    }
-
-    async loadContent(loadablePages) {
-        for (let page of loadablePages) {
-            let response = (await fetch(page["pageFile"])).text();
-            let body = await response;
-            el(page["pageId"]).innerHTML = body;
-        }
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
-        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
-        els("version").forEach((it) => it.innerText = VERSION);
     }
 }
 

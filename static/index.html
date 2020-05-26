@@ -16,9 +16,9 @@
     <div class="page" id="mainPage" style="display: none;">
         <div id="mainPage_actions">
             <button id="mainPage_createRoom">
-                Создать
+                <!-- Создать -->
             </button><button id="mainPage_joinRoom">
-                Войти
+                <!-- Войти -->
             </button>
             <button id="mainPage_viewHelp" name="helpButton"></button>
         </div>
@@ -33,17 +33,23 @@
         <div class="content-small">
             <div id="joinPage_header">
                 <input class="large-input" id="joinPage_inputKey" spellcheck="false" placeholder="Ключ игры">
-                <p class="hint">Введённый выше ключ необходим для игры.</p>
+                <p id="joinPage_inputKeyHint" class="hint">
+                    <!-- Введённый выше ключ необходим для игры. -->
+                </p>
                 <button class="small-button bg-blue" id="joinPage_pasteKey">
-                    Вставить
+                    <!-- Вставить -->
                 </button><button class="small-button bg-blue" id="joinPage_generateKey">
-                    Сгенерировать новый
+                    <!-- Сгенерировать новый -->
                 </button>
             </div>
             <div id="joinPage_body">
                 <input class="medium-input" id="joinPage_inputName" spellcheck="false" placeholder="Введи своё имя">
-                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
-                <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+                <p id="joinPage_inputNameHint" class="hint">
+                    <!-- Имя нужно, чтобы друзья могли тебя опознать -->
+                </p>
+                <button class="medium-button bg-green" id="joinPage_go">
+                    <!-- Поехали! -->
+                </button>
                 <p class="hint" id="joinPage_goHint" style="display: none;"></p>
             </div>
         </div>
@@ -61,9 +67,9 @@
                 </h1>
                 <p class="hint" style="display: none;"><span id="preparationPage_playersCnt">0</span></p>
                 <button class="small-button bg-blue" id="preparationPage_copyKey">
-                    Копир. ключ
+                    <!-- Копир. ключ -->
                 </button><button class="small-button bg-blue" id="preparationPage_copyLink">
-                    Копир. ссылку
+                    <!-- Копир. ссылку -->
                 </button>
             </div>
             <div id="preparationPage_body">
@@ -72,9 +78,15 @@
                     <div id="preparationPage_users"></div>
                     <div class="spacer"></div>
                 </div>
-                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">Начать игру</button>
-                <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
-                <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
+                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">
+                    <!-- Начать игру -->
+                </button>
+                <p class="hint" id="preparationPage_startHint" style="display: none;">
+                    <!-- Меньше 2 игроков -->
+                </p>
+                <h1 id="preparationPage_startLabel" style="display: none;">
+                    <!-- Игра не началась -->
+                </h1>
             </div>
         </div>
     </div>
@@ -86,24 +98,24 @@
         </button>
         <div id="gamePage_hatPicture"></div>
         <div id="gamePage_hatText">
-            Слов в шляпе: <span id="gamePage_wordsCnt"></span>
+            <span id="gamePage_wordsInHat"><!-- Слов в шляпе --></span> : <span id="gamePage_wordsCnt"></span>
         </div>
         <div class="content-small">
             <div id="gamePage_header">
                 <h1 class="game-title" id="gamePage_waitTitle" style="display: none;">
-                    Подготовка
+                    <!-- Подготовка -->
                 </h1>
                 <h1 class="game-title" id="gamePage_explanationTitle" style="display: none;">
-                    Идёт объяснение
+                    <!-- Идёт объяснение -->
                 </h1>
                 <h1 class="game-title" id="gamePage_speakerTitle" style="display: none;">
-                    Ты объясняешь
+                    <!-- Ты объясняешь -->
                 </h1>
                 <h1 class="game-title" id="gamePage_listenerTitle" style="display: none;">
-                    Ты отгадываешь
+                    <!-- Ты отгадываешь -->
                 </h1>
                 <h1 class="game-title" id="gamePage_editTitle" style="display: none;">
-                    Редактирование раунда
+                    <!-- Редактирование раунда -->
                 </h1>
             </div>
             <div id="gamePage_body">
@@ -113,10 +125,14 @@
                             <span class="fa fa-microphone"></span>
                             <span id="gamePage_speaker"></span>
                         </h1>
-                        <p id="gamePage_speakerHint">объясняет</p>
+                        <p id="gamePage_speakerHint">
+                            <!-- объясняет -->
+                        </p>
                     </div>
                     <div id="gamePage_listenerBox">
-                        <p id="gamePage_listenerHint">отгадывает</p>
+                        <p id="gamePage_listenerHint">
+                            <!-- отгадывает -->
+                        </p>
                         <h1 id="gamePage_listenerLabel">
                             <span id="gamePage_listener"></span>
                             <span class="fa fa-headphones"></span>
@@ -125,12 +141,18 @@
                 </div>
                 <div id="gamePage_speakerReadyBox" style="display: none;">
                     <button class="medium-button bg-green" id="gamePage_speakerReadyButton">
-                        Я готов объяснять
+                        <!-- Я готов объяснять -->
+                    </button>
+                    <button class="medium-button bg-green" id="gamePage_speakerReady" disabled>
+                        <!-- Подожди напарника -->
                     </button>
                 </div>
                 <div id="gamePage_listenerReadyBox" style="display: none;">
                     <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">
-                        Я готов отгадывать
+                        <!-- Я готов отгадывать -->
+                    </button>
+                    <button class="medium-button bg-blue" id="gamePage_listenerReady" disabled>
+                        <!-- Подожди напарника -->
                     </button>
                 </div>
                 <div id="gamePage_observerBox" style="display: none;">
@@ -151,12 +173,12 @@
                     </div>
                     <div id="gamePage_explanationActions">
                         <button class="medium-button bg-blue" id="gamePage_explanationFailed">
-                            Не угадал
+                            <!-- Не угадал -->
                         </button><button class="medium-button bg-red" id="gamePage_explanationMistake">
-                            Ошибка
+                            <!-- Ошибка -->
                         </button>
                         <button class="medium-button bg-green" id="gamePage_explanationSuccess">
-                            Угадал
+                            <!-- Угадал -->
                         </button>
                     </div>
                 </div>
@@ -166,7 +188,7 @@
                         </div>
                     </div>
                     <button class="medium-button bg-green" id="gamePage_editConfirm">
-                        Подтверждаю
+                        <!-- Подтверждаю -->
                     </button>
                 </div>
             </div>
@@ -181,24 +203,26 @@
         </button>
         <div class="content-small">
             <div id="resultsPage_header">
-                <h1 id="resultsPage_title">Результаты игры</h1>
+                <h1 id="resultsPage_title">
+                    <!-- Результаты игры -->
+                </h1>
             </div>
             <div id="resultsPage_body">
                 <table id="resultsPage_table">
                 <thead>
-                    <th>Игрок</th>
-                    <th>Объяснено</th>
-                    <th>Угадано</th>
-                    <th>Сумма</th>
+                    <th id="resultsPage_tableTitle_player"><!-- Игрок --></th>
+                    <th id="resultsPage_tableTitle_explained"><!-- Объяснено --></th>
+                    <th id="resultsPage_tableTitle_guessed"><!-- Угадано --></th>
+                    <th id="resultsPage_tableTitle_summ"><!-- Сумма --></th>
                 </thead>
                 <tbody id="resultsPage_results">
                 </tbody>
                 </table>
                 <button class="medium-button bg-blue" id="resultsPage_feedback" name="feedbackButton">
-                    Оставить отзыв
+                    <!-- Оставить отзыв -->
                 </button>
                 <button class="medium-button bg-green" id="resultsPage_newGame">
-                    Новая игра
+                    <!-- Новая игра -->
                 </button>
             </div>
         </div>
@@ -212,9 +236,9 @@
         <div class="content-large">
             <div id="helpPage_header">
                 <div id="helpPage_navigation">
-                    <button class="flat-button option active" id="helpPage_rulesOption">Правила</button>
-                    <button class="flat-button option" id="helpPage_faqOption">FAQ</button>
-                    <button class="flat-button option" id="helpPage_aboutOption">О нас</button>
+                    <button class="flat-button option active" id="helpPage_rulesOption"><!-- Правила --></button>
+                    <button class="flat-button option" id="helpPage_faqOption"><!-- FAQ --></button>
+                    <button class="flat-button option" id="helpPage_aboutOption"><!-- О нас --></button>
                 </div>
             </div>
             <div id="helpPage_body">
@@ -234,7 +258,9 @@
         </button>
         <div class="content-medium">
             <div id="feedbackPage_header">
-                <h1 id="feedbackPage_title">Обратная связь</h1>
+                <h1 id="feedbackPage_title">
+                    <!-- Обратная связь -->
+                </h1>
                 <h3 id="feedbackPage_version" name="version"></h3>
             </div>
             <div id="feedbackPage_body">
@@ -242,9 +268,13 @@
                 <div id="feedbackPage_clientInfo">
                     <input type="checkbox" id="feedbackPage_clientInfoCheckbox" checked>
                     <label for="feedbackPage_clientInfoCheckbox"><span class="fa fa-check"></span></label>
-                    <label for="feedbackPage_clientInfoCheckbox">Отправить дополнительные сведения</label>
+                    <label id="feedbackPage_clientInfoHint" for="feedbackPage_clientInfoCheckbox">
+                        <!-- Отправить дополнительные сведения -->
+                    </label>
                 </div>
-                <button class="medium-button bg-green" id="feedbackPage_submit">Отправить</button>
+                <button class="medium-button bg-green" id="feedbackPage_submit">
+                    <!-- Отправить -->
+                </button>
             </div>
         </div>
     </div>
@@ -257,6 +287,7 @@
     <audio src="sounds/final+.mp3" id="final+"></audio>
     <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
     <script src="version.js"></script>
+    <script src="locale.js"></script>
     <script src="main.js"></script>
 </body>
 
