@@ -6,11 +6,14 @@
     "wordsPath": "./words/easy.json",
     "feedbackPath": "./feedback.log",
     "env": "staging",
+        "defaultSettings": {
+        "delayTime": 3000,
+        "explanationTime": 40000,
+        "aftermathTime": 3000,
+        "wordNumber": 100,
+        "strictMode": false
+    },
     "transferTime": 1000,
-    "delayTime": 3000,
-    "explanationTime": 40000,
-    "aftermathTime": 3000,
-    "wordNumber": 100,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [
