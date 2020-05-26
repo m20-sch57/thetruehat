@@ -31,7 +31,7 @@ Query string:
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
 - `host` - Если `status = wait, play`. Хост комнаты.
-- `settings` - Если `status = wait, play`. Настройки комнаты.
+- `settings` - Если `status = wait, play`. Словарь с настройками комнаты.
 - `results (array)` - Если `status = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
     - `username (string)` - имя игрока.
     - `scoreExplained (int)` - количество объяснённых слов.
