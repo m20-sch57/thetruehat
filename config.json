@@ -3,7 +3,22 @@
     "feedbackPort": 7005,
     "serverPIDPath": "./server.pid",
     "feedbackPIDPath": "./feedback.pid",
-    "wordsPath": "./words/easy.json",
+    "dicts": [
+        {
+            "name": {
+                "ru": "Русские слова",
+                "en": "Russian words"
+            },
+            "path": "./words/all.json"
+        },
+        {
+            "name": {
+                "ru": "Английские слова (русские)",
+                "en": "English words (russian)"
+            },
+            "path": "./words/easy.json"
+        }
+    ],
     "feedbackPath": "./feedback.log",
     "env": "staging",
         "defaultSettings": {
