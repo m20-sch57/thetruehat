@@ -255,6 +255,14 @@
         </button>
         <div class="content-small">
             <div id="gameSettingsPage_header">
+                <h1 id="gameSettingsPage_title">
+                КЛЮЧ</h1>
+                <p class="hint" style="display: none;"><span id="gameSettingsPage_playersCnt">0</span></p>
+                <button class="small-button bg-blue" id="gameSettingsPage_copyKey">
+                    Копир. ключ
+                </button><button class="small-button bg-blue" id="gameSettingsPage_copyLink">
+                    Копир. ссылку
+                </button>
             </div>
             <div id="gameSettingsPage_body">
                 <div id="gameSettingsPage_layers">
@@ -276,12 +284,17 @@
                     </div>
                 </div>
                 <div id="gameSettingsPage_dictionarySelection">
-                    <div id="gameSettingsPage_dictionarySelectionLabel">
+                    <div id="gameSettingsPage_dictionarySelectionLabel" class="label">
                     Словарь</div>
-                    <select>
+                    <select id="gameSettingsPage_dictionaryList">
                         <option>лол</option>
                         <option>кек</optgroup>
                     </select>
+                </div>
+                <div id="gameSettingsPage_strictMode">
+                    <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
+                    <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
+                    <label for="gameSettingsPage_strictModeCheckbox">Строгий режим</label>
                 </div>
                 <div id="gameSettingsPage_actions">
                     <button class="medium-button bg-green" id="gameSettingsPage_applyButton">
