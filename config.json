@@ -26,6 +26,7 @@
         "explanationTime": 40000,
         "aftermathTime": 3000,
         "wordNumber": 100,
+        "dictionaryId": 0,
         "strictMode": false
     },
     "transferTime": 1000,

@@ -14,7 +14,18 @@ const PORT = config.port;
 const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
-const allWords = require(config.wordsPath).words;
+// const allWords = require(config.wordsPath).words;
+
+const dictsConf = config.dicts;
+let _dicts = [];
+for (let i = 0; i < dictsConf.length; ++i) {
+    let dict = {};
+    dict["words"] = require(dictsConf[i].path).words;
+    dict["name"] = dictsConf[i].name;
+    dict["wordNumber"] = dict.words.length;
+    _dicts.push(dict);
+}
+const dicts = _dicts;
 
 const fs = require("fs");
 fs.writeFile(argv.pidfile, process.pid.toString(), function(err, data) {
@@ -168,12 +179,13 @@ function getRoom(socket) {
 function generateWords(key) {
     let words = [];
     let used = {};
-    const numberOfAllWords = allWords.length;
+    let dict = dicts[rooms[key].settings.dictionaryId];
+    const numberOfAllWords = dict.wordNumber;
     while (words.length < rooms[key].settings.wordNumber) {
         const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
-            words.push(allWords[pos]);
+            words.push(dict.words[pos]);
         }
     }
     return words;
@@ -551,6 +563,23 @@ function sendResponse(req, res, data) {
  * Implementation of getFreeKey function
  * @see API.md
  */
+app.get("/getDictionaryList", function(req, res) {
+    // preparing data
+    let dictionaries = [];
+    for (let i = 0; i < dicts.length; ++i) {
+        dictionaries.push({
+            "name": dicts[i].name,
+            "wordNumber": dicts[i].wordNumber
+        });
+    }
+
+    sendResponse(req, res, {"dictionaries": dictionaries});
+});
+
+/**
+ * Implementation of getFreeKey function
+ * @see API.md
+ */
 app.get("/getFreeKey", function(req, res) {
     // getting the settings
     const minKeyLength = config.minKeyLength;
@@ -800,7 +829,7 @@ class CheckConditions {
         return true;
     }
 
-    static cApplySettings(socket, key) {
+    static cApplySettings(socket, key, settings) {
         // Checking if user is not in the room
         if (key === socket.id) {
             Signals.sFailure(socket.id, "cApplySettings", null, "Вы не в комнате");
@@ -830,6 +859,12 @@ class CheckConditions {
             Signals.sFailure(socket.id, "cApplySettings", null, "Только хост может изменить настройки");
             return false;
         }
+        // checking that dictionaryId is OK
+        if ("dictionaryId" in settings  && settings["dictionaryId"] >= dicts.length) {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Неверный идентификатор словаря");
+            return false;
+        }
+
         return true;
     }
 
@@ -1092,11 +1127,18 @@ class Callbacks {
 
     static cApplySettings(socket, key, settings) {
         // setting settings
-        const settingsKeys = Object.keys(rooms[key].settings);
+        const settingsKeys = Object.keys(settings);
         for (let i = 0; i < settingsKeys.length; ++i) {
-            if (settingsKeys[i] in settings &&
-                typeof(rooms[key].settings[settingsKeys[i]]) === typeof(settings[settingsKeys[i]])) {
-                rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
+            if (settingsKeys[i] in rooms[key].settings) {
+                if (typeof(rooms[key].settings[settingsKeys[i]]) === typeof(settings[settingsKeys[i]])) {
+                    rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
+                } else {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверный тип поля настроек " + settingsKeys[i] + ": "+
+                        typeof(settings[settingsKeys[i]]) + " вместо " + typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
+                }
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
             }
         }
 
@@ -1353,7 +1395,7 @@ io.on("connection", function(socket) {
         }
 
         // checking signal conditions
-        if (!CheckConditions.cApplySettings(socket, key)) {
+        if (!CheckConditions.cApplySettings(socket, key, data.settings)) {
             return;
         }
 
