@@ -179,13 +179,22 @@ input[type=checkbox] + label + label {
     font-size: 18px;
 }
 
-.large-input {
+.large-underlined-input {
     height: 55px;
-    padding: 7px 20px 7px 20px;
+    padding: 7px 0 7px 0;
     background-color: transparent;
     border-width: 0 0 1px 0;
     border-color: grey;
     font-size: 38px;
+}
+
+.small-underlined-input {
+    height: 30px;
+    padding: 4px 0 4px 0;
+    background-color: transparent;
+    border-width: 0 0 1px 0;
+    border-color: grey;
+    font-size: 25px;
 }
 
 .default-textarea {
@@ -196,11 +205,12 @@ input[type=checkbox] + label + label {
     line-height: 20px;
 }
 
-.medium-input:focus, .large-input:focus, .default-textarea:focus {
+.medium-input:focus, .large-underlined-input:focus, 
+.small-underlined-input:focus, .default-textarea:focus {
     border-color: skyblue;
 }
 
-.large-input:focus::placeholder {
+.large-underlined-input:focus::placeholder {
     color: transparent;
 }
 
@@ -1033,4 +1043,44 @@ input[type=checkbox] + label + label {
 
 #failureClose:active {
     background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* gameSettingsPage */
+
+#gameSettingsPage_actions {
+	display: flex;
+	flex-flow: row;
+}
+
+#gameSettingsPage_applyButton {
+	flex-basis: 50%;
+	margin-right: 20px;
+}
+
+#gameSettingsPage_revertButton {
+	flex-basis: 50%;
+}
+
+#gameSettingsPage_body {
+    padding: 0 30px 30px 30px;
+}
+
+#gameSettingsPage_layers {
+	margin-left: 25px;
+	margin-right: 25px;
+}
+
+#gameSettingsPage_layers .layer {
+	display: flex;
+	flex-flow: row;
+}
+
+#gameSettingsPage_layers .label {
+	margin: auto auto auto 0px;
+}
+
+#gameSettingsPage_layers .input {
+	max-width: 60px;
+	margin-left: 5px;
+	text-align: center;
 }

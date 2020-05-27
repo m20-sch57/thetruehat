@@ -32,7 +32,7 @@
         </button>
         <div class="content-small">
             <div id="joinPage_header">
-                <input class="large-input" id="joinPage_inputKey" spellcheck="false" placeholder="Ключ игры">
+                <input class="large-underlined-input" id="joinPage_inputKey" spellcheck="false" placeholder="Ключ игры">
                 <p class="hint">Введённый выше ключ необходим для игры.</p>
                 <button class="small-button bg-blue" id="joinPage_pasteKey">
                     Вставить
@@ -248,6 +248,51 @@
             </div>
         </div>
     </div>
+    <div class="page" id="gameSettingsPage" style="">
+        <button class="white-bubble go-back" id="gameSettingsPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button>
+        <div class="content-small">
+            <div id="gameSettingsPage_header">
+            </div>
+            <div id="gameSettingsPage_body">
+                <div id="gameSettingsPage_layers">
+                    <div id="gameSettingsPage_wordNumber" class="layer">
+                        <div id="gameSettingsPage_wordNumberLabel" class="label">Количество слов</div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_wordNumberField">
+                    </div>
+                    <div id="gameSettingsPage_delayTime" class="layer">
+                        <div id="gameSettingsPage_delayTimeLabel" class="label">Время на подготовку</div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_delayTimeField">
+                    </div>
+                    <div id="gameSettingsPage_aftermathTime" class="layer">
+                        <div id="gameSettingsPage_aftermathTimeLabel" class="label">Время на объяснение</div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField">
+                    </div>
+                    <div id="gameSettingsPage_explanationTime" class="layer">
+                        <div id="gameSettingsPage_explanationTimeLabel" class="label">Время на последнюю попытку</div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_explanationTimeField">
+                    </div>
+                </div>
+                <div id="gameSettingsPage_dictionarySelection">
+                    <div id="gameSettingsPage_dictionarySelectionLabel">
+                    Словарь</div>
+                    <select>
+                        <option>лол</option>
+                        <option>кек</optgroup>
+                    </select>
+                </div>
+                <div id="gameSettingsPage_actions">
+                    <button class="medium-button bg-green" id="gameSettingsPage_applyButton">
+                            Применить
+                    </button><button class="medium-button bg-grey" id="gameSettingsPage_revertButton">
+                            Отмена
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="failure" style="display: none;">
         <span id="failureMsg"></span>
         <button id="failureClose">&times;</button>
@@ -257,7 +302,7 @@
     <audio src="sounds/final+.mp3" id="final+"></audio>
     <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
     <script src="version.js"></script>
-    <script src="main.js"></script>
+    <!-- <script src="main.js"></script> -->
 </body>
 
 </html>
