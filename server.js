@@ -858,7 +858,7 @@ class CheckConditions {
             return false;
         }
         // checking that dictionaryId is OK
-        if ("dictionaryId" in settings  && settings["dictionaryId"] >= dicts.length) {
+        if ("dictionaryId" in settings && settings["dictionaryId"] >= dicts.length) {
             Signals.sFailure(socket.id, "cApplySettings", null, "Неверный идентификатор словаря");
             return false;
         }
