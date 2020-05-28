@@ -1122,6 +1122,7 @@ class Callbacks {
 
     static cApplySettings(socket, key, settings) {
         // special case: "dictionaryId" (it changes ranges for other settings)
+        let warn = false;
         if ("dictionaryId" in settings) {
             if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
@@ -1135,8 +1136,7 @@ class Callbacks {
                     rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
                     if (rooms[key].settings["wordNumber"] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
                         rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber - 1;
-                        Signals.sFailure(socket.id, "cApplySettings", null,
-                            "Количество слов уменьшено до максимально возможного для данного словаря");
+                        warn = true;
                     }
                 }
             }
@@ -1161,15 +1161,23 @@ class Callbacks {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                     continue;
                 }
-                if (settingsKeys[i] === "wordNumber" &&
-                    settings[settingsKeys[i]] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                if (settingsKeys[i] === "wordNumber") {
+                    if (settings[settingsKeys[i]] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                        continue;
+                    }
+                    warn = false;
                 }
                 rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
             } else {
                 Signals.sFailure(socket.id, "cApplySettings", null,
                     "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
             }
+        }
+
+        if (warn) {
+            Signals.sFailure(socket.id, "cApplySettings", null,
+                "Количество слов уменьшено до максимально возможного для данного словаря");
         }
 
         Signals.sNewSettings(key);
