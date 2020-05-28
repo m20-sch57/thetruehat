@@ -171,15 +171,15 @@ function getRoom(socket) {
 /**
  * Generate word list
  *
- * @param key key of the room
+ * @param settings settings of the room
  * @return list of words
  */
-function generateWords(key) {
+function generateWords(settings) {
     let words = [];
     let used = {};
-    let dict = dicts[rooms[key].settings.dictionaryId];
+    let dict = dicts[settings.dictionaryId];
     const numberOfAllWords = dict.wordNumber;
-    while (words.length < rooms[key].settings.wordNumber) {
+    while (words.length < settings.wordNumber) {
         const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
@@ -672,12 +672,12 @@ class Room {
     /**
      * Preparing room for the game
      */
-    gamePrepare(key) {
+    gamePrepare() {
         // changing state to 'play'
         this.state = "play";
 
-        // generating word list (later key can affect word list)
-        this.freshWords = generateWords(key);
+        // generating word list
+        this.freshWords = generateWords(this.settings);
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -1160,7 +1160,7 @@ class Callbacks {
         // removing offline users
         rooms[key].users = onlineUsers;
 
-        rooms[key].gamePrepare(key);
+        rooms[key].gamePrepare();
 
         Signals.sGameStarted(key);
     }
