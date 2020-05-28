@@ -57,8 +57,8 @@
         </button>
         <div class="content-small">
             <div id="preparationPage_header">
-                <h1 id="preparationPage_title">
-                </h1>
+                <h1 id="preparationPage_title"></h1>
+                <button id="preparationPage_openSettings" style="display: none;">Настройки</button>
                 <p class="hint" style="display: none;"><span id="preparationPage_playersCnt">0</span></p>
                 <button class="small-button bg-blue" id="preparationPage_copyKey">
                     Копир. ключ
@@ -248,15 +248,18 @@
             </div>
         </div>
     </div>
-    <div class="page" id="gameSettingsPage" style="">
+    <div class="page" id="gameSettingsPage" style="display: none;">
         <button class="white-bubble go-back" id="gameSettingsPage_goBack">
             <span class="fa fa-chevron-left"></span>
         </button><button class="white-bubble view-help" name="helpButton">
         </button>
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
+        </button>
         <div class="content-small">
             <div id="gameSettingsPage_header">
                 <h1 id="gameSettingsPage_title">
-                КЛЮЧ</h1>
+                </h1>
                 <p class="hint" style="display: none;"><span id="gameSettingsPage_playersCnt">0</span></p>
                 <button class="small-button bg-blue" id="gameSettingsPage_copyKey">
                     Копир. ключ
@@ -315,7 +318,7 @@
     <audio src="sounds/final+.mp3" id="final+"></audio>
     <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
     <script src="version.js"></script>
-    <!-- <script src="main.js"></script> -->
+    <script src="main.js"></script>
 </body>
 
 </html>

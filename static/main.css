@@ -1048,7 +1048,7 @@ input[type=checkbox] + label + label {
 /* gameSettingsPage */
 
 #gameSettingsPage_actions {
-    padding-top: 50px;
+    padding-top: 35px;
 	display: flex;
 	flex-flow: row;
 }
@@ -1079,13 +1079,14 @@ input[type=checkbox] + label + label {
 }
 
 #gameSettingsPage_body .label {
-	margin: auto auto auto 0px;
+	margin: auto auto 0px 0px;
 }
 
 #gameSettingsPage_layers .input {
 	max-width: 60px;
 	margin-left: 5px;
 	text-align: center;
+    background-color: #ffecb5;
 }
 
 #gameSettingsPage_dictionaryList {
@@ -1094,9 +1095,17 @@ input[type=checkbox] + label + label {
 }
 
 #gameSettingsPage_dictionarySelection {
-    padding-top: 50px;
+    padding-top: 25px;
 }
 
 #gameSettingsPage_strictMode {
-    padding-top: 50px;
+    padding-top: 25px;
+}
+
+#gameSettingsPage_delayTime {
+    padding-top: 20px;
+}
+
+#gameSettingsPage_aftermathTime, #gameSettingsPage_explanationTime {
+    padding-top: 10px;
 }

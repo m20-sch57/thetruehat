@@ -488,6 +488,7 @@ class App {
         location.hash = value;
         el("joinPage_inputKey").value = this.game.key;
         el("preparationPage_title").innerText = this.game.key;
+        el("gameSettingsPage_title").innerText = this.game.key;
     }
 
     enterRoom() {
@@ -520,6 +521,7 @@ class App {
     }
 
     renderPreparationPage() {
+        this.updateSettingsButtonVisibility();
         if (this.game.isHost) {
             show("preparationPage_start");
             hide("preparationPage_startLabel");
@@ -807,6 +809,14 @@ class App {
         el("helpPage_aboutOption").classList.remove("active");
     }
 
+    applySettings() {
+        console.log("Applying...");
+    }
+
+    updateSettingsButtonVisibility() {
+        el("preparationPage_openSettings").style.display = (this.game.isHost ? "" : "none");
+    }
+
     setSocketioEventListeners() {
         let _this = this;
 
@@ -988,6 +998,14 @@ class App {
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("failureClose").onclick = hideError;
         el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
+        el("preparationPage_openSettings").onclick = 
+            () => this.pages.go(["gameSettingsPage"]);
+        el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
+        el("gameSettingsPage_revertButton").onclick = () => this.pages.goBack();
+        el("gameSettingsPage_applyButton").onclick = () => {
+            this.applySettings();
+            this.pages.goBack();
+        }
     }
 
     async loadContent(loadablePages) {
