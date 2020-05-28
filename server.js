@@ -1155,7 +1155,7 @@ class Callbacks {
                         typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
                     continue;
                 }
-                if (typeof(settings[settingsKeys[i]]) !== typeof(true) &&
+                if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
                     settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
                     settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max) {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
