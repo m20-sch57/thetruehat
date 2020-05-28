@@ -25,6 +25,8 @@ for (let i = 0; i < dictsConf.length; ++i) {
 }
 const dicts = _dicts;
 
+const settingsRange = config.settingsRange;
+
 const fs = require("fs");
 fs.writeFile(argv.pidfile, process.pid.toString(), function(err, data) {
     if (err) {
@@ -857,11 +859,6 @@ class CheckConditions {
             Signals.sFailure(socket.id, "cApplySettings", null, "Только хост может изменить настройки");
             return false;
         }
-        // checking that dictionaryId is OK
-        if ("dictionaryId" in settings && settings["dictionaryId"] >= dicts.length) {
-            Signals.sFailure(socket.id, "cApplySettings", null, "Неверный идентификатор словаря");
-            return false;
-        }
 
         return true;
     }
@@ -1124,19 +1121,54 @@ class Callbacks {
     }
 
     static cApplySettings(socket, key, settings) {
+        // special case: "dictionaryId" (it changes ranges for other settings)
+        if ("dictionaryId" in settings) {
+            if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверный тип поля настроек dictionaryId: " +
+                    typeof(settings["dictionaryId"]) + " вместо " +
+                    typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
+            } else {
+                if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+                } else {
+                    rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
+                    if (rooms[key].settings["wordNumber"] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber - 1;
+                        Signals.sFailure(socket.id, "cApplySettings", null,
+                            "Количество слов уменьшено до максимально возможного для данного словаря");
+                    }
+                }
+            }
+        }
+
         // setting settings
         const settingsKeys = Object.keys(settings);
         for (let i = 0; i < settingsKeys.length; ++i) {
+            if (settingsKeys[i] === "dictionaryId") continue; // already done
+
             if (settingsKeys[i] in rooms[key].settings) {
-                if (typeof(rooms[key].settings[settingsKeys[i]]) === typeof(settings[settingsKeys[i]])) {
-                    rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
-                } else {
+                if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
                     Signals.sFailure(socket.id, "cApplySettings", null,
-                        "Неверный тип поля настроек " + settingsKeys[i] + ": "+
-                        typeof(settings[settingsKeys[i]]) + " вместо " + typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
+                        "Неверный тип поля настроек " + settingsKeys[i] + ": " +
+                        typeof(settings[settingsKeys[i]]) + " вместо " +
+                        typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
+                    continue;
                 }
+                if (typeof(settings[settingsKeys[i]]) !== typeof(true) &&
+                    settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
+                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                    continue;
+                }
+                if (settingsKeys[i] === "wordNumber" &&
+                    settings[settingsKeys[i]] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                }
+                rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
             } else {
-                Signals.sFailure(socket.id, "cApplySettings", null, "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
             }
         }
 

@@ -21,13 +21,31 @@
     ],
     "feedbackPath": "./feedback.log",
     "env": "staging",
-        "defaultSettings": {
+    "defaultSettings": {
         "delayTime": 3000,
         "explanationTime": 40000,
         "aftermathTime": 3000,
         "wordNumber": 100,
         "dictionaryId": 0,
         "strictMode": false
+    },
+    "settingsRange": {
+        "delayTime": {
+            "min": 0,
+            "max": 100000
+        },
+        "explanationTime": {
+            "min": 0,
+            "max": 1000000
+        },
+        "aftermathTime": {
+            "min": 0,
+            "max": 100000
+        },
+        "wordNumber": {
+            "min": 0,
+            "max": 1000
+        }
     },
     "transferTime": 1000,
     "minKeyLength": 6,
