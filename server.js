@@ -220,6 +220,7 @@ function startExplanation(key) {
     const currentTime = date.getTime();
     rooms[key].startTime = currentTime + (rooms[key].settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
+
     if (rooms[key].settings.strictMode) {
         const numberOfTurn = rooms[key].numberOfTurn;
         setTimeout(function() {
@@ -422,7 +423,6 @@ class Signals {
     /**
      * Implementation of sNewSettings signal
      * @see API.md
-     *
      *
      * @param key Key of the Room
      */
