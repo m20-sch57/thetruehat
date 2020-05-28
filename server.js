@@ -558,7 +558,7 @@ function sendResponse(req, res, data) {
 }
 
 /**
- * Implementation of getFreeKey function
+ * Implementation of getDictionaryList function
  * @see API.md
  */
 app.get("/getDictionaryList", function(req, res) {
