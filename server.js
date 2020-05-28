@@ -14,8 +14,6 @@ const PORT = config.port;
 const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
-// const allWords = require(config.wordsPath).words;
-
 const dictsConf = config.dicts;
 let _dicts = [];
 for (let i = 0; i < dictsConf.length; ++i) {
