@@ -436,6 +436,10 @@ class App {
             {
                 "pageFile": "about.html",
                 "pageId": "helpPage_aboutBox"
+            },
+            {
+                "pageFile": "news.html",
+                "pageId": "helpPage_newsBox"
             }
         ]);
 
@@ -818,6 +822,7 @@ class App {
         el("helpPage_rulesOption").classList.remove("active");
         el("helpPage_faqOption").classList.remove("active");
         el("helpPage_aboutOption").classList.remove("active");
+        el("helpPage_newsOption").classList.remove("active");
     }
 
     setSocketioEventListeners() {
@@ -994,6 +999,11 @@ class App {
             this.deactiveteHelpOptions();
             el("helpPage_aboutOption").classList.add("active");
             this.helpPages.go(["helpPage_aboutBox"]);
+        }
+        el("helpPage_newsOption").onclick = () => {
+            this.deactiveteHelpOptions();
+            el("helpPage_newsOption").classList.add("active");
+            this.helpPages.go(["helpPage_newsBox"]);
         }
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
