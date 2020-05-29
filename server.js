@@ -1096,7 +1096,7 @@ class CheckConditions {
             return false;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cEndGame", null, "Только хост может начать игру");
+            Signals.sFailure(socket.id, "cEndGame", null, "Только хост может закончить игру");
             return false;
         }
 
