@@ -211,6 +211,7 @@ input[type=checkbox] + label + label {
 .medium-select {
     height: 40px;
     padding: 0 10px 0 10px;
+    border: 1px solid grey;
     border-radius: 20px;
     font-size: 18px;
 }
