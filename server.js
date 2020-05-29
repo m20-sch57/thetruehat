@@ -106,7 +106,7 @@ function getHostUsername(users) {
 
 /**
  * Rerurns random number from interval [a, b)
- * 
+ *
  * @param a lower bound
  * @param b upper bound
  * @return random integer from [a, b)
@@ -1271,7 +1271,7 @@ class Callbacks {
         let cnt = 0;
         for (let i = 0; i < editWords.length; ++i) {
             let word = rooms[key].editWords[i];
-            
+
             // checking matching of information
             if (word.word !== editWords[i].word) {
                 Signals.sFailure(socket.id, "cWordsEdited", 704, `Неверное слово на позиции ${i}`);
@@ -1355,7 +1355,7 @@ class Callbacks {
             const _key = key[i];
             const _username = username[i];
             const _usernamePos = usernamePos[i];
-            
+
             // Removing the user from the room info
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
@@ -1506,7 +1506,7 @@ io.on("connection", function(socket) {
             startExplanation(key);
         }
     });
-    
+
     /**
      * Implementation of cEndWordExplanation function
      * @see API.md

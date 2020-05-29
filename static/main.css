@@ -829,7 +829,7 @@ input[type=checkbox] + label + label {
 }
 
 #gamePage_editConfirm.shadow {
-     box-shadow: 0 -10px 10px -10px grey; 
+     box-shadow: 0 -10px 10px -10px grey;
 }
 
 @media (min-width: 500px) {
