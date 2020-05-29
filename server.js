@@ -106,7 +106,7 @@ function getHostUsername(users) {
 
 /**
  * Rerurns random number from interval [a, b)
- * 
+ *
  * @param a lower bound
  * @param b upper bound
  * @return random integer from [a, b)
@@ -429,7 +429,7 @@ class Signals {
      * @param key Key of the Room
      */
     static sNewSettings(key) {
-        Signals.emit(key, "sNewSettings", rooms[key].settings);
+        Signals.emit(key, "sNewSettings", {"settings": rooms[key].settings});
     }
 
     /**
@@ -1174,8 +1174,8 @@ class Callbacks {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
                 } else {
                     rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
-                    if (rooms[key].settings["wordNumber"] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber - 1;
+                    if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
                         warn = true;
                     }
                 }
@@ -1196,13 +1196,13 @@ class Callbacks {
                     continue;
                 }
                 if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
-                    settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
-                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max) {
+                    (settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
+                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max)) {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                     continue;
                 }
                 if (settingsKeys[i] === "wordNumber") {
-                    if (settings[settingsKeys[i]] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                    if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
                         Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                         continue;
                     }
@@ -1298,6 +1298,8 @@ class Callbacks {
                     "wordState": "notExplained",
                     "transfer": true});
 
+                rooms[key].word = "";
+
                 Signals.sWordExplanationEnded(key, cause);
 
                 // finishing the explanation
@@ -1311,7 +1313,7 @@ class Callbacks {
         let cnt = 0;
         for (let i = 0; i < editWords.length; ++i) {
             let word = rooms[key].editWords[i];
-            
+
             // checking matching of information
             if (word.word !== editWords[i].word) {
                 Signals.sFailure(socket.id, "cWordsEdited", 704, `Неверное слово на позиции ${i}`);
@@ -1395,7 +1397,7 @@ class Callbacks {
             const _key = key[i];
             const _username = username[i];
             const _usernamePos = usernamePos[i];
-            
+
             // Removing the user from the room info
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
@@ -1546,7 +1548,7 @@ io.on("connection", function(socket) {
             startExplanation(key);
         }
     });
-    
+
     /**
      * Implementation of cEndWordExplanation function
      * @see API.md

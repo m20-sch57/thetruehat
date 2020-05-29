@@ -1,5 +1,7 @@
+"use strict"
+
 Array.prototype.last = function() {
-    console.assert(this.length >= 1, 
+    console.assert(this.length >= 1,
         "Attempt to get last element of empty array");
     return this[this.length - 1];
 }
@@ -21,7 +23,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
     return new Promise(function(resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
-            time = timeSync.getTime();
+            let time = timeSync.getTime();
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
 
@@ -40,7 +42,7 @@ function animate({startTime, timing, draw, duration, stopCondition}) {
     })
 }
 
-function el(id) {   
+function el(id) {
     return document.getElementById(id);
 }
 
@@ -224,11 +226,11 @@ class Sound {
                 this.currentSound = el(sound);
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
-        } else if (timeSync.getTime() - startTime < 
+        } else if (timeSync.getTime() - startTime <
                 el(sound).duration * 1000){
             this.killSound();
             this.currentSound = el(sound);
-            this.currentSound.currentTime = (timeSync.getTime() - startTime) / 
+            this.currentSound.currentTime = (timeSync.getTime() - startTime) /
                 1000;
             this.currentSound.play();
         }
@@ -243,14 +245,14 @@ class Pages {
 
     hideLastPage() {
         if (this.pageLog.length >= 1) {
-            this.pageLog.last().forEach((elem) => {
+            this.pageLog.last().forEach(elem => {
                 hide(elem)
             });
         }
     }
 
     showPage(page) {
-        page.forEach((elem) =>{
+        page.forEach(elem =>{
             show(elem);
         })
     }
@@ -337,8 +339,6 @@ class Game {
     }
 
     render() {
-        let _this = this;
-
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
         el("gamePage_wordsCnt").innerText = this.wordsCount;
@@ -348,7 +348,7 @@ class Game {
         this.players.forEach(username => {
             el("preparationPage_users").appendChild(
                 Template.user({"username": username}));
-            if (username == _this.myUsername) {
+            if (username == this.myUsername) {
                 el(`user_${username}`).classList.add("you");
             }
         });
@@ -361,7 +361,7 @@ class Game {
         }
 
         el("gamePage_editListScrollable").innerHTML = "";
-        this.editWords.forEach((word) => {
+        this.editWords.forEach(word => {
             el("gamePage_editListScrollable").appendChild(Template.editWord(word));
             el(`editPage_${word.word}_explained`).onclick =
                     () => this.changeWordState(word.word, "explained");
@@ -376,7 +376,7 @@ class Game {
         el("gamePage_editListScrollable").appendChild(eDiv);
 
         el("resultsPage_results").innerHTML = "";
-        this.results.forEach((result) => {
+        this.results.forEach(result => {
             el("resultsPage_results").appendChild(Template.result(result));
         })
     }
@@ -507,7 +507,7 @@ class App {
                 return;
             };
             if (["wait", "play"].indexOf(data.state) != -1) {
-                this.emit("cJoinRoom", 
+                this.emit("cJoinRoom",
                     {"username": this.game.myUsername,
                      "key": this.game.key
                 });
@@ -574,7 +574,7 @@ class App {
             .then(() => {
                 if (this.game.roundId != roundId) return;
                 if (this.game.myRole == "speaker") {
-                    this.gamePages.go(["gamePage_explanationBox", 
+                    this.gamePages.go(["gamePage_explanationBox",
                         "gamePage_speakerTitle"]);
                 } else if (this.game.myRole == "listener") {
                     this.gamePages.go(["gamePage_speakerListener",
@@ -586,7 +586,7 @@ class App {
                 this.sizeWord();
                 this.animateExplanationTimer(startTime, roundId)
                 .then(() => {
-                    this.animateAftermathTimer(startTime + 
+                    this.animateAftermathTimer(startTime +
                         this.game.settings.explanationTime, roundId);
                 })
             })
@@ -624,9 +624,9 @@ class App {
         let roundId = this.game.roundId;
         let stopCondition = () => roundId != this.game.roundId;
         this.sound.playSound("start", startTime, stopCondition);
-        this.sound.playSound("final", startTime + 
-            this.game.settings.explanationTime, stopCondition);  
-        this.sound.playSound("final+", startTime + 
+        this.sound.playSound("final", startTime +
+            this.game.settings.explanationTime, stopCondition);
+        this.sound.playSound("final+", startTime +
             this.game.settings.explanationTime +
             this.game.settings.aftermathTime, stopCondition);
         for (let i = 1; i <= Math.floor(this.game.settings.delayTime / 1000); i++) {
@@ -637,7 +637,7 @@ class App {
     setWord(word) {
         el("gamePage_explanationWord").innerText = word;
         this.sizeWord();
-    }   
+    }
 
     sizeWord() {
         let eWord = el("gamePage_explanationWord");
@@ -649,7 +649,7 @@ class App {
         eWord.style["font-size"] = `${baseWidth}px`
         let wordWidth = eWord.getBoundingClientRect().width;
         let parentWidth = eWordParent.getBoundingClientRect().width;
-        eWord.style["font-size"] = `${Math.min(40, 
+        eWord.style["font-size"] = `${Math.min(40,
             baseWidth * parentWidth / wordWidth)}px`;
     }
 
@@ -676,10 +676,37 @@ class App {
     checkClipboard() {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             disable("joinPage_pasteKey");
+        } else {
+            navigator.permissions.query({name: "clipboard-read"})
+            .then(result => {
+                if (result.state == "denied") {
+                    disable("joinPage_pasteKey");
+                }
+                result.onchange = function() {
+                    if (this.state == "denied") {
+                        disable("joinPage_pasteKey");
+                    }
+                }
+            }).catch(err => {});
         }
         if (!(navigator.clipboard && navigator.clipboard.writeText)) {
             disable("preparationPage_copyKey");
             disable("preparationPage_copyLink");
+        } else {
+            navigator.permissions.query({name: "clipboard-write"})
+            .then(result => {
+                if (result.state == "denied") {
+                    disable("preparationPage_copyKey");
+                    disable("preparationPage_copyLink");
+                }
+                result.onchange = function() {
+                    console.log(this.state);
+                    if (this.state == "denied") {
+                        disable("preparationPage_copyKey");
+                        disable("preparationPage_copyLink");
+                    }
+                }
+            }).catch(err => {});
         }
     }
 
@@ -696,18 +723,17 @@ class App {
     }
 
     animateDelayTimer(startTime, roundId) {
-        let _this = this;
         return animate({
             startTime,
             duration: this.game.settings.delayTime,
             draw: (progress) => {
-                el("gamePage_explanationDelayTimer").innerText = 
+                el("gamePage_explanationDelayTimer").innerText =
                     Math.floor((1 - progress) / 1000 * this.game.settings.delayTime) + 1;
-                el("gamePage_explanationDelayTimer").style.background = 
+                el("gamePage_explanationDelayTimer").style.background =
                     DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
             },
             stopCondition: () => {
-                return _this.game.roundId != roundId;
+                return this.game.roundId != roundId;
             }
         })
     }
@@ -715,18 +741,17 @@ class App {
     animateExplanationTimer(startTime, roundId) {
         el("gamePage_explanationTimer").classList.remove("timer-aftermath");
         el("gamePage_observerTimer").classList.remove("timer-aftermath");
-        let _this = this;
         let animation = animate({
             startTime,
             duration: this.game.settings.explanationTime,
             draw: (progress) => {
-                let time = minSec(Math.floor((1 - progress) / 
+                let time = minSec(Math.floor((1 - progress) /
                     1000 * this.game.settings.explanationTime) + 1);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
             stopCondition: () => {
-                return _this.game.roundId != roundId;
+                return this.game.roundId != roundId;
             }
         })
         return animation.then(() => {
@@ -736,21 +761,20 @@ class App {
     }
 
     animateAftermathTimer(startTime, roundId) {
-        let _this = this;
         el("gamePage_explanationTimer").classList.add("timer-aftermath");
         el("gamePage_observerTimer").classList.add("timer-aftermath");
         let animation =  animate({
             startTime,
             duration: this.game.settings.aftermathTime,
             draw: (progress) => {
-                let msec = (Math.floor((1 - progress) / 
+                let msec = (Math.floor((1 - progress) /
                     100 * this.game.settings.aftermathTime) + 1);
                 let time = secMsec(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
             stopCondition: () => {
-                return _this.game.roundId != roundId;
+                return this.game.roundId != roundId;
             }
         })
         return animation.then(() => {
@@ -788,7 +812,7 @@ class App {
 
     sendFeedback() {
         let feedbackTextarea = el("feedbackPage_textarea");
-        let feedback = this.buildFeedback(feedbackTextarea.value, 
+        let feedback = this.buildFeedback(feedbackTextarea.value,
             el("feedbackPage_clientInfoCheckbox").checked);
         feedbackTextarea.value = "";
         fetch("feedback", {
@@ -808,118 +832,116 @@ class App {
     }
 
     setSocketioEventListeners() {
-        let _this = this;
-
         let events = ["sFailure", "sPlayerJoined", "sPlayerLeft",
         "sYouJoined", "sGameStarted", "sExplanationStarted",
-        "sExplanationEnded", "sNextTurn", "sNewWord", 
+        "sExplanationEnded", "sNextTurn", "sNewWord",
         "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
-        events.forEach((event) => {
-            _this.socket.on(event, function(data) {
-                _this.logSignal(event, data);
+        events.forEach(event => {
+            this.socket.on(event, data =>  {
+                this.logSignal(event, data);
             })
         })
 
         this.socket.on("disconnect", () => {
-            _this.log("Socketio disconnect", "error");
-            _this.connected = false;
+            this.log("Socketio disconnect", "error");
+            this.connected = false;
             setTimeout(() => {
-                if (!_this.connected) {
+                if (!this.connected) {
                     showError("Нет соединения, перезагрузите страницу");
                 }
             }, DISCONNECT_TIMEOUT);
         });
         this.socket.on("reconnect", () => {
-            _this.log("Socketio reconnect", "warn");
+            this.log("Socketio reconnect", "warn");
             hideError();
-            _this.connected = true;
-            if (_this.game.inGame) {
-                _this.enterRoom();
+            this.connected = true;
+            if (this.game.inGame) {
+                this.enterRoom();
             }
         });
         this.socket.on("connect", () => {
-            _this.log("Socketio connect");
-            _this.connected = true;
+            this.log("Socketio connect");
+            this.connected = true;
         })
 
-        this.socket.on("sYouJoined", function(data) {
-            _this.game.update(data);
-            _this.game.inGame = true;
+        this.socket.on("sYouJoined", data => {
+            this.game.update(data);
+            this.game.inGame = true;
             switch (data.state) {
             case "wait":
-                _this.renderPreparationPage()
-                _this.pages.go(["preparationPage"]);
+                this.renderPreparationPage()
+                this.pages.go(["preparationPage"]);
                 break;
             case "play":
-                _this.pages.go(["gamePage"]);
+                this.pages.go(["gamePage"]);
                 switch(data.substate) {
                 case "wait":
-                    _this.renderWaitPage();
+                    this.renderWaitPage();
                     break;
                 case "explanation":
-                    _this.setWord(data.word);
-                    _this.renderExplanationPage(data);
-                    _this.playExplanationSounds(data);
+                    this.setWord(data.word);
+                    this.renderExplanationPage(data);
+                    this.playExplanationSounds(data);
                     break;
                 case "edit":
-                    _this.renderEditPage()
+                    this.renderEditPage()
                     break;
                 }
                 break;
             case "end":
-                _this.renderResultsScreen()
+                this.renderResultsScreen()
                 break;
             }
         })
-        this.socket.on("sPlayerJoined", function(data) {
-            _this.game.update(data);
-            _this.renderPreparationPage()
+        this.socket.on("sPlayerJoined", data => {
+            this.game.update(data);
+            this.renderPreparationPage()
         })
-        this.socket.on("sPlayerLeft", function(data) {
-            _this.game.update(data);
-            _this.renderPreparationPage()
+        this.socket.on("sPlayerLeft", data => {
+            this.game.update(data);
+            this.renderPreparationPage()
         })
-        this.socket.on("sGameStarted", function(data) {
-            _this.game.update(data);
-            _this.renderWaitPage();
-            _this.pages.go(["gamePage"]);
+        this.socket.on("sGameStarted", data => {
+            this.game.update(data);
+            this.renderWaitPage();
+            this.pages.go(["gamePage"]);
         })
-        this.socket.on("sExplanationStarted", function(data) {
-            _this.renderExplanationPage(data);
-            _this.playExplanationSounds(data);
+        this.socket.on("sExplanationStarted", data => {
+            this.renderExplanationPage(data);
+            this.playExplanationSounds(data);
         })
-        this.socket.on("sNewWord", function(data) {
-            _this.setWord(data.word);
+        this.socket.on("sNewWord", data => {
+            this.setWord(data.word);
         })
-        this.socket.on("sWordsToEdit", function(data) {
+        this.socket.on("sWordsToEdit", data => {
             //Pages.go(Pages.edit.speaker);
-            _this.game.update(data);
-            _this.renderEditPage(data);
+            this.game.update(data);
+            this.renderEditPage(data);
         })
-        this.socket.on("sNextTurn", function(data) {
-            _this.game.update(data);
-            _this.renderWaitPage();
+        this.socket.on("sNextTurn", data => {
+            this.game.update(data);
+            this.renderWaitPage();
         })
-        this.socket.on("sWordExplanationEnded", function(data) {
-            _this.game.update(data);
+        this.socket.on("sWordExplanationEnded", data => {
+            this.game.update(data);
         })
-        this.socket.on("sExplanationEnded", function(data) {
-            _this.game.update(data);
-            _this.game.roundId += 1;
-            _this.renderEditPage();
+        this.socket.on("sExplanationEnded", data => {
+            this.game.update(data);
+            this.game.roundId += 1;
+            this.renderEditPage();
         })
-        this.socket.on("sGameEnded", function(data) {
-            _this.game.update(data);
-            _this.pages.go(["resultsPage"]);
-            _this.game.leave();
+        this.socket.on("sGameEnded", data => {
+            this.game.update(data);
+            this.pages.go(["resultsPage"]);
+            this.game.leave();
         })
-        this.socket.on("sFailure", function(data) {
+        this.socket.on("sFailure", data =>  {
             switch(data.code) {
             case 103:
-                _this.failedToJoin("Ой. Это имя занято :(");
+                this.failedToJoin("Ой. Это имя занято :(");
                 break;
             case 104:
-                _this.failedToJoin("Вы точно с таким именем играли?");
+                this.failedToJoin("Вы точно с таким именем играли?");
                 break;
             default:
                 showError(data.msg, "code:", data.code);
@@ -950,9 +972,9 @@ class App {
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
-        el("gamePage_listenerReadyButton").onclick = () => 
+        el("gamePage_listenerReadyButton").onclick = () =>
             this.listenerReady();
-        el("gamePage_speakerReadyButton").onclick = () => 
+        el("gamePage_speakerReadyButton").onclick = () =>
             this.speakerReady();
         el("gamePage_explanationSuccess").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "explained"});
@@ -961,7 +983,7 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
-        el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited", 
+        el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited",
             this.game.editedWordsObject());
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
@@ -996,9 +1018,9 @@ class App {
             let body = await response;
             el(page["pageId"]).innerHTML = body;
         }
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
-        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
-        els("version").forEach((it) => it.innerText = VERSION);
+        els("helpButton").forEach(it => it.onclick = () => this.pages.go(["helpPage"]));
+        els("feedbackButton").forEach(it => it.onclick = () => this.pages.go(["feedbackPage"]));
+        els("version").forEach(it => it.innerText = VERSION);
     }
 }
 
