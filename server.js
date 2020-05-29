@@ -1134,8 +1134,8 @@ class Callbacks {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
                 } else {
                     rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
-                    if (rooms[key].settings["wordNumber"] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber - 1;
+                    if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
                         warn = true;
                     }
                 }
@@ -1156,13 +1156,13 @@ class Callbacks {
                     continue;
                 }
                 if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
-                    settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
-                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max) {
+                    (settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
+                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max)) {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                     continue;
                 }
                 if (settingsKeys[i] === "wordNumber") {
-                    if (settings[settingsKeys[i]] >= dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                    if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
                         Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                         continue;
                     }
