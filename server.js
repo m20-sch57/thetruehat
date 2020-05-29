@@ -429,7 +429,7 @@ class Signals {
      * @param key Key of the Room
      */
     static sNewSettings(key) {
-        Signals.emit(key, "sNewSettings", rooms[key].settings);
+        Signals.emit(key, "sNewSettings", {"settings": rooms[key].settings});
     }
 
     /**
@@ -1257,6 +1257,8 @@ class Callbacks {
                     "word": rooms[key].word,
                     "wordState": "notExplained",
                     "transfer": true});
+
+                rooms[key].word = "";
 
                 Signals.sWordExplanationEnded(key, cause);
 
