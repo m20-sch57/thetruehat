@@ -639,6 +639,10 @@ input[type=checkbox] + label + label {
     cursor: pointer;
 }
 
+#gameSettingsPage_layers .info:hover {
+    color: rgb(33, 164, 216);
+}
+
 #gameSettingsPage_layers .input {
     max-width: 60px;
     margin-top: auto;
