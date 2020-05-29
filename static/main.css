@@ -160,7 +160,7 @@ input[type=checkbox] + label + label {
 }
 
 .flat-button:hover:enabled {
-    color: rgb(65, 193, 225);
+    color: rgb(33, 164, 216);
     cursor: pointer;
 }
 
@@ -228,6 +228,27 @@ input[type=checkbox] + label + label {
 
 .hint {
     margin: 5px 20px 15px 20px;
+}
+
+.close {
+    flex-shrink: 0;
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    margin-left: auto;
+    font-size: 19px;
+    line-height: 19px;
+}
+
+.close:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.close:active {
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .white-bubble {
@@ -573,6 +594,8 @@ input[type=checkbox] + label + label {
 
 #gameSettingsPage_title {
     margin-bottom: 10px;
+    font-size: 35px;
+    font-weight: lighter;
 }
 
 #gameSettingsPage_body {
@@ -588,6 +611,19 @@ input[type=checkbox] + label + label {
     flex-flow: row;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+#gameSettingsPage_layers .popup-hint {
+    display: flex;
+    position: absolute;
+    width: 360px;
+    max-width: calc(100% - 50px);
+    padding: 10px 15px 10px 15px;
+    margin-top: -5px;
+    margin-left: -10px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 2px 2px 10px grey;
 }
 
 #gameSettingsPage_layers .label {
@@ -1111,28 +1147,7 @@ input[type=checkbox] + label + label {
 }
 
 #failureMsg {
-    margin-right: auto;
     font-size: 18px;
     font-weight: lighter;
     line-height: 20px;
-}
-
-#failureClose {
-    flex-shrink: 0;
-    height: 20px;
-    width: 20px;
-    background-color: transparent;
-    border: none;
-    border-radius: 50%;
-    padding: 0;
-    font-size: 19px;
-    line-height: 19px;
-}
-
-#failureClose:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-#failureClose:active {
-    background-color: rgba(0, 0, 0, 0.4);
 }

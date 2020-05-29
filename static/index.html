@@ -97,48 +97,72 @@
                     <div class="layer">
                         <div class="label">
                             Количество слов в шляпе
-                            <span class="fa fa-info-circle info"></span>
+                            <span class="fa fa-info-circle info" id="gameSettingsPage_wordNumberInfo"></span>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_wordNumberField">
+                    </div>
+                    <div class="popup-hint" id="gameSettingsPage_wordNumberHint" style="display: none;">
+                        Это всплывающая подсказка. Здесь вообще должен быть контент. И много контента!!!
+                        <button class="close" id="gameSettingsPage_wordNumberClose">&times;</button>
                     </div>
                     <div class="layer" id="gameSettingsPage_delayTime">
                         <div class="label">
                             Время на подготовку
-                            <span class="fa fa-info-circle info"></span>
+                            <span class="fa fa-info-circle info" id="gameSettingsPage_delayTimeInfo"></span>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_delayTimeField">
+                    </div>
+                    <div class="popup-hint" id="gameSettingsPage_delayTimeHint" style="display: none;">
+                        Это всплывающая подсказка. Здесь вообще должен быть контент. И много контента!!!
+                        <button class="close" id="gameSettingsPage_delayTimeClose">&times;</button>
                     </div>
                     <div class="layer" id="gameSettingsPage_explanationTime">
                         <div class="label">
                             Время на объяснение
-                            <span class="fa fa-info-circle info"></span>
+                            <span class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo"></span>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_explanationTimeField">
+                    </div>
+                    <div class="popup-hint" id="gameSettingsPage_explanationTimeHint" style="display: none;">
+                        Это всплывающая подсказка. Здесь вообще должен быть контент. И много контента!!!
+                        <button class="close" id="gameSettingsPage_explanationTimeClose">&times;</button>
                     </div>
                     <div class="layer" id="gameSettingsPage_aftermathTime">
                         <div class="label">
                             Время на последнюю попытку
-                            <span class="fa fa-info-circle info"></span>
+                            <span class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo"></span>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField">
+                    </div>
+                    <div class="popup-hint" id="gameSettingsPage_aftermathTimeHint" style="display: none;">
+                        Это всплывающая подсказка. Здесь вообще должен быть контент. И много контента!!!
+                        <button class="close" id="gameSettingsPage_aftermathTimeClose">&times;</button>
                     </div>
                     <div class="layer" id="gameSettingsPage_dictionarySelection">
                         <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
                             Словарь
-                            <span class="fa fa-info-circle info"></span>
+                            <span class="fa fa-info-circle info" id="gameSettingsPage_dictionarySelectionInfo"></span>
                         </div>
                         <select class="medium-select" id="gameSettingsPage_dictionaryList">
                             <option>Русский (20000 слов)</option>
                             <option>English (10000 words)</optgroup>
                         </select>
                     </div>
+                    <div class="popup-hint" id="gameSettingsPage_dictionarySelectionHint" style="display: none;">
+                        Это всплывающая подсказка. Здесь вообще должен быть контент. И много контента!!!
+                        <button class="close" id="gameSettingsPage_dictionarySelectionClose">&times;</button>
+                    </div>
                     <div class="layer" id="gameSettingsPage_strictMode">
                         <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
                         <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
                         <label>
                             Строгий режим
-                            <span class="fa fa-info-circle info"></span>
+                            <span class="fa fa-info-circle info" id="gameSettingsPage_strictModeInfo"></span>
                         </label>
+                    </div>
+                    <div class="popup-hint" id="gameSettingsPage_strictModeHint" style="display: none;">
+                        Это всплывающая подсказка. Здесь вообще должен быть контент. И много контента!!!
+                        <button class="close" id="gameSettingsPage_strictModeClose">&times;</button>
                     </div>
                 </div>
                 <div id="gameSettingsPage_actions">
@@ -323,7 +347,7 @@
     </div>
     <div id="failure" style="display: none;">
         <span id="failureMsg"></span>
-        <button id="failureClose">&times;</button>
+        <button class="close" id="failureClose">&times;</button>
     </div>
     <audio src="sounds/start.mp3" id="start"></audio>
     <audio src="sounds/final.mp3" id="final"></audio>
