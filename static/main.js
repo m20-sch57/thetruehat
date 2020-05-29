@@ -353,8 +353,8 @@ class Game {
             }
         });
 
-        el("preparationPage_playersCnt").innerText = `${this.players.length} ${
-            wordPlayers(this.players.length)}`;
+        // el("preparationPage_playersCnt").innerText = `${this.players.length} ${
+        //     wordPlayers(this.players.length)}`;
 
         if (this.host) {
             el(`user_${this.host}`).classList.add("host");
@@ -488,7 +488,7 @@ class App {
         location.hash = value;
         el("joinPage_inputKey").value = this.game.key;
         el("preparationPage_title").innerText = this.game.key;
-        el("gameSettingsPage_title").innerText = this.game.key;
+        // el("gameSettingsPage_title").innerText = this.game.key;
     }
 
     enterRoom() {

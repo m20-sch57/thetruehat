@@ -13,7 +13,7 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
-button, input, textarea {
+button, input, textarea, select {
     resize: none;
     font-family: inherit;
     outline: 0;
@@ -62,7 +62,8 @@ input[type=checkbox]:checked + label span {
 }
 
 input[type=checkbox] + label + label {
-    line-height: 25px;
+    font-size: 20px;
+    line-height: 23px;
 }
 
 /* Common classes */
@@ -125,7 +126,8 @@ input[type=checkbox] + label + label {
 }
 
 .small-button:disabled, .medium-button:disabled {
-    background-color: lightgrey;
+    background-color: rgb(230, 230, 230);
+    color: grey;
 }
 
 .small-white-button {
@@ -152,12 +154,13 @@ input[type=checkbox] + label + label {
 
 .flat-button {
     padding: 0;
+    color: dimgrey;
     background-color: inherit;
     border: none;
 }
 
 .flat-button:hover:enabled {
-    color: grey;
+    color: rgb(65, 193, 225);
     cursor: pointer;
 }
 
@@ -205,8 +208,16 @@ input[type=checkbox] + label + label {
     line-height: 20px;
 }
 
+.medium-select {
+    height: 40px;
+    padding: 0 10px 0 10px;
+    border-radius: 20px;
+    font-size: 18px;
+}
+
 .medium-input:focus, .large-underlined-input:focus, 
-.small-underlined-input:focus, .default-textarea:focus {
+.small-underlined-input:focus, .default-textarea:focus,
+.medium-select:focus {
     border-color: skyblue;
 }
 
@@ -300,10 +311,6 @@ input[type=checkbox] + label + label {
 
 .bg-red {
     background-color: lightcoral;
-}
-
-.bg-grey {
-    background-color: lightgrey;
 }
 
 .bg-white {
@@ -467,29 +474,40 @@ input[type=checkbox] + label + label {
 
 /* Preparation page */
 
-#preparationPage_header, #gameSettingsPage_header {
+#preparationPage_header {
     width: 100%;
     text-align: center;
     padding: 0 30px 30px 30px;
 }
 
-#preparationPage_title, #gameSettingsPage_title {
-    text-transform: uppercase;
+#preparationPage_titleSettings {
     margin-bottom: 10px;
 }
 
-#preparationPage_copyKey, #gameSettingsPage_copyKey {
+#preparationPage_title {
+    text-transform: uppercase;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+#preparationPage_openSettings {
+    margin-left: 10px;
+    font-size: 30px;
+    font-weight: lighter;
+}
+
+#preparationPage_copyKey {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-#preparationPage_copyLink, #gameSettingsPage_copyLink {
+#preparationPage_copyLink {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: -1px;
 }
 
-#preparationPage_body, #gameSettingsPage_body {
+#preparationPage_body {
     padding: 0 30px 30px 30px;
 }
 
@@ -542,6 +560,79 @@ input[type=checkbox] + label + label {
     font-size: 25px;
     font-weight: lighter;
     text-align: center;
+}
+
+/* Game settings page */
+
+#gameSettingsPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 30px 30px;
+}
+
+#gameSettingsPage_title {
+    margin-bottom: 10px;
+}
+
+#gameSettingsPage_body {
+    padding: 0 30px 30px 30px;
+}
+
+#gameSettingsPage_layers {
+    margin: 0 7px 40px 7px;
+}
+
+#gameSettingsPage_layers .layer {
+    display: flex;
+    flex-flow: row;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#gameSettingsPage_layers .label {
+    padding-right: 10px;
+    margin: auto auto auto 0;
+    font-size: 20px;
+}
+
+#gameSettingsPage_layers .info {
+    color: grey;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#gameSettingsPage_layers .input {
+    max-width: 60px;
+    margin-top: auto;
+    text-align: center;
+}
+
+#gameSettingsPage_dictionarySelection {
+    flex-wrap: wrap !important;
+    margin-top: 30px !important;
+}
+
+#gameSettingsPage_dictionarySelectionLabel {
+    padding: 5px 0 5px 0;
+}
+
+#gameSettingsPage_strictMode {
+    margin-top: 30px !important;
+}
+
+#gameSettingsPage_actions {
+	display: flex;
+	flex-flow: row;
+}
+
+#gameSettingsPage_applyButton {
+	flex-basis: 50%;
+	margin-right: 20px;
+}
+
+#gameSettingsPage_revertButton {
+	flex-basis: 50%;
 }
 
 /* Game page */
@@ -1043,69 +1134,4 @@ input[type=checkbox] + label + label {
 
 #failureClose:active {
     background-color: rgba(0, 0, 0, 0.4);
-}
-
-/* gameSettingsPage */
-
-#gameSettingsPage_actions {
-    padding-top: 35px;
-	display: flex;
-	flex-flow: row;
-}
-
-#gameSettingsPage_applyButton {
-	flex-basis: 50%;
-	margin-right: 20px;
-}
-
-#gameSettingsPage_revertButton {
-	flex-basis: 50%;
-}
-
-#gameSettingsPage_body {
-    padding: 0 30px 30px 30px;
-}
-
-#gameSettingsPage_layers, #gameSettingsPage_dictionarySelection,
-#gameSettingsPage_strictMode {
-	margin-left: 25px;
-	margin-right: 25px;
-}
-
-#gameSettingsPage_layers .layer, #gameSettingsPage_dictionarySelection,
-#gameSettingsPage_strictMode {
-	display: flex;
-	flex-flow: row;
-}
-
-#gameSettingsPage_body .label {
-	margin: auto auto 0px 0px;
-}
-
-#gameSettingsPage_layers .input {
-	max-width: 60px;
-	margin-left: 5px;
-	text-align: center;
-    background-color: #ffecb5;
-}
-
-#gameSettingsPage_dictionaryList {
-    min-width: 200px;
-    margin-left: 5px;
-}
-
-#gameSettingsPage_dictionarySelection {
-    padding-top: 25px;
-}
-
-#gameSettingsPage_strictMode {
-    padding-top: 25px;
-}
-
-#gameSettingsPage_delayTime {
-    padding-top: 20px;
-}
-
-#gameSettingsPage_aftermathTime, #gameSettingsPage_explanationTime {
-    padding-top: 10px;
 }
