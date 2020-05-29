@@ -57,9 +57,12 @@
         </button>
         <div class="content-small">
             <div id="preparationPage_header">
-                <h1 id="preparationPage_title"></h1>
-                <button id="preparationPage_openSettings" style="display: none;">Настройки</button>
-                <p class="hint" style="display: none;"><span id="preparationPage_playersCnt">0</span></p>
+                <div id="preparationPage_titleSettings">
+                    <span id="preparationPage_title">
+                    </span><button class="flat-button" id="preparationPage_openSettings">
+                        <span class="fa fa-cog"></span>
+                    </button>
+                </div>
                 <button class="small-button bg-blue" id="preparationPage_copyKey">
                     Копир. ключ
                 </button><button class="small-button bg-blue" id="preparationPage_copyLink">
@@ -75,6 +78,76 @@
                 <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">Начать игру</button>
                 <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
                 <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="gameSettingsPage" style="display: none;">
+        <button class="white-bubble go-back" id="gameSettingsPage_goBack">
+            <span class="fa fa-chevron-left"></span>
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span class="fa fa-comment-dots"></span>
+        </button>
+        <div class="content-small">
+            <div id="gameSettingsPage_header">
+                <h1 id="gameSettingsPage_title">Настройки игры</h1>
+            </div>
+            <div id="gameSettingsPage_body">
+                <div id="gameSettingsPage_layers">
+                    <div class="layer">
+                        <div class="label">
+                            Количество слов в шляпе
+                            <span class="fa fa-info-circle info"></span>
+                        </div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_wordNumberField">
+                    </div>
+                    <div class="layer" id="gameSettingsPage_delayTime">
+                        <div class="label">
+                            Время на подготовку
+                            <span class="fa fa-info-circle info"></span>
+                        </div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_delayTimeField">
+                    </div>
+                    <div class="layer" id="gameSettingsPage_aftermathTime">
+                        <div class="label">
+                            Время на объяснение
+                            <span class="fa fa-info-circle info"></span>
+                        </div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField">
+                    </div>
+                    <div class="layer" id="gameSettingsPage_explanationTime">
+                        <div class="label">
+                            Время на последнюю попытку
+                            <span class="fa fa-info-circle info"></span>
+                        </div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_explanationTimeField">
+                    </div>
+                    <div class="layer" id="gameSettingsPage_dictionarySelection">
+                        <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
+                            Словарь
+                            <span class="fa fa-info-circle info"></span>
+                        </div>
+                        <select class="medium-select" id="gameSettingsPage_dictionaryList">
+                            <option>Русский (20000 слов)</option>
+                            <option>English (10000 words)</optgroup>
+                        </select>
+                    </div>
+                    <div class="layer" id="gameSettingsPage_strictMode">
+                        <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
+                        <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
+                        <label>
+                            Строгий режим
+                            <span class="fa fa-info-circle info"></span>
+                        </label>
+                    </div>
+                </div>
+                <div id="gameSettingsPage_actions">
+                    <button class="medium-button bg-green" id="gameSettingsPage_applyButton">
+                        Применить
+                    </button><button class="medium-button bg-blue" id="gameSettingsPage_revertButton">
+                        Отмена
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -242,70 +315,9 @@
                 <div id="feedbackPage_clientInfo">
                     <input type="checkbox" id="feedbackPage_clientInfoCheckbox" checked>
                     <label for="feedbackPage_clientInfoCheckbox"><span class="fa fa-check"></span></label>
-                    <label for="feedbackPage_clientInfoCheckbox">Отправить дополнительные сведения</label>
+                    <label>Отправить дополнительные сведения</label>
                 </div>
                 <button class="medium-button bg-green" id="feedbackPage_submit">Отправить</button>
-            </div>
-        </div>
-    </div>
-    <div class="page" id="gameSettingsPage" style="display: none;">
-        <button class="white-bubble go-back" id="gameSettingsPage_goBack">
-            <span class="fa fa-chevron-left"></span>
-        </button><button class="white-bubble view-help" name="helpButton">
-        </button>
-        </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
-        </button>
-        <div class="content-small">
-            <div id="gameSettingsPage_header">
-                <h1 id="gameSettingsPage_title">
-                </h1>
-                <p class="hint" style="display: none;"><span id="gameSettingsPage_playersCnt">0</span></p>
-                <button class="small-button bg-blue" id="gameSettingsPage_copyKey">
-                    Копир. ключ
-                </button><button class="small-button bg-blue" id="gameSettingsPage_copyLink">
-                    Копир. ссылку
-                </button>
-            </div>
-            <div id="gameSettingsPage_body">
-                <div id="gameSettingsPage_layers">
-                    <div id="gameSettingsPage_wordNumber" class="layer">
-                        <div id="gameSettingsPage_wordNumberLabel" class="label">Количество слов</div>
-                        <input class="small-underlined-input input" id="gameSettingsPage_wordNumberField">
-                    </div>
-                    <div id="gameSettingsPage_delayTime" class="layer">
-                        <div id="gameSettingsPage_delayTimeLabel" class="label">Время на подготовку</div>
-                        <input class="small-underlined-input input" id="gameSettingsPage_delayTimeField">
-                    </div>
-                    <div id="gameSettingsPage_explanationTime" class="layer">
-                        <div id="gameSettingsPage_explanationTimeLabel" class="label">Время на объяснение</div>
-                        <input class="small-underlined-input input" id="gameSettingsPage_explanationTimeField">
-                    </div>
-                    <div id="gameSettingsPage_aftermathTime" class="layer">
-                        <div id="gameSettingsPage_aftermathTimeLabel" class="label">Время на последнюю попытку</div>
-                        <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField">
-                    </div>
-                </div>
-                <div id="gameSettingsPage_dictionarySelection">
-                    <div id="gameSettingsPage_dictionarySelectionLabel" class="label">
-                    Словарь</div>
-                    <select id="gameSettingsPage_dictionaryList">
-                        <option>лол</option>
-                        <option>кек</optgroup>
-                    </select>
-                </div>
-                <div id="gameSettingsPage_strictMode">
-                    <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
-                    <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
-                    <label for="gameSettingsPage_strictModeCheckbox">Строгий режим</label>
-                </div>
-                <div id="gameSettingsPage_actions">
-                    <button class="medium-button bg-green" id="gameSettingsPage_applyButton">
-                            Применить
-                    </button><button class="medium-button bg-grey" id="gameSettingsPage_revertButton">
-                            Отмена
-                    </button>
-                </div>
             </div>
         </div>
     </div>
