@@ -910,6 +910,9 @@ class App {
         })
         this.socket.on("sNewSettings", function(data) {
             _this.game.update({settings: data});
+            // Из-за бага на сервере пришлось написать так.
+            // А должно быть так:
+            // _this.game.update(data);
         })
         this.socket.on("sGameStarted", function(data) {
             _this.game.update(data);
