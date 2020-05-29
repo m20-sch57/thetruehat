@@ -966,7 +966,7 @@ input[type=checkbox] + label + label {
 }
 
 #gamePage_editConfirm.shadow {
-     box-shadow: 0 -10px 10px -10px grey; 
+     box-shadow: 0 -10px 10px -10px grey;
 }
 
 @media (min-width: 500px) {
@@ -1065,13 +1065,43 @@ input[type=checkbox] + label + label {
     padding: 0 30px 30px 30px;
 }
 
+#helpPage_newsTitle {
+    font-size: 40px;
+    font-weight: lighter;
+}
+
+#helpPage_newsBox .title {
+    margin-bottom: 2px;
+}
+
+#helpPage_newsBox .date {
+    color: grey;
+    margin-right: 10px;
+}
+
+#helpPage_newsBox .version {
+    color: grey;
+    margin-right: 10px;
+}
+
+#helpPage_newsBox .new {
+    color: green;
+    font-weight: bold;
+}
+
+#helpPage_rulesTitle {
+    margin-bottom: 30px;
+    font-size: 40px;
+    font-weight: lighter;
+}
+
 #helpPage_rulesBox .justify {
     text-align: justify;
 }
 
-#helpPage_rulesTitle {
-    text-align: center;
-    margin-bottom: 30px;
+#helpPage_faqTitle {
+    font-size: 40px;
+    font-weight: lighter;
 }
 
 #helpPage_aboutTitle {

@@ -11,7 +11,7 @@ const argv = require("yargs")
     })
     .option('logfile', {
         default: config.feedbackPath
-    })    
+    })
     .argv;
 
 const fs = require("fs");

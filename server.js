@@ -106,7 +106,7 @@ function getHostUsername(users) {
 
 /**
  * Rerurns random number from interval [a, b)
- * 
+ *
  * @param a lower bound
  * @param b upper bound
  * @return random integer from [a, b)
@@ -429,7 +429,7 @@ class Signals {
      * @param key Key of the Room
      */
     static sNewSettings(key) {
-        Signals.emit(key, "sNewSettings", rooms[key].settings);
+        Signals.emit(key, "sNewSettings", {"settings": rooms[key].settings});
     }
 
     /**
@@ -1062,6 +1062,46 @@ class CheckConditions {
         }
         return true;
     }
+
+    static cEndGame(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cEndGame", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cEndGame", null, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'play', something went wrong
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket.id, "cEndGame", null, "Состояние игры не `play`");
+            return false;
+        }
+
+        // works only in substate 'wait'
+        if (rooms[key].substate !== "wait") {
+            Signals.sFailure(socket.id, "cEndGame", null, "Подсостояние игры не `wait`");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cEndGame", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cEndGame", null, "Только хост может закончить игру");
+            return false;
+        }
+
+        return true;
+    }
 }
 
 class Callbacks {
@@ -1258,6 +1298,8 @@ class Callbacks {
                     "wordState": "notExplained",
                     "transfer": true});
 
+                rooms[key].word = "";
+
                 Signals.sWordExplanationEnded(key, cause);
 
                 // finishing the explanation
@@ -1271,7 +1313,7 @@ class Callbacks {
         let cnt = 0;
         for (let i = 0; i < editWords.length; ++i) {
             let word = rooms[key].editWords[i];
-            
+
             // checking matching of information
             if (word.word !== editWords[i].word) {
                 Signals.sFailure(socket.id, "cWordsEdited", 704, `Неверное слово на позиции ${i}`);
@@ -1355,7 +1397,7 @@ class Callbacks {
             const _key = key[i];
             const _username = username[i];
             const _usernamePos = usernamePos[i];
-            
+
             // Removing the user from the room info
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
@@ -1506,7 +1548,7 @@ io.on("connection", function(socket) {
             startExplanation(key);
         }
     });
-    
+
     /**
      * Implementation of cEndWordExplanation function
      * @see API.md
@@ -1537,7 +1579,7 @@ io.on("connection", function(socket) {
      */
     socket.on("cWordsEdited", function(data) {
         if (WRITE_LOGS) {
-            console.log(socket.id, "cWordsEdited", data)
+            console.log(socket.id, "cWordsEdited", data);
         }
 
         const key = getRoom(socket); // key of the room
@@ -1553,6 +1595,25 @@ io.on("connection", function(socket) {
         }
 
         Callbacks.cWordsEdited(socket, key, data.editWords);
+    });
+
+    /**
+     * Implementation of cEndGame function
+     * @see API.md
+     */
+    socket.on("cEndGame", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cEndGame");
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking signal conditions
+        if (!CheckConditions.cEndGame(socket, key)) {
+            return;
+        }
+
+        endGame(key);
     });
 
     socket.on("disconnect", function() {
