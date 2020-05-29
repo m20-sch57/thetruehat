@@ -112,6 +112,16 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
+// Show hint on elem hover
+function addHint(elem, hint) {
+    el(elem).addEventListener("mouseover", () => {
+        show(hint);
+    });
+    el(elem).addEventListener("mouseout", () => {
+        hide(hint);
+    })
+}
+
 class TimeSync {
     constructor(syncInterval) {
         this.syncInterval = syncInterval;
@@ -1033,6 +1043,14 @@ class App {
         el("gameSettingsPage_applyButton").onclick = () => {
             this.applySettings();
             this.pages.goBack();
+        }
+
+        // Adding settings hint
+        let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
+            "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
+            "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode"]
+        for (let idPrefix of prefixes) {
+            addHint(idPrefix+"Info", idPrefix+"Hint");
         }
     }
 
