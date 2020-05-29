@@ -555,7 +555,7 @@ class App {
 
     async renderExplanationPage({startTime}) {
         let roundId = this.game.roundId;
-        setTimeout(() => {
+        setTimeout(async () => {
             if (this.game.roundId != roundId) return;
             let page = ["gamePage_explanationDelayBox"];
             if (this.game.myRole == "speaker") {
@@ -659,7 +659,7 @@ class App {
         navigator.clipboard.writeText(window.location);
     }
 
-    pasteKey() {
+    async pasteKey() {
         let clipText = await navigator.clipboard.readText();
         el("joinPage_inputKey").value = clipText;
     }
