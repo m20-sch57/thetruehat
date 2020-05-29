@@ -1156,8 +1156,8 @@ class Callbacks {
                     continue;
                 }
                 if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
-                    settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
-                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max) {
+                    (settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
+                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max)) {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                     continue;
                 }
