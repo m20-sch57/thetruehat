@@ -124,6 +124,12 @@ function addHint(elem, hint) {
     })
 }
 
+function validateNumber(elem) {
+    el(elem).oninput = function(event) {
+        el(elem).value = el(elem).value.replace(/\D+/g,"");
+    }
+}
+
 class TimeSync {
     constructor(syncInterval) {
         this.syncInterval = syncInterval;
@@ -1079,6 +1085,8 @@ class App {
         for (let idPrefix of prefixes) {
             addHint(idPrefix+"Info", idPrefix+"Hint");
         }
+
+        els("type.number").forEach(it => validateNumber(it.id));
     }
 
     loadContent() {
