@@ -339,7 +339,7 @@ class Game {
     render() {
         this.renderStuff();
         this.renderPlayersList();
-        this.renderPlayersCnt();
+        // this.renderPlayersCnt();
         this.renderHost();
         this.renderEditList();
         this.renderResults();
