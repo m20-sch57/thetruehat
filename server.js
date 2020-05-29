@@ -429,7 +429,7 @@ class Signals {
      * @param key Key of the Room
      */
     static sNewSettings(key) {
-        Signals.emit(key, "sNewSettings", rooms[key].settings);
+        Signals.emit(key, "sNewSettings", {"settings": rooms[key].settings});
     }
 
     /**
