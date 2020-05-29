@@ -1258,6 +1258,8 @@ class Callbacks {
                     "wordState": "notExplained",
                     "transfer": true});
 
+                rooms[key].word = "";
+
                 Signals.sWordExplanationEnded(key, cause);
 
                 // finishing the explanation
