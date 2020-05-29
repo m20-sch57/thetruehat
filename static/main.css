@@ -618,6 +618,7 @@ input[type=checkbox] + label + label {
     width: 360px;
     max-width: calc(100% - 50px);
     padding: 10px 15px 10px 15px;
+    margin-top: 5px;
     margin-left: -10px;
     background-color: white;
     border-radius: 20px;
