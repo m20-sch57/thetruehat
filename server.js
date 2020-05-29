@@ -668,7 +668,7 @@ class Room {
     constructor() {
         this.state = "wait";
         this.users = [];
-        this.settings = config.defaultSettings;
+        this.settings = Object.assign({}, config.defaultSettings);
     }
 
     /**
