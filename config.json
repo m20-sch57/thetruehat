@@ -13,10 +13,10 @@
         },
         {
             "name": {
-                "ru": "Английские слова (русские)",
-                "en": "English words (russian)"
+                "ru": "Английские слова",
+                "en": "English words"
             },
-            "path": "./words/easy.json"
+            "path": "./words/english-nouns.json"
         }
     ],
     "feedbackPath": "./feedback.log",
