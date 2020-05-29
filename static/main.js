@@ -114,6 +114,16 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
+// Show hint on elem hover
+function addHint(elem, hint) {
+    el(elem).addEventListener("mouseover", () => {
+        show(hint);
+    });
+    el(elem).addEventListener("mouseout", () => {
+        hide(hint);
+    })
+}
+
 class TimeSync {
     constructor(syncInterval) {
         this.syncInterval = syncInterval;
@@ -339,27 +349,32 @@ class Game {
     }
 
     render() {
-        el("gamePage_speaker").innerText = this.speaker;
-        el("gamePage_listener").innerText = this.listener;
-        el("gamePage_wordsCnt").innerText = this.wordsCount;
-        // el("gamePage_title").innerText = this.myUsername;
-        // el("editPage_wordsCnt").innerText = this.editWordsCount;
-        el("preparationPage_users").innerHTML = "";
-        this.players.forEach(username => {
-            el("preparationPage_users").appendChild(
-                Template.user({"username": username}));
-            if (username == this.myUsername) {
-                el(`user_${username}`).classList.add("you");
-            }
-        });
+        this.renderStuff();
+        this.renderPlayersList();
+        // this.renderPlayersCnt();
+        this.renderHost();
+        this.renderEditList();
+        this.renderResults();
+        this.renderSettings();
+    }
 
-        el("preparationPage_playersCnt").innerText = `${this.players.length} ${
-            wordPlayers(this.players.length)}`;
+    renderSettings() {
+        el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
+        el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
+        el("gameSettingsPage_aftermathTimeField").value = this.settings.aftermathTime/1000;
+        el("gameSettingsPage_wordNumberField").value = this.settings.wordNumber;
+        el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
+        el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId;
+    }
 
-        if (this.host) {
-            el(`user_${this.host}`).classList.add("host");
-        }
+    renderResults() {
+        el("resultsPage_results").innerHTML = "";
+        this.results.forEach((result) => {
+            el("resultsPage_results").appendChild(Template.result(result));
+        })
+    }
 
+    renderEditList() {
         el("gamePage_editListScrollable").innerHTML = "";
         this.editWords.forEach(word => {
             el("gamePage_editListScrollable").appendChild(Template.editWord(word));
@@ -374,11 +389,34 @@ class Game {
         let eDiv = document.createElement("div");
         eDiv.style.height = "15px";
         el("gamePage_editListScrollable").appendChild(eDiv);
+    }
 
-        el("resultsPage_results").innerHTML = "";
-        this.results.forEach(result => {
-            el("resultsPage_results").appendChild(Template.result(result));
-        })
+    renderHost() {
+        if (this.host) {
+            el(`user_${this.host}`).classList.add("host");
+        }
+    }
+
+    renderPlayersCnt() {
+        el("preparationPage_playersCnt").innerText = `${this.players.length} ${
+            wordPlayers(this.players.length)}`;
+    }
+
+    renderPlayersList() {
+        el("preparationPage_users").innerHTML = "";
+        this.players.forEach(username => {
+            el("preparationPage_users").appendChild(
+                Template.user({"username": username}));
+            if (username == this.myUsername) {
+                el(`user_${username}`).classList.add("you");
+            }
+        });
+    }
+
+    renderStuff() {
+        el("gamePage_speaker").innerText = this.speaker;
+        el("gamePage_listener").innerText = this.listener;
+        el("gamePage_wordsCnt").innerText = this.wordsCount;
     }
 
     changeWordState(word, state) {
@@ -424,24 +462,7 @@ class App {
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
-        this.loadContent([
-            {
-                "pageFile": "rules.html",
-                "pageId": "helpPage_rulesBox"
-            },
-            {
-                "pageFile": "faq.html",
-                "pageId": "helpPage_faqBox"
-            },
-            {
-                "pageFile": "about.html",
-                "pageId": "helpPage_aboutBox"
-            },
-            {
-                "pageFile": "news.html",
-                "pageId": "helpPage_newsBox"
-            }
-        ]);
+        this.loadContent();
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -492,6 +513,7 @@ class App {
         location.hash = value;
         el("joinPage_inputKey").value = this.game.key;
         el("preparationPage_title").innerText = this.game.key;
+        // el("gameSettingsPage_title").innerText = this.game.key;
     }
 
     enterRoom() {
@@ -527,9 +549,11 @@ class App {
         if (this.game.isHost) {
             show("preparationPage_start");
             hide("preparationPage_startLabel");
+            show("preparationPage_openSettings");
         } else {
             hide("preparationPage_start");
             show("preparationPage_startLabel");
+            hide("preparationPage_openSettings");
         }
         if (this.game.players.length > 1) {
             enable("preparationPage_start");
@@ -836,11 +860,24 @@ class App {
         el("helpPage_newsOption").classList.remove("active");
     }
 
+    applySettings() {
+        let settings = {};
+        settings.delayTime = +el("gameSettingsPage_delayTimeField").value*1000;
+        settings.explanationTime = +el("gameSettingsPage_explanationTimeField").value*1000;
+        settings.aftermathTime = +el("gameSettingsPage_aftermathTimeField").value*1000;
+        settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
+        settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
+        settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex;
+        localStorage.settings = settings;
+        this.emit("cApplySettings", {settings});
+    }
+
     setSocketioEventListeners() {
         let events = ["sFailure", "sPlayerJoined", "sPlayerLeft",
         "sYouJoined", "sGameStarted", "sExplanationStarted",
         "sExplanationEnded", "sNextTurn", "sNewWord",
-        "sWordExplanationEnded", "sWordsToEdit", "sGameEnded"];
+        "sWordExplanationEnded", "sWordsToEdit", "sGameEnded",
+        "sNewSettings"];
         events.forEach(event => {
             this.socket.on(event, data =>  {
                 this.logSignal(event, data);
@@ -900,11 +937,14 @@ class App {
         })
         this.socket.on("sPlayerJoined", data => {
             this.game.update(data);
-            this.renderPreparationPage()
+            this.renderPreparationPage();
         })
         this.socket.on("sPlayerLeft", data => {
             this.game.update(data);
             this.renderPreparationPage()
+        })
+        this.socket.on("sNewSettings", data => {
+            this.game.update(data);
         })
         this.socket.on("sGameStarted", data => {
             this.game.update(data);
@@ -1020,17 +1060,64 @@ class App {
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("failureClose").onclick = hideError;
         el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
+        el("preparationPage_openSettings").onclick =
+            () => this.pages.go(["gameSettingsPage"]);
+        el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
+        el("gameSettingsPage_revertButton").onclick = () => {
+            this.game.renderSettings();
+            this.pages.goBack();
+        }
+        el("gameSettingsPage_applyButton").onclick = () => {
+            this.applySettings();
+            this.pages.goBack();
+        }
+
+        // Adding settings hint
+        let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
+            "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
+            "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode"]
+        for (let idPrefix of prefixes) {
+            addHint(idPrefix+"Info", idPrefix+"Hint");
+        }
     }
 
-    async loadContent(loadablePages) {
+    loadContent() {
+        this.loadPages();
+        this.loadDictionaries();
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+        els("version").forEach((it) => it.innerText = VERSION);
+    }
+
+    async loadPages() {
+        let loadablePages = [
+            {
+                "pageFile": "rules.html",
+                "pageId": "helpPage_rulesBox"
+            },
+            {
+                "pageFile": "faq.html",
+                "pageId": "helpPage_faqBox"
+            },
+            {
+                "pageFile": "about.html",
+                "pageId": "helpPage_aboutBox"
+            }
+        ];
         for (let page of loadablePages) {
             let response = (await fetch(page["pageFile"])).text();
             let body = await response;
             el(page["pageId"]).innerHTML = body;
         }
-        els("helpButton").forEach(it => it.onclick = () => this.pages.go(["helpPage"]));
-        els("feedbackButton").forEach(it => it.onclick = () => this.pages.go(["feedbackPage"]));
-        els("version").forEach(it => it.innerText = VERSION);
+    }
+
+    async loadDictionaries() {
+        let dictionaries = await (await fetch("api/getDictionaryList")).json();
+        el("gameSettingsPage_dictionaryList").innerHTML = "";
+        for (let dict of dictionaries.dictionaries) {
+            let dictname = `${dict.name["ru"]}, ${dict.wordNumber} слов`;
+            el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
+        }
     }
 }
 
