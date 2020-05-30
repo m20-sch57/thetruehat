@@ -128,6 +128,8 @@ function addHint(elem, hint) {
     })
 }
 
+function _(msgid) {return i18n.gettext(msgid)}
+
 class TimeSync {
     constructor(syncInterval) {
         this.syncInterval = syncInterval;
@@ -180,8 +182,7 @@ class Template {
         return elem;
     }
 
-    static editWord({word, wordState, lang}) {
-        console.log(lang);
+    static editWord({word, wordState}) {
         let elem = document.createElement("div");
         elem.classList.add("edit-item");
         elem.setAttribute("id", `editPage_word_${word}`);
@@ -191,21 +192,21 @@ class Template {
         let eExplained = document.createElement("button");
         eExplained.classList.add("small-white-button");
         eExplained.classList.add("explained");
-        eExplained.innerText = locale.name[lang].explainedWordState;
-        eExplained.setAttribute("name", "explainedWordState");
         eExplained.setAttribute("id", `editPage_${word}_explained`);
+        eExplained.setAttribute("gt", "");
+        eExplained.setAttribute("gt-text", "угадал");
         let eNotExplained = document.createElement("button");
         eNotExplained.classList.add("small-white-button");
         eNotExplained.classList.add("not-explained");
-        eNotExplained.innerText = locale.name[lang].notExplainedWordState;
-        eNotExplained.setAttribute("name", "notExplainedWordState");
         eNotExplained.setAttribute("id", `editPage_${word}_notExplained`);
+        eNotExplained.setAttribute("gt", "");
+        eNotExplained.setAttribute("gt-text", "не угадал");
         let eMistake = document.createElement("button");
         eMistake.classList.add("small-white-button");
         eMistake.classList.add("mistake");
-        eMistake.innerText = locale.name[lang].mistakeWordState;
-        eMistake.setAttribute("name", "mistakeWordState");
         eMistake.setAttribute("id", `editPage_${word}_mistake`);
+        eMistake.setAttribute("gt", "");
+        eMistake.setAttribute("gt-text", "ошибка");
         elem.appendChild(eWord);
         elem.appendChild(eExplained);
         elem.appendChild(eNotExplained);
@@ -216,6 +217,7 @@ class Template {
             "mistake": eMistake
         }[wordState];
         selected.classList.add("selected");
+
         return elem;
     }
 }
@@ -386,7 +388,6 @@ class Game {
     renderEditList() {
         el("gamePage_editListScrollable").innerHTML = "";
         this.editWords.forEach(word => {
-            word.lang = this.app.lang;
             el("gamePage_editListScrollable").appendChild(Template.editWord(word));
             el(`editPage_${word.word}_explained`).onclick =
                     () => this.changeWordState(word.word, "explained");
@@ -395,6 +396,7 @@ class Game {
             el(`editPage_${word.word}_mistake`).onclick =
                     () => this.changeWordState(word.word, "mistake");
         });
+        this.app.renderText();
         // Fixed bug with padding in Firefox
         let eDiv = document.createElement("div");
         eDiv.style.height = "15px";
@@ -455,7 +457,7 @@ class Game {
 class App {
     constructor() {
         this.debug = true;
-
+        this.gameLog = [];
         this.connected = false;
 
         this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
@@ -464,22 +466,12 @@ class App {
         this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
+
         this.helpPages.go(["helpPage_rulesBox"]);
-
         this.setKey(readLocationHash());
-        this.gameLog = []
-
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
-
-        if (localStorage.preferredLang) {
-            this.setLang(localStorage.preferredLang);
-        } else {
-            this.setLang("ru");
-        }
-
-        this.loadContent();
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
@@ -487,6 +479,16 @@ class App {
             this.pages.go(["mainPage"]);
         }
 
+        this.prepareGettext();
+        this.loadTranslations().then(() => {
+            if (localStorage.preferredLang) {
+                this.setLocale(localStorage.preferredLang);
+            } else {
+                this.setLocale("ru");
+            }
+        }).then(() => {
+            this.loadContent();
+        })
     }
 
     log(data, level) {
@@ -866,24 +868,43 @@ class App {
         el("helpPage_newsOption").classList.remove("active");
     }
 
-    setLang(lang) {
-        if (LANGS.indexOf(lang) == -1) {
-            console.error("Incorrect language. Language must be one of", LANGS);
-            return;
+    async loadTranslations() {
+        let langs = ["en"];
+        for (let lang of langs) {
+            let json = await (await fetch(`localization/${lang}.json`)).text();
+            i18n.loadJSON(json, 'messages');
         }
+    }
+
+    setLocale(lang) {
         if (this.lang && lang == this.lang) return;
         localStorage.preferredLang = lang;
         this.lang = lang;
-        for (let id of Object.keys(locale.id[lang])) {
-            el(id).innerHTML = locale.id[lang][id];
-        }
-        for (let id of Object.keys(locale.placeholder[lang])) {
-            el(id).setAttribute("placeholder", locale.placeholder[lang][id]);
-        }
-        for (let name of Object.keys(locale.name[lang])) {
-            els(name).forEach(it => it.innerHTML = locale.name[lang][name]);
-        }
+        i18n.setLocale(lang);
+        this.renderText();
         this.loadContent();
+    }
+
+    prepareGettext() {
+        for (let elem of document.querySelectorAll("[gt-text]")) {
+            elem.setAttribute("gt-text", elem.innerText.trim());
+        }
+    }
+
+    renderText() {
+        for (let elem of document.querySelectorAll("[gt]")) {
+            for (let i=0; i<elem.attributes.length; i++) {
+                if (elem.attributes[i].name.startsWith("gt-")) {
+                    let attributeName = elem.attributes[i].name.slice(3);
+                    let value = _(elem.attributes[i].value);
+                    if (attributeName == "text") {
+                        elem.innerText = value;
+                    } else {
+                        elem.setAttribute(attributeName, value);
+                    }
+                }
+            }
+        }
     }
 
     applySettings() {
@@ -1152,6 +1173,7 @@ class App {
 }
 
 let timeSync = new TimeSync(TIME_SYNC_DELTA);
+i18n=i18n();
 let app;
 window.onload = function() {
     app = new App();

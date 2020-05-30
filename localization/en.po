@@ -1,0 +1,187 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+msgid "Создать"
+msgstr "Create"
+
+msgid "Войти"
+msgstr "Enter"
+
+msgid "Введённый выше ключ необходим для игры."
+msgstr "It is key"
+
+msgid "Введи своё имя"
+msgstr "Enter your name"
+
+msgid "Вставить"
+msgstr "Paste"
+
+msgid "Сгенерировать новый"
+msgstr "Generate new"
+
+msgid "Имя нужно, чтобы друзья могли тебя опознать"
+msgstr "Name is necessary for you to be recognizable"
+
+msgid "Поехали!"
+msgstr "Go!"
+
+msgid "Копир. ключ"
+msgstr "Copy key"
+
+msgid "Копир. ссылку"
+msgstr "Copy link"
+
+msgid "Начать игру"
+msgstr "Start game"
+
+msgid "Меньше 2 игроков"
+msgstr "Less than 2 players"
+
+msgid "Игра не началась"
+msgstr "Game not started"
+
+msgid "Слов в шляпе"
+msgstr "Words in hat"
+
+msgid "Подготовка"
+msgstr "Preparation"
+
+msgid "Идёт объяснение"
+msgstr "Explanation"
+
+msgid "Ты объясняешь"
+msgstr "You explain"
+
+msgid "Ты отгадываешь"
+msgstr "You guess"
+
+msgid "Редактирование раунда"
+msgstr "Round editing"
+
+msgid "объясняет"
+msgstr "explains"
+
+msgid "отгадывает"
+msgstr "guesses"
+
+msgid "Я готов объяснять"
+msgstr "I am ready to explain"
+
+msgid "Я готов отгадывать"
+msgstr "I'm ready to guess"
+
+msgid "Подожди напарника"
+msgstr "Wait partner"
+
+msgid "Не угадал"
+msgstr "Not guess"
+
+msgid "Ошибка"
+msgstr "Mistake"
+
+msgid "Угадал"
+msgstr "Guess"
+
+msgid "Подтверждаю"
+msgstr "Confirm"
+
+msgid "###Результаты игры"
+msgstr "Game results"
+
+msgid "Игрок"
+msgstr "Player"
+
+msgid "Объяснено"
+msgstr "Explained"
+
+msgid "Угадано"
+msgstr "Guessed"
+
+msgid "Сумма"
+msgstr "Summ"
+
+msgid "Оставить отзыв"
+msgstr "Give feedback"
+
+msgid "Правила"
+msgstr "Rules"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "О нас"
+msgstr "About us"
+
+msgid "Новости"
+msgstr "News"
+
+msgid "Обратная связь"
+msgstr "Feedback"
+
+msgid "Отправить дополнительные сведения"
+msgstr "Send more information"
+
+msgid "Отправить"
+msgstr "Send"
+
+msgid "Настройки игры"
+msgstr "Game settings"
+
+msgid "Количество слов в шляпе"
+msgstr "Words count"
+
+msgid "Когда слова закончатся, закончится и игра."
+msgstr ""
+
+msgid "Время на подготовку"
+msgstr "Delay time"
+
+msgid "Время обратного отсчёта до начала раунда."
+msgstr ""
+
+msgid "Время на объяснение"
+msgstr "Explanation time"
+
+msgid "По окончании этого времени любое объяснение слов должно быть закончено."
+msgstr ""
+
+msgid "Время на последнюю попытку"
+msgstr "Aftermath time"
+
+msgid "В течение этого времени отгадывающий может озвучить последнюю версию."
+msgstr ""
+
+msgid "Словарь"
+msgstr "Dictionary"
+
+msgid "Словарь определяет набор слов, из которых будут выбраны слова для этой партии."
+msgstr ""
+
+msgid "Строгий режим"
+msgstr "Strict mode"
+
+msgid "Применить"
+msgstr "Apply"
+
+msgid "Отмена"
+msgstr "Cancel"
+
+msgid "Ключ игры"
+msgstr "Game key"
+
+msgid "угадал"
+msgstr "explained"
+
+msgid "не угадал"
+msgstr "not explained"
+
+msgid "ошибка"
+msgstr "mistake"
+
+msgid "Оставьте свой комментарий здесь"
+msgstr "Leave your comment here"
+
+msgid "Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным."
+msgstr ""
