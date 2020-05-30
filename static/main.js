@@ -1137,9 +1137,9 @@ class App {
         els("type.number").forEach(it => validateNumber(it.id));
     }
 
-    loadContent() {
-        this.loadPages();
-        this.loadDictionaries();
+    async loadContent() {
+        await this.loadPages();
+        await this.loadDictionaries();
         els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
