@@ -516,7 +516,7 @@ class App {
         // el("gameSettingsPage_title").innerText = this.game.key;
     }
 
-    enterRoom() {
+    async enterRoom() {
         if (this.game.key == "") {
             this.failedToJoin("Пустой ключ комнаты - низзя");
             return;
@@ -525,24 +525,21 @@ class App {
             this.failedToJoin("Нужно представиться");
             return;
         }
-        fetch(`api/getRoomInfo?key=${this.game.key}`)
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                console.log("Invalid room key");
-                return;
-            };
-            if (["wait", "play"].indexOf(data.state) != -1) {
-                this.emit("cJoinRoom",
-                    {"username": this.game.myUsername,
-                     "key": this.game.key
-                });
-            } else if (data.state == "end") {
-                console.log("Results in MVP-next.");
-            } else {
-                console.error("GetRoomInfo. Incorrect state.", data);
-            }
-        })
+        let data = await (await fetch(`api/getRoomInfo?key=${this.game.key}`)).json();
+        if (!data.success) {
+            console.log("Invalid room key");
+            return;
+        };
+        if (["wait", "play"].indexOf(data.state) != -1) {
+            this.emit("cJoinRoom",
+                {"username": this.game.myUsername,
+                    "key": this.game.key
+            });
+        } else if (data.state == "end") {
+            console.log("Results in MVP-next.");
+        } else {
+            console.error("GetRoomInfo. Incorrect state.", data);
+        }
     }
 
     renderPreparationPage() {
@@ -584,9 +581,9 @@ class App {
         this.gamePages.go(page);
     }
 
-    renderExplanationPage({startTime}) {
+    async renderExplanationPage({startTime}) {
         let roundId = this.game.roundId;
-        setTimeout(() => {
+        setTimeout(async () => {
             if (this.game.roundId != roundId) return;
             let page = ["gamePage_explanationDelayBox"];
             if (this.game.myRole == "speaker") {
@@ -597,27 +594,23 @@ class App {
                 page.push("gamePage_explanationTitle")
             }
             this.gamePages.go(page);
-            this.animateDelayTimer(startTime - this.game.settings.delayTime,
-                roundId)
-            .then(() => {
-                if (this.game.roundId != roundId) return;
-                if (this.game.myRole == "speaker") {
-                    this.gamePages.go(["gamePage_explanationBox",
-                        "gamePage_speakerTitle"]);
-                } else if (this.game.myRole == "listener") {
-                    this.gamePages.go(["gamePage_speakerListener",
-                        "gamePage_observerBox", "gamePage_listenerTitle"]);
-                } else {
-                    this.gamePages.go(["gamePage_speakerListener",
-                        "gamePage_observerBox", "gamePage_explanationTitle"]);
-                }
-                this.sizeWord();
-                this.animateExplanationTimer(startTime, roundId)
-                .then(() => {
-                    this.animateAftermathTimer(startTime +
-                        this.game.settings.explanationTime, roundId);
-                })
-            })
+            await this.animateDelayTimer(startTime - this.game.settings.delayTime,
+                roundId);
+            if (this.game.roundId != roundId) return;
+            if (this.game.myRole == "speaker") {
+                this.gamePages.go(["gamePage_explanationBox",
+                    "gamePage_speakerTitle"]);
+            } else if (this.game.myRole == "listener") {
+                this.gamePages.go(["gamePage_speakerListener",
+                    "gamePage_observerBox", "gamePage_listenerTitle"]);
+            } else {
+                this.gamePages.go(["gamePage_speakerListener",
+                    "gamePage_observerBox", "gamePage_explanationTitle"]);
+            }
+            this.sizeWord();
+            await this.animateExplanationTimer(startTime, roundId)
+            this.animateAftermathTimer(startTime +
+                this.game.settings.explanationTime, roundId);
 
         }, startTime - timeSync.getTime() - this.game.settings.delayTime);
     }
@@ -681,10 +674,9 @@ class App {
             baseWidth * parentWidth / wordWidth)}px`;
     }
 
-    generateKey() {
-        fetch("api/getFreeKey")
-            .then(response => response.json())
-            .then(result => el("joinPage_inputKey").value = result.key);
+    async generateKey() {
+        let result = await (await fetch("api/getFreeKey")).json();
+        el("joinPage_inputKey").value = result.key;
     }
 
     copyKey() {
@@ -695,10 +687,9 @@ class App {
         navigator.clipboard.writeText(window.location);
     }
 
-    pasteKey() {
-        navigator.clipboard.readText().then(clipText => {
-            el("joinPage_inputKey").value = clipText;
-        })
+    async pasteKey() {
+        let clipText = await navigator.clipboard.readText();
+        el("joinPage_inputKey").value = clipText;
     }
 
     checkClipboard() {
@@ -750,8 +741,8 @@ class App {
         el("gamePage_speakerReadyButton").innerText = "Подожди напарника";
     }
 
-    animateDelayTimer(startTime, roundId) {
-        return animate({
+    async animateDelayTimer(startTime, roundId) {
+        await animate({
             startTime,
             duration: this.game.settings.delayTime,
             draw: (progress) => {
@@ -766,7 +757,7 @@ class App {
         })
     }
 
-    animateExplanationTimer(startTime, roundId) {
+    async animateExplanationTimer(startTime, roundId) {
         el("gamePage_explanationTimer").classList.remove("timer-aftermath");
         el("gamePage_observerTimer").classList.remove("timer-aftermath");
         let animation = animate({
@@ -782,13 +773,12 @@ class App {
                 return this.game.roundId != roundId;
             }
         })
-        return animation.then(() => {
-            el("gamePage_explanationTimer").innerText = "00:00";
-            el("gamePage_observerTimer").innerText = "00:00";
-        })
+        await animation;
+        el("gamePage_explanationTimer").innerText = "00:00";
+        el("gamePage_observerTimer").innerText = "00:00";
     }
 
-    animateAftermathTimer(startTime, roundId) {
+    async animateAftermathTimer(startTime, roundId) {
         el("gamePage_explanationTimer").classList.add("timer-aftermath");
         el("gamePage_observerTimer").classList.add("timer-aftermath");
         let animation =  animate({
@@ -805,10 +795,9 @@ class App {
                 return this.game.roundId != roundId;
             }
         })
-        return animation.then(() => {
-            el("gamePage_explanationTimer").innerText = "0.0";
-            el("gamePage_observerTimer").innerText = "0.0";
-        })
+        await animation;
+        el("gamePage_explanationTimer").innerText = "0.0";
+        el("gamePage_observerTimer").innerText = "0.0";
     }
 
     failedToJoin(msg) {
