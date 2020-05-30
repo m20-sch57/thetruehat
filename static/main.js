@@ -6,6 +6,14 @@ Array.prototype.last = function() {
     return this[this.length - 1];
 }
 
+if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
+if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
+    HTMLCollection.prototype.forEach = Array.prototype.forEach;
+}
+
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
