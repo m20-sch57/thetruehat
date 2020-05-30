@@ -15,11 +15,11 @@ async function main() {
     console.log("Rolling database back...");
     try {
         await session.sql("START TRANSACTION;")
-        await session.sql("TRUNCATE Games;").execute();
-        await session.sql("TRUNCATE Players;").execute();
-        await session.sql("TRUNCATE Rooms;").execute();
-        await session.sql("TRUNCATE ExplanationRecords;").execute();
-        await session.sql("TRUNCATE Participating;").execute();
+        await session.sql("DELETE FROM Games;").execute();
+        await session.sql("DELETE FROM Players;").execute();
+        await session.sql("DELETE FROM Rooms;").execute();
+        await session.sql("DELETE FROM ExplanationRecords;").execute();
+        await session.sql("DELETE FROM Participating;").execute();
         await session.sql("COMMIT;").execute();
         console.log("Rolled database back.");
         process.exit(0);
