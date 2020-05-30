@@ -594,8 +594,8 @@ class App {
                 page.push("gamePage_explanationTitle")
             }
             this.gamePages.go(page);
-            await this.animateDelayTimer(startTime - this.game.settings.delayTime,
-                roundId);
+            await this.animateDelayTimer(startTime -
+                this.game.settings.delayTime, roundId);
             if (this.game.roundId != roundId) return;
             if (this.game.myRole == "speaker") {
                 this.gamePages.go(["gamePage_explanationBox",
@@ -842,7 +842,7 @@ class App {
         this.pages.goBack();
     }
 
-    deactiveteHelpOptions() {
+    deactivateHelpOptions() {
         el("helpPage_rulesOption").classList.remove("active");
         el("helpPage_faqOption").classList.remove("active");
         el("helpPage_aboutOption").classList.remove("active");
@@ -1026,22 +1026,22 @@ class App {
         }
         el("helpPage_goBack").onclick = () => this.pages.goBack();
         el("helpPage_rulesOption").onclick = () => {
-            this.deactiveteHelpOptions();
+            this.deactivateHelpOptions();
             el("helpPage_rulesOption").classList.add("active");
             this.helpPages.go(["helpPage_rulesBox"]);
         }
         el("helpPage_faqOption").onclick = () => {
-            this.deactiveteHelpOptions();
+            this.deactivateHelpOptions();
             el("helpPage_faqOption").classList.add("active");
             this.helpPages.go(["helpPage_faqBox"]);
         }
         el("helpPage_aboutOption").onclick = () => {
-            this.deactiveteHelpOptions();
+            this.deactivateHelpOptions();
             el("helpPage_aboutOption").classList.add("active");
             this.helpPages.go(["helpPage_aboutBox"]);
         }
         el("helpPage_newsOption").onclick = () => {
-            this.deactiveteHelpOptions();
+            this.deactivateHelpOptions();
             el("helpPage_newsOption").classList.add("active");
             this.helpPages.go(["helpPage_newsBox"]);
         }
