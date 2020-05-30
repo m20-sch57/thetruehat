@@ -1091,6 +1091,10 @@ class App {
             {
                 "pageFile": "about.html",
                 "pageId": "helpPage_aboutBox"
+            },
+            {
+                "pageFile": "news.html",
+                "pageId": "helpPage_newsBox"
             }
         ];
         for (let page of loadablePages) {
