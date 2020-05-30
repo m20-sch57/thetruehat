@@ -3,14 +3,51 @@
     "feedbackPort": 7005,
     "serverPIDPath": "./server.pid",
     "feedbackPIDPath": "./feedback.pid",
-    "wordsPath": "./words/easy.json",
+    "dicts": [
+        {
+            "name": {
+                "ru": "Русские слова",
+                "en": "Russian words"
+            },
+            "path": "./words/all.json"
+        },
+        {
+            "name": {
+                "ru": "Английские слова",
+                "en": "English words"
+            },
+            "path": "./words/english-nouns.json"
+        }
+    ],
     "feedbackPath": "./feedback.log",
     "env": "staging",
+    "defaultSettings": {
+        "delayTime": 3000,
+        "explanationTime": 40000,
+        "aftermathTime": 3000,
+        "wordNumber": 100,
+        "dictionaryId": 0,
+        "strictMode": false
+    },
+    "settingsRange": {
+        "delayTime": {
+            "min": 0,
+            "max": 100000
+        },
+        "explanationTime": {
+            "min": 0,
+            "max": 1000000
+        },
+        "aftermathTime": {
+            "min": 0,
+            "max": 100000
+        },
+        "wordNumber": {
+            "min": 1,
+            "max": 1000
+        }
+    },
     "transferTime": 1000,
-    "delayTime": 3000,
-    "explanationTime": 40000,
-    "aftermathTime": 3000,
-    "wordNumber": 100,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [

@@ -12,13 +12,20 @@ const argv = require("yargs")
 
 const PORT = config.port;
 const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
-const WORD_NUMBER = config.wordNumber;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
-const EXPLANATION_TIME = config.explanationTime; // length of explanation
-const DELAY_TIME = config.delayTime; // given delay for client reaction
-const AFTERMATH_TIME = config.aftermathTime; // time for guess
 
-const allWords = require(config.wordsPath).words;
+const dictsConf = config.dicts;
+let _dicts = [];
+for (let i = 0; i < dictsConf.length; ++i) {
+    let dict = {};
+    dict["words"] = require(dictsConf[i].path).words;
+    dict["name"] = dictsConf[i].name;
+    dict["wordNumber"] = dict.words.length;
+    _dicts.push(dict);
+}
+const dicts = _dicts;
+
+const settingsRange = config.settingsRange;
 
 const fs = require("fs");
 fs.writeFile(argv.pidfile, process.pid.toString(), function(err, data) {
@@ -99,7 +106,7 @@ function getHostUsername(users) {
 
 /**
  * Rerurns random number from interval [a, b)
- * 
+ *
  * @param a lower bound
  * @param b upper bound
  * @return random integer from [a, b)
@@ -166,17 +173,19 @@ function getRoom(socket) {
 /**
  * Generate word list
  *
+ * @param settings settings of the room
  * @return list of words
  */
-function generateWords() {
+function generateWords(settings) {
     let words = [];
     let used = {};
-    const numberOfAllWords = allWords.length;
-    while (words.length < WORD_NUMBER) {
+    let dict = dicts[settings.dictionaryId];
+    const numberOfAllWords = dict.wordNumber;
+    while (words.length < settings.wordNumber) {
         const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
-            words.push(allWords[pos]);
+            words.push(dict.words[pos]);
         }
     }
     return words;
@@ -211,20 +220,21 @@ function startExplanation(key) {
     rooms[key].substate = "explanation";
     const date = new Date();
     const currentTime = date.getTime();
-    rooms[key].startTime = currentTime + (DELAY_TIME + TRANSFER_TIME);
+    rooms[key].startTime = currentTime + (rooms[key].settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
-    /*
-    const numberOfTurn = rooms[key].numberOfTurn;
-    setTimeout(function() {
-        // if explanation hasn't finished yet
-        if (!( key in rooms)) {
-            return;
-        }
-        if (rooms[key].numberOfTurn === numberOfTurn) {
-            finishExplanation(key);
-        }
-    }, (DELAY_TIME + EXPLANATION_TIME + AFTERMATH_TIME + TRANSFER_TIME));
-    */
+
+    if (rooms[key].settings.strictMode) {
+        const numberOfTurn = rooms[key].numberOfTurn;
+        setTimeout(function() {
+            // if explanation hasn't finished yet
+            if (!( key in rooms)) {
+                return;
+            }
+            if (rooms[key].numberOfTurn === numberOfTurn) {
+                finishExplanation(key);
+            }
+        }, (rooms[key].settings.delayTime + rooms[key].settings.explanationTime + rooms[key].settings.aftermathTime + TRANSFER_TIME));
+    }
     setTimeout(() => Signals.sNewWord(key), TRANSFER_TIME);
     Signals.sExplanationStarted(key)
 }
@@ -245,6 +255,14 @@ function finishExplanation(key) {
         return;
     }
     rooms[key].substate = "edit";
+
+    if (rooms[key].word !== "") {
+        rooms[key].editWords.push({
+            "word": rooms[key].word,
+            "wordState": "notExplained",
+            "transfer": true
+        });
+    }
 
     rooms[key].startTime = 0;
     rooms[key].word = "";
@@ -359,11 +377,7 @@ class Signals {
             "key": key,
             "playerList": getPlayerList(room.users),
             "host": getHostUsername(room.users),
-            "settings": {
-                "delayTime": config.delayTime,
-                "explanationTime": config.explanationTime,
-                "aftermathTime": config.aftermathTime
-            }
+            "settings": room.settings
         };
         switch (room.state) {
             case "wait":
@@ -406,6 +420,16 @@ class Signals {
                 break;
         }
         Signals.emit(sid, "sYouJoined", joinObj);
+    }
+
+    /**
+     * Implementation of sNewSettings signal
+     * @see API.md
+     *
+     * @param key Key of the Room
+     */
+    static sNewSettings(key) {
+        Signals.emit(key, "sNewSettings", {"settings": rooms[key].settings});
     }
 
     /**
@@ -536,6 +560,23 @@ function sendResponse(req, res, data) {
 }
 
 /**
+ * Implementation of getDictionaryList function
+ * @see API.md
+ */
+app.get("/getDictionaryList", function(req, res) {
+    // preparing data
+    let dictionaries = [];
+    for (let i = 0; i < dicts.length; ++i) {
+        dictionaries.push({
+            "name": dicts[i].name,
+            "wordNumber": dicts[i].wordNumber
+        });
+    }
+
+    sendResponse(req, res, {"dictionaries": dictionaries});
+});
+
+/**
  * Implementation of getFreeKey function
  * @see API.md
  */
@@ -573,6 +614,7 @@ app.get("/getRoomInfo", function(req, res) {
         sendResponse(req, res, {"success": true,
                   "state": "wait",
                   "playerList": [],
+                  "settings": config.defaultSettings,
                   "host": ""});
         return;
     }
@@ -607,6 +649,7 @@ app.get("/getRoomInfo", function(req, res) {
  * Room's info is an object that has fields:
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
+ *     - settings --- room settings
  * if state === "play":
  *     - substate --- substate of the room,
  *     - freshWords --- list of words in hat,
@@ -625,6 +668,7 @@ class Room {
     constructor() {
         this.state = "wait";
         this.users = [];
+        this.settings = Object.assign({}, config.defaultSettings);
     }
 
     /**
@@ -634,8 +678,8 @@ class Room {
         // changing state to 'play'
         this.state = "play";
 
-        // generating word list (later key can affect word list)
-        this.freshWords = generateWords();
+        // generating word list
+        this.freshWords = generateWords(this.settings);
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -779,6 +823,40 @@ class CheckConditions {
         // if username position is -1
         if (usernamePos === -1) {
             Signals.sFailure(socket.id, "cLeaveRoom", 200, "Вы не в комнате");
+            return false;
+        }
+
+        return true;
+    }
+
+    static cApplySettings(socket, key, settings) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "wait") {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Игра уже начата");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cApplySettings", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Только хост может изменить настройки");
             return false;
         }
 
@@ -984,6 +1062,46 @@ class CheckConditions {
         }
         return true;
     }
+
+    static cEndGame(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cEndGame", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cEndGame", null, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'play', something went wrong
+        if (rooms[key].state !== "play") {
+            Signals.sFailure(socket.id, "cEndGame", null, "Состояние игры не `play`");
+            return false;
+        }
+
+        // works only in substate 'wait'
+        if (rooms[key].substate !== "wait") {
+            Signals.sFailure(socket.id, "cEndGame", null, "Подсостояние игры не `wait`");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cEndGame", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cEndGame", null, "Только хост может закончить игру");
+            return false;
+        }
+
+        return true;
+    }
 }
 
 class Callbacks {
@@ -1042,6 +1160,69 @@ class Callbacks {
         Signals.sPlayerLeft(key, rooms[key], username);
     }
 
+    static cApplySettings(socket, key, settings) {
+        // special case: "dictionaryId" (it changes ranges for other settings)
+        let warn = false;
+        if ("dictionaryId" in settings) {
+            if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверный тип поля настроек dictionaryId: " +
+                    typeof(settings["dictionaryId"]) + " вместо " +
+                    typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
+            } else {
+                if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+                } else {
+                    rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
+                    if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
+                        warn = true;
+                    }
+                }
+            }
+        }
+
+        // setting settings
+        const settingsKeys = Object.keys(settings);
+        for (let i = 0; i < settingsKeys.length; ++i) {
+            if (settingsKeys[i] === "dictionaryId") continue; // already done
+
+            if (settingsKeys[i] in rooms[key].settings) {
+                if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверный тип поля настроек " + settingsKeys[i] + ": " +
+                        typeof(settings[settingsKeys[i]]) + " вместо " +
+                        typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
+                    continue;
+                }
+                if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
+                    (settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
+                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max)) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                    continue;
+                }
+                if (settingsKeys[i] === "wordNumber") {
+                    if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                        continue;
+                    }
+                    warn = false;
+                }
+                rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
+            }
+        }
+
+        if (warn) {
+            Signals.sFailure(socket.id, "cApplySettings", null,
+                "Количество слов уменьшено до максимально возможного для данного словаря");
+        }
+
+        Signals.sNewSettings(key);
+    }
+
     static cStartGame(socket, key) {
         /**
          * kicking off offline users
@@ -1079,7 +1260,7 @@ class Callbacks {
                 Signals.sWordExplanationEnded(key, cause);
 
                 // checking the time
-                if ((new Date()).getTime() > rooms[key].startTime + EXPLANATION_TIME) {
+                if ((new Date()).getTime() > rooms[key].startTime + rooms[key].settings.explanationTime) {
                     // finishing the explanation
                     finishExplanation(key);
                     return;
@@ -1117,6 +1298,8 @@ class Callbacks {
                     "wordState": "notExplained",
                     "transfer": true});
 
+                rooms[key].word = "";
+
                 Signals.sWordExplanationEnded(key, cause);
 
                 // finishing the explanation
@@ -1130,7 +1313,7 @@ class Callbacks {
         let cnt = 0;
         for (let i = 0; i < editWords.length; ++i) {
             let word = rooms[key].editWords[i];
-            
+
             // checking matching of information
             if (word.word !== editWords[i].word) {
                 Signals.sFailure(socket.id, "cWordsEdited", 704, `Неверное слово на позиции ${i}`);
@@ -1214,7 +1397,7 @@ class Callbacks {
             const _key = key[i];
             const _username = username[i];
             const _usernamePos = usernamePos[i];
-            
+
             // Removing the user from the room info
             rooms[_key].users[_usernamePos].online = false;
             rooms[_key].users[_usernamePos].sids = [];
@@ -1273,6 +1456,30 @@ io.on("connection", function(socket) {
 
         // Removing the user from the room
         socket.leave(key, (err) => Callbacks.leaveRoomCallback(socket, key, err));
+    });
+
+    /**
+     * Implementation of cApplySettings function
+     * @see API.md
+     */
+    socket.on("cApplySettings", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cApplySettings", data);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"settings": "object"}, "cApplySettings")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cApplySettings(socket, key, data.settings)) {
+            return;
+        }
+
+        Callbacks.cApplySettings(socket, key, data.settings);
     });
 
     /**
@@ -1341,7 +1548,7 @@ io.on("connection", function(socket) {
             startExplanation(key);
         }
     });
-    
+
     /**
      * Implementation of cEndWordExplanation function
      * @see API.md
@@ -1372,7 +1579,7 @@ io.on("connection", function(socket) {
      */
     socket.on("cWordsEdited", function(data) {
         if (WRITE_LOGS) {
-            console.log(socket.id, "cWordsEdited", data)
+            console.log(socket.id, "cWordsEdited", data);
         }
 
         const key = getRoom(socket); // key of the room
@@ -1388,6 +1595,25 @@ io.on("connection", function(socket) {
         }
 
         Callbacks.cWordsEdited(socket, key, data.editWords);
+    });
+
+    /**
+     * Implementation of cEndGame function
+     * @see API.md
+     */
+    socket.on("cEndGame", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cEndGame");
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking signal conditions
+        if (!CheckConditions.cEndGame(socket, key)) {
+            return;
+        }
+
+        endGame(key);
     });
 
     socket.on("disconnect", function() {
