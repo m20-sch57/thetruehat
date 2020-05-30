@@ -114,16 +114,6 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
-// Show hint on elem hover
-function addHint(elem, hint) {
-    el(elem).addEventListener("mouseover", () => {
-        show(hint);
-    });
-    el(elem).addEventListener("mouseout", () => {
-        hide(hint);
-    })
-}
-
 function validateNumber(elem) {
     el(elem).oninput = function(event) {
         el(elem).value = el(elem).value.replace(/\D+/g,"");
@@ -878,6 +868,25 @@ class App {
         this.emit("cApplySettings", {settings});
     }
 
+    addHint(id) {
+        let cls = "active";
+        el(id).onclick = () => {
+            if (el(id).classList.contains(cls)) {
+                el(id).classList.remove(cls);
+            } else {
+                el(id).classList.add(cls);
+                let counter = 0;
+                let listener = document.addEventListener("click", () => {
+                    if (counter == 1) {
+                        document.removeEventListener("click", listener);
+                        el(id).classList.remove(cls);
+                    }
+                    counter += 1;
+                });
+            }
+        }
+    }
+
     setSocketioEventListeners() {
         let events = ["sFailure", "sPlayerJoined", "sPlayerLeft",
         "sYouJoined", "sGameStarted", "sExplanationStarted",
@@ -1083,7 +1092,7 @@ class App {
             "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
             "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode"]
         for (let idPrefix of prefixes) {
-            addHint(idPrefix+"Info", idPrefix+"Hint");
+            this.addHint(idPrefix+"Info");
         }
 
         els("type.number").forEach(it => validateNumber(it.id));
