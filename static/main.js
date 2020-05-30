@@ -883,6 +883,7 @@ class App {
         i18n.setLocale(lang);
         this.renderText();
         this.loadContent();
+        this.loadDictionaries()
     }
 
     prepareGettext() {
@@ -1166,7 +1167,7 @@ class App {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
         for (let dict of dictionaries.dictionaries) {
-            let dictname = `${dict.name["ru"]}, ${dict.wordNumber} слов`;
+            let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} слов`;
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
         }
     }
