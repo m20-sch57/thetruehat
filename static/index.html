@@ -102,80 +102,94 @@
         </button>
         <div class="content-small">
             <div id="gameSettingsPage_header">
-                <h1 id="gameSettingsPage_title">Настройки игры</h1>
+                <h1 id="gameSettingsPage_title">
+                    <!-- Настройки игры -->
+                </h1>
             </div>
             <div id="gameSettingsPage_body">
                 <div id="gameSettingsPage_layers">
                     <div class="layer">
                         <div class="label">
-                            Количество слов в шляпе
+                            <span id="gameSettingsPage_wordNumberText">
+                                <!-- Количество слов в шляпе -->
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_wordNumberInfo"></span>
                             <div class="popup-hint" id="gameSettingsPage_wordNumberHint" style="display: none;">
-                                Когда слова закончатся, закончится и игра.
+                                <!-- Когда слова закончатся, закончится и игра. -->
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_wordNumberField">
                     </div>
                     <div class="layer" id="gameSettingsPage_delayTime">
                         <div class="label">
-                            Время на подготовку
+                            <span id="gameSettingsPage_delayTimeText">
+                                <!-- Время на подготовку -->
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_delayTimeInfo"></span>
                             <div class="popup-hint" id="gameSettingsPage_delayTimeHint" style="display: none;">
-                                Время обратного отсчёта до начала раунда.
+                                <!-- Время обратного отсчёта до начала раунда. -->
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_delayTimeField">
                     </div>
                     <div class="layer" id="gameSettingsPage_explanationTime">
                         <div class="label">
-                            Время на объяснение
+                            <span id="gameSettingsPage_explanationTimeText">
+                                <!-- Время на объяснение -->
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo"></span>
                             <div class="popup-hint" id="gameSettingsPage_explanationTimeHint" style="display: none;">
-                                По окончании этого времени любое объяснение слов должно быть закончено.
+                                <!-- По окончании этого времени любое объяснение слов должно быть закончено. -->
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_explanationTimeField">
                     </div>
                     <div class="layer" id="gameSettingsPage_aftermathTime">
                         <div class="label">
-                            Время на последнюю попытку
+                            <span id="gameSettingsPage_aftermathTimeText">
+                                <!-- Время на последнюю попытку -->
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo"></span>
                             <div class="popup-hint" id="gameSettingsPage_aftermathTimeHint" style="display: none;">
-                                В течение этого времени отгадывающий может озвучить последнюю версию.
+                                <!-- В течение этого времени отгадывающий может озвучить последнюю версию. -->
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField">
                     </div>
                     <div class="layer" id="gameSettingsPage_dictionarySelection">
                         <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
-                            Словарь
+                            <span id="gameSettingsPage_dictionarySelectionText">
+                                <!-- Словарь -->
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_dictionarySelectionInfo"></span>
                             <div class="popup-hint" id="gameSettingsPage_dictionarySelectionHint" style="display: none;">
-                                Словарь определяет набор слов, из которых будут выбраны слова для этой партии.
+                                <!-- Словарь определяет набор слов, из которых будут выбраны слова для этой партии. -->
                             </div>
                         </div>
                         <select class="medium-select" id="gameSettingsPage_dictionaryList">
-                            <option>Русский (20000 слов)</option>
-                            <option>English (10000 words)</optgroup>
+                            <!-- <option>Русский (20000 слов)</option>
+                            <option>English (10000 words)</optgroup> -->
                         </select>
                     </div>
                     <div class="layer" id="gameSettingsPage_strictMode">
                         <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
                         <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
                         <label>
-                            Строгий режим
+                            <span id="gameSettingsPage_strictModeText">
+                                <!-- Строгий режим -->
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_strictModeInfo"></span>
                             <div class="popup-hint" id="gameSettingsPage_strictModeHint" style="display: none;">
-                                Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным.
+                                <!-- Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным. -->
                             </div>
                         </label>
                     </div>
                 </div>
                 <div id="gameSettingsPage_actions">
                     <button class="medium-button bg-green" id="gameSettingsPage_applyButton">
-                        Применить
+                        <!-- Применить -->
                     </button><button class="medium-button bg-blue" id="gameSettingsPage_revertButton">
-                        Отмена
+                        <!-- Отмена -->
                     </button>
                 </div>
             </div>
