@@ -28,8 +28,8 @@ input[type=checkbox] + label {
     flex-shrink: 0;
     height: 25px;
     width: 25px;
+    margin: auto 5px auto 0;
     background-color: white;
-    margin-right: 5px;
     border: 1px solid grey;
     border-radius: 50%;
 }
@@ -50,10 +50,10 @@ input[type=checkbox]:checked + label:hover {
 }
 
 input[type=checkbox] + label span {
-    height: 14px;
-    width: 14px;
+    height: 15px;
+    width: 15px;
     margin: auto;
-    font-size: 14px;
+    font-size: 15px;
     visibility: hidden;
 }
 
@@ -63,7 +63,6 @@ input[type=checkbox]:checked + label span {
 
 input[type=checkbox] + label + label {
     font-size: 20px;
-    line-height: 23px;
 }
 
 /* Common classes */
@@ -649,7 +648,7 @@ input[type=checkbox] + label + label {
     display: block;
     position: absolute;
     width: 360px;
-    max-width: calc(100% - 50px);
+    max-width: calc(100% - 55px);
     padding: 10px 15px 10px 15px;
     margin-top: 5px;
     margin-left: -15px;
@@ -657,6 +656,7 @@ input[type=checkbox] + label + label {
     border-radius: 20px;
     font-size: 16px;
     box-shadow: 2px 2px 10px grey;
+    user-select: none;
     z-index: 1;
 }
 
