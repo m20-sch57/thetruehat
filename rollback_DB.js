@@ -1,10 +1,32 @@
 #!/usr/bin/node
 
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('DB.db');
+const mysqlx = require("@mysql/xdevapi");
 
-db.run("DELETE FROM Players")
-db.run("DELETE FROM Games")
-db.run("DELETE FROM Rooms")
-db.run("DELETE FROM ExplanationRecords")
-db.run("DELETE FROM Participating")
+async function main() {
+    console.log("Connecting to database...");
+    const session = await mysqlx.getSession({
+        user: "root",
+        password: "root",
+        host: "localhost",
+        schema: "test"
+    });
+    console.log("Connected to database.");
+
+    console.log("Rolling database back...");
+    try {
+        await session.sql("START TRANSACTION;")
+        await session.sql("TRUNCATE Games;").execute();
+        await session.sql("TRUNCATE Players;").execute();
+        await session.sql("TRUNCATE Rooms;").execute();
+        await session.sql("TRUNCATE ExplanationRecords;").execute();
+        await session.sql("TRUNCATE Participating;").execute();
+        await session.sql("COMMIT;").execute();
+        console.log("Rolled database back.");
+        process.exit(0);
+    } catch (err) {
+        console.log(err);
+        process.exit(1);
+    }
+}
+
+main();

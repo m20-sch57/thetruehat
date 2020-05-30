@@ -1,19 +1,41 @@
 #!/usr/bin/node
 
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('DB.db');
-
+const mysqlx = require("@mysql/xdevapi");
 const request = require('request');
-request('http://the-hat.appspot.com/api/v2/dictionary/ru', function (error, response, body) {
-    db.serialize(function () {
-        db.run("BEGIN;")
-        JSON.parse(body).forEach((word) => {
-            db.run("INSERT INTO Words VALUES (?,?,?,?);",
-                word.word,
-                word.diff,
-                word.used,
-                word.tags)
-        })
-        db.run("COMMIT;")
-    })
-});
+
+async function main() { 
+    console.log("Connecting to database...");
+    const session = await mysqlx.getSession({
+        user: "root",
+        password: "root",
+        host: "localhost",
+        schema: "test"
+    });
+    console.log("Connected to database.");
+    
+    console.log("Downloading words...");
+    request('http://the-hat.appspot.com/api/v2/dictionary/ru', async function (error, response, body) {
+        const all = JSON.parse(body);
+        try {
+            await session.sql("START TRANSACTION;").execute();
+            console.log("Words downloaded.")
+            console.log("Updating database...");
+            for (let i = 0; i < all.length; ++i) {
+                const word = all[i];
+                await session.sql("REPLACE INTO Words VALUES (?,?,?,?);").bind(
+                    word.word,
+                    word.diff,
+                    word.used,
+                    word.tags).execute();
+            }
+            await session.sql("COMMIT;").execute();
+            console.log("Database updated.");
+            process.exit(0);
+        } catch (err) {
+            console.log(err);
+            process.exit(1);
+        }
+    });
+}
+
+main();
