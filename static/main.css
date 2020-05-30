@@ -690,6 +690,15 @@ input[type=checkbox] + label + label {
     background-repeat: no-repeat;
 }
 
+#gamePage_volume {
+    position: absolute;
+    top: 10px;
+    left: calc(50% + 30px);
+    height: 60px;
+    width: 60px;
+    font-size: 25px;
+}
+
 #gamePage_hatText {
     position: absolute;
     top: 75px;
