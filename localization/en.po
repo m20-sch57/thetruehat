@@ -87,7 +87,7 @@ msgstr "Guess"
 msgid "Подтверждаю"
 msgstr "Confirm"
 
-msgid "###Результаты игры"
+msgid "Результаты игры"
 msgstr "Game results"
 
 msgid "Игрок"
