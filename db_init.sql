@@ -11,13 +11,13 @@ CREATE TABLE Games
 (
     GameID INTEGER not null auto_increment unique,
     constraint Games_PK primary key (GameID),
-    Settings JSON not null,
-    WordsList JSON not null,
+    Settings JSON not null DEFAULT ('{}'),
+    WordsList JSON not null DEFAULT ('[]'),
     State TEXT not null,
-    Players JSON not null,
+    Players JSON not null DEFAULT ('{}'),
     Host TEXT not null,
-    StartTime INTEGER,
-    EndTime INTEGER,
+    StartTime BIGINT,
+    EndTime BIGINT,
     TimeZoneOffset TEXT,
     Results TEXT,
     Sent INTEGER default 0 not null
@@ -25,11 +25,9 @@ CREATE TABLE Games
 CREATE TABLE Participating
 (
     GameID INTEGER not null unique,
-    Participating_Games_GameID_FK INTEGER not null,
-    foreign key (Participating_Games_GameID_FK) references Games(GameID),
+    foreign key (GameID) references Games(GameID),
     UserID INTEGER not null,
-    Participating_Players_UserID_FK INTEGER not null,
-    foreign key (Participating_Players_UserID_FK) references Players(UserID)
+    foreign key (UserID) references Players(UserID)
 );
 CREATE TABLE Words
 (
@@ -44,14 +42,12 @@ CREATE TABLE Rooms
     RoomKey CHAR(32) not null unique,
     constraint Rooms_PK primary key(RoomKey),
     GameID INTEGER unique,
-    Rooms_Games_GameID_FK INTEGER not null,
-    foreign key (Rooms_Games_GameID_FK) references Games(GameID)
+    foreign key (GameID) references Games(GameID)
 );
 CREATE TABLE ExplanationRecords
 (
     GameID INTEGER,
-    ExplanationRecords_Games_GameID_FK INTEGER not null,
-    foreign key (ExplanationRecords_Games_GameID_FK) references Games(GameID),
+    foreign key (GameID) references Games(GameID),
     ExplNo INTEGER,
     Speaker TEXT not null,
     SpeakerID INTEGER,
