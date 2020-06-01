@@ -14,7 +14,7 @@ CREATE TABLE Games
     Settings JSON not null DEFAULT ('{}'),
     WordsList JSON not null DEFAULT ('[]'),
     State TEXT not null,
-    Players JSON not null DEFAULT ('{}'),
+    Players JSON not null DEFAULT ('[]'),
     Host TEXT not null,
     StartTime BIGINT,
     EndTime BIGINT,

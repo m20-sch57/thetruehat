@@ -84,9 +84,13 @@ const mysqlx = require("@mysql/xdevapi");
     */
 
     async function allAsync(sql, params) {
-        console.log(sql, params);
+        const paramsStr = toStr(params);
+        console.log(sql, paramsStr);
         try {
-            const res = await session.sql(sql).bind(params).execute();
+            const res = await session.sql(sql).bind(paramsStr).execute();
+            if (!res.hasData()) {
+                return null;
+            }
             let ans = [];
             const cols = res.getColumns().map((column) => column.getColumnName());
             const data = res.toArray()[0];
@@ -99,14 +103,15 @@ const mysqlx = require("@mysql/xdevapi");
             return ans;
         } catch (err) {
             console.warn(err);
-            return [];
+            return null;
         }
     }
 
     async function runAsync(sql, params) {
-        console.log(sql, params);
+        const paramsStr = toStr(params);
+        console.log(sql, paramsStr);
         try {
-            const res = await session.sql(sql).bind(params).execute();
+            const res = await session.sql(sql).bind(paramsStr).execute();
             return res;
         } catch (err) {
             console.warn(err);
@@ -116,6 +121,24 @@ const mysqlx = require("@mysql/xdevapi");
 
     //----------------------------------------------------------
     // Handy functions
+
+    /**
+     * Converts all array elemets to string
+     *
+     * @param arr --- array
+     * @return array which elemets are strings
+     */
+    function toStr(arr) {
+        let ans = [];
+        for (let i = 0; i < arr.length; ++i) {
+            if (arr[i] === null) {
+                ans[i] = null;
+                continue;
+            }
+            ans[i] = JSON.stringify(arr[i]);
+        }
+        return ans;
+    }
 
     /**
      * Checks object with the pattern
@@ -159,6 +182,7 @@ const mysqlx = require("@mysql/xdevapi");
      * @return list of players
      */
     function getPlayerList(users) {
+        console.log(users, typeof(users));
         return users.map(el => {return {"username": el.username, "online": el.online};});
     }
 
@@ -389,10 +413,10 @@ const mysqlx = require("@mysql/xdevapi");
         Signals.sGameEnded(key, results)
         await runAsync(`UPDATE Games
                 SET Results = ?,
-                    EndTime = ?
+                    EndTime = ?,
                 WHERE GameID = ?;`,
             [
-                JSON.stringify(results),
+                results,
                 Date.now(),
                 rooms[key].gameID
             ]);
@@ -689,6 +713,11 @@ const mysqlx = require("@mysql/xdevapi");
      * @see API.md
      */
     app.get("/getRoomInfo", async function(req, res) {
+        if (!("key" in req.query)) {
+            sendResponse(req, res, {"success": false});
+            return;
+        }
+
         const key = req.query.key.toLowerCase().replace(/\s+/g, ""); // The key of the room
 
         if (key === "") {
@@ -702,8 +731,6 @@ const mysqlx = require("@mysql/xdevapi");
                                               (SELECT GameID
                                               FROM Rooms
                                               WHERE RoomKey = ?);`, [key]);
-
-        console.log(rows[0]);
 
         // Case of nonexistent room
         if (rows === null || rows.length === 0) { // TODO smth with case rows === null
@@ -721,6 +748,7 @@ const mysqlx = require("@mysql/xdevapi");
 
         const game = rows[0]; // The room
         const players = game["Players"]; // Players in the game
+        console.log(game);
         switch (game["State"]) {
             case "wait":
             case "play":
@@ -811,13 +839,13 @@ const mysqlx = require("@mysql/xdevapi");
                        TimeZoneOffset = ?
                    WHERE GameID = ?;`,
                 [
-                    JSON.stringify(this.settings),
-                    JSON.stringify(this.freshWords),
+                    this.settings,
+                    this.freshWords,
                     this.state,
-                    JSON.stringify(getPlayerList(this.users)),
+                    getPlayerList(this.users),
                     getHostUsername(this),
                     Date.now(),
-                    JSON.stringify([]), // TODO: implement
+                    [], // TODO: implement
                     this.gameID
                 ]);
             // TODO: Turn on when IDs will be ready
@@ -1232,7 +1260,7 @@ const mysqlx = require("@mysql/xdevapi");
                                    Host = ?
                                WHERE GameID = ?;`,
                 [
-                    JSON.stringify(getPlayerList(rooms[key].users)),
+                    getPlayerList(rooms[key].users),
                     getHostUsername(rooms[key].users),
                     gameID
                 ]);
