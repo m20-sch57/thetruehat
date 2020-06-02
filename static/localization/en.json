@@ -57,5 +57,9 @@
     "угадал": "explained",
     "не угадал": "not explained",
     "ошибка": "mistake",
-    "Оставьте свой комментарий здесь": "Leave your comment here"
+    "Оставьте свой комментарий здесь": "Leave your comment here",
+    "слово": [
+        "word",
+        "words"
+    ]
 }

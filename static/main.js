@@ -128,7 +128,13 @@ function addHint(elem, hint) {
     })
 }
 
-function _(msgid) {return i18n.gettext(msgid)}
+function _(msgid, n) {
+    if (n === undefined) {
+        return i18n.gettext(msgid);
+    } else {
+        return i18n.ngettext(msgid, msgid, n);
+    }
+}
 
 function validateNumber(elem) {
     el(elem).oninput = function(event) {
@@ -366,7 +372,8 @@ class Game {
     }
 
     render() {
-        this.renderStuff();
+        this.renderSpeakerListener();
+        this.renderWordsCount();
         this.renderPlayersList();
         // this.renderPlayersCnt();
         this.renderHost();
@@ -431,10 +438,14 @@ class Game {
         });
     }
 
-    renderStuff() {
+    renderWordsCount() {
+        el("gamePage_wordsCnt").innerText = this.wordsCount;
+        el("gamePage_wordsInHat").innerText = _("слово", this.wordsCount);
+    }
+
+    renderSpeakerListener() {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
-        el("gamePage_wordsCnt").innerText = this.wordsCount;
     }
 
     changeWordState(word, state) {
@@ -874,14 +885,6 @@ class App {
         el("helpPage_newsOption").classList.remove("active");
     }
 
-    async loadTranslations() {
-        let langs = ["en"];
-        for (let lang of langs) {
-            let json = await (await fetch(`localization/${lang}.json`)).text();
-            i18n.loadJSON(json, 'messages');
-        }
-    }
-
     setLocale(lang) {
         if (this.lang && lang == this.lang) return;
         localStorage.preferredLang = lang;
@@ -1177,6 +1180,14 @@ class App {
         for (let dict of dictionaries.dictionaries) {
             let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} слов`;
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
+        }
+    }
+
+    async loadTranslations() {
+        let langs = ["en", "ru"];
+        for (let lang of langs) {
+            let json = await (await fetch(`localization/${lang}.json`)).text();
+            i18n.loadJSON(json, 'messages');
         }
     }
 }
