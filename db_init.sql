@@ -29,13 +29,21 @@ CREATE TABLE Participating
     UserID INTEGER not null,
     foreign key (UserID) references Players(UserID)
 );
+CREATE TABLE Dictionaries
+(
+    DictionaryID INTEGER not null unique,
+    constraint Dictionaries_PK primary key (DictionaryID),
+    DictionaryName TEXT not null
+);
 CREATE TABLE Words
 (
     Word CHAR(32) not null unique,
     constraint Words_PK primary key (Word),
     Difficult INTEGER not null,
     Used INTEGER not null,
-    Tags TEXT not null
+    Tags TEXT not null,
+    DictionaryID INTEGER not null unique,
+    foreign key (DictionaryID) references Dictionaries(DictionaryID)
 );
 CREATE TABLE Rooms
 (
@@ -69,4 +77,6 @@ CREATE INDEX Words_Difficult_Index
     on Words (Difficult);
 CREATE INDEX ER_GameID_Index
     on ExplanationRecords (GameID);
+CREATE UNIQUE INDEX Words_DictionaryID_UIndex
+    on Words (DictionaryID);
 COMMIT;
