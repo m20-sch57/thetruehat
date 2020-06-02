@@ -53,7 +53,7 @@ Just stop processes in both consoles you used to launch project.
 You can see the documentation [here](docs/main.md).
 
 ## Gratitude
-We want to express gratitude for their cooperation to [SCS.Hat project](https://the-hat.appspot.com/landing). 
+We want to express gratitude for their cooperation to [SIS.Hat project](https://the-hat.appspot.com/landing).
 
 ## License
 This project is available by [MIT license](LICENSE).
