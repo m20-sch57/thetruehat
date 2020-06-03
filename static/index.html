@@ -175,31 +175,38 @@
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
-        <div id="gamePage_hatPicture"></div>
-        <button class="flat-button" id="gamePage_volume">
-            <span class="fa fa-volume-down"></span>
-            <!-- <span class="fa fa-volume-mute"></span> -->
-        </button>
-        <div id="gamePage_hatText">
-            Слов в шляпе: <span id="gamePage_wordsCnt"></span>
+        <div id="gamePage_hatPicture">
+            <div id="gamePage_wordsCnt">
+            </div>
+            <div id="gamePage_words">
+                слов
+            </div>
         </div>
         <div class="content-small">
             <div id="gamePage_header">
-                <h1 class="game-title" id="gamePage_waitTitle" style="display: none;">
-                    Подготовка
+                <div id="gamePage_gameActions">
+                    <button class="white-bubble action" id="gamePage_leave">
+                        <span src="svg/exit_left.svg" name="svg"></span>
+                    </button>
+                    <button class="white-bubble action" id="gamePage_volume">
+                        <span src="svg/volume_on.svg" name="svg" style="display: none;"></span>
+                        <span src="svg/volume_off.svg" name="svg" style="display: none;"></span>
+                    </button>
+                    <button class="white-bubble action" id="gamePage_finish">
+                        <span src="svg/flag_check.svg" name="svg"></span>
+                    </button>
+                </div>
+                <h1 id="gamePage_status">
+                    <span id="gamePage_waitTitle" style="display: none;">Подготовка</span>
+                    <span id="gamePage_explanationTitle" style="display: none;">Идёт объяснение</span>
+                    <span id="gamePage_speakerTitle" style="display: none;">Ты объясняешь</span>
+                    <span id="gamePage_listenerTitle" style="display: none;">Ты отгадываешь</span>
+                    <span id="gamePage_editTitle" style="display: none;">Редактирование раунда</span>
                 </h1>
-                <h1 class="game-title" id="gamePage_explanationTitle" style="display: none;">
-                    Идёт объяснение
-                </h1>
-                <h1 class="game-title" id="gamePage_speakerTitle" style="display: none;">
-                    Ты объясняешь
-                </h1>
-                <h1 class="game-title" id="gamePage_listenerTitle" style="display: none;">
-                    Ты отгадываешь
-                </h1>
-                <h1 class="game-title" id="gamePage_editTitle" style="display: none;">
-                    Редактирование раунда
-                </h1>
+                <h2 id="gamePage_additionalStatus" style="display: none;">
+                    Отгадывает
+                    <span id="gamePage_additionalStatusListener"></span>
+                </h2>
             </div>
             <div id="gamePage_body">
                 <div id="gamePage_speakerListener" style="display: none;">

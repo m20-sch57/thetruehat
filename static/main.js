@@ -631,16 +631,16 @@ class App {
         } else {
             this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
             el("gamePage_editConfirm").classList.remove("shadow");
-            el("gamePage_editTitle").classList.remove("shadow");
+            el("gamePage_status").classList.remove("shadow");
         }
     }
 
     editPageUpdateShadows() {
         let elem = el("gamePage_editListScrollable");
         if (elem.scrollTop == 0) {
-            el("gamePage_editTitle").classList.remove("shadow");
+            el("gamePage_status").classList.remove("shadow");
         } else {
-            el("gamePage_editTitle").classList.add("shadow");
+            el("gamePage_status").classList.add("shadow");
         }
         if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
             el("gamePage_editConfirm").classList.remove("shadow");
@@ -678,7 +678,7 @@ class App {
         eWord.style["font-size"] = `${baseWidth}px`
         let wordWidth = eWord.getBoundingClientRect().width;
         let parentWidth = eWordParent.getBoundingClientRect().width;
-        eWord.style["font-size"] = `${Math.min(40,
+        eWord.style["font-size"] = `${Math.min(50,
             baseWidth * parentWidth / wordWidth)}px`;
     }
 
@@ -1080,10 +1080,19 @@ class App {
 
     loadContent() {
         this.loadPages();
+        this.loadSvgs();
         this.loadDictionaries();
         els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
+    }
+
+    async loadSvgs() {
+        els("svg").forEach(async (it) => {
+            let name = it.attributes["src"].nodeValue;
+            let response = await fetch(name);
+            it.innerHTML = await response.text();
+        })
     }
 
     async loadPages() {
