@@ -25,6 +25,20 @@ const NOT_EXPLAINED_WORD_STATE = "не угадал";
 const MISTAKE_WORD_STATE = "ошибка";
 const WORD_MAX_SIZE = 50;
 
+Array.prototype.last = function() {
+    console.assert(this.length >= 1,
+        "Attempt to get last element of empty array");
+    return this[this.length - 1];
+}
+
+if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
+if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
+    HTMLCollection.prototype.forEach = Array.prototype.forEach;
+}
+
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
     timing = timing || (time => time);
@@ -1143,18 +1157,4 @@ class App {
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
         }
     }
-}
-
-Array.prototype.last = function() {
-    console.assert(this.length >= 1,
-        "Attempt to get last element of empty array");
-    return this[this.length - 1];
-}
-
-if (window.NodeList && !NodeList.prototype.forEach) {
-    NodeList.prototype.forEach = Array.prototype.forEach;
-}
-
-if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
-    HTMLCollection.prototype.forEach = Array.prototype.forEach;
 }
