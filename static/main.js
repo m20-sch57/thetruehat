@@ -2,6 +2,13 @@
 
 let app, timeSync;
 window.onload = function() {
+    if (ENV == PROD) {
+        console.log("%c Не лезь сюда, оно сожрёт тебя !", `
+            font-size: 100px;
+            text-shadow: 2px 0px 0px red, -2px 0px 0px red, 0px 2px 0px red, 0px -2px 0px red,
+            2px 2px 0px red, -2px 2px 0px red, -2px 2px 0px red, -2px -2px 0px red;
+            `);
+    }
     timeSync = new TimeSync(TIME_SYNC_DELTA);
     let _app = new App()
     if (GLOBAL_APP_SCOPE) {
