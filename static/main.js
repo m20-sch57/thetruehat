@@ -1,12 +1,5 @@
 "use strict"
 
-// Config
-const GLOBAL_APP_SCOPE = true;
-const DEBUG_OUTPUT = true;
-const TIME_SYNC_DELTA = 60000;
-const DISCONNECT_TIMEOUT = 5000;
-const ERROR_TIMEOUT = 4000;
-
 let app, timeSync;
 window.onload = function() {
     timeSync = new TimeSync(TIME_SYNC_DELTA);
@@ -17,7 +10,6 @@ window.onload = function() {
     _app.debug = DEBUG_OUTPUT;
 }
 
-// UI consts
 const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
