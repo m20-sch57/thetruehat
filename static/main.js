@@ -1,5 +1,30 @@
 "use strict"
 
+let app, timeSync;
+window.onload = function() {
+    if (ENV == PROD) {
+        console.log("%c Не лезь сюда, оно сожрёт тебя !", `
+            font-size: 100px;
+            text-shadow: 2px 0px 0px red, -2px 0px 0px red, 0px 2px 0px red, 0px -2px 0px red,
+            2px 2px 0px red, -2px 2px 0px red, -2px 2px 0px red, -2px -2px 0px red;
+            `);
+    }
+    timeSync = new TimeSync(TIME_SYNC_DELTA);
+    let _app = new App()
+    if (GLOBAL_APP_SCOPE) {
+        app = _app;
+    }
+    _app.debug = DEBUG_OUTPUT;
+}
+
+const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
+const SPEAKER_READY = "Я готов объяснять";
+const LISTENER_READY = "Я готов отгадывать";
+const EXPLAINED_WORD_STATE = "угадал";
+const NOT_EXPLAINED_WORD_STATE = "не угадал";
+const MISTAKE_WORD_STATE = "ошибка";
+const WORD_MAX_SIZE = 50;
+
 Array.prototype.last = function() {
     console.assert(this.length >= 1,
         "Attempt to get last element of empty array");
@@ -13,16 +38,6 @@ if (window.NodeList && !NodeList.prototype.forEach) {
 if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
     HTMLCollection.prototype.forEach = Array.prototype.forEach;
 }
-
-const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
-const SPEAKER_READY = "Я готов объяснять";
-const LISTENER_READY = "Я готов отгадывать";
-const EXPLAINED_WORD_STATE = "угадал";
-const NOT_EXPLAINED_WORD_STATE = "не угадал";
-const MISTAKE_WORD_STATE = "ошибка";
-
-const TIME_SYNC_DELTA = 60000;
-const DISCONNECT_TIMEOUT = 5000;
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -64,12 +79,10 @@ function deleteNode(node) {
 
 function hide(id) {
     el(id).style.display = "none";
-    // console.log("Hide", id);
 }
 
 function show(id) {
     el(id).style.display = "";
-    // console.log("Show", id);
 }
 
 function showError(msg) {
@@ -106,6 +119,11 @@ function secMsec(msec) {
     let sec = Math.floor(msec / 10);
     msec -= 10 * sec;
     return `${sec}.${msec}`;
+}
+
+// Делит промежуток от 0 до 1 на n равных частей.
+function stairs(x, n) {
+    return Math.floor(x * n);
 }
 
 function wordPlayers(playersCounter) {
@@ -472,19 +490,19 @@ class Game {
 class App {
     constructor() {
         this.debug = true;
-
         this.connected = false;
+        this.settings = {};
+        this.appLog = [];
 
-        this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
+        this.socket = io.connect(window.location.origin,
+            {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game();
         this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
-        this.helpPages.go(["helpPage_rulesBox"]);
 
         this.setKey(readLocationHash());
-        this.gameLog = []
 
         this.checkClipboard();
         this.setDOMEventListeners();
@@ -496,12 +514,15 @@ class App {
         } else {
             this.pages.go(["mainPage"]);
         }
-
+        this.helpPages.go(["helpPage_rulesBox"]);
     }
 
     log(data, level) {
         level = level || "info";
-        this.gameLog.push(data);
+        this.appLog.push({data,
+            "time": timeSync.getTime(),
+            "humanTime": (new Date(timeSync.getTime()).toISOString())
+        });
         if (this.debug) {
             console[level](data);
         }
@@ -510,10 +531,7 @@ class App {
     logSignal(event, data) {
         let level = "info";
         if (event == "sFailure") level = "warn";
-        this.log({event, data,
-            "time": timeSync.getTime(),
-            "humanTime": (new Date(timeSync.getTime()).toISOString())
-        }, level);
+        this.log({event, data}, level);
     }
 
     emit(event, data) {
@@ -697,7 +715,7 @@ class App {
         eWord.style["font-size"] = `${baseWidth}px`
         let wordWidth = eWord.getBoundingClientRect().width;
         let parentWidth = eWordParent.getBoundingClientRect().width;
-        eWord.style["font-size"] = `${Math.min(40,
+        eWord.style["font-size"] = `${Math.min(WORD_MAX_SIZE,
             baseWidth * parentWidth / wordWidth)}px`;
     }
 
@@ -723,7 +741,7 @@ class App {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             disable("joinPage_pasteKey");
         } else {
-            navigator.permissions.query({name: "clipboard-read"})
+            navigator.permissions.query({"name": "clipboard-read"})
             .then(result => {
                 if (result.state == "denied") {
                     disable("joinPage_pasteKey");
@@ -739,7 +757,7 @@ class App {
             disable("preparationPage_copyKey");
             disable("preparationPage_copyLink");
         } else {
-            navigator.permissions.query({name: "clipboard-write"})
+            navigator.permissions.query({"name": "clipboard-write"})
             .then(result => {
                 if (result.state == "denied") {
                     disable("preparationPage_copyKey");
@@ -774,10 +792,18 @@ class App {
             startTime,
             duration: this.game.settings.delayTime,
             draw: (progress) => {
+<<<<<<< HEAD
                 el("gamePage_explanationDelayTimer").innerText =
                     Math.floor((1 - progress) / 1000 * this.game.settings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").style.background =
                     `rgb(${gradient(progress).join()})`;
+=======
+                let sec = stairs(1 - progress,
+                    this.game.settings.delayTime / 1000) + 1;
+                el("gamePage_explanationDelayTimer").innerText = sec;
+                el("gamePage_explanationDelayTimer").style.background =
+                    `rgb(${gradient(progress).join()})`;
+>>>>>>> origin/master
             },
             stopCondition: () => {
                 return this.game.roundId != roundId;
@@ -792,8 +818,9 @@ class App {
             startTime,
             duration: this.game.settings.explanationTime,
             draw: (progress) => {
-                let time = minSec(Math.floor((1 - progress) /
-                    1000 * this.game.settings.explanationTime) + 1);
+                let sec = stairs(1 - progress,
+                    this.game.settings.explanationTime / 1000) + 1;
+                let time = minSec(sec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
@@ -813,8 +840,8 @@ class App {
             startTime,
             duration: this.game.settings.aftermathTime,
             draw: (progress) => {
-                let msec = (Math.floor((1 - progress) /
-                    100 * this.game.settings.aftermathTime) + 1);
+                let msec = stairs(1 - progress,
+                    this.game.settings.aftermathTime / 100) + 1;
                 let time = secMsec(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
@@ -851,7 +878,7 @@ class App {
         result.version = VERSION;
         result.hash = HASH;
         result.message = message;
-        result.gameLog = this.gameLog;
+        result.appLog = this.appLog;
         return result;
     }
 
@@ -1026,7 +1053,7 @@ class App {
                 break;
             default:
                 showError(data.msg, "code:", data.code);
-                setTimeout(hideError, 4000);
+                setTimeout(hideError, ERROR_TIMEOUT);
                 break;
             }
         })
@@ -1161,10 +1188,4 @@ class App {
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
         }
     }
-}
-
-let timeSync = new TimeSync(TIME_SYNC_DELTA);
-let app;
-window.onload = function() {
-    app = new App();
 }
