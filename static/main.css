@@ -392,6 +392,7 @@ svg {
     width: 100%;
     max-height: 800px;
     max-width: 400px;
+    padding: 50px;
     margin: auto;
 }
 
@@ -449,6 +450,22 @@ svg {
 
 #mainPage_viewHelp:hover {
     background-color: rgb(223, 216, 128);
+}
+
+#mainPage_languages {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+#mainPage_ru, #mainPage_en {
+    margin: 5px;
+}
+
+#mainPage_languages img {
+    height: 30px;
+    width: 40px;
+    border: 1px solid lightgrey;
 }
 
 @media (min-width: 1000px) {
