@@ -18,6 +18,7 @@ window.onload = function() {
 }
 
 const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
+// const DELAY_COLORS = [[0, 230, 25], [255, 0, 0]];
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 const EXPLAINED_WORD_STATE = "угадал";
@@ -792,18 +793,11 @@ class App {
             startTime,
             duration: this.game.settings.delayTime,
             draw: (progress) => {
-<<<<<<< HEAD
-                el("gamePage_explanationDelayTimer").innerText =
-                    Math.floor((1 - progress) / 1000 * this.game.settings.delayTime) + 1;
-                el("gamePage_explanationDelayTimer").style.background =
-                    `rgb(${gradient(progress).join()})`;
-=======
                 let sec = stairs(1 - progress,
                     this.game.settings.delayTime / 1000) + 1;
                 el("gamePage_explanationDelayTimer").innerText = sec;
                 el("gamePage_explanationDelayTimer").style.background =
                     `rgb(${gradient(progress).join()})`;
->>>>>>> origin/master
             },
             stopCondition: () => {
                 return this.game.roundId != roundId;
