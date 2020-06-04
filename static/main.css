@@ -258,20 +258,32 @@ svg {
 }
 
 .white-bubble {
-    color: rgb(100, 100, 100);
+    --color: rgb(100, 100, 100);
+    color: var(--color);
+    fill: var(--color);
+    stroke: var(--color);
     background-color: white;
     border-radius: 50%;
-    border: 1px solid grey;
+    border: 1px solid var(--color);
     box-shadow: 0 0 3px grey;
 }
 
-.white-bubble:hover {
+.white-bubble:hover:enabled {
     background-color: rgb(233, 233, 233);
     box-shadow: 0 0 5px grey;
 }
 
-.white-bubble:active {
+.white-bubble:active:enabled {
     background-color: lightgrey;
+}
+
+.white-bubble:disabled {
+    --color: lightgrey;
+    color: var(--color);
+    fill: var(--color);
+    stroke: var(--color);
+    border: 1px solid var(--color);
+    box-shadow: none;
 }
 
 .go-back {
@@ -684,36 +696,6 @@ svg {
 
 /* Game page */
 
-/* #gamePage_hatPicture {
-    position: absolute;
-    display: flex;
-    flex-flow: column;
-    top: 20px;
-    left: calc(50% - 50px);
-    height: 100px;
-    width: 100px;
-    background-image: url(\hat.png);
-    background-size: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-#gamePage_wordsCnt {
-    color: white;
-    margin-top: auto;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 22px;
-}
-
-#gamePage_words {
-    color: white;
-    margin-bottom: auto;
-    text-align: center;
-    font-size: 14px;
-} */
-
 #gamePage_hatSvg {
     position: absolute;
     top: 20px;
@@ -732,10 +714,6 @@ svg {
     display: flex;
     height: 50px;
     width: 50px;
-    --color: rgb(100, 100, 100);
-    border-color: var(--color);
-    fill: var(--color);
-    stroke: var(--color);
     margin: 10px;
     flex-shrink: 0;
 }
