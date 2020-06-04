@@ -39,7 +39,7 @@ CREATE TABLE Words
 (
     Word CHAR(32) not null unique,
     constraint Words_PK primary key (Word),
-    Difficult INTEGER not null,
+    Difficulty INTEGER not null,
     Used INTEGER not null,
     Tags TEXT not null,
     DictionaryID INTEGER not null unique,
@@ -73,8 +73,8 @@ CREATE INDEX Participating_UserID_Index
     on Participating (UserID);
 CREATE UNIQUE INDEX Players_Login_UIndex
     on Players (Login);
-CREATE INDEX Words_Difficult_Index
-    on Words (Difficult);
+CREATE INDEX Words_Difficulty_Index
+    on Words (Difficulty);
 CREATE INDEX ER_GameID_Index
     on ExplanationRecords (GameID);
 CREATE UNIQUE INDEX Words_DictionaryID_UIndex

@@ -3,22 +3,26 @@
     "feedbackPort": 7005,
     "serverPIDPath": "./server.pid",
     "feedbackPIDPath": "./feedback.pid",
-    "dicts": [
-        {
+    "dicts": {
+        "0": {
+            "method": "url",
             "name": {
                 "ru": "Русские слова",
                 "en": "Russian words"
             },
-            "path": "./words/all.json"
+            "file": "./words/all.json",
+            "url": "http://the-hat.appspot.com/api/v2/dictionary/ru"
         },
-        {
+        "1": {
+            "method": "file",
             "name": {
                 "ru": "Английские слова",
                 "en": "English words"
             },
-            "path": "./words/english-nouns.json"
+            "file": "./words/english-nouns.json",
+            "url": ""
         }
-    ],
+    },
     "feedbackPath": "./feedback.log",
     "env": "staging",
     "defaultSettings": {
