@@ -684,7 +684,7 @@ svg {
 
 /* Game page */
 
-#gamePage_hatPicture {
+/* #gamePage_hatPicture {
     position: absolute;
     display: flex;
     flex-flow: column;
@@ -712,6 +712,14 @@ svg {
     margin-bottom: auto;
     text-align: center;
     font-size: 14px;
+} */
+
+#gamePage_hatSvg {
+    position: absolute;
+    top: 20px;
+    left: calc(50% - 50px);
+    height: 100px;
+    width: 100px;
 }
 
 #gamePage_gameActions {
@@ -753,9 +761,9 @@ svg {
 }
 
 #gamePage_status.shadow {
+    position: relative;
     box-shadow: 0 5px 5px -5px grey;
     z-index: 3;
-    position: relative;
 }
 
 #gamePage_additionalStatus {
@@ -1009,7 +1017,7 @@ svg {
 }
 
 #gamePage_editConfirm.shadow {
-     box-shadow: 0 -10px 10px -10px grey;
+    box-shadow: 0 -10px 10px -10px grey;
 }
 
 @media (min-width: 500px) {

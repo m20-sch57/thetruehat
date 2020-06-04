@@ -459,7 +459,8 @@ class Game {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
         el("gamePage_additionalStatusListener").innerText = this.listener;
-        el("gamePage_wordsCnt").innerText = this.wordsCount;
+        setValue(this.wordsCount, "ru");
+        // el("gamePage_wordsCnt").innerText = this.wordsCount;
     }
 
     changeWordState(word, state) {

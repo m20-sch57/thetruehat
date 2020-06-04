@@ -175,12 +175,7 @@
         </button><button class="white-bubble feedback" name="feedbackButton">
             <span class="fa fa-comment-dots"></span>
         </button>
-        <div id="gamePage_hatPicture">
-            <div id="gamePage_wordsCnt">
-            </div>
-            <div id="gamePage_words">
-                слов
-            </div>
+        <div src="svg/chat.svg" id="gamePage_hatSvg" name="svg">
         </div>
         <div class="content-small">
             <div id="gamePage_header">
@@ -189,7 +184,7 @@
                         <span src="svg/exit_left.svg" name="svg"></span>
                     </button>
                     <button class="white-bubble action" id="gamePage_volume">
-                        <span id="gamePage_volumeOn" src="svg/volume_on.svg" name="svg" style=""></span>
+                        <span id="gamePage_volumeOn" src="svg/volume_on.svg" name="svg" style="display: none;"></span>
                         <span id="gamePage_volumeOff" src="svg/volume_off.svg" name="svg" style="display: none;"></span>
                     </button>
                     <button class="white-bubble action" id="gamePage_finish">
@@ -362,6 +357,7 @@
     <audio src="sounds/final+.mp3" id="final+"></audio>
     <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
     <script src="version.js"></script>
+    <script src="hat_words.js"></script>
     <script src="main.js"></script>
 </body>
 
