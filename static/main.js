@@ -14,7 +14,7 @@ if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
     HTMLCollection.prototype.forEach = Array.prototype.forEach;
 }
 
-const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
+const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
 const SPEAKER_READY = "Я готов объяснять";
 const LISTENER_READY = "Я готов отгадывать";
 const EXPLAINED_WORD_STATE = "угадал";
@@ -125,6 +125,29 @@ function wordPlayers(playersCounter) {
 function validateNumber(elem) {
     el(elem).oninput = function(event) {
         el(elem).value = el(elem).value.replace(/\D+/g,"");
+    }
+}
+
+function weightColor(color1, color2, weight) {
+    let w1 = weight;
+    let w2 = 1 - weight;
+    let rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+        Math.round(color1[1] * w1 + color2[1] * w2),
+        Math.round(color1[2] * w1 + color2[2] * w2)];
+    return rgb;
+}
+
+function colorGradientRGB(colors) {
+    return function(x) {
+        if (x == 1) {
+            return colors.last();
+        }
+        let parts = colors.length - 1;
+        let partIndex = Math.floor(x * parts);
+        let colorLeft = colors[partIndex];
+        let colorRight = colors[partIndex + 1];
+        let weight = x * parts - partIndex;
+        return weightColor(colorRight, colorLeft, weight);
     }
 }
 
@@ -746,6 +769,7 @@ class App {
     }
 
     async animateDelayTimer(startTime, roundId) {
+        let gradient = colorGradientRGB(DELAY_COLORS);
         await animate({
             startTime,
             duration: this.game.settings.delayTime,
@@ -753,7 +777,7 @@ class App {
                 el("gamePage_explanationDelayTimer").innerText =
                     Math.floor((1 - progress) / 1000 * this.game.settings.delayTime) + 1;
                 el("gamePage_explanationDelayTimer").style.background =
-                    DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
+                    `rgb(${gradient(progress).join()})`;
             },
             stopCondition: () => {
                 return this.game.roundId != roundId;
