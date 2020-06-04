@@ -222,7 +222,7 @@ svg {
     font-size: 18px;
 }
 
-.medium-input:focus, .large-underlined-input:focus, 
+.medium-input:focus, .large-underlined-input:focus,
 .small-underlined-input:focus, .default-textarea:focus,
 .medium-select:focus {
     border-color: skyblue;
@@ -755,6 +755,7 @@ svg {
 #gamePage_status.shadow {
     box-shadow: 0 5px 5px -5px grey;
     z-index: 3;
+    position: relative;
 }
 
 #gamePage_additionalStatus {

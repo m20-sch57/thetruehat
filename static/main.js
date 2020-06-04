@@ -610,6 +610,7 @@ class App {
     }
 
     renderWaitPage() {
+        el("gamePage_status").classList.remove("shadow");
         enable("gamePage_listenerReadyButton");
         el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
         enable("gamePage_speakerReadyButton");
