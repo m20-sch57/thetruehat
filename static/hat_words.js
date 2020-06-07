@@ -29,24 +29,26 @@ function setValue(n, lang) {
         document.querySelector("use#digitE").setAttribute("xlink:href", `#${n % 10}e`);
     }
     let fl = "2";
-    let lng = "";
+    let lng = "w";
     switch (lang) {
         case "ru":
-            fl = "2";
             if (n % 10 == 1 && n % 100 != 11) {
                 fl = "1";
             } else if (0 < n % 10 && n % 10 < 5 && n % 100 != 10 + n % 10) {
                 fl = "2a";
             }
-            lng = "RU";
+            lng += "RU";
             break;
         case "en":
-            fl = "2";
             if (n == 1) {
                 fl = "1"
             }
-            lng = "EN";
+            lng += "EN";
             break;
     }
-    document.querySelector("use#bottom").setAttribute("xlink:href", `#w${lng}${fl}`);
+    if (n == 57) {
+        lng = "forever";
+        fl = "";
+    }
+    document.querySelector("use#bottom").setAttribute("xlink:href", `#${lng}${fl}`);
 }

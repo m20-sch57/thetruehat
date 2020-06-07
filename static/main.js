@@ -619,7 +619,7 @@ class App {
 
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
-            page.push("gamePage_additionalStatus");
+            // page.push("gamePage_additionalStatus");
             page.push("gamePage_speakerReadyBox");
             page.push("gamePage_speakerTitle");
         } else if (this.game.myRole == "listener") {
