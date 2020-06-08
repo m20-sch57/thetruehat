@@ -631,6 +631,7 @@ app.get("/getRoomInfo", function(req, res) {
             sendResponse(req, res, {"success": true,
                       "state": room.state,
                       "playerList": getPlayerList(room.users),
+                      "settings": room.settings,
                       "host": getHostUsername(room.users)});
             break;
 
