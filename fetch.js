@@ -14,14 +14,20 @@ function fetch({path, method="GET", headers={}, data=null, hostname, protocol="h
     };
 
     let proto = http;
+    switch (protocol) {
+        case "http:":
+            proto = http;
+            break;
+        case "https:":
+            proto = https;
+            break;
+    }
 
     switch (method) {
         case "GET":
-            proto = http;
             options.path += "?" + querystring.stringify(data);
             break;
         case "POST": // Do not forget about "Content-Type".
-            proto = https;
             if (data !== null) {
                 data = JSON.stringify(data);
                 options.headers["Content-Length"] = Buffer.byteLength(data);
