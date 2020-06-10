@@ -221,8 +221,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
  */
 function startExplanation(key) {
     rooms[key].substate = "explanation";
-    const date = new Date();
-    const currentTime = date.getTime();
+    const currentTime = (new Date()).getTime();
     rooms[key].startTime = currentTime + (rooms[key].settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
 
