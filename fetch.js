@@ -2,7 +2,8 @@ const https = require("https");
 const http = require("http");
 const querystring = require("querystring"); 
 
-module.exports.fetch = function fetch({path, method="GET", headers={}, data=null, hostname, protocol="http:", port=80}) {
+module.exports.fetch =
+function fetch({path, method="GET", headers={}, data=null, hostname, protocol="http:", port=80}) {
     const options = {
         protocol,
         hostname,
