@@ -350,11 +350,18 @@ function sendStat(room) {
     sendObject.start_timestamp = room.start_timestamp;
     sendObject.end_timestamp = room.end_timestamp;
     sendObject.player_time_zone_offsets = room.users.map(el => el.time_zone_offset);
-    sendObject.attempts = room.explanationRecords;
+    sendObject.attempts = [];
+    for (let i = 0; i < room.explanationRecords.length; ++i) {
+        for (let j = 0; j < room.explanationRecords[i].length; ++j) {
+            room.explanationRecords[i][j].time -= room.explanationRecords[i][j].extra_time;
+            sendObject.attempts.push(room.explanationRecords[i][j]);
+        }
+    }
     
     // sending data
     console.log("Send:");
     console.log(sendObject);
+    console.log(sendObject.attempts);
 }
 
 //----------------------------------------------------------
@@ -1415,7 +1422,7 @@ class Callbacks {
                     rooms[key].editWords[i].wordState = editWords[i].wordState;
                     rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1][findFirstPos(
                         rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1], "word", editWords[i].word
-                    )].outcome = mapOutcome[editWords.wordState];
+                    )].outcome = mapOutcome[editWords[i].wordState];
                     break;
                 case "notExplained":
                     // returning not explained words to the hat
