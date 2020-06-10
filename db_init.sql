@@ -42,7 +42,7 @@ CREATE TABLE Words
     Difficulty INTEGER not null,
     Used INTEGER not null,
     Tags TEXT not null,
-    DictionaryID INTEGER not null unique,
+    DictionaryID INTEGER not null,
     foreign key (DictionaryID) references Dictionaries(DictionaryID)
 );
 CREATE TABLE Rooms
