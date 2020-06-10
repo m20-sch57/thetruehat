@@ -70,5 +70,15 @@
         "explained": "guessed",
         "mistake": "failed",
         "notExplained": ""
+    },
+    "statSendConfig": {
+        "method": "POST",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "protocol": "https:",
+        "hostname": "m20-sch57.site",
+        "port": "3005",
+        "path": "/feedback"
     }
 }

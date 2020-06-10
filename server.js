@@ -2,6 +2,8 @@
 
 "use strict"
 
+const fetch = require("./fetch.js").fetch;
+
 const config = require("./config.json");
 const version = require("./version.json");
 
@@ -360,7 +362,11 @@ function sendStat(room) {
     // sending data
     console.log("Send:");
     console.log(sendObject);
-    console.log(sendObject.attempts);
+    try {
+        fetch(Object.assign({}, config.statSendConfig, {"data": sendObject}));
+    } catch (err) {
+        console.warn(err);
+    }
 }
 
 //----------------------------------------------------------
