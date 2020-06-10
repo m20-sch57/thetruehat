@@ -725,7 +725,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - startTime --- UTC time of start of explanation (in milliseconds).
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
- *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info)
+ *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info, but `time` is `time` plus `extra_time`)
  *     - start_timestamp --- start timestamp
  *     - end_timestamp --- end timestamp
  *     - explStartMainTime --- start timestamp of word explanation
