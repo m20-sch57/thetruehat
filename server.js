@@ -728,6 +728,8 @@ app.get("/getRoomInfo", function(req, res) {
  *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info)
  *     - start_timestamp --- start timestamp
  *     - end_timestamp --- end timestamp
+ *     - explStartMainTime --- start timestamp of word explanation
+ *     - explStartExtraTime --- start timestamp of extra time
  */
 class Room {
     constructor() {
