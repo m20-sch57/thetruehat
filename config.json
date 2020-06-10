@@ -62,5 +62,13 @@
     ],
     "DEVEL": "devel",
     "STAGING": "staging",
-    "PROD": "prod"
+    "PROD": "prod",
+    "appName": "thetruehat",
+    "protocolVersion": "2.0",
+    "mode": "online",
+    "mapOutcome": {
+        "explained": "guessed",
+        "mistake": "failed",
+        "notExplained": ""
+    }
 }
