@@ -737,6 +737,7 @@ const mysqlx = require("@mysql/xdevapi");
             sendResponse(req, res, {"success": true,
                 "state": "wait",
                 "playerList": [],
+                "settings": config.defaultSettings,
                 "host": ""});
             return;
         }
@@ -755,6 +756,7 @@ const mysqlx = require("@mysql/xdevapi");
                 sendResponse(req, res, {"success": true,
                     "state": game["State"],
                     "playerList": getPlayerList(players), // TODO: Bug that caused by disparity of Web API and DB API.
+                    "settings": game.settigns,
                     "host": game["Host"]});
                 break;
 
