@@ -12,7 +12,7 @@
             },
             "file": "./words/all.json",
             "url": "http://the-hat.appspot.com/api/v2/dictionary/ru",
-            "expiration": 86400000
+            "expirationTime": 86400000
         },
         "1": {
             "method": "file",
@@ -22,9 +22,10 @@
             },
             "file": "./words/english-nouns.json",
             "url": "",
-            "expiration": 0
+            "expirationTime": 0
         }
     },
+    "dictRegExp": "",
     "feedbackPath": "./feedback.log",
     "env": "staging",
     "defaultSettings": {
