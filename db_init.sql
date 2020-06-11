@@ -42,8 +42,7 @@ CREATE TABLE Words
     Difficulty INTEGER not null,
     Used INTEGER not null,
     Tags TEXT not null,
-    DictionaryID INTEGER not null,
-    foreign key (DictionaryID) references Dictionaries(DictionaryID)
+    DictionaryID INTEGER not null
 );
 CREATE TABLE Rooms
 (
@@ -77,6 +76,4 @@ CREATE INDEX Words_Difficulty_Index
     on Words (Difficulty);
 CREATE INDEX ER_GameID_Index
     on ExplanationRecords (GameID);
-CREATE UNIQUE INDEX Words_DictionaryID_UIndex
-    on Words (DictionaryID);
 COMMIT;

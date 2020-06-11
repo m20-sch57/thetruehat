@@ -13,7 +13,7 @@ const rl = readline.createInterface({
 
 // This is a part of config
 function getRepPos(list, field, pos) {
-    for (let i = 0; i < list.length; ++i) {
+    for (let i = 0; i < pos; ++i) {
         if (i === pos) {
             continue;
         }
@@ -158,10 +158,16 @@ async function main() {
                                 console.log("Following records have equal words:");
                                 console.log(_data[repPos]);
                                 console.log(_data[j]);
-                                let ans = await rlAsync("Use (F)irst or use (S)econd: ");
-                                while (!(ans in {"F": null, "S": null})) {
-                                    console.log("Bad answer: " + ans + ". Please, answer `F` or `S`.");
-                                    ans = await rlAsync("Use (F)irst or use (S)econd: ");
+                                let ans = await rlAsync("Use (F)irst, (S)econd, or with more (U)ses: ");
+                                while (!(ans in {"F": null, "S": null, "U": null})) {
+                                    console.log("Bad answer: " + ans + ". Please, answer `F`, `S`, or `U`.");
+                                    ans = await rlAsync("Use (F)irst, (S)econd, or with more (U)ses: ");
+                                }
+                                if (ans === "P") {
+                                    if (_data[j].used <= _data[repPos]) {
+                                        continue;
+                                    }
+                                    ans = "S";
                                 }
                                 if (ans === "F") {
                                     continue;
@@ -170,9 +176,8 @@ async function main() {
                                     processedData = processedData.splice(j, 1);
                                     processedData.push(_data[j]);
                                 }
-                            }
-                            if (j % 100 === 0) {
-                                console.log(j);
+                            } else {
+                                processedData.push(_data[j]);
                             }
                         }
                         log("Words processed.");
@@ -200,21 +205,24 @@ async function main() {
                         log("Cache saved.");
                     } else {
                         log("Loading cached data...");
+                        /*
                         let ans = await rlAsync("Use (P)rocessed data or (R)aw data: ");
                         while (!(ans in {"P": null, "R": null})) {
                             console.log("Bad answer: " + ans + ". Please, answer `P` or `R`.");
                             ans = await rlAsync("Use (P)rocessed data or (R)aw data: ");
                         }
+                        */
+                        let ans = "P";
                         let dType = "";
                         if (ans === "P") {
-                            dType = "proc";
+                            dType = "-proc";
                         }
-                        _data = require("./.loadCache/" + dictIDs[i] + "-" + dType + ".json").data;
+                        _data = require("./.loadCache/" + dictIDs[i] + dType + ".json").data;
                         log("Loaded cached data.");
                     }
                     const data = _data;
                     log("Uploading words to tmp table...");
-                    await session.sql("create table tmp(Word CHAR(32), Difficulty INTEGER, Used INTEGER, Tags TEXT, DictionaryID INTEGER);").bind().execute();
+                    await session.sql("create table tmp(Word CHAR(32), Difficulty INTEGER, Used INTEGER, Tags TEXT, DictionaryID INTEGER);").execute();
                     await session.sql("start transaction;").execute();
                     for (let j = 0; j < data.length; ++j) {
                         const word = data[j];
@@ -226,21 +234,26 @@ async function main() {
                     log("Words uploaded.");
                     log(`Updating words for "${dictIDs[i]}" dictionary...`);
                     log("Removing unchanged word records from tmp table...");
-                    await session.sql("delete from tmp where exists (select (Word, Difficulty, Used, Tags, DictionaryID) from Words tmp.Word = Words.Word and tmp.Difficulty = Words.Difficulty and tmp.Used = Words.Used and tmp.Tags = Words.Tags and tmp.DictionaryID = Words.DictionaryID);").bind().execute();
+                    await session.sql("delete from tmp where exists (select * from Words where tmp.Word = Words.Word and tmp.Difficulty = Words.Difficulty and tmp.Used = Words.Used and tmp.Tags = Words.Tags and tmp.DictionaryID = Words.DictionaryID);").execute();
                     log("Removed unchannged word records from tmp table.");
                     log("Updating word records...");
                     //TODO: rewrite
+                    /*
                     await session.sql("start transaction;").execute();
                     for (let j = 0; j < data.length; ++j) {
                         const word = data[j];
-                        /*
                         await session.sql("replace into Words (Word, Difficulty, Used, Tags, DictionaryID) values (?, ?, ?, ?, ?);").bind(
                             [word.word, word.diff, word.used, word.tags, dictIDs[i]]
                         ).execute();
-                        */
                     }
                     await session.sql("commit;").execute();
+                    */
+                    await session.sql("update Words,tmp set Words.Used = tmp.Used, Words.Difficulty = tmp.Difficulty, Words.Tags = tmp.Tags where Words.Word = tmp.Word and Words.DictionaryID = tmp.DictionaryID;").execute();
+                    await session.sql("insert ignore into Words(Word, Used, Tags, Difficulty, DictionaryID) select Word, Used, Tags, Difficulty, DictionaryID from tmp;").execute();
                     log("Updated word records.");
+                    log("Cleaning up...");
+                    await session.sql("drop table tmp;").execute();
+                    log("Cleaned up.")
                     log(`Words for "${dictIDs[i]}" dictionary updated.`);
                 } catch (err) {
                     log(err);

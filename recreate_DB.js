@@ -23,7 +23,7 @@ function rlAsync(question, answer) {
 
 async function main() {
     await console.log("This action cannot be undone. Recreating database will remove ALL data from it. Please be certain.");
-    const res = await rlAsync("Type \"I understand the consequences, recreate database `test`\" to continue\n.", "I understand the consequences, recreate database `test`");
+    const res = await rlAsync("Type \"I understand the consequences, recreate database `test`\" to continue.\n", "I understand the consequences, recreate database `test`");
     if (!res) {
         console.log("Aborting...");
         process.exit(1);
