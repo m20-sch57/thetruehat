@@ -4,6 +4,47 @@ const mysqlx = require("@mysql/xdevapi");
 const dicts = require("./config.json").dicts;
 const http = require("http");
 
+let argv = process.argv;
+
+let _WRITE_LOGS = true;
+let _FORCE_REFRESH = false;
+
+for (let i = 0; i < argv.length; ++i) {
+    let arg = argv[i];
+    let argDict = {};
+    if (arg[0] === "-" && arg[1] === "-") {
+        argDict[arg.slice(2, arg.length)] = true;
+    } else if (arg[0] === "-" && arg[1] !== "-") {
+        for (let j = 1; j < arg.length; ++j) {
+            argDict[arg[j]] = true;
+        }
+    }
+    if ("h" in argDict || "help" in argDict) {
+        console.log("Usage:");
+        console.log("\tloadWords.js [options]");
+        console.log("Options:");
+        console.log("\t--refresh\t\tdisable use of cached data")
+        console.log("\t-q, --quiet\t\tprint only errors");
+        console.log("\t-h, --help\t\tshow this help info and exit");
+        process.exit(0);
+    }
+    if ("q" in argDict || "quiet" in argDict) {
+        _WRITE_LOGS = false;
+    }
+    if ("refresh" in argDict) {
+        _FORCE_REFRESH = true;
+    }
+}
+
+const WRITE_LOGS = _WRITE_LOGS;
+const FORCE_REFRESH = _FORCE_REFRESH;
+
+function log(data) {
+    if (WRITE_LOGS) {
+        console.log(data);
+    }
+}
+
 async function fetch(url) {
     return new Promise(function(resolve, reject) {
         http.get(url, function(res) {
@@ -38,45 +79,60 @@ async function fetch(url) {
 }
 
 async function main() { 
-    console.log("Connecting to database...");
+    log("Connecting to database...");
     const session = await mysqlx.getSession({
         user: "root",
         password: "root",
         host: "localhost",
         schema: "test"
     });
-    console.log("Connected to database.");
+    log("Connected to database.");
     
     const dictIDs = Object.keys(dicts);
     let failed = false;
     for (let i = 0; i < dictIDs.length; ++i) {
         const dict = dicts[dictIDs[i]];
-        console.log(`Working on "${dictIDs[i]}" dictionary...`);
+        log(`Working on "${dictIDs[i]}" dictionary...`);
         switch (dict.method) {
             case "url":
                 try {
-                    console.log("Updating Dictionaries table...");
+                    log("Updating Dictionaries table...");
                     await session.sql("replace into Dictionaries (DictionaryID, DictionaryName) values (?, ?);").bind(
                         [dictIDs[i], JSON.stringify(dict.name)]
                     ).execute();
-                    console.log("Dictionary table updated.");
-                    сonsole.log("Running metadata expiration check...");
+                    log("Dictionary table updated.");
+                    let expired = true;
+                    if (!FORCE_REFRESH) {
+                        log("Running data expiration check...");
+                        //TODO: implement
+                        log("Data expiration check succeeded.");
+                    }
+                    let _data = null;
+                    if (expired || FORCE_REFRESH) {
+                        log("Downloading words...");
+                        // downloading words
+                        _data = await fetch(dict.url);
+
+                        // updating cache
+                        //
+                        log("Words downloaded.");
+                    } else {
+                        log("Loading cached data...");
+                        //TODO: implement
+                        log("Loaded cached data.");
+                    }
+                    const data = _data;
+                    log("Processing words...");
                     //TODO: implement
-                    console.log("Metadata expiration check succeeded.");
-                    console.log("Downloading words...");
-                    const data = await fetch("http://the-hat.appspot.com/api/v2/dictionary/ru");
-                    console.log("Words downloaded.");
-                    console.log("Processing words...")
+                    log("Words processed.");
+                    log("Uploading words to tmp table...");
                     //TODO: implement
-                    console.log("Words processed.")
-                    console.log("Uploading words to tmp table...");
+                    log("Words uploaded.");
+                    log(`Updating words for "${dictIDs[i]}" dictionary...`);
+                    log("Removing unchanged word records from tmp table...");
                     //TODO: implement
-                    console.log("Words uploaded.");
-                    console.log(`Updating words for "${dictIDs[i]}" dictionary...`);
-                    console.log("Removing unchanged word records from tmp table...");
-                    //TODO: implement
-                    console.log("Removed unchannged word records from tmp table.");
-                    console.log("Updating word records...");
+                    log("Removed unchannged word records from tmp table.");
+                    log("Updating word records...");
                     //TODO: rewrite
                     await session.sql("start transaction;").execute();
                     for (let j = 0; j < data.length; ++j) {
@@ -84,22 +140,19 @@ async function main() {
                         await session.sql("replace into Words (Word, Difficulty, Used, Tags, DictionaryID) values (?, ?, ?, ?, ?);").bind(
                             [word.word, word.diff, word.used, word.tags, dictIDs[i]]
                         ).execute();
-                        if (j % 1000 === 0) {
-                            console.log(j);
-                        }
                     }
                     await session.sql("commit;").execute();
-                    console.log("Updated word records.");
-                    console.log(`Words for "${dictIDs[i]}" dictionary updated.`);
+                    log("Updated word records.");
+                    log(`Words for "${dictIDs[i]}" dictionary updated.`);
                 } catch (err) {
-                    console.log(err);
+                    log(err);
                     failed = 1;
                 }
                 break;
             case "file":
                 break;
         }
-        console.log(`"${dictIDs[i]}" dictionary done.`);
+        log(`"${dictIDs[i]}" dictionary done.`);
     }
     process.exit(failed ? 1 : 0);
 }

@@ -11,7 +11,8 @@
                 "en": "Russian words"
             },
             "file": "./words/all.json",
-            "url": "http://the-hat.appspot.com/api/v2/dictionary/ru"
+            "url": "http://the-hat.appspot.com/api/v2/dictionary/ru",
+            "expiration": 86400000
         },
         "1": {
             "method": "file",
@@ -20,7 +21,8 @@
                 "en": "English words"
             },
             "file": "./words/english-nouns.json",
-            "url": ""
+            "url": "",
+            "expiration": 0
         }
     },
     "feedbackPath": "./feedback.log",
