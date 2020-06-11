@@ -63,7 +63,7 @@
     "DEVEL": "devel",
     "STAGING": "staging",
     "PROD": "prod",
-    "appName": "thetruehat",
+    "appName": "TheTrueHat",
     "protocolVersion": "2.0",
     "mode": "online",
     "mapOutcome": {
