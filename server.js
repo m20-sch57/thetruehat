@@ -129,6 +129,9 @@ const mysqlx = require("@mysql/xdevapi");
      * @return array which elemets are strings
      */
     function toStr(arr) {
+        if (arr === undefined) {
+            return [];
+        }
         let ans = [];
         for (let i = 0; i < arr.length; ++i) {
             if (arr[i] === null) {
@@ -269,13 +272,13 @@ const mysqlx = require("@mysql/xdevapi");
     /**
      * Get all words from DB.
      *
+     * @param dictionaryId id of dictionary
      * @return All words in DB.
      * TODO: Rewrite using less segment. Feature.
      */
-    async function getAllWords() {
-        const res = await allAsync(`SELECT Word
-                                       FROM Words
-                                       WHERE Tags != ?;`, ["-deleted"]);
+    async function getAllWords(dictionaryId) {
+        //TODO: smth when there are more tags
+        const res = await allAsync("SELECT Word FROM Words WHERE Tags != ? and DictionaryID = ?;", ["-deleted", dictionaryId]);
         if (res === null) {
             console.warn("getAllWords: DB crash!");
             return []; // TODO smth
@@ -286,18 +289,16 @@ const mysqlx = require("@mysql/xdevapi");
     /**
      * Generate word list
      *
+     * @param settings settings of the room
      * @return list of words
      * TODO: Rewrite using less segment. Feature.
      */
-    async function generateWords(word_number) {
-        const allWords = await getAllWords();
+    async function generateWords(settings) {
+        const allWords = await getAllWordsFromDict(settings.dictionaryId);
         const words = [];
         const used = {};
         const numberOfAllWords = allWords.length;
-        if (numberOfAllWords < word_number) {
-            return [];
-        }
-        while (words.length < word_number) {
+        while (words.length < settings.wordNumber) {
             const pos = randrange(numberOfAllWords);
             if (!(pos in used)) {
                 used[pos] = true;
@@ -410,11 +411,9 @@ const mysqlx = require("@mysql/xdevapi");
             return 0 - (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
         });
 
-        Signals.sGameEnded(key, results)
-        await runAsync(`UPDATE Games
-                SET Results = ?,
-                    EndTime = ?,
-                WHERE GameID = ?;`,
+        Signals.sGameEnded(key, results);
+        
+        await runAsync("UPDATE Games SET Results = ?, EndTime = ?, WHERE GameID = ?;",
             [
                 results,
                 Date.now(),
@@ -424,9 +423,7 @@ const mysqlx = require("@mysql/xdevapi");
         // removing room
         delete rooms[key];
         if (config.cleanRooms) {
-            await runAsync(`DELETE
-                FROM Rooms
-                WHERE RoomKey = ?`, [key]);
+            await runAsync("DELETE FROM Rooms WHERE RoomKey = ?", [key]);
         }
 
         // removing users from room
@@ -675,6 +672,17 @@ const mysqlx = require("@mysql/xdevapi");
     }
 
     /**
+     * Implementation of getDictionaryList function
+     * @see API.md
+     */
+    app.get("/getDictionaryList", async function(req, res) {
+        let dictionaries = (await allAsync("SELECT DictionaryName, (SELECT COUNT(Word) FROM Words WHERE DictionaryId = Dictionaries.DictionaryID) FROM Dictionaries ORDER BY DictionaryID;"))
+            .map(el => {return {"name": JSON.parse(el["DictionaryName"]), "wordNumber": el["(SELECT COUNT(Word) FROM Words WHERE DictionaryId = Dictionaries.DictionaryID)"]}});
+
+        sendResponse(req, res, {"dictionaries": dictionaries});
+    });
+
+    /**
      * Implementation of getFreeKey function
      * @see API.md
      */
@@ -694,9 +702,7 @@ const mysqlx = require("@mysql/xdevapi");
                 const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
                 key += charList[randrange(charList.length)];
             }
-            const qRes = await allAsync(`SELECT COUNT(RoomKey)
-                                            FROM Rooms
-                                            WHERE RoomKey = ?;`, [key]);
+            const qRes = await allAsync("SELECT COUNT(RoomKey) FROM Rooms WHERE RoomKey = ?;", [key]);
             if (qRes === null) {
                 continue; // TODO terminate after ~100 attempts
             }
