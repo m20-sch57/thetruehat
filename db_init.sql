@@ -18,7 +18,7 @@ CREATE TABLE Games
     Host TEXT not null,
     StartTime BIGINT,
     EndTime BIGINT,
-    TimeZoneOffset TEXT,
+    TimeZoneOffsets JSON not null DEFAULT ('[]'),
     Results TEXT,
     Sent INTEGER default 0 not null
 );

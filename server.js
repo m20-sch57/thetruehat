@@ -731,12 +731,7 @@ const mysqlx = require("@mysql/xdevapi");
             return;
         }
 
-        const rows = await allAsync(`SELECT *
-                                        FROM Games
-                                        WHERE GameID =
-                                              (SELECT GameID
-                                              FROM Rooms
-                                              WHERE RoomKey = ?);`, [key]);
+        const rows = await allAsync(`SELECT * FROM Games WHERE GameID = (SELECT GameID FROM Rooms WHERE RoomKey = ?);`, [key]);
 
         // Case of nonexistent room
         if (rows === null || rows.length === 0) { // TODO smth with case rows === null
@@ -825,7 +820,7 @@ const mysqlx = require("@mysql/xdevapi");
             this.state = "play";
 
             // generating word list (later key can affect word list)
-            this.freshWords = await generateWords(this.settings.wordNumber);
+            this.freshWords = await generateWords(this.settings);
 
             // preparing storage for explained words
             this.usedWords = {};
@@ -837,15 +832,7 @@ const mysqlx = require("@mysql/xdevapi");
             this.speaker = numberOfPlayers - 1;
             this.listener = numberOfPlayers - 2;
 
-            await runAsync(`UPDATE Games
-                   SET Settings = ?,
-                       WordsList = ?,
-                       State = ?,
-                       Players = ?,
-                       Host = ?,
-                       StartTime = ?,
-                       TimeZoneOffset = ?
-                   WHERE GameID = ?;`,
+            await runAsync("UPDATE Games SET Settings = ?, WordsList = ?, State = ?, Players = ?, Host = ?, StartTime = ?, TimeZoneOffsets = ? WHERE GameID = ?;",
                 [
                     this.settings,
                     this.freshWords,
@@ -919,13 +906,14 @@ const mysqlx = require("@mysql/xdevapi");
      *     - TODO: timeZoneOffset
      */
     class User {
-        constructor(username, sids, online=true) {
+        constructor(username, sids, time_zone_offset, online=true) {
             this.username = username;
             this.ID = null; // TODO: Enable when authorisation will be added.
             this.sids = sids;
             this.online = online;
             this.scoreExplained = 0;
             this.scoreGuessed = 0;
+            this.time_zone_offset = time_zone_offset
         }
     }
 
@@ -1007,6 +995,40 @@ const mysqlx = require("@mysql/xdevapi");
             // if username position is -1
             if (usernamePos === -1) {
                 Signals.sFailure(socket.id, "cLeaveRoom", 200, "Вы не в комнате");
+                return false;
+            }
+
+            return true;
+        }
+
+        static cApplySettings(socket, key, settings) {
+            // Checking if user is not in the room
+            if (key === socket.id) {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Вы не в комнате");
+                return false;
+            }
+
+            // if game ended
+            if (!(key in rooms)) {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Игра закончена");
+                return false;
+            }
+
+            // if state isn't 'wait', something went wrong
+            if (rooms[key].state !== "wait") {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Игра уже начата");
+                return false;
+            }
+
+            // checking whether signal owner is host
+            const hostPos = findFirstPos(rooms[key].users, "online", true);
+            if (hostPos === -1) {
+                // very strange case, probably something went wrong, let's log it!
+                Signals.sFailure(socket.id, "cApplySettings", null, "Все оффлайн");
+                return false;
+            }
+            if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Только хост может изменить настройки");
                 return false;
             }
 
@@ -1218,6 +1240,7 @@ const mysqlx = require("@mysql/xdevapi");
         static async joinRoomCallback(socket, data, err) {
             const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
             const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
+            const time_zone_offset = data.time_zone_offset;
 
             // If any error happened
             if (err) {
@@ -1241,8 +1264,7 @@ const mysqlx = require("@mysql/xdevapi");
                 }
                 gameID = resp.getAutoIncrementValue();
                 rooms[key] = new Room(gameID);
-                await runAsync(`INSERT INTO Rooms (RoomKey, GameID)
-                            VALUES (?, ?)`,
+                await runAsync("INSERT INTO Rooms (RoomKey, GameID) VALUES (?, ?)",
                     [
                         key,
                         gameID
@@ -1255,7 +1277,7 @@ const mysqlx = require("@mysql/xdevapi");
             const pos = findFirstPos(rooms[key].users, "username", name);
             if (pos === -1) {
                 // creating new one
-                rooms[key].users.push(new User(name, [socket.id]));
+                rooms[key].users.push(new User(name, [socket.id], time_zone_offset));
             } else {
                 // logging in user
                 rooms[key].users[pos].sids = [socket.id];
@@ -1263,10 +1285,7 @@ const mysqlx = require("@mysql/xdevapi");
             }
 
             // updating players and host
-            await runAsync(`UPDATE Games
-                               SET Players = ?,
-                                   Host = ?
-                               WHERE GameID = ?;`,
+            await runAsync("UPDATE Games SET Players = ?, Host = ? WHERE GameID = ?;",
                 [
                     getPlayerList(rooms[key].users),
                     getHostUsername(rooms[key].users),
@@ -1294,9 +1313,7 @@ const mysqlx = require("@mysql/xdevapi");
             rooms[key].users[usernamePos].sids = [];
 
             // updating players and host
-            const resp = await allAsync(`SELECT GameID
-                                            FROM Rooms
-                                            WHERE RoomKey = ?;`, [key]);
+            const resp = await allAsync("SELECT GameID FROM Rooms WHERE RoomKey = ?;", [key]);
             if (resp === null) {
                 console.warn("Callbacks.leaveRoomCallback: DB crash!"); // TODO smth with crash
             }
@@ -1304,10 +1321,7 @@ const mysqlx = require("@mysql/xdevapi");
                 console.warn("Incorrect number of rows!");
             }
             const gameID = resp[0]["GameID"];
-            await runAsync(`UPDATE Games
-                               SET Players = ?,
-                                   Host = ?
-                               WHERE GameID = ?;`,
+            await runAsync("UPDATE Games SET Players = ?, Host = ? WHERE GameID = ?;",
                 [
                     getPlayerList(rooms[key].users),
                     getHostUsername(rooms[key].users),
@@ -1315,6 +1329,71 @@ const mysqlx = require("@mysql/xdevapi");
                 ]);
 
             Signals.sPlayerLeft(key, rooms[key], username);
+        }
+
+        static async cApplySettings(socket, key, settings) {
+            // special case: "dictionaryId" (it changes ranges for other settings)
+            let warn = false;
+            if ("dictionaryId" in settings) {
+                if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверный тип поля настроек dictionaryId: " +
+                        typeof(settings["dictionaryId"]) + " вместо " +
+                        typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
+                } else {
+                    if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+                    } else {
+                        rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
+                        if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                            rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
+                            warn = true;
+                        }
+                    }
+                }
+            }
+
+            // setting settings
+            const settingsKeys = Object.keys(settings);
+            for (let i = 0; i < settingsKeys.length; ++i) {
+                if (settingsKeys[i] === "dictionaryId") continue; // already done
+
+                if (settingsKeys[i] in rooms[key].settings) {
+                    if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
+                        Signals.sFailure(socket.id, "cApplySettings", null,
+                            "Неверный тип поля настроек " + settingsKeys[i] + ": " +
+                            typeof(settings[settingsKeys[i]]) + " вместо " +
+                            typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
+                        continue;
+                    }
+                    if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
+                        (settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
+                        settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max)) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                        continue;
+                    }
+                    if (settingsKeys[i] === "wordNumber") {
+                        if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                            Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                            continue;
+                        }
+                        warn = false;
+                    }
+                    rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
+                } else {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
+                }
+            }
+
+            if (warn) {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Количество слов уменьшено до максимально возможного для данного словаря");
+            }
+
+            await runAsync("update Games set Settings = ?", [rooms[key].settings]);
+
+            Signals.sNewSettings(key);
         }
 
         static async cStartGame(socket, key) {
@@ -1426,28 +1505,7 @@ const mysqlx = require("@mysql/xdevapi");
                         break;
                 }
 
-                await runAsync(`INSERT INTO ExplanationRecords(
-                                   GameID,
-                                   ExplNo,
-                                   Speaker,
-                                   SpeakerID,
-                                   Listener,
-                                   ListenerID,
-                                   Word,
-                                   Time,
-                                   ExtraTime,
-                                   Outcome
-                        )
-                        VALUES (?,
-                                ?,
-                                ?,
-                                ?,
-                                ?,
-                                ?,
-                                ?,
-                                ?,
-                                ?,
-                                ?);`,
+                await runAsync("INSERT INTO ExplanationRecords(GameID, ExplNo, Speaker, SpeakerID, Listener, ListenerID, Word, Time, ExtraTime, Outcome) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                     [
                         rooms[key].gameID,
                         ++ (rooms[key].explCount),
@@ -1458,7 +1516,7 @@ const mysqlx = require("@mysql/xdevapi");
                         word.word,
                         0, // TODO: implement
                         0, // TODO: implement
-                        editWords[i].wordState
+                        mapOutcome[editWords[i].wordState]
                     ])
             }
 
@@ -1552,7 +1610,7 @@ const mysqlx = require("@mysql/xdevapi");
             }
 
             // Checking input format
-            if (!checkInputFormat(socket, data, {"key": "string", "username": "string"}, "cJoinRoom")) {
+            if (!checkInputFormat(socket, data, {"key": "string", "username": "string", "time_zone_offset": typeof(0)}, "cJoinRoom")) {
                 return;
             }
 
@@ -1583,6 +1641,26 @@ const mysqlx = require("@mysql/xdevapi");
 
             // Removing the user from the room
             socket.leave(key, (err) => Callbacks.leaveRoomCallback(socket, key, err));
+        });
+
+        socket.on("cApplySettings", function(data) {
+            if (WRITE_LOGS) {
+                console.log(socket.id, "cApplySettings", data);
+            }
+
+            const key = getRoom(socket); // key of the room
+
+            // checking input format
+            if (!checkInputFormat(socket, data, {"settings": "object"}, "cApplySettings")) {
+                return;
+            }
+
+            // checking signal conditions
+            if (!CheckConditions.cApplySettings(socket, key, data.settings)) {
+                return;
+            }
+
+            Callbacks.cApplySettings(socket, key, data.settings);
         });
 
         /**
