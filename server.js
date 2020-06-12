@@ -43,8 +43,8 @@ const mysqlx = require("@mysql/xdevapi");
     let _session = null;
     try {
         _session = await mysqlx.getSession({
-            user: "root",
-            password: "root",
+            user: "app",
+            password: "app",
             host: "localhost",
             schema: "test"
         });
@@ -1531,6 +1531,8 @@ const mysqlx = require("@mysql/xdevapi");
                         "time": currentTime - rooms[key].explStartMainTime,
                         "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
                     });
+
+                    rooms[key].word = "";
 
                     Signals.sWordExplanationEnded(key, cause);
 

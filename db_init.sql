@@ -63,7 +63,7 @@ CREATE TABLE ExplanationRecords
     Word TEXT not null,
     Time INTEGER not null,
     ExtraTime INTEGER not null,
-    Outcome TEXT not null,
+    Outcome TEXT,
     constraint ER_PK primary key (GameID, ExplNo)
 );
 CREATE INDEX Participating_GameID_Index
