@@ -16,6 +16,9 @@ const PORT = config.port;
 const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
+const settingsRange = config.settingsRange;
+const mapOutcome = config.mapOutcome;
+
 // Saving PID
 const fs = require("fs");
 fs.writeFile(argv.pidfile, process.pid.toString(), function(err, data) {
@@ -276,11 +279,11 @@ const mysqlx = require("@mysql/xdevapi");
      * @return All words in DB.
      * TODO: Rewrite using less segment. Feature.
      */
-    async function getAllWords(dictionaryId) {
+    async function getAllWordsFromDict(dictionaryId) {
         //TODO: smth when there are more tags
         const res = await allAsync("SELECT Word FROM Words WHERE Tags != ? and DictionaryID = ?;", ["-deleted", dictionaryId]);
         if (res === null) {
-            console.warn("getAllWords: DB crash!");
+            console.warn("getAllWordsFromDict: DB crash!");
             return []; // TODO smth
         }
         return res.map((row) => (row["Word"]));
@@ -335,12 +338,12 @@ const mysqlx = require("@mysql/xdevapi");
      */
     function startExplanation(key) {
         const settings = rooms[key].settings;
-        const currentTime = Date.now();
+        const currentTime = (new Date()).getTime();
 
         // Updating room info.
         rooms[key].substate = "explanation";
         rooms[key].startTime = currentTime + (settings.delayTime + TRANSFER_TIME);
-        rooms[key].word = rooms[key].freshWords.pop();
+        rooms[key].word = rooms[key].freshWords.pop().trim();
 
         if (settings.strictMode) {
             const numberOfTurn = rooms[key].numberOfTurn;
@@ -355,6 +358,9 @@ const mysqlx = require("@mysql/xdevapi");
             }, (settings.delayTime + settings.explanationTime + settings.aftermathTime + TRANSFER_TIME));
         }
         setTimeout(() => Signals.sNewWord(key), TRANSFER_TIME);
+        rooms[key].explStartMainTime = rooms[key].startTime;
+        rooms[key].explStartExtraTime = rooms[key].startTime + rooms[key].settings.explanationTime;
+        rooms[key].explanationRecords = [];
         Signals.sExplanationStarted(key)
     }
 
@@ -374,6 +380,22 @@ const mysqlx = require("@mysql/xdevapi");
             return;
         }
         rooms[key].substate = "edit";
+
+        if (rooms[key].word !== "") {
+            rooms[key].editWords.push({
+                "word": rooms[key].word,
+                "wordState": "notExplained",
+                "transfer": true
+            });
+            const currentTime = (new Date()).getTime()
+            rooms[key].explanationRecords.push({
+                "from": rooms[key].speaker,
+                "to": rooms[key].listener,
+                "word": rooms[key].word,
+                "time": currentTime - rooms[key].explStartMainTime,
+                "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+            });
+        }
 
         rooms[key].startTime = 0;
         rooms[key].word = "";
@@ -413,10 +435,10 @@ const mysqlx = require("@mysql/xdevapi");
 
         Signals.sGameEnded(key, results);
         
-        await runAsync("UPDATE Games SET Results = ?, EndTime = ?, WHERE GameID = ?;",
+        await runAsync("UPDATE Games SET Results = ?, EndTime = ? WHERE GameID = ?;",
             [
                 results,
-                Date.now(),
+                (new Date()).getTime(),
                 rooms[key].gameID
             ]);
 
@@ -541,6 +563,16 @@ const mysqlx = require("@mysql/xdevapi");
                     break;
             }
             Signals.emit(sid, "sYouJoined", joinObj);
+        }
+
+        /**
+         * Implementation of sNewSettings signal
+         * @see API.md
+         *
+         * @param key Key of the Room
+         */
+        static sNewSettings(key) {
+            Signals.emit(key, "sNewSettings", {"settings": rooms[key].settings});
         }
 
         /**
@@ -785,7 +817,7 @@ const mysqlx = require("@mysql/xdevapi");
      *         - explanationTime --- length of explanation
      *         - aftermathTime --- time for guess
      *         - wordNumber --- number of words in game
-    *      - explCount --- last number of any explanation (from 1 to ...)
+     *     - explCount --- last number of any explanation (from 1 to ...)
      *     - state --- state of the room,
      *     - users --- list of users (User objects)
      *
@@ -802,6 +834,11 @@ const mysqlx = require("@mysql/xdevapi");
      *     - startTime --- UTC time of start of explanation (in milliseconds).
      *     - editWords --- list of words to edit TODO: description of content
      *     - numberOfTurn --- number of turn
+     *     - explanationRecords --- explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info, but `time` is `time` plus `extra_time`)
+     *     - start_timestamp --- start timestamp
+     *     - end_timestamp --- end timestamp
+     *     - explStartMainTime --- start timestamp of word explanation
+     *     - explStartExtraTime --- start timestamp of extra time
      */
     class Room {
         constructor(gameID) {
@@ -831,6 +868,7 @@ const mysqlx = require("@mysql/xdevapi");
             const numberOfPlayers = this.users.length;
             this.speaker = numberOfPlayers - 1;
             this.listener = numberOfPlayers - 2;
+            this.explanationRecords = [];
 
             await runAsync("UPDATE Games SET Settings = ?, WordsList = ?, State = ?, Players = ?, Host = ?, StartTime = ?, TimeZoneOffsets = ? WHERE GameID = ?;",
                 [
@@ -839,7 +877,7 @@ const mysqlx = require("@mysql/xdevapi");
                     this.state,
                     getPlayerList(this.users),
                     getHostUsername(this),
-                    Date.now(),
+                    (new Date()).getTime(),
                     [], // TODO: implement
                     this.gameID
                 ]);
@@ -897,13 +935,13 @@ const mysqlx = require("@mysql/xdevapi");
      *
      * User is an object that has fields:
      *     - username --- no comments,
-     *     - ID --- user's ID in the DB
+     *     - ID --- user's ID in the DB,
      *     - TODO: login
      *     - sids --- socket ids,
      *     - online --- whether the player is online,
      *     - scoreExplained --- no comments,
      *     - scoreGuessed --- no comments,
-     *     - TODO: timeZoneOffset
+     *     - timeZoneOffset --- no comments,
      */
     class User {
         constructor(username, sids, time_zone_offset, online=true) {
@@ -1189,7 +1227,7 @@ const mysqlx = require("@mysql/xdevapi");
             }
 
             // checking if time is correct
-            if (Date.now() < rooms[key].startTime) {
+            if ((new Date()).getTime() < rooms[key].startTime) {
                 Signals.sFailure(socket.id, "cEndWordExplanation", 604, "Too early");
                 return false;
             }
@@ -1333,6 +1371,7 @@ const mysqlx = require("@mysql/xdevapi");
 
         static async cApplySettings(socket, key, settings) {
             // special case: "dictionaryId" (it changes ranges for other settings)
+            const dicts = (await allAsync("SELECT COUNT(Word) FROM Words GROUP BY DictionaryID;")).map(el => {return {"wordNumber": el["COUNT(Word)"]}});
             let warn = false;
             if ("dictionaryId" in settings) {
                 if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
@@ -1391,7 +1430,7 @@ const mysqlx = require("@mysql/xdevapi");
                     "Количество слов уменьшено до максимально возможного для данного словаря");
             }
 
-            await runAsync("update Games set Settings = ?", [rooms[key].settings]);
+            await runAsync("UPDATE Games SET Settings = ?", [rooms[key].settings]);
 
             Signals.sNewSettings(key);
         }
@@ -1419,6 +1458,7 @@ const mysqlx = require("@mysql/xdevapi");
         }
 
         static cEndWordExplanation(socket, key, cause) {
+            const currentTime = (new Date()).getTime();
             switch (cause) {
                 case "explained":
                     // logging the word
@@ -1426,6 +1466,13 @@ const mysqlx = require("@mysql/xdevapi");
                         "word": rooms[key].word,
                         "wordState": "explained",
                         "transfer": true});
+                    rooms[key].explanationRecords.push({
+                        "from": rooms[key].speaker,
+                        "to": rooms[key].listener,
+                        "word": rooms[key].word,
+                        "time": currentTime - rooms[key].explStartMainTime,
+                        "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+                    });
 
                     // removing the word from the 'word' container
                     rooms[key].word = "";
@@ -1433,7 +1480,7 @@ const mysqlx = require("@mysql/xdevapi");
                     Signals.sWordExplanationEnded(key, cause);
 
                     // checking the time
-                    if (Date.now() > rooms[key].startTime + rooms[key].settings.explanationTime) {
+                    if (currentTime > rooms[key].startTime + rooms[key].settings.explanationTime) {
                         // finishing the explanation
                         finishExplanation(key);
                         return;
@@ -1446,7 +1493,7 @@ const mysqlx = require("@mysql/xdevapi");
                     }
 
                     // emitting new word
-                    rooms[key].word = rooms[key].freshWords.pop();
+                    rooms[key].word = rooms[key].freshWords.pop().trim();
                     Signals.sNewWord(key)
                     return;
                 case "mistake":
@@ -1455,6 +1502,13 @@ const mysqlx = require("@mysql/xdevapi");
                         "word": rooms[key].word,
                         "wordState": "mistake",
                         "transfer": true});
+                    rooms[key].explanationRecords.push({
+                        "from": rooms[key].speaker,
+                        "to": rooms[key].listener,
+                        "word": rooms[key].word,
+                        "time": currentTime - rooms[key].explStartMainTime,
+                        "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+                    });
 
                     // word don't go to the hat
                     rooms[key].word = "";
@@ -1470,6 +1524,13 @@ const mysqlx = require("@mysql/xdevapi");
                         "word": rooms[key].word,
                         "wordState": "notExplained",
                         "transfer": true});
+                    rooms[key].explanationRecords.push({
+                        "from": rooms[key].speaker,
+                        "to": rooms[key].listener,
+                        "word": rooms[key].word,
+                        "time": currentTime - rooms[key].explStartMainTime,
+                        "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+                    });
 
                     Signals.sWordExplanationEnded(key, cause);
 
@@ -1482,6 +1543,7 @@ const mysqlx = require("@mysql/xdevapi");
         static async cWordsEdited(socket, key, editWords) {
             // applying changes and counting success explanations
             let cnt = 0;
+            console.log(rooms[key].explanationRecords);
             for (let i = 0; i < editWords.length; ++i) {
                 let word = rooms[key].editWords[i];
                 
@@ -1498,27 +1560,32 @@ const mysqlx = require("@mysql/xdevapi");
                     case "mistake":
                         // transferring data to serer structure
                         rooms[key].editWords[i].wordState = editWords[i].wordState;
+                        rooms[key].explanationRecords[findFirstPos(
+                            rooms[key].explanationRecords, "word", editWords[i].word
+                        )].outcome = mapOutcome[editWords[i].wordState];
                         break;
                     case "notExplained":
                         // returning not explained words to the hat
                         rooms[key].editWords[i].transfer = false;
                         break;
                 }
+            }
 
-                await runAsync("INSERT INTO ExplanationRecords(GameID, ExplNo, Speaker, SpeakerID, Listener, ListenerID, Word, Time, ExtraTime, Outcome) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+            rooms[key].explanationRecords.forEach(async (el) => {
+                await runAsync("INSERT INTO ExplanationRecords(GameID, ExplNo, SpeakerPos, SpeakerID, ListenerPos, ListenerID, Word, Time, ExtraTime, Outcome) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                     [
                         rooms[key].gameID,
                         ++ (rooms[key].explCount),
-                        rooms[key].users[rooms[key].speaker].username,
+                        el.from,
                         rooms[key].users[rooms[key].speaker].ID,
-                        rooms[key].users[rooms[key].listener].username,
+                        el.to,
                         rooms[key].users[rooms[key].listener].ID,
-                        word.word,
-                        0, // TODO: implement
-                        0, // TODO: implement
-                        mapOutcome[editWords[i].wordState]
-                    ])
-            }
+                        el.word,
+                        el.time - el.extra_time,
+                        el.extra_time,
+                        el.outcome
+                    ]);
+            });
 
             // transferring round info
             // changing the score
