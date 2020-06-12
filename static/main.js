@@ -579,7 +579,8 @@ class App {
         if (["wait", "play"].indexOf(data.state) != -1) {
             this.emit("cJoinRoom",
                 {"username": this.game.myUsername,
-                    "key": this.game.key
+                    "key": this.game.key,
+                    "time_zone_offset": (new Date()).getTimezoneOffset() * (-60000)
             });
         } else if (data.state == "end") {
             console.log("Results in MVP-next.");

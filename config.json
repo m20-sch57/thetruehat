@@ -70,5 +70,23 @@
     "cleanRooms": false,
     "DEVEL": "devel",
     "STAGING": "staging",
-    "PROD": "prod"
+    "PROD": "prod",
+    "appName": "TheTrueHat",
+    "protocolVersion": "2.0",
+    "mode": "online",
+    "mapOutcome": {
+        "explained": "guessed",
+        "mistake": "failed",
+        "notExplained": ""
+    },
+    "statSendConfig": {
+        "method": "POST",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "protocol": "https:",
+        "hostname": "m20-sch57.site",
+        "port": "3005",
+        "path": "/feedback"
+    }
 }

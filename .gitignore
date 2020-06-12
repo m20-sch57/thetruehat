@@ -434,6 +434,7 @@ localRunCaddy
 
 # versioning
 static/version.js
+version.json
 
 # Loader cache
 .loadCache/*
