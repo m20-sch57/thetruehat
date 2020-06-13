@@ -602,6 +602,11 @@ app.get("/getFreeKey", function(req, res) {
  * @see API.md
  */
 app.get("/getRoomInfo", function(req, res) {
+    if (!("key" in req.query)) {
+        sendResponse(req, res, {"success": false});
+        return;
+    }
+
     const key = req.query.key.toLowerCase().replace(/\s+/g, ""); // The key of the room
 
     if (key === "") {
@@ -626,6 +631,7 @@ app.get("/getRoomInfo", function(req, res) {
             sendResponse(req, res, {"success": true,
                       "state": room.state,
                       "playerList": getPlayerList(room.users),
+                      "settings": room.settings,
                       "host": getHostUsername(room.users)});
             break;
 
