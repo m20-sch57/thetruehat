@@ -556,7 +556,7 @@ class App {
             this.toggleVolume();
         }
 
-        // this.helpPages.go(["helpPage_rulesBox"]);
+        this.helpPages.go(["helpPage_rulesBox"]);
     }
 
     log(data, level) {
@@ -971,7 +971,8 @@ class App {
             return;
         }
 
-        if (confirm("Вы уверены?"+ (this.game.state == "wait" ?
+        // In English?
+        if (confirm("Вы уверены, что хотите завершить игру?"+ (this.game.state == "wait" ?
             " Игра закончится, и вы сможете посмотреть результаты." :
             " Игра закончится в конце текущего раунда"))) {
             this.emit("cEndGame");

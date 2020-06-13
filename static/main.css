@@ -264,23 +264,23 @@ svg {
 }
 
 .white-bubble {
-    --color: rgb(100, 100, 100);
+    --color: rgb(120, 120, 120);
     color: var(--color);
     fill: var(--color);
     stroke: var(--color);
     background-color: white;
     border-radius: 50%;
-    border: 1px solid var(--color);
+    border: 1px solid rgb(160, 160, 160);
     box-shadow: 0 0 3px grey;
 }
 
 .white-bubble:hover:enabled {
-    background-color: rgb(233, 233, 233);
+    background-color: rgb(240, 240, 240);
     box-shadow: 0 0 5px grey;
 }
 
 .white-bubble:active:enabled {
-    background-color: lightgrey;
+    background-color: rgb(225, 225, 225);
 }
 
 .white-bubble:disabled {
@@ -669,6 +669,7 @@ svg {
     --color: grey;
     fill: var(--color);
     stroke: var(--color);
+    line-height: 20px;
     vertical-align: middle;
     position: relative;
     cursor: pointer;
@@ -688,7 +689,7 @@ svg {
     position: absolute;
     top: 100%;
     left: 50%;
-    transform: translate(-50%, -12px);
+    transform: translate(-50%, -15px);
     border: 10px solid transparent;
     border-bottom-color: white;
     z-index: 2;
@@ -828,6 +829,12 @@ svg {
     margin-bottom: 0;
 }
 
+#gamePage_speakerIcon {
+    height: 18px;
+    fill: black;
+    stroke: black;
+}
+
 #gamePage_speaker {
     font-size: 25px;
     font-weight: lighter;
@@ -853,6 +860,12 @@ svg {
 #gamePage_listenerLabel {
     font-size: 20px;
     margin-top: 0;
+}
+
+#gamePage_listenerIcon {
+    height: 18px;
+    fill: black;
+    stroke: black;
 }
 
 #gamePage_listener {
