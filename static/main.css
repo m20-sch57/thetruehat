@@ -50,15 +50,16 @@ input[type=checkbox]:checked + label:hover {
 }
 
 input[type=checkbox] + label span {
-    height: 14px;
-    width: 14px;
+    display: none;
+    height: 18px;
+    width: 15px;
+    fill: white;
+    stroke: white;
     margin: auto;
-    font-size: 14px;
-    visibility: hidden;
 }
 
 input[type=checkbox]:checked + label span {
-    visibility: visible;
+    display: inline-block;
 }
 
 input[type=checkbox] + label + label {
@@ -159,14 +160,20 @@ svg {
 
 .flat-button {
     padding: 0;
-    color: dimgrey;
+    --color: dimgrey;
+    color: var(--color);
+    fill: var(--color);
+    stroke: var(--color);
     background-color: inherit;
     border: none;
     font-size: inherit;
 }
 
 .flat-button:hover:enabled {
-    color: rgb(33, 164, 216);
+    --color: rgb(33, 164, 216);
+    color: var(--color);
+    fill: var(--color);
+    stroke: var(--color);
     cursor: pointer;
 }
 
@@ -393,7 +400,7 @@ svg {
     width: 100%;
     max-height: 800px;
     max-width: 400px;
-    padding: 50px;
+    padding: 30px;
     margin: auto;
 }
 
@@ -551,7 +558,11 @@ svg {
 #preparationPage_openSettings {
     margin-left: 10px;
     font-size: 30px;
-    font-weight: lighter;
+}
+
+#preparationPage_openSettings span {
+    width: 26px;
+    vertical-align: middle;
 }
 
 #preparationPage_copyKey {
