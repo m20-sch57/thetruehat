@@ -680,9 +680,10 @@ svg {
 }
 
 #gameSettingsPage_layers .info {
-    color: grey;
-    font-size: 18px;
-    font-weight: bold;
+    fill: grey;
+    stroke: grey;
+    height: 20px;
+    vertical-align: middle;
     cursor: pointer;
 }
 
