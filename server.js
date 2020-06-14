@@ -435,8 +435,9 @@ const mysqlx = require("@mysql/xdevapi");
 
         Signals.sGameEnded(key, results);
         
-        await runAsync("UPDATE Games SET Results = ?, EndTime = ? WHERE GameID = ?;",
+        await runAsync("UPDATE Games SET State = ?, Results = ?, EndTime = ? WHERE GameID = ?;",
             [
+                "end",
                 results,
                 (new Date()).getTime(),
                 rooms[key].gameID
@@ -782,7 +783,6 @@ const mysqlx = require("@mysql/xdevapi");
 
         const game = rows[0]; // The room
         const players = game["Players"]; // Players in the game
-        console.log(game);
         switch (game["State"]) {
             case "wait":
             case "play":
@@ -794,13 +794,13 @@ const mysqlx = require("@mysql/xdevapi");
                 break;
 
             case "end":
-                sendResponse(req, res, {"success": true, "state": "end"});
+                sendResponse(req, res, {"success": true, "state": "end", "results": game["Results"]});
                 console.warn("getRoomInfo: Ended game is not removed from the room.") // What???
                 break;
 
             default:
                 console.warn("getRoomInfo: Game state is incorrect.")
-                console.log(room);
+                console.log(game);
                 break;
         }
     });

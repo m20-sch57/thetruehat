@@ -19,7 +19,7 @@ CREATE TABLE Games
     StartTime BIGINT,
     EndTime BIGINT,
     TimeZoneOffsets JSON not null DEFAULT ('[]'),
-    Results TEXT,
+    Results JSON,
     Sent INTEGER default 0 not null
 );
 CREATE TABLE Participating
