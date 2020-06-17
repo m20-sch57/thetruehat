@@ -504,16 +504,15 @@ class Game {
     }
 
     renderWordsCount() {
-        el("gamePage_wordsCnt").innerText = this.wordsCount;
-        el("gamePage_wordsInHat").innerText = _("слово", this.wordsCount);
+        console.log(this.wordsCount);
+        console.log(this.app.lang);
+        setValue(this.wordsCount, this.app.lang);
     }
 
     renderSpeakerListener() {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
         el("gamePage_additionalStatusListener").innerText = this.listener;
-        setValue(this.wordsCount, this.app.lang);
-        // el("gamePage_wordsCnt").innerText = this.wordsCount;
     }
 
     changeWordState(word, state) {
@@ -1284,14 +1283,15 @@ class App {
         els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
+        this.game.renderWordsCount();
     }
 
     async loadSvgs() {
-        els("svg").forEach(async (it) => {
-            let name = it.attributes["src"].nodeValue;
+        for (let curEl of els("svg")) {
+            let name = curEl.attributes["src"].nodeValue;
             let response = await fetch(name);
-            it.innerHTML = await response.text();
-        })
+            curEl.innerHTML = await response.text();
+        }
     }
 
     async loadPages() {
