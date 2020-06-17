@@ -650,6 +650,7 @@ class App {
     }
 
     renderWaitPage() {
+        enable("gamePage_finish");
         el("gamePage_status").classList.remove("shadow");
         enable("gamePage_listenerReadyButton");
         el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
@@ -673,6 +674,7 @@ class App {
     async renderExplanationPage({startTime}) {
         let roundId = this.game.roundId;
         setTimeout(async () => {
+            disable("gamePage_finish");
             if (this.game.roundId != roundId) return;
             let page = ["gamePage_explanationDelayBox"];
             if (this.game.myRole == "speaker") {
@@ -706,6 +708,7 @@ class App {
     }
 
     renderEditPage() {
+        disable("gamePage_finish");
         if (this.game.myRole == "speaker") {
             this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
             el("gamePage_editListScrollable").scrollTop = 0;
@@ -976,7 +979,6 @@ class App {
             " Игра закончится, и вы сможете посмотреть результаты." :
             " Игра закончится в конце текущего раунда"))) {
             this.emit("cEndGame");
-            disable("gamePage_finish");
         }
     }
 
