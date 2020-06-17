@@ -11,13 +11,19 @@
 
     <title>Шляпа</title>
     <script src="socket.io/socket.io.js"></script>
+    <script src="gettext.js"></script>
 </head>
 <body>
     <div class="page" id="mainPage" style="display: none;">
+        <!-- <div id="mainPage_actions">
+            <button id="mainPage_createRoom" gt gt-text="Создать"></button>
+            <button id="mainPage_joinRoom" gt gt-text="Войти"></button>
+            <button id="mainPage_viewHelp" name="helpButton"></button>
+        </div> -->
         <div id="mainPage_actions">
-            <button id="mainPage_createRoom">
+            <button id="mainPage_createRoom" gt gt-text>
                 Создать
-            </button><button id="mainPage_joinRoom">
+            </button><button id="mainPage_joinRoom" gt gt-text>
                 Войти
             </button>
             <button id="mainPage_viewHelp" name="helpButton"></button>
@@ -32,18 +38,24 @@
         </button>
         <div class="content-small">
             <div id="joinPage_header">
-                <input class="large-underlined-input" id="joinPage_inputKey" spellcheck="false" placeholder="Ключ игры">
-                <p class="hint">Введённый выше ключ необходим для игры.</p>
-                <button class="small-button bg-blue" id="joinPage_pasteKey">
+                <input class="large-underlined-input" id="joinPage_inputKey" spellcheck="false" gt gt-placeholder="Ключ игры">
+                <p id="joinPage_inputKeyHint" class="hint" gt gt-text>
+                    Введённый выше ключ необходим для игры.
+                </p>
+                <button class="small-button bg-blue" id="joinPage_pasteKey" gt gt-text>
                     Вставить
-                </button><button class="small-button bg-blue" id="joinPage_generateKey">
+                </button><button class="small-button bg-blue" id="joinPage_generateKey" gt gt-text>
                     Сгенерировать новый
                 </button>
             </div>
             <div id="joinPage_body">
-                <input class="medium-input" id="joinPage_inputName" spellcheck="false" placeholder="Введи своё имя">
-                <p class="hint">Имя нужно, чтобы друзья могли тебя опознать</p>
-                <button class="medium-button bg-green" id="joinPage_go">Поехали!</button>
+                <input class="medium-input" id="joinPage_inputName" spellcheck="false" gt gt-placeholder="Введи своё имя">
+                <p id="joinPage_inputNameHint" class="hint" gt gt-text>
+                    Имя нужно, чтобы друзья могли тебя опознать
+                </p>
+                <button class="medium-button bg-green" id="joinPage_go" gt gt-text>
+                    Поехали!
+                </button>
                 <p class="hint" id="joinPage_goHint" style="display: none;"></p>
             </div>
         </div>
@@ -63,9 +75,9 @@
                         <span class="fa fa-cog"></span>
                     </button>
                 </div>
-                <button class="small-button bg-blue" id="preparationPage_copyKey">
+                <button class="small-button bg-blue" id="preparationPage_copyKey" gt gt-text>
                     Копир. ключ
-                </button><button class="small-button bg-blue" id="preparationPage_copyLink">
+                </button><button class="small-button bg-blue" id="preparationPage_copyLink" gt gt-text>
                     Копир. ссылку
                 </button>
             </div>
@@ -75,9 +87,15 @@
                     <div id="preparationPage_users"></div>
                     <div class="spacer"></div>
                 </div>
-                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;">Начать игру</button>
-                <p class="hint" id="preparationPage_startHint" style="display: none;">Меньше 2 игроков</p>
-                <h1 id="preparationPage_startLabel" style="display: none;">Игра не началась</h1>
+                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;" gt gt-text>
+                    Начать игру
+                </button>
+                <p class="hint" id="preparationPage_startHint" style="display: none;" gt gt-text>
+                    Меньше 2 игроков
+                </p>
+                <h1 id="preparationPage_startLabel" style="display: none;" gt gt-text>
+                    Игра не началась
+                </h1>
             </div>
         </div>
     </div>
@@ -90,17 +108,21 @@
         </button>
         <div class="content-small">
             <div id="gameSettingsPage_header">
-                <h1 id="gameSettingsPage_title">Настройки игры</h1>
+                <h1 id="gameSettingsPage_title" gt gt-text>
+                    Настройки игры
+                </h1>
             </div>
             <div id="gameSettingsPage_body">
                 <div id="gameSettingsPage_layers">
                     <div class="layer">
                         <div class="label">
-                            Количество слов в шляпе
+                            <span id="gameSettingsPage_wordNumberText" gt gt-text>
+                                Количество слов в шляпе
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_wordNumberInfo">
                                 <div class="arrow"></div>
                             </span>
-                            <div class="popup-hint">
+                            <div class="popup-hint" id="gameSettingsPage_wordNumberHint" style="display: none;" gt gt-text>
                                 Когда слова закончатся, закончится и игра.
                             </div>
                         </div>
@@ -108,11 +130,13 @@
                     </div>
                     <div class="layer" id="gameSettingsPage_delayTime">
                         <div class="label">
-                            Время на подготовку
+                            <span id="gameSettingsPage_delayTimeText" gt gt-text>
+                                Время на подготовку
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_delayTimeInfo">
                                 <div class="arrow"></div>
                             </span>
-                            <div class="popup-hint">
+                            <div class="popup-hint" id="gameSettingsPage_delayTimeHint" style="display: none;" gt gt-text>
                                 Время обратного отсчёта до начала раунда.
                             </div>
                         </div>
@@ -120,11 +144,13 @@
                     </div>
                     <div class="layer" id="gameSettingsPage_explanationTime">
                         <div class="label">
-                            Время на объяснение
+                            <span id="gameSettingsPage_explanationTimeText" gt gt-text>
+                                Время на объяснение
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo">
                                 <div class="arrow"></div>
                             </span>
-                            <div class="popup-hint">
+                            <div class="popup-hint" id="gameSettingsPage_explanationTimeHint" style="display: none;" gt gt-text>
                                 По окончании этого времени любое объяснение слов должно быть закончено.
                             </div>
                         </div>
@@ -132,11 +158,13 @@
                     </div>
                     <div class="layer" id="gameSettingsPage_aftermathTime">
                         <div class="label">
-                            Время на последнюю попытку
+                            <span id="gameSettingsPage_aftermathTimeText" gt gt-text>
+                                Время на последнюю попытку
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo">
                                 <div class="arrow"></div>
                             </span>
-                            <div class="popup-hint">
+                            <div class="popup-hint" id="gameSettingsPage_aftermathTimeHint" style="display: none;" gt gt-text>
                                 В течение этого времени отгадывающий может озвучить последнюю версию.
                             </div>
                         </div>
@@ -144,37 +172,41 @@
                     </div>
                     <div class="layer" id="gameSettingsPage_dictionarySelection">
                         <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
-                            Словарь
+                            <span id="gameSettingsPage_dictionarySelectionText" gt gt-text>
+                                Словарь
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_dictionarySelectionInfo">
                                 <div class="arrow"></div>
                             </span>
-                            <div class="popup-hint">
+                            <div class="popup-hint" id="gameSettingsPage_dictionarySelectionHint" style="display: none;" gt gt-text>
                                 Словарь определяет набор слов, из которых будут выбраны слова для этой партии.
                             </div>
                         </div>
                         <select class="medium-select" id="gameSettingsPage_dictionaryList">
-                            <option>Русский (20000 слов)</option>
-                            <option>English (10000 words)</optgroup>
+                            <!-- <option>Русский (20000 слов)</option>
+                            <option>English (10000 words)</optgroup> -->
                         </select>
                     </div>
                     <div class="layer" id="gameSettingsPage_strictMode">
                         <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
                         <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
                         <label>
-                            Строгий режим
+                            <span id="gameSettingsPage_strictModeText" gt gt-text>
+                                Строгий режим
+                            </span>
                             <span class="fa fa-info-circle info" id="gameSettingsPage_strictModeInfo">
                                 <div class="arrow"></div>
                             </span>
-                            <div class="popup-hint">
+                            <div class="popup-hint" id="gameSettingsPage_strictModeHint" style="display: none;" gt gt-text>
                                 Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным.
                             </div>
                         </label>
                     </div>
                 </div>
                 <div id="gameSettingsPage_actions">
-                    <button class="medium-button bg-green" id="gameSettingsPage_applyButton">
+                    <button class="medium-button bg-green" id="gameSettingsPage_applyButton" gt gt-text>
                         Применить
-                    </button><button class="medium-button bg-blue" id="gameSettingsPage_revertButton">
+                    </button><button class="medium-button bg-blue" id="gameSettingsPage_revertButton" gt gt-text>
                         Отмена
                     </button>
                 </div>
@@ -189,23 +221,23 @@
         </button>
         <div id="gamePage_hatPicture"></div>
         <div id="gamePage_hatText">
-            Слов в шляпе: <span id="gamePage_wordsCnt"></span>
+            <span id="gamePage_wordsCnt"></span> <span id="gamePage_wordsInHat"></span>
         </div>
         <div class="content-small">
             <div id="gamePage_header">
-                <h1 class="game-title" id="gamePage_waitTitle" style="display: none;">
+                <h1 class="game-title" id="gamePage_waitTitle" style="display: none;" gt gt-text>
                     Подготовка
                 </h1>
-                <h1 class="game-title" id="gamePage_explanationTitle" style="display: none;">
+                <h1 class="game-title" id="gamePage_explanationTitle" style="display: none;" gt gt-text>
                     Идёт объяснение
                 </h1>
-                <h1 class="game-title" id="gamePage_speakerTitle" style="display: none;">
+                <h1 class="game-title" id="gamePage_speakerTitle" style="display: none;" gt gt-text>
                     Ты объясняешь
                 </h1>
-                <h1 class="game-title" id="gamePage_listenerTitle" style="display: none;">
+                <h1 class="game-title" id="gamePage_listenerTitle" style="display: none;" gt gt-text>
                     Ты отгадываешь
                 </h1>
-                <h1 class="game-title" id="gamePage_editTitle" style="display: none;">
+                <h1 class="game-title" id="gamePage_editTitle" style="display: none;" gt gt-text>
                     Редактирование раунда
                 </h1>
             </div>
@@ -216,10 +248,14 @@
                             <span class="fa fa-microphone"></span>
                             <span id="gamePage_speaker"></span>
                         </h1>
-                        <p id="gamePage_speakerHint">объясняет</p>
+                        <p id="gamePage_speakerHint" gt gt-text>
+                            объясняет
+                        </p>
                     </div>
                     <div id="gamePage_listenerBox">
-                        <p id="gamePage_listenerHint">отгадывает</p>
+                        <p id="gamePage_listenerHint" gt gt-text>
+                            отгадывает
+                        </p>
                         <h1 id="gamePage_listenerLabel">
                             <span id="gamePage_listener"></span>
                             <span class="fa fa-headphones"></span>
@@ -227,13 +263,19 @@
                     </div>
                 </div>
                 <div id="gamePage_speakerReadyBox" style="display: none;">
-                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton">
+                    <button class="medium-button bg-green" id="gamePage_speakerReadyButton" gt gt-text>
                         Я готов объяснять
+                    </button>
+                    <button class="medium-button bg-green" id="gamePage_speakerReady" disabled gt gt-text>
+                        Подожди напарника
                     </button>
                 </div>
                 <div id="gamePage_listenerReadyBox" style="display: none;">
-                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton">
+                    <button class="medium-button bg-blue" id="gamePage_listenerReadyButton" gt gt-text>
                         Я готов отгадывать
+                    </button>
+                    <button class="medium-button bg-blue" id="gamePage_listenerReady" disabled gt gt-text>
+                        Подожди напарника
                     </button>
                 </div>
                 <div id="gamePage_observerBox" style="display: none;">
@@ -253,12 +295,12 @@
                         </h1>
                     </div>
                     <div id="gamePage_explanationActions">
-                        <button class="medium-button bg-blue" id="gamePage_explanationFailed">
+                        <button class="medium-button bg-blue" id="gamePage_explanationFailed" gt gt-text>
                             Не угадал
-                        </button><button class="medium-button bg-red" id="gamePage_explanationMistake">
+                        </button><button class="medium-button bg-red" id="gamePage_explanationMistake" gt gt-text>
                             Ошибка
                         </button>
-                        <button class="medium-button bg-green" id="gamePage_explanationSuccess">
+                        <button class="medium-button bg-green" id="gamePage_explanationSuccess" gt gt-text>
                             Угадал
                         </button>
                     </div>
@@ -268,7 +310,7 @@
                         <div id="gamePage_editListScrollable">
                         </div>
                     </div>
-                    <button class="medium-button bg-green" id="gamePage_editConfirm">
+                    <button class="medium-button bg-green" id="gamePage_editConfirm" gt gt-text>
                         Подтверждаю
                     </button>
                 </div>
@@ -284,23 +326,25 @@
         </button>
         <div class="content-small">
             <div id="resultsPage_header">
-                <h1 id="resultsPage_title">Результаты игры</h1>
+                <h1 id="resultsPage_title" gt gt-text>
+                    Результаты игры
+                </h1>
             </div>
             <div id="resultsPage_body">
                 <table id="resultsPage_table">
                 <thead>
-                    <th>Игрок</th>
-                    <th>Объяснено</th>
-                    <th>Угадано</th>
-                    <th>Сумма</th>
+                    <th id="resultsPage_tableTitle_player" gt gt-text>Игрок</th>
+                    <th id="resultsPage_tableTitle_explained" gt gt-text>Объяснено</th>
+                    <th id="resultsPage_tableTitle_guessed" gt gt-text>Угадано</th>
+                    <th id="resultsPage_tableTitle_summ" gt gt-text>Сумма</th>
                 </thead>
                 <tbody id="resultsPage_results">
                 </tbody>
                 </table>
-                <button class="medium-button bg-blue" id="resultsPage_feedback" name="feedbackButton">
+                <button class="medium-button bg-blue" id="resultsPage_feedback" name="feedbackButton" gt gt-text>
                     Оставить отзыв
                 </button>
-                <button class="medium-button bg-green" id="resultsPage_newGame">
+                <button class="medium-button bg-green" id="resultsPage_newGame" gt gt-text>
                     Новая игра
                 </button>
             </div>
@@ -315,10 +359,10 @@
         <div class="content-large">
             <div id="helpPage_header">
                 <div id="helpPage_navigation">
-                    <button class="flat-button option" id="helpPage_newsOption">Новости</button>
-                    <button class="flat-button option active" id="helpPage_rulesOption">Правила</button>
-                    <button class="flat-button option" id="helpPage_faqOption">FAQ</button>
-                    <button class="flat-button option" id="helpPage_aboutOption">О нас</button>
+                    <button class="flat-button option" id="helpPage_newsOption" gt gt-text>Новости</button>
+                    <button class="flat-button option active" id="helpPage_rulesOption" gt gt-text>Правила</button>
+                    <button class="flat-button option" id="helpPage_faqOption" gt gt-text>FAQ</button>
+                    <button class="flat-button option" id="helpPage_aboutOption" gt gt-text>О нас</button>
                 </div>
             </div>
             <div id="helpPage_body">
@@ -340,17 +384,23 @@
         </button>
         <div class="content-medium">
             <div id="feedbackPage_header">
-                <h1 id="feedbackPage_title">Обратная связь</h1>
+                <h1 id="feedbackPage_title" gt gt-text>
+                    Обратная связь
+                </h1>
                 <h3 id="feedbackPage_version" name="version"></h3>
             </div>
             <div id="feedbackPage_body">
-                <textarea class="default-textarea" id="feedbackPage_textarea" placeholder="Оставьте свой комментарий здесь"></textarea>
+                <textarea class="default-textarea" id="feedbackPage_textarea" gt gt-placeholder="Оставьте свой комментарий здесь"></textarea>
                 <div id="feedbackPage_clientInfo">
                     <input type="checkbox" id="feedbackPage_clientInfoCheckbox" checked>
                     <label for="feedbackPage_clientInfoCheckbox"><span class="fa fa-check"></span></label>
-                    <label>Отправить дополнительные сведения</label>
+                    <label id="feedbackPage_clientInfoHint" gt gt-text>
+                        Отправить дополнительные сведения
+                    </label>
                 </div>
-                <button class="medium-button bg-green" id="feedbackPage_submit">Отправить</button>
+                <button class="medium-button bg-green" id="feedbackPage_submit" gt gt-text>
+                    Отправить
+                </button>
             </div>
         </div>
     </div>
