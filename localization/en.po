@@ -10,7 +10,7 @@ msgid "Войти"
 msgstr "Enter"
 
 msgid "Введённый выше ключ необходим для игры."
-msgstr "It is key"
+msgstr "The key is required for the game."
 
 msgid "Введи своё имя"
 msgstr "Enter your name"
@@ -22,10 +22,13 @@ msgid "Сгенерировать новый"
 msgstr "Generate new"
 
 msgid "Имя нужно, чтобы друзья могли тебя опознать"
-msgstr "Name is necessary for you to be recognizable"
+msgstr "Name is required for you to be recognized"
 
 msgid "Поехали!"
 msgstr "Go!"
+
+msgid "Нужно представиться"
+msgstr "Introduce yourself"
 
 msgid "Копир. ключ"
 msgstr "Copy key"
@@ -40,7 +43,7 @@ msgid "Меньше 2 игроков"
 msgstr "Less than 2 players"
 
 msgid "Игра не началась"
-msgstr "Game not started"
+msgstr "Game is not started"
 
 msgid "Слов в шляпе"
 msgstr "Words in hat"
@@ -70,19 +73,19 @@ msgid "Я готов объяснять"
 msgstr "I am ready to explain"
 
 msgid "Я готов отгадывать"
-msgstr "I'm ready to guess"
+msgstr "I am ready to guess"
 
 msgid "Подожди напарника"
-msgstr "Wait partner"
+msgstr "Wait for partner"
 
 msgid "Не угадал"
-msgstr "Not guess"
+msgstr "Not guessed"
 
 msgid "Ошибка"
 msgstr "Mistake"
 
 msgid "Угадал"
-msgstr "Guess"
+msgstr "Guessed"
 
 msgid "Подтверждаю"
 msgstr "Confirm"
@@ -100,10 +103,13 @@ msgid "Угадано"
 msgstr "Guessed"
 
 msgid "Сумма"
-msgstr "Summ"
+msgstr "Sum"
+
+msgid "Новая игра"
+msgstr "New game"
 
 msgid "Оставить отзыв"
-msgstr "Give feedback"
+msgstr "Leave feedback"
 
 msgid "Правила"
 msgstr "Rules"
@@ -121,7 +127,7 @@ msgid "Обратная связь"
 msgstr "Feedback"
 
 msgid "Отправить дополнительные сведения"
-msgstr "Send more information"
+msgstr "Send additional info"
 
 msgid "Отправить"
 msgstr "Send"
@@ -130,13 +136,13 @@ msgid "Настройки игры"
 msgstr "Game settings"
 
 msgid "Количество слов в шляпе"
-msgstr "Words count"
+msgstr "Number of words in hat"
 
 msgid "Когда слова закончатся, закончится и игра."
 msgstr ""
 
 msgid "Время на подготовку"
-msgstr "Delay time"
+msgstr "Preparation time"
 
 msgid "Время обратного отсчёта до начала раунда."
 msgstr ""
