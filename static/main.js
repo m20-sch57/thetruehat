@@ -1,5 +1,26 @@
 "use strict"
 
+let app, timeSync;
+window.onload = function() {
+    if (ENV == PROD) {
+        console.log("%c Не лезь сюда, оно сожрёт тебя !", `
+            font-size: 100px;
+            text-shadow: 2px 0px 0px red, -2px 0px 0px red, 0px 2px 0px red, 0px -2px 0px red,
+            2px 2px 0px red, -2px 2px 0px red, -2px 2px 0px red, -2px -2px 0px red;
+            `);
+    }
+    timeSync = new TimeSync(TIME_SYNC_DELTA);
+    i18n=i18n();
+    let _app = new App()
+    if (GLOBAL_APP_SCOPE) {
+        app = _app;
+    }
+    _app.debug = DEBUG_OUTPUT;
+}
+
+const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
+const WORD_MAX_SIZE = 50;
+
 Array.prototype.last = function() {
     console.assert(this.length >= 1,
         "Attempt to get last element of empty array");
@@ -13,12 +34,6 @@ if (window.NodeList && !NodeList.prototype.forEach) {
 if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
     HTMLCollection.prototype.forEach = Array.prototype.forEach;
 }
-
-const DELAY_COLORS = ["forestgreen", "goldenrod", "red"];
-
-const TIME_SYNC_DELTA = 60000;
-const DISCONNECT_TIMEOUT = 5000;
-const LANGS = ["ru", "en-test"];
 
 function animate({startTime, timing, draw, duration, stopCondition}) {
     // Largely taken from https://learn.javascript.ru
@@ -60,12 +75,10 @@ function deleteNode(node) {
 
 function hide(id) {
     el(id).style.display = "none";
-    // console.log("Hide", id);
 }
 
 function show(id) {
     el(id).style.display = "";
-    // console.log("Show", id);
 }
 
 function showError(msg) {
@@ -104,6 +117,11 @@ function secMsec(msec) {
     return `${sec}.${msec}`;
 }
 
+// Делит промежуток от 0 до 1 на n равных частей.
+function stairs(x, n) {
+    return Math.floor(x * n);
+}
+
 function wordPlayers(playersCounter) {
     let word;
     if ([11, 12, 13, 14].indexOf(playersCounter % 100) != -1) {
@@ -118,16 +136,6 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
-// Show hint on elem hover
-function addHint(elem, hint) {
-    el(elem).addEventListener("mouseover", () => {
-        show(hint);
-    });
-    el(elem).addEventListener("mouseout", () => {
-        hide(hint);
-    })
-}
-
 function _(msgid, n) {
     if (n === undefined) {
         return i18n.gettext(msgid);
@@ -139,6 +147,29 @@ function _(msgid, n) {
 function validateNumber(elem) {
     el(elem).oninput = function(event) {
         el(elem).value = el(elem).value.replace(/\D+/g,"");
+    }
+}
+
+function weightColor(color1, color2, weight) {
+    let w1 = weight;
+    let w2 = 1 - weight;
+    let rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+        Math.round(color1[1] * w1 + color2[1] * w2),
+        Math.round(color1[2] * w1 + color2[2] * w2)];
+    return rgb;
+}
+
+function colorGradientRGB(colors) {
+    return function(x) {
+        if (x == 1) {
+            return colors.last();
+        }
+        let parts = colors.length - 1;
+        let partIndex = Math.floor(x * parts);
+        let colorLeft = colors[partIndex];
+        let colorRight = colors[partIndex + 1];
+        let weight = x * parts - partIndex;
+        return weightColor(colorRight, colorLeft, weight);
     }
 }
 
@@ -474,10 +505,12 @@ class Game {
 class App {
     constructor() {
         this.debug = true;
-        this.gameLog = [];
         this.connected = false;
+        this.settings = {};
+        this.appLog = [];
 
-        this.socket = io.connect(window.location.origin, {"path": window.location.pathname + "socket.io"});
+        this.socket = io.connect(window.location.origin,
+            {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game(this);
         this.pages = new Pages(["mainPage"]);
@@ -505,12 +538,16 @@ class App {
             }
         }).then(() => {
             this.loadContent();
-        })
+        });
+        this.helpPages.go(["helpPage_rulesBox"]);
     }
 
     log(data, level) {
         level = level || "info";
-        this.gameLog.push(data);
+        this.appLog.push({data,
+            "time": timeSync.getTime(),
+            "humanTime": (new Date(timeSync.getTime()).toISOString())
+        });
         if (this.debug) {
             console[level](data);
         }
@@ -519,10 +556,7 @@ class App {
     logSignal(event, data) {
         let level = "info";
         if (event == "sFailure") level = "warn";
-        this.log({event, data,
-            "time": timeSync.getTime(),
-            "humanTime": (new Date(timeSync.getTime()).toISOString())
-        }, level);
+        this.log({event, data}, level);
     }
 
     emit(event, data) {
@@ -706,7 +740,7 @@ class App {
         eWord.style["font-size"] = `${baseWidth}px`
         let wordWidth = eWord.getBoundingClientRect().width;
         let parentWidth = eWordParent.getBoundingClientRect().width;
-        eWord.style["font-size"] = `${Math.min(40,
+        eWord.style["font-size"] = `${Math.min(WORD_MAX_SIZE,
             baseWidth * parentWidth / wordWidth)}px`;
     }
 
@@ -732,7 +766,7 @@ class App {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             disable("joinPage_pasteKey");
         } else {
-            navigator.permissions.query({name: "clipboard-read"})
+            navigator.permissions.query({"name": "clipboard-read"})
             .then(result => {
                 if (result.state == "denied") {
                     disable("joinPage_pasteKey");
@@ -748,7 +782,7 @@ class App {
             disable("preparationPage_copyKey");
             disable("preparationPage_copyLink");
         } else {
-            navigator.permissions.query({name: "clipboard-write"})
+            navigator.permissions.query({"name": "clipboard-write"})
             .then(result => {
                 if (result.state == "denied") {
                     disable("preparationPage_copyKey");
@@ -778,14 +812,16 @@ class App {
     }
 
     async animateDelayTimer(startTime, roundId) {
+        let gradient = colorGradientRGB(DELAY_COLORS);
         await animate({
             startTime,
             duration: this.game.settings.delayTime,
             draw: (progress) => {
-                el("gamePage_explanationDelayTimer").innerText =
-                    Math.floor((1 - progress) / 1000 * this.game.settings.delayTime) + 1;
+                let sec = stairs(1 - progress,
+                    this.game.settings.delayTime / 1000) + 1;
+                el("gamePage_explanationDelayTimer").innerText = sec;
                 el("gamePage_explanationDelayTimer").style.background =
-                    DELAY_COLORS[Math.floor(progress * DELAY_COLORS.length)];
+                    `rgb(${gradient(progress).join()})`;
             },
             stopCondition: () => {
                 return this.game.roundId != roundId;
@@ -800,8 +836,9 @@ class App {
             startTime,
             duration: this.game.settings.explanationTime,
             draw: (progress) => {
-                let time = minSec(Math.floor((1 - progress) /
-                    1000 * this.game.settings.explanationTime) + 1);
+                let sec = stairs(1 - progress,
+                    this.game.settings.explanationTime / 1000) + 1;
+                let time = minSec(sec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
             },
@@ -821,8 +858,8 @@ class App {
             startTime,
             duration: this.game.settings.aftermathTime,
             draw: (progress) => {
-                let msec = (Math.floor((1 - progress) /
-                    100 * this.game.settings.aftermathTime) + 1);
+                let msec = stairs(1 - progress,
+                    this.game.settings.aftermathTime / 100) + 1;
                 let time = secMsec(msec);
                 el("gamePage_explanationTimer").innerText = time;
                 el("gamePage_observerTimer").innerText = time;
@@ -859,7 +896,7 @@ class App {
         result.version = VERSION;
         result.hash = HASH;
         result.message = message;
-        result.gameLog = this.gameLog;
+        result.appLog = this.appLog;
         return result;
     }
 
@@ -927,6 +964,25 @@ class App {
         settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex;
         localStorage.settings = settings;
         this.emit("cApplySettings", {settings});
+    }
+
+    addHint(id) {
+        let cls = "active";
+        el(id).onclick = () => {
+            if (el(id).classList.contains(cls)) {
+                el(id).classList.remove(cls);
+            } else {
+                el(id).classList.add(cls);
+                let counter = 0;
+                let listener = document.addEventListener("click", () => {
+                    if (counter == 1) {
+                        document.removeEventListener("click", listener);
+                        el(id).classList.remove(cls);
+                    }
+                    counter += 1;
+                });
+            }
+        }
     }
 
     setSocketioEventListeners() {
@@ -1047,7 +1103,7 @@ class App {
                 break;
             default:
                 showError(data.msg, "code:", data.code);
-                setTimeout(hideError, 4000);
+                setTimeout(hideError, ERROR_TIMEOUT);
                 break;
             }
         })
@@ -1134,7 +1190,7 @@ class App {
             "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
             "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode"]
         for (let idPrefix of prefixes) {
-            addHint(idPrefix+"Info", idPrefix+"Hint");
+            this.addHint(idPrefix+"Info");
         }
 
         els("type.number").forEach(it => validateNumber(it.id));
@@ -1190,11 +1246,4 @@ class App {
             i18n.loadJSON(json, 'messages');
         }
     }
-}
-
-let timeSync = new TimeSync(TIME_SYNC_DELTA);
-i18n=i18n();
-let app;
-window.onload = function() {
-    app = new App();
 }
