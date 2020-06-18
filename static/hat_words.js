@@ -1,7 +1,4 @@
 function setValue(n, lang) {
-    console.log('call');
-    console.log(n);
-    console.log(lang);
     if (n > 999 || n < 0) {
         console.error("Invalid number");
         return;
