@@ -504,8 +504,6 @@ class Game {
     }
 
     renderWordsCount() {
-        console.log(this.wordsCount);
-        console.log(this.app.lang);
         setValue(this.wordsCount, this.app.lang);
     }
 
