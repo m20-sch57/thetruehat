@@ -1264,6 +1264,8 @@ class App {
             this.applySettings();
             this.pages.goBack();
         }
+        el("mainPage_ru").onclick = () => this.setLocale("ru");
+        el("mainPage_en").onclick = () => this.setLocale("en");
 
         // Adding settings hint
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
