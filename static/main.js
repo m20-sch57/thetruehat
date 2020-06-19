@@ -504,7 +504,7 @@ class Game {
     }
 
     renderWordsCount() {
-        setValue(this.wordsCount, "ru");
+        setValue(this.wordsCount, this.app.lang);
     }
 
     renderSpeakerListener() {
@@ -1262,6 +1262,8 @@ class App {
             this.applySettings();
             this.pages.goBack();
         }
+        el("mainPage_ru").onclick = () => this.setLocale("ru");
+        el("mainPage_en").onclick = () => this.setLocale("en");
 
         // Adding settings hint
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
@@ -1281,14 +1283,15 @@ class App {
         els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
+        this.game.renderWordsCount();
     }
 
     async loadSvgs() {
-        els("svg").forEach(async (it) => {
-            let name = it.attributes["src"].nodeValue;
+        for (let curEl of els("svg")) {
+            let name = curEl.attributes["src"].nodeValue;
             let response = await fetch(name);
-            it.innerHTML = await response.text();
-        })
+            curEl.innerHTML = await response.text();
+        }
     }
 
     async loadPages() {
