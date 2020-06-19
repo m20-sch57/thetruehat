@@ -1,4 +1,5 @@
 import Vue from "vue"
+import Filtrations from "./filtrations"
 
 import * as config from "./config.js"
 import view from "./view.vue"
@@ -8,24 +9,13 @@ import app from "./app.js"
 
 import {userWarning, timeSync} from "./lib"
 
+Vue.use(Filtrations);
+
 let vue = new Vue({
 	router,
 	store,
 	el: "#app",
 	render: h => h(view)
-})
-
-Vue.directive("validate", {
-	bind: function(el, binding) {
-		el.oninput = function() {
-			let caretPosition = el.selectionStart;
-			let validated = binding.value(el.value, caretPosition);
-			console.log(validated.value, validated.newCaretPosition)
-			el.value = validated.value;
-			el.selectionStart = validated.newCaretPosition;
-			el.selectionEnd = validated.newCaretPosition;
-		}
-	}
 })
 
 timeSync.maintainDelta(config.TIME_SYNC_DELTA);

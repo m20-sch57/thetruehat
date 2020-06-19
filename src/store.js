@@ -36,6 +36,9 @@ const roomModule = {
 		},
 		setHost(state, {host}) {
 			state.host = host;
+		},
+		setSettings(state, {settings}) {
+			state.settings = settings;
 		}
 	},
 	getters: {

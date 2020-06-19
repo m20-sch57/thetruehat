@@ -54,6 +54,11 @@ class App {
 		this.emit("cLeaveRoom");
 	}
 
+	applySettings(settings) {
+		store.commit("setSettings", {settings});
+		this.emit("cApplySettings", {settings});
+	}
+
 	listen() {
         let events = [
 			"sFailure", "sPlayerJoined", "sPlayerLeft",
@@ -97,6 +102,10 @@ class App {
 			store.commit("setHost", {
 				host: data.host
 			});
+		})
+
+		this.socket.on("sNewSettings", data => {
+			store.commit("setSettings", data);
 		})
 	}
 }

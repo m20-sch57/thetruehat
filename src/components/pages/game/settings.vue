@@ -15,25 +15,31 @@
 				<div class="layer">
 					<div class="label">
 						Количество слов в шляпе
-						<span class="fa fa-info-circle info" id="gameSettingsPage_wordNumberInfo">
+						<span
+							:class="{active: hints.wordNumber}"
+							@click="showHint('wordNumber')"
+							class="fa fa-info-circle info"
+							id="gameSettingsPage_wordNumberInfo">
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
 							Когда слова закончатся, закончится и игра.
 						</div>
 					</div>
-
-						<!-- :value="settings.wordNumber"
-						@input="validateNumber" -->
 					<input
-						v-model="settings.wordNumber"
+						v-filter="settings.wordNumber"
 						class="small-underlined-input input"
-						id="gameSettingsPage_wordNumberField">
+						id="gameSettingsPage_wordNumberField"
+					>
 				</div>
 				<div class="layer" id="gameSettingsPage_delayTime">
 					<div class="label">
 						Время на подготовку
-						<span class="fa fa-info-circle info" id="gameSettingsPage_delayTimeInfo">
+						<span
+							:class="{active: hints.delayTime}"
+							@click="showHint('delayTime')"
+							class="fa fa-info-circle info"
+							id="gameSettingsPage_delayTimeInfo">
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -41,55 +47,81 @@
 						</div>
 					</div>
 					<input
-						v-model.number="settings.delayTime"
+						v-filter.number="settings.delayTime"
 						class="small-underlined-input input"
 						id="gameSettingsPage_delayTimeField">
 				</div>
 				<div class="layer" id="gameSettingsPage_explanationTime">
 					<div class="label">
 						Время на объяснение
-						<span class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo">
+						<span
+							:class="{active: hints.explanationTime}"
+							@click="showHint('explanationTime')"
+							class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo">
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
 							По окончании этого времени любое объяснение слов должно быть закончено.
 						</div>
 					</div>
-					<input class="small-underlined-input input" id="gameSettingsPage_explanationTimeField"  name="type.number">
+					<input
+						v-filter.number="settings.explanationTime"
+						class="small-underlined-input input"
+						id="gameSettingsPage_explanationTimeField">
 				</div>
 				<div class="layer" id="gameSettingsPage_aftermathTime">
 					<div class="label">
 						Время на последнюю попытку
-						<span class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo">
+						<span
+							:class="{active: hints.aftermathTime}"
+							@click="showHint('aftermathTime')"
+							class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo">
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
 							В течение этого времени отгадывающий может озвучить последнюю версию.
 						</div>
 					</div>
-					<input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField"  name="type.number">
+					<input
+						v-filter.number="settings.aftermathTime"
+						class="small-underlined-input input"
+						id="gameSettingsPage_aftermathTimeField">
 				</div>
 				<div class="layer" id="gameSettingsPage_dictionarySelection">
 					<div class="label" id="gameSettingsPage_dictionarySelectionLabel">
 						Словарь
-						<span class="fa fa-info-circle info" id="gameSettingsPage_dictionarySelectionInfo">
+						<span
+							:class="{active: hints.dictionaryId}"
+							@click="showHint('dictionaryId')"
+							class="fa fa-info-circle info"
+							id="gameSettingsPage_dictionarySelectionInfo">
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
 							Словарь определяет набор слов, из которых будут выбраны слова для этой партии.
 						</div>
 					</div>
-					<select class="medium-select" id="gameSettingsPage_dictionaryList">
-						<option>Русский (20000 слов)</option>
-						<option>English (10000 words)</option>
+					<select
+						v-model="settings.dictionaryId"
+						class="medium-select"
+						id="gameSettingsPage_dictionaryList">
+						<option :value="0">Русский (20000 слов)</option>
+						<option :value="1">English (10000 words)</option>
 					</select>
 				</div>
 				<div class="layer" id="gameSettingsPage_strictMode">
-					<input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
+					<input
+						v-model="settings.strictMode"
+						type="checkbox"
+						id="gameSettingsPage_strictModeCheckbox">
 					<label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
 					<label>
 						Строгий режим
-						<span class="fa fa-info-circle info" id="gameSettingsPage_strictModeInfo">
+						<span
+							:class="{active: hints.strictMode}"
+							@click="showHint('strictMode')"
+							class="fa fa-info-circle info"
+							id="gameSettingsPage_strictModeInfo">
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -99,9 +131,16 @@
 				</div>
 			</div>
 			<div id="gameSettingsPage_actions">
-				<button class="medium-button bg-green" id="gameSettingsPage_applyButton">
+				<button
+					@click="applySettings"
+					class="medium-button bg-green"
+					id="gameSettingsPage_applyButton">
 					Применить
-				</button><button class="medium-button bg-blue" id="gameSettingsPage_revertButton">
+				</button><!--
+			 --><button
+			 		@click="cancelSettings"
+			 		class="medium-button bg-blue"
+					id="gameSettingsPage_revertButton">
 					Отмена
 				</button>
 			</div>
@@ -112,36 +151,93 @@
 
 <script>
 import hatHeader from "_/hatHeader.vue"
+import store from "__/store.js"
+import router from "__/router"
+import app from "__/app.js"
+
+function number(value, {caretPosition}) {
+	caretPosition = value.slice(0, caretPosition).replace(/\D+/g,"").length;
+	value = parseInt(value.replace(/\D+/g,""));
+	value = isNaN(value) ? null : value;
+	return {value, caretPosition}
+}
+function max(maxValue) {
+	return function(value) {
+		return Math.min(value, maxValue)
+	}
+}
 
 export default {
 	data: function() {
 		return {
-			settings: this.$store.state.room.settings
+			settings: {
+				...this.$store.state.room.settings,
+				delayTime: this.$store.state.room.settings.delayTime / 1000,
+				explanationTime: this.$store.state.room.settings.explanationTime / 1000,
+				aftermathTime: this.$store.state.room.settings.aftermathTime / 1000
+			},
+			hints: {
+				wordNumber: false,
+				delayTime: false,
+				explanationTime: false,
+				aftermathTime: false,
+				dictionaryId: false,
+				strictMode: false
+			}
 		}
 	},
 	methods: {
-		// validateNumber: function(e) {
-		// 	let el = e.target;
-		// 	console.log(el);
-		// 	let caretPosition = el.selectionStart;
-		// 	let newCaretPosition = el.value.slice(0, caretPosition).replace(/\D+/g,"").length;
-		// 	el.value = el.value.replace(/\D+/g,"");
-		// 	el.selectionStart = newCaretPosition;
-		// 	el.selectionEnd = newCaretPosition;
-		// 	console.log(el.value, newCaretPosition, caretPosition, el.value.slice(0, caretPosition));
-		// }
+		showHint(hintName) {
+			if (this.hints[hintName]) return
+			this.hints[hintName] = true;
+			let counter = 0;
+			let listener = window.addEventListener("click", () => {
+				if (counter == 1) {
+					this.hints[hintName] = false;
+					document.removeEventListener("click", listener)
+				}
+				counter++;
+			});
+		},
+		applySettings() {
+			app.applySettings({
+				...this.settings,
+				delayTime: this.settings.delayTime * 1000,
+				explanationTime: this.settings.explanationTime * 1000,
+				aftermathTime: this.settings.aftermathTime * 1000
+			})
+			this.$router.go(-1);
+		},
+		cancelSettings() {
+			this.$router.go(-1);
+		}
+	},
+	filtrations: {
+		"settings.wordNumber": {
+			number, max: {filter: max(999), when: "blur"}
+		},
+		"settings.delayTime": {
+			number, max: {filter: max(99), when: "blur"}
+		},
+		"settings.aftermathTime": {
+			number, max: {filter: max(99), when: "blur"}
+		},
+		"settings.explanationTime": {
+			number, max: {filter: max(999), when: "blur"}
+		}
 	},
 	components: {hatHeader},
 	beforeRouteEnter: function(to, from, next) {
-		next(vm => {
-			if (vm.$store.state.room.connection != "online") {
-				vm.$router.replace({path: "/join", query: {k: vm.$store.state.room.key, ...vm.$route.query}});
-			} else {
-				if (vm.$route.query.k != vm.$store.state.room.key) {
-					vm.$router.replace({query: {k: vm.$store.state.room.key}})
-				}
+		if (store.state.room.connection != "online") {
+			router.replace({path: "/join", query: {k: store.state.room.key, ...to.query}});
+		} else {
+			if (to.query.k != store.state.room.key) {
+				next(vm => {
+					vm.$router.replace({query: {k: store.state.room.key}})
+				})
 			}
-		})
+		}
+		next();
 	},
 }
 </script>

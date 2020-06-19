@@ -23,7 +23,8 @@
 		 		class="small-button bg-blue"
 				id="preparationPage_copyLink">
 				Копир. ссылку
-			</button>
+			</button><br>
+			<!-- <span> {{ settingsPreview }}</span> -->
 		</div>
 		<div id="preparationPage_body">
 			<div id="preparationPage_usersTable">
@@ -72,6 +73,15 @@ export default {
 		...mapGetters(["isHost"]),
 		canStart: function() {
 			return this.$store.getters.onlinePlayers.length >= 2
+		},
+		settingsPreview: function() {
+			let settings = this.$store.state.room.settings;
+			let result =
+				[`words: ${settings.wordNumber}`,`time: ${settings.delayTime / 1000}+${
+				settings.explanationTime / 1000}+${
+				settings.aftermathTime / 1000}`]
+			if (settings.strictMode) result.push("strict mode");
+			return result.join("; ");
 		}
 	},
 	methods: {
