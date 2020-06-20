@@ -66,3 +66,4 @@ TheTrueHat - это веб-приложение для игры в Шляпу. �
 - [body-parser](https://github.com/expressjs/body-parser#readme)
 - [yargs](https://yargs.js.org/)
 - [po2json](https://github.com/mikeedwards/po2json)
+- [gettext](https://github.com/guillaumepotier/gettext.js)
