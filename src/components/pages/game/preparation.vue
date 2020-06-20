@@ -40,6 +40,7 @@
 			<button
 				v-if="isHost"
 				:disabled="!canStart"
+				@click="startGame"
 				class="medium-button bg-green"
 				id="preparationPage_start">
 				Начать игру
@@ -61,6 +62,7 @@
 
 <script>
 import usersTable from "_/usersTable.vue"
+import app from "__/app.js"
 import { mapGetters } from 'vuex'
 
 export default {
@@ -90,6 +92,9 @@ export default {
 		},
 		copyLink: function() {
 			navigator.clipboard.writeText(window.location);
+		},
+		startGame: function() {
+			app.startGame()
 		}
 	},
 	components: {usersTable}

@@ -1,6 +1,12 @@
 <template>
 <div class="page" id="gamePage">
-	<hat-header @go-back="goBack"></hat-header>
+	<hat-header
+		:hat-picture="true"
+		@go-back="goBack">
+		<template v-if="phase != 'preparation'">
+			Слов в шляпе: <span id="gamePage_wordsCnt"> {{wordsCount }} </span>
+		</template>
+	</hat-header>
 	<component :is="gamePage"></component>
 </div>
 </template>
@@ -10,9 +16,17 @@ import app from "__/app.js"
 
 import hatHeader from "_/hatHeader.vue"
 import preparationPage from "_/pages/game/preparation.vue"
+import waitPage from "_/pages/game/wait.vue"
+import explanationPage from "_/pages/game/explanation.vue"
+import editPage from "_/pages/game/edit.vue"
+import { mapState } from 'vuex'
 
 export default {
 	computed: {
+		...mapState({
+			phase: state => state.room.phase,
+			wordsCount: state => state.room.wordsCount
+		}),
 		gamePage: function() {
 			if (this.$store.state.room.connection == "online") {
 				return this.$store.state.room.phase + "Page"
@@ -36,6 +50,6 @@ export default {
 			}
 		})
 	},
-	components: {hatHeader, preparationPage}
+	components: {hatHeader, preparationPage, waitPage, explanationPage, editPage}
 }
 </script>
