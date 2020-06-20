@@ -174,6 +174,12 @@ class App {
 
 			sNextTurn: data => {
 				store.commit("nextTurn", data);
+			},
+
+			sGameEnded: data => {
+				store.commit("leaveRoom");
+				store.commit("setResults", data);
+				router.push("/results");
 			}
 		}
 

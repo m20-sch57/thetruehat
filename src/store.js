@@ -37,6 +37,10 @@ const roomModule = {
 			state.listener = null;
 			state.wordsCount = null;
 			state.editWords = null;
+			state.word = null;
+			state.startTime = null;
+			state.settings = null;
+			state.roundId += 1;
 		},
 		connectRoom(state, payload) {
 			set(["username", "key"])(state, payload);
@@ -75,10 +79,13 @@ const roomModule = {
 				state.editWords = editWords;
 			}
 			state.phase = "edit";
+			state.startTime = null;
+			state.word = null;
 		},
 		nextTurn(state, payload) {
 			state.phase = "wait";
 			set(["speaker", "listener", "wordsCount"])(state, payload);
+			state.editWords = null;
 		},
 		setPlayers: set("players"),
 		setHost: set("host"),
@@ -109,7 +116,15 @@ const roomModule = {
 }
 
 export default new Vuex.Store({
+	state: {
+		results: null
+	},
 	modules: {
 		room: roomModule
+	},
+	mutations: {
+		setResults(state, {results}) {
+			state.results = results
+		}
 	}
 })

@@ -21,9 +21,9 @@
 		</h1>
 	</div>
 	<div id="gamePage_body">
-		<spekaer-listener
+		<speaker-listener
 			v-if="(myRole == 'observer' || myRole == 'listener') && state != 'delay'">
-		</spekaer-listener>
+		</speaker-listener>
 		<div
 			v-if="myRole == 'observer' || myRole == 'listener'"
 			id="gamePage_observerBox">
