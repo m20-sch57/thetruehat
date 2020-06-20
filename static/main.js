@@ -675,6 +675,7 @@ class App {
         hide("gamePage_listenerReady");
         show("gamePage_speakerReadyButton");
         hide("gamePage_speakerReady");
+        enable("gamePage_finish");
 
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
@@ -1148,6 +1149,7 @@ class App {
             this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", data => {
+            el("gamePage_status").classList.remove("shadow");
             this.game.state = "wait";
             this.game.update(data);
             this.renderWaitPage();
@@ -1163,6 +1165,7 @@ class App {
         })
         this.socket.on("sGameEnded", data => {
             enable("gamePage_finish");
+            el("gamePage_status").classList.remove("shadow");
             this.game.state = "end";
             this.game.update(data);
             this.pages.go(["resultsPage"]);
