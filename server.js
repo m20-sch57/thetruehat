@@ -2,7 +2,7 @@
 
 "use strict"
 
-const fetch = require("./fetch.js").fetch;
+const fetch = require("@lounres/flex_node_fetch").fetch;
 
 const config = require("./config.json");
 const version = require("./version.json");
