@@ -5,9 +5,18 @@
   "bugs": {
     "url": "https://github.com/m20-sch57/thetruehat/issues"
   },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m20-sch57/thetruehat"
+  },
   "author": {
     "name": "Yury Voronov"
   },
+  "keywords": [
+    "online hat game",
+    "online alias game"
+  ],
   "contributors": [
     {
       "name": "Ivan Gaidai-Turlov",

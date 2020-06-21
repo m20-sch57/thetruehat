@@ -10,6 +10,7 @@ window.onload = function() {
             `);
     }
     timeSync = new TimeSync(TIME_SYNC_DELTA);
+    i18n=i18n();
     let _app = new App()
     if (GLOBAL_APP_SCOPE) {
         app = _app;
@@ -18,12 +19,6 @@ window.onload = function() {
 }
 
 const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
-// const DELAY_COLORS = [[0, 230, 25], [255, 0, 0]];
-const SPEAKER_READY = "Я готов объяснять";
-const LISTENER_READY = "Я готов отгадывать";
-const EXPLAINED_WORD_STATE = "угадал";
-const NOT_EXPLAINED_WORD_STATE = "не угадал";
-const MISTAKE_WORD_STATE = "ошибка";
 const WORD_MAX_SIZE = 50;
 
 Array.prototype.last = function() {
@@ -141,6 +136,14 @@ function wordPlayers(playersCounter) {
     return word;
 }
 
+function _(msgid, n) {
+    if (n === undefined) {
+        return i18n.gettext(msgid);
+    } else {
+        return i18n.ngettext(msgid, msgid, n);
+    }
+}
+
 function validateNumber(elem) {
     el(elem).oninput = function(event) {
         el(elem).value = el(elem).value.replace(/\D+/g,"");
@@ -232,18 +235,21 @@ class Template {
         let eExplained = document.createElement("button");
         eExplained.classList.add("small-white-button");
         eExplained.classList.add("explained");
-        eExplained.innerText = EXPLAINED_WORD_STATE;
         eExplained.setAttribute("id", `editPage_${word}_explained`);
+        eExplained.setAttribute("gt", "");
+        eExplained.setAttribute("gt-text", "угадал");
         let eNotExplained = document.createElement("button");
         eNotExplained.classList.add("small-white-button");
         eNotExplained.classList.add("not-explained");
-        eNotExplained.innerText = NOT_EXPLAINED_WORD_STATE;
         eNotExplained.setAttribute("id", `editPage_${word}_notExplained`);
+        eNotExplained.setAttribute("gt", "");
+        eNotExplained.setAttribute("gt-text", "не угадал");
         let eMistake = document.createElement("button");
         eMistake.classList.add("small-white-button");
         eMistake.classList.add("mistake");
-        eMistake.innerText = MISTAKE_WORD_STATE;
         eMistake.setAttribute("id", `editPage_${word}_mistake`);
+        eMistake.setAttribute("gt", "");
+        eMistake.setAttribute("gt-text", "ошибка");
         elem.appendChild(eWord);
         elem.appendChild(eExplained);
         elem.appendChild(eNotExplained);
@@ -254,6 +260,7 @@ class Template {
             "mistake": eMistake
         }[wordState];
         selected.classList.add("selected");
+
         return elem;
     }
 }
@@ -261,6 +268,8 @@ class Template {
 class Sound {
     constructor () {
         this.currentSound = false;
+        this.isMuted = false;
+        this.volume = 1;
     }
 
     killSound() {
@@ -268,6 +277,26 @@ class Sound {
             this.currentSound.pause();
             this.currentSound = false;
         }
+    }
+
+    updateVolume() {
+        if (this.currentSound) {
+            if (this.isMuted) {
+                this.currentSound.volume = 0;
+            } else {
+                this.currentSound.volume = this.volume;
+            }
+        }
+    }
+
+    setVolume(volume) {
+        this.volume = volume;
+        this.updateVolume();
+    }
+
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        this.updateVolume();
     }
 
     playSound(sound, startTime, stopCondition) {
@@ -280,12 +309,14 @@ class Sound {
                 if (stopCondition()) return;
                 this.killSound();
                 this.currentSound = el(sound);
+                this.updateVolume();
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime <
                 el(sound).duration * 1000){
             this.killSound();
             this.currentSound = el(sound);
+            this.updateVolume();
             this.currentSound.currentTime = (timeSync.getTime() - startTime) /
                 1000;
             this.currentSound.play();
@@ -337,13 +368,14 @@ class Pages {
 }
 
 class Game {
-    constructor() {
+    constructor(app) {
         this.myUsername = "";
         this.settings = {};
         this.editWords = [];
         this.results = [];
         this.roundId = 0;
         this.inGame = false;
+        this.app = app;
     }
 
     update(data) {
@@ -395,10 +427,12 @@ class Game {
     }
 
     render() {
-        this.renderStuff();
+        this.renderSpeakerListener();
+        this.renderWordsCount();
         this.renderPlayersList();
         // this.renderPlayersCnt();
         this.renderHost();
+        this.renderHostActions();
         this.renderEditList();
         this.renderResults();
         this.renderSettings();
@@ -431,6 +465,7 @@ class Game {
             el(`editPage_${word.word}_mistake`).onclick =
                     () => this.changeWordState(word.word, "mistake");
         });
+        this.app.renderText();
         // Fixed bug with padding in Firefox
         let eDiv = document.createElement("div");
         eDiv.style.height = "15px";
@@ -440,6 +475,15 @@ class Game {
     renderHost() {
         if (this.host) {
             el(`user_${this.host}`).classList.add("host");
+        } else {
+        }
+    }
+
+    renderHostActions() {
+        if (this.isHost) {
+            show("gamePage_finish");
+        } else {
+            hide("gamePage_finish");
         }
     }
 
@@ -459,10 +503,14 @@ class Game {
         });
     }
 
-    renderStuff() {
+    renderWordsCount() {
+        setValue(this.wordsCount, this.app.lang);
+    }
+
+    renderSpeakerListener() {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
-        el("gamePage_wordsCnt").innerText = this.wordsCount;
+        el("gamePage_additionalStatusListener").innerText = this.listener;
     }
 
     changeWordState(word, state) {
@@ -498,23 +546,37 @@ class App {
         this.socket = io.connect(window.location.origin,
             {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
-        this.game = new Game();
+        this.game = new Game(this);
         this.pages = new Pages(["mainPage"]);
         this.gamePages = new Pages();
         this.helpPages = new Pages();
 
+        this.helpPages.go(["helpPage_rulesBox"]);
         this.setKey(readLocationHash());
-
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
-        this.loadContent();
 
         if (this.game.key != "") {
             this.pages.go(["joinPage"]);
         } else {
             this.pages.go(["mainPage"]);
         }
+
+        if (localStorage.volume && localStorage.volume == "off") {
+            this.toggleVolume();
+        }
+
+        this.prepareGettext();
+        this.loadTranslations().then(() => {
+            if (localStorage.preferredLang) {
+                this.setLocale(localStorage.preferredLang);
+            } else {
+                this.setLocale("ru");
+            }
+        }).then(() => {
+            this.loadContent();
+        });
         this.helpPages.go(["helpPage_rulesBox"]);
     }
 
@@ -610,13 +672,15 @@ class App {
     }
 
     renderWaitPage() {
-        enable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innerText = LISTENER_READY;
-        enable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innerText = SPEAKER_READY;
+        show("gamePage_listenerReadyButton");
+        hide("gamePage_listenerReady");
+        show("gamePage_speakerReadyButton");
+        hide("gamePage_speakerReady");
+        enable("gamePage_finish");
 
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
+            // page.push("gamePage_additionalStatus");
             page.push("gamePage_speakerReadyBox");
             page.push("gamePage_speakerTitle");
         } else if (this.game.myRole == "listener") {
@@ -631,10 +695,12 @@ class App {
     async renderExplanationPage({startTime}) {
         let roundId = this.game.roundId;
         setTimeout(async () => {
+            disable("gamePage_finish");
             if (this.game.roundId != roundId) return;
             let page = ["gamePage_explanationDelayBox"];
             if (this.game.myRole == "speaker") {
                 page.push("gamePage_speakerTitle");
+                page.push("gamePage_additionalStatus");
             } else if (this.game.myRole == "listener") {
                 page.push("gamePage_listenerTitle");
             } else {
@@ -646,7 +712,7 @@ class App {
             if (this.game.roundId != roundId) return;
             if (this.game.myRole == "speaker") {
                 this.gamePages.go(["gamePage_explanationBox",
-                    "gamePage_speakerTitle"]);
+                    "gamePage_speakerTitle", "gamePage_additionalStatus"]);
             } else if (this.game.myRole == "listener") {
                 this.gamePages.go(["gamePage_speakerListener",
                     "gamePage_observerBox", "gamePage_listenerTitle"]);
@@ -663,6 +729,7 @@ class App {
     }
 
     renderEditPage() {
+        disable("gamePage_finish");
         if (this.game.myRole == "speaker") {
             this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
             el("gamePage_editListScrollable").scrollTop = 0;
@@ -670,16 +737,16 @@ class App {
         } else {
             this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
             el("gamePage_editConfirm").classList.remove("shadow");
-            el("gamePage_editTitle").classList.remove("shadow");
+            el("gamePage_status").classList.remove("shadow");
         }
     }
 
     editPageUpdateShadows() {
         let elem = el("gamePage_editListScrollable");
         if (elem.scrollTop == 0) {
-            el("gamePage_editTitle").classList.remove("shadow");
+            el("gamePage_status").classList.remove("shadow");
         } else {
-            el("gamePage_editTitle").classList.add("shadow");
+            el("gamePage_status").classList.add("shadow");
         }
         if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
             el("gamePage_editConfirm").classList.remove("shadow");
@@ -778,14 +845,14 @@ class App {
 
     listenerReady() {
         this.emit("cListenerReady");
-        disable("gamePage_listenerReadyButton");
-        el("gamePage_listenerReadyButton").innerText = "Подожди напарника";
+        hide("gamePage_listenerReadyButton");
+        show("gamePage_listenerReady");
     }
 
     speakerReady() {
         this.emit("cSpeakerReady");
-        disable("gamePage_speakerReadyButton");
-        el("gamePage_speakerReadyButton").innerText = "Подожди напарника";
+        hide("gamePage_speakerReadyButton");
+        show("gamePage_speakerReady");
     }
 
     async animateDelayTimer(startTime, roundId) {
@@ -899,6 +966,38 @@ class App {
         el("helpPage_newsOption").classList.remove("active");
     }
 
+    setLocale(lang) {
+        if (this.lang && lang == this.lang) return;
+        localStorage.preferredLang = lang;
+        this.lang = lang;
+        i18n.setLocale(lang);
+        this.renderText();
+        this.loadContent();
+        this.loadDictionaries()
+    }
+
+    prepareGettext() {
+        for (let elem of document.querySelectorAll("[gt-text]")) {
+            elem.setAttribute("gt-text", elem.innerText.trim());
+        }
+    }
+
+    renderText() {
+        for (let elem of document.querySelectorAll("[gt]")) {
+            for (let i=0; i<elem.attributes.length; i++) {
+                if (elem.attributes[i].name.startsWith("gt-")) {
+                    let attributeName = elem.attributes[i].name.slice(3);
+                    let value = _(elem.attributes[i].value);
+                    if (attributeName == "text") {
+                        elem.innerText = value;
+                    } else {
+                        elem.setAttribute(attributeName, value);
+                    }
+                }
+            }
+        }
+    }
+
     applySettings() {
         let settings = {};
         settings.delayTime = +el("gameSettingsPage_delayTimeField").value*1000;
@@ -907,8 +1006,33 @@ class App {
         settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
         settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex;
-        localStorage.settings = settings;
         this.emit("cApplySettings", {settings});
+    }
+
+    toggleVolume() {
+        hide("gamePage_volumeOn");
+        hide("gamePage_volumeOff");
+        this.sound.toggleMute();
+        if (this.sound.isMuted) {
+            show("gamePage_volumeOff");
+        } else {
+            show("gamePage_volumeOn");
+        }
+        localStorage.volume = this.sound.isMuted ? "off" : "on";
+    }
+
+    finishGame() {
+        if (!this.game.isHost) {
+            console.error(_("Только хост может закончить игру"));
+            return;
+        }
+
+        // In English?
+        if (confirm(_("Вы уверены, что хотите завершить игру?")+ (this.game.state == "wait" ?
+            _(" Игра закончится, и вы сможете посмотреть результаты.") :
+            _(" Игра закончится в конце текущего раунда.")))) {
+            this.emit("cEndGame");
+        }
     }
 
     addHint(id) {
@@ -967,6 +1091,8 @@ class App {
         this.socket.on("sYouJoined", data => {
             this.game.update(data);
             this.game.inGame = true;
+            this.game.state = data.state == "wait" ? "preparation" :
+                data.state == "play" ? data.substate : data.state;
             switch (data.state) {
             case "wait":
                 this.renderPreparationPage()
@@ -1005,11 +1131,13 @@ class App {
             this.game.update(data);
         })
         this.socket.on("sGameStarted", data => {
+            this.game.state = "wait";
             this.game.update(data);
             this.renderWaitPage();
             this.pages.go(["gamePage"]);
         })
         this.socket.on("sExplanationStarted", data => {
+            this.game.state = "explanation";
             this.renderExplanationPage(data);
             this.playExplanationSounds(data);
         })
@@ -1022,10 +1150,13 @@ class App {
             this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", data => {
+            el("gamePage_status").classList.remove("shadow");
+            this.game.state = "wait";
             this.game.update(data);
             this.renderWaitPage();
         })
         this.socket.on("sWordExplanationEnded", data => {
+            this.game.state = "edit";
             this.game.update(data);
         })
         this.socket.on("sExplanationEnded", data => {
@@ -1034,6 +1165,9 @@ class App {
             this.renderEditPage();
         })
         this.socket.on("sGameEnded", data => {
+            enable("gamePage_finish");
+            el("gamePage_status").classList.remove("shadow");
+            this.game.state = "end";
             this.game.update(data);
             this.pages.go(["resultsPage"]);
             this.game.leave();
@@ -1086,6 +1220,9 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
+        el("gamePage_leave").onclick = () => this.leaveRoom();
+        el("gamePage_volume").onclick = () => this.toggleVolume();
+        el("gamePage_finish").onclick = () => this.finishGame();
         el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited",
             this.game.editedWordsObject());
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
@@ -1129,6 +1266,8 @@ class App {
             this.applySettings();
             this.pages.goBack();
         }
+        el("mainPage_ru").onclick = () => this.setLocale("ru");
+        el("mainPage_en").onclick = () => this.setLocale("en");
 
         // Adding settings hint
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
@@ -1141,30 +1280,40 @@ class App {
         els("type.number").forEach(it => validateNumber(it.id));
     }
 
-    loadContent() {
-        this.loadPages();
-        this.loadDictionaries();
+    async loadContent() {
+        await this.loadPages();
+        await this.loadSvgs();
+        await this.loadDictionaries();
         els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
+        this.game.renderWordsCount();
+    }
+
+    async loadSvgs() {
+        for (let curEl of els("svg")) {
+            let name = curEl.attributes["src"].nodeValue;
+            let response = await fetch(name);
+            curEl.innerHTML = await response.text();
+        }
     }
 
     async loadPages() {
         let loadablePages = [
             {
-                "pageFile": "rules.html",
+                "pageFile": `rules.${this.lang}.html`,
                 "pageId": "helpPage_rulesBox"
             },
             {
-                "pageFile": "faq.html",
+                "pageFile": `faq.${this.lang}.html`,
                 "pageId": "helpPage_faqBox"
             },
             {
-                "pageFile": "about.html",
+                "pageFile": `about.${this.lang}.html`,
                 "pageId": "helpPage_aboutBox"
             },
             {
-                "pageFile": "news.html",
+                "pageFile": `news.${this.lang}.html`,
                 "pageId": "helpPage_newsBox"
             }
         ];
@@ -1179,8 +1328,16 @@ class App {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
         for (let dict of dictionaries.dictionaries) {
-            let dictname = `${dict.name["ru"]}, ${dict.wordNumber} слов`;
+            let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} слов`;
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
+        }
+    }
+
+    async loadTranslations() {
+        let langs = ["en", "ru"];
+        for (let lang of langs) {
+            let json = await (await fetch(`localization/${lang}.json`)).text();
+            i18n.loadJSON(json, 'messages');
         }
     }
 }
