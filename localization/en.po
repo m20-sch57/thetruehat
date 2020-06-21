@@ -169,7 +169,7 @@ msgid "Строгий режим"
 msgstr "Strict mode"
 
 msgid "Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным."
-msgstr "Deathmatch for professional gamers 😊. Round is over when time expires, no chance for the final guess."
+msgstr "Deathmatch for professional gamers 😊. Round is over when extra time expires. If final guess missed or absent, last word becomes unsolved."
 
 msgid "Применить"
 msgstr "Apply"
