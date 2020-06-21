@@ -63,5 +63,9 @@
     "слово": [
         "word",
         "words"
-    ]
+    ],
+    "Вы уверены, что хотите завершить игру?": "Are you sure you want to finish the game?",
+    " Игра закончится, и вы сможете посмотреть результаты.": " You will see the results.",
+    " Игра закончится в конце текущего раунда.": " The game will finish at the end of the round.",
+    "Только хост может закончить игру": "The host only can finish the game"
 }

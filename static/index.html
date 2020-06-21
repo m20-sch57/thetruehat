@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.9, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"> -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
-    <link rel="shortcut icon" href="hat.png">
+    <link rel="shortcut icon" href="hat2.png">
 
     <title>Шляпа</title>
     <script src="socket.io/socket.io.js"></script>
@@ -15,11 +15,6 @@
 </head>
 <body>
     <div class="page" id="mainPage" style="display: none;">
-        <!-- <div id="mainPage_actions">
-            <button id="mainPage_createRoom" gt gt-text="Создать"></button>
-            <button id="mainPage_joinRoom" gt gt-text="Войти"></button>
-            <button id="mainPage_viewHelp" name="helpButton"></button>
-        </div> -->
         <div id="mainPage_actions">
             <button id="mainPage_createRoom" gt gt-text>
                 Создать
@@ -28,13 +23,20 @@
             </button>
             <button id="mainPage_viewHelp" name="helpButton"></button>
         </div>
+        <div id="mainPage_languages">
+            <button class="flat-button" id="mainPage_ru">
+                <img src="img/rus.png">
+            </button><button class="flat-button" id="mainPage_en">
+                <img src="img/eng.png">
+            </button>
+        </div>
     </div>
     <div class="page" id="joinPage" style="display: none;">
         <button class="white-bubble go-back" id="joinPage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
+            <span src="svg/feedback.svg" name="svg"></span>
         </button>
         <div class="content-small">
             <div id="joinPage_header">
@@ -62,17 +64,17 @@
     </div>
     <div class="page" id="preparationPage" style="display: none;">
         <button class="white-bubble go-back" id="preparationPage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
+            <span src="svg/feedback.svg" name="svg"></span>
         </button>
         <div class="content-small">
             <div id="preparationPage_header">
                 <div id="preparationPage_titleSettings">
                     <span id="preparationPage_title">
                     </span><button class="flat-button" id="preparationPage_openSettings">
-                        <span class="fa fa-cog"></span>
+                        <span src="svg/settings.svg" name="svg"></span>
                     </button>
                 </div>
                 <button class="small-button bg-blue" id="preparationPage_copyKey" gt gt-text>
@@ -101,10 +103,10 @@
     </div>
     <div class="page" id="gameSettingsPage" style="display: none;">
         <button class="white-bubble go-back" id="gameSettingsPage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
+            <span src="svg/feedback.svg" name="svg"></span>
         </button>
         <div class="content-small">
             <div id="gameSettingsPage_header">
@@ -119,7 +121,8 @@
                             <span id="gameSettingsPage_wordNumberText" gt gt-text>
                                 Количество слов в шляпе
                             </span>
-                            <span class="fa fa-info-circle info" id="gameSettingsPage_wordNumberInfo">
+                            <span class="info" id="gameSettingsPage_wordNumberInfo">
+                                <span src="svg/info.svg" name="svg"></span>
                                 <div class="arrow"></div>
                             </span>
                             <div class="popup-hint" id="gameSettingsPage_wordNumberHint" gt gt-text>
@@ -133,7 +136,8 @@
                             <span id="gameSettingsPage_delayTimeText" gt gt-text>
                                 Время на подготовку
                             </span>
-                            <span class="fa fa-info-circle info" id="gameSettingsPage_delayTimeInfo">
+                            <span class="info" id="gameSettingsPage_delayTimeInfo">
+                                <span src="svg/info.svg" name="svg"></span>
                                 <div class="arrow"></div>
                             </span>
                             <div class="popup-hint" id="gameSettingsPage_delayTimeHint" gt gt-text>
@@ -147,7 +151,8 @@
                             <span id="gameSettingsPage_explanationTimeText" gt gt-text>
                                 Время на объяснение
                             </span>
-                            <span class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo">
+                            <span class="info" id="gameSettingsPage_explanationTimeInfo">
+                                <span src="svg/info.svg" name="svg"></span>
                                 <div class="arrow"></div>
                             </span>
                             <div class="popup-hint" id="gameSettingsPage_explanationTimeHint" gt gt-text>
@@ -161,21 +166,23 @@
                             <span id="gameSettingsPage_aftermathTimeText" gt gt-text>
                                 Время на последнюю попытку
                             </span>
-                            <span class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo">
+                            <span class="info" id="gameSettingsPage_aftermathTimeInfo">
+                                <span src="svg/info.svg" name="svg"></span>
                                 <div class="arrow"></div>
                             </span>
                             <div class="popup-hint" id="gameSettingsPage_aftermathTimeHint" gt gt-text>
                                 В течение этого времени отгадывающий может озвучить последнюю версию.
                             </div>
                         </div>
-                        <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField"  name="type.number">
+                        <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField" name="type.number">
                     </div>
                     <div class="layer" id="gameSettingsPage_dictionarySelection">
                         <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
                             <span id="gameSettingsPage_dictionarySelectionText" gt gt-text>
                                 Словарь
                             </span>
-                            <span class="fa fa-info-circle info" id="gameSettingsPage_dictionarySelectionInfo">
+                            <span class="info" id="gameSettingsPage_dictionarySelectionInfo">
+                                <span src="svg/info.svg" name="svg"></span>
                                 <div class="arrow"></div>
                             </span>
                             <div class="popup-hint" id="gameSettingsPage_dictionarySelectionHint" gt gt-text>
@@ -189,12 +196,15 @@
                     </div>
                     <div class="layer" id="gameSettingsPage_strictMode">
                         <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">
-                        <label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
+                        <label for="gameSettingsPage_strictModeCheckbox">
+                            <span src="svg/check.svg" name="svg"></span>
+                        </label>
                         <label>
                             <span id="gameSettingsPage_strictModeText" gt gt-text>
                                 Строгий режим
                             </span>
-                            <span class="fa fa-info-circle info" id="gameSettingsPage_strictModeInfo">
+                            <span class="info" id="gameSettingsPage_strictModeInfo">
+                                <span src="svg/info.svg" name="svg"></span>
                                 <div class="arrow"></div>
                             </span>
                             <div class="popup-hint" id="gameSettingsPage_strictModeHint" gt gt-text>
@@ -215,37 +225,43 @@
     </div>
     <div class="page" id="gamePage" style="display: none;">
         <button class="white-bubble go-back" id="gamePage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
+            <span src="svg/feedback.svg" name="svg"></span>
         </button>
-        <div id="gamePage_hatPicture"></div>
-        <div id="gamePage_hatText">
-            <span id="gamePage_wordsCnt"></span> <span id="gamePage_wordsInHat"></span>
+        <div src="svg/hat_words_small.svg" id="gamePage_hatSvg" name="svg">
         </div>
         <div class="content-small">
             <div id="gamePage_header">
-                <h1 class="game-title" id="gamePage_waitTitle" style="display: none;" gt gt-text>
-                    Подготовка
+                <div id="gamePage_gameActions">
+                    <button class="white-bubble action" id="gamePage_leave">
+                        <span src="svg/exit_left.svg" name="svg"></span>
+                    </button>
+                    <button class="white-bubble action" id="gamePage_volume">
+                        <span id="gamePage_volumeOn" src="svg/volume_on.svg" name="svg"></span>
+                        <span id="gamePage_volumeOff" src="svg/volume_off.svg" name="svg" style="display: none;"></span>
+                    </button>
+                    <button class="white-bubble action" id="gamePage_finish">
+                        <span src="svg/flag_check.svg" name="svg"></span>
+                    </button>
+                </div>
+                <h1 id="gamePage_status">
+                    <span id="gamePage_waitTitle" style="display: none;" gt gt-text>Подготовка</span>
+                    <span id="gamePage_explanationTitle" style="display: none;" gt gt-text>Идёт объяснение</span>
+                    <span id="gamePage_speakerTitle" style="display: none;" gt gt-text>Ты объясняешь</span>
+                    <span id="gamePage_listenerTitle" style="display: none;" gt gt-text>Ты отгадываешь</span>
+                    <span id="gamePage_editTitle" style="display: none;" gt gt-text>Редактирование раунда</span>
                 </h1>
-                <h1 class="game-title" id="gamePage_explanationTitle" style="display: none;" gt gt-text>
-                    Идёт объяснение
-                </h1>
-                <h1 class="game-title" id="gamePage_speakerTitle" style="display: none;" gt gt-text>
-                    Ты объясняешь
-                </h1>
-                <h1 class="game-title" id="gamePage_listenerTitle" style="display: none;" gt gt-text>
-                    Ты отгадываешь
-                </h1>
-                <h1 class="game-title" id="gamePage_editTitle" style="display: none;" gt gt-text>
-                    Редактирование раунда
-                </h1>
+                <h2 id="gamePage_additionalStatus" style="display: none;">
+                    <span id="gamePage_additionalStatusListener"></span>
+                    <span id="gamePage_additionalStatusText" gt gt-text>отгадывает</span>
+                </h2>
             </div>
             <div id="gamePage_body">
                 <div id="gamePage_speakerListener" style="display: none;">
                     <div id="gamePage_speakerBox">
                         <h1 id="gamePage_speakerLabel">
-                            <span class="fa fa-microphone"></span>
+                            <span src="svg/microphone.svg" name="svg" id="gamePage_speakerIcon"></span>
                             <span id="gamePage_speaker"></span>
                         </h1>
                         <p id="gamePage_speakerHint" gt gt-text>
@@ -258,7 +274,7 @@
                         </p>
                         <h1 id="gamePage_listenerLabel">
                             <span id="gamePage_listener"></span>
-                            <span class="fa fa-headphones"></span>
+                            <span src="svg/headphones.svg" name="svg" id="gamePage_listenerIcon"></span>
                         </h1>
                     </div>
                 </div>
@@ -319,10 +335,10 @@
     </div>
     <div class="page" id="resultsPage" style="display: none;">
         <button class="white-bubble go-back" id="resultsPage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble view-help" name="helpButton">
         </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
+            <span src="svg/feedback.svg" name="svg"></span>
         </button>
         <div class="content-small">
             <div id="resultsPage_header">
@@ -352,9 +368,9 @@
     </div>
     <div class="page" id="helpPage" style="display: none;">
         <button class="white-bubble go-back" id="helpPage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble feedback" name="feedbackButton">
-            <span class="fa fa-comment-dots"></span>
+            <span src="svg/feedback.svg" name="svg"></span>
         </button>
         <div class="content-large">
             <div id="helpPage_header">
@@ -379,7 +395,7 @@
     </div>
     <div class="page" id="feedbackPage" style="display: none;">
         <button class="white-bubble go-back" id="feedbackPage_goBack">
-            <span class="fa fa-chevron-left"></span>
+            <span src="svg/arrow_left.svg" name="svg"></span>
         </button><button class="white-bubble view-help" name="helpButton">
         </button>
         <div class="content-medium">
@@ -393,7 +409,9 @@
                 <textarea class="default-textarea" id="feedbackPage_textarea" gt gt-placeholder="Оставьте свой комментарий здесь"></textarea>
                 <div id="feedbackPage_clientInfo">
                     <input type="checkbox" id="feedbackPage_clientInfoCheckbox" checked>
-                    <label for="feedbackPage_clientInfoCheckbox"><span class="fa fa-check"></span></label>
+                    <label for="feedbackPage_clientInfoCheckbox">
+                        <span src="svg/check.svg" name="svg"></span>
+                    </label>
                     <label id="feedbackPage_clientInfoHint" gt gt-text>
                         Отправить дополнительные сведения
                     </label>
@@ -413,6 +431,7 @@
     <audio src="sounds/final+.mp3" id="final+"></audio>
     <audio src="sounds/countdown.mp3" id="countdown" shift="-100"></audio>
     <script src="version.js"></script>
+    <script src="hat_words.js"></script>
     <script src="config.js"></script>
     <script src="main.js"></script>
 </body>

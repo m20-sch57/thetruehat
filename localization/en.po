@@ -195,3 +195,15 @@ msgstr ""
 msgid "слово"
 msgstr[0] "word"
 msgstr[1] "words"
+
+msgid "Вы уверены, что хотите завершить игру?"
+msgstr "Are you sure you want to finish the game?"
+
+msgid " Игра закончится, и вы сможете посмотреть результаты."
+msgstr " You will see the results."
+
+msgid " Игра закончится в конце текущего раунда."
+msgstr " The game will finish at the end of the round."
+
+msgid "Только хост может закончить игру"
+msgstr "The host only can finish the game"

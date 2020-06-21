@@ -268,6 +268,8 @@ class Template {
 class Sound {
     constructor () {
         this.currentSound = false;
+        this.isMuted = false;
+        this.volume = 1;
     }
 
     killSound() {
@@ -275,6 +277,26 @@ class Sound {
             this.currentSound.pause();
             this.currentSound = false;
         }
+    }
+
+    updateVolume() {
+        if (this.currentSound) {
+            if (this.isMuted) {
+                this.currentSound.volume = 0;
+            } else {
+                this.currentSound.volume = this.volume;
+            }
+        }
+    }
+
+    setVolume(volume) {
+        this.volume = volume;
+        this.updateVolume();
+    }
+
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        this.updateVolume();
     }
 
     playSound(sound, startTime, stopCondition) {
@@ -287,12 +309,14 @@ class Sound {
                 if (stopCondition()) return;
                 this.killSound();
                 this.currentSound = el(sound);
+                this.updateVolume();
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime <
                 el(sound).duration * 1000){
             this.killSound();
             this.currentSound = el(sound);
+            this.updateVolume();
             this.currentSound.currentTime = (timeSync.getTime() - startTime) /
                 1000;
             this.currentSound.play();
@@ -408,6 +432,7 @@ class Game {
         this.renderPlayersList();
         // this.renderPlayersCnt();
         this.renderHost();
+        this.renderHostActions();
         this.renderEditList();
         this.renderResults();
         this.renderSettings();
@@ -450,6 +475,15 @@ class Game {
     renderHost() {
         if (this.host) {
             el(`user_${this.host}`).classList.add("host");
+        } else {
+        }
+    }
+
+    renderHostActions() {
+        if (this.isHost) {
+            show("gamePage_finish");
+        } else {
+            hide("gamePage_finish");
         }
     }
 
@@ -470,13 +504,13 @@ class Game {
     }
 
     renderWordsCount() {
-        el("gamePage_wordsCnt").innerText = this.wordsCount;
-        el("gamePage_wordsInHat").innerText = _("слово", this.wordsCount);
+        setValue(this.wordsCount, this.app.lang);
     }
 
     renderSpeakerListener() {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
+        el("gamePage_additionalStatusListener").innerText = this.listener;
     }
 
     changeWordState(word, state) {
@@ -527,6 +561,10 @@ class App {
             this.pages.go(["joinPage"]);
         } else {
             this.pages.go(["mainPage"]);
+        }
+
+        if (localStorage.volume && localStorage.volume == "off") {
+            this.toggleVolume();
         }
 
         this.prepareGettext();
@@ -637,9 +675,11 @@ class App {
         hide("gamePage_listenerReady");
         show("gamePage_speakerReadyButton");
         hide("gamePage_speakerReady");
+        enable("gamePage_finish");
 
         let page = ["gamePage_speakerListener"];
         if (this.game.myRole == "speaker") {
+            // page.push("gamePage_additionalStatus");
             page.push("gamePage_speakerReadyBox");
             page.push("gamePage_speakerTitle");
         } else if (this.game.myRole == "listener") {
@@ -654,10 +694,12 @@ class App {
     async renderExplanationPage({startTime}) {
         let roundId = this.game.roundId;
         setTimeout(async () => {
+            disable("gamePage_finish");
             if (this.game.roundId != roundId) return;
             let page = ["gamePage_explanationDelayBox"];
             if (this.game.myRole == "speaker") {
                 page.push("gamePage_speakerTitle");
+                page.push("gamePage_additionalStatus");
             } else if (this.game.myRole == "listener") {
                 page.push("gamePage_listenerTitle");
             } else {
@@ -669,7 +711,7 @@ class App {
             if (this.game.roundId != roundId) return;
             if (this.game.myRole == "speaker") {
                 this.gamePages.go(["gamePage_explanationBox",
-                    "gamePage_speakerTitle"]);
+                    "gamePage_speakerTitle", "gamePage_additionalStatus"]);
             } else if (this.game.myRole == "listener") {
                 this.gamePages.go(["gamePage_speakerListener",
                     "gamePage_observerBox", "gamePage_listenerTitle"]);
@@ -686,6 +728,7 @@ class App {
     }
 
     renderEditPage() {
+        disable("gamePage_finish");
         if (this.game.myRole == "speaker") {
             this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
             el("gamePage_editListScrollable").scrollTop = 0;
@@ -693,16 +736,16 @@ class App {
         } else {
             this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
             el("gamePage_editConfirm").classList.remove("shadow");
-            el("gamePage_editTitle").classList.remove("shadow");
+            el("gamePage_status").classList.remove("shadow");
         }
     }
 
     editPageUpdateShadows() {
         let elem = el("gamePage_editListScrollable");
         if (elem.scrollTop == 0) {
-            el("gamePage_editTitle").classList.remove("shadow");
+            el("gamePage_status").classList.remove("shadow");
         } else {
-            el("gamePage_editTitle").classList.add("shadow");
+            el("gamePage_status").classList.add("shadow");
         }
         if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
             el("gamePage_editConfirm").classList.remove("shadow");
@@ -962,8 +1005,33 @@ class App {
         settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
         settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex;
-        localStorage.settings = settings;
         this.emit("cApplySettings", {settings});
+    }
+
+    toggleVolume() {
+        hide("gamePage_volumeOn");
+        hide("gamePage_volumeOff");
+        this.sound.toggleMute();
+        if (this.sound.isMuted) {
+            show("gamePage_volumeOff");
+        } else {
+            show("gamePage_volumeOn");
+        }
+        localStorage.volume = this.sound.isMuted ? "off" : "on";
+    }
+
+    finishGame() {
+        if (!this.game.isHost) {
+            console.error(_("Только хост может закончить игру"));
+            return;
+        }
+
+        // In English?
+        if (confirm(_("Вы уверены, что хотите завершить игру?")+ (this.game.state == "wait" ?
+            _(" Игра закончится, и вы сможете посмотреть результаты.") :
+            _(" Игра закончится в конце текущего раунда.")))) {
+            this.emit("cEndGame");
+        }
     }
 
     addHint(id) {
@@ -1022,6 +1090,8 @@ class App {
         this.socket.on("sYouJoined", data => {
             this.game.update(data);
             this.game.inGame = true;
+            this.game.state = data.state == "wait" ? "preparation" :
+                data.state == "play" ? data.substate : data.state;
             switch (data.state) {
             case "wait":
                 this.renderPreparationPage()
@@ -1060,11 +1130,13 @@ class App {
             this.game.update(data);
         })
         this.socket.on("sGameStarted", data => {
+            this.game.state = "wait";
             this.game.update(data);
             this.renderWaitPage();
             this.pages.go(["gamePage"]);
         })
         this.socket.on("sExplanationStarted", data => {
+            this.game.state = "explanation";
             this.renderExplanationPage(data);
             this.playExplanationSounds(data);
         })
@@ -1077,10 +1149,13 @@ class App {
             this.renderEditPage(data);
         })
         this.socket.on("sNextTurn", data => {
+            el("gamePage_status").classList.remove("shadow");
+            this.game.state = "wait";
             this.game.update(data);
             this.renderWaitPage();
         })
         this.socket.on("sWordExplanationEnded", data => {
+            this.game.state = "edit";
             this.game.update(data);
         })
         this.socket.on("sExplanationEnded", data => {
@@ -1089,6 +1164,9 @@ class App {
             this.renderEditPage();
         })
         this.socket.on("sGameEnded", data => {
+            enable("gamePage_finish");
+            el("gamePage_status").classList.remove("shadow");
+            this.game.state = "end";
             this.game.update(data);
             this.pages.go(["resultsPage"]);
             this.game.leave();
@@ -1141,6 +1219,9 @@ class App {
         el("gamePage_explanationMistake").onclick = () => this.emit(
             "cEndWordExplanation", {"cause": "mistake"});
         el("gamePage_goBack").onclick = () => this.leaveRoom();
+        el("gamePage_leave").onclick = () => this.leaveRoom();
+        el("gamePage_volume").onclick = () => this.toggleVolume();
+        el("gamePage_finish").onclick = () => this.finishGame();
         el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited",
             this.game.editedWordsObject());
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
@@ -1184,6 +1265,8 @@ class App {
             this.applySettings();
             this.pages.goBack();
         }
+        el("mainPage_ru").onclick = () => this.setLocale("ru");
+        el("mainPage_en").onclick = () => this.setLocale("en");
 
         // Adding settings hint
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
@@ -1198,10 +1281,20 @@ class App {
 
     async loadContent() {
         await this.loadPages();
+        await this.loadSvgs();
         await this.loadDictionaries();
         els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
         els("version").forEach((it) => it.innerText = VERSION);
+        this.game.renderWordsCount();
+    }
+
+    async loadSvgs() {
+        for (let curEl of els("svg")) {
+            let name = curEl.attributes["src"].nodeValue;
+            let response = await fetch(name);
+            curEl.innerHTML = await response.text();
+        }
     }
 
     async loadPages() {
