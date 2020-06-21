@@ -136,37 +136,40 @@ msgid "Настройки игры"
 msgstr "Game settings"
 
 msgid "Количество слов в шляпе"
-msgstr "Number of words in hat"
+msgstr "Total number of words"
 
 msgid "Когда слова закончатся, закончится и игра."
-msgstr ""
+msgstr "When words run out, the game ends."
 
 msgid "Время на подготовку"
-msgstr "Preparation time"
+msgstr "Readiness time"
 
 msgid "Время обратного отсчёта до начала раунда."
-msgstr ""
+msgstr "Countdown time before start of the round."
 
 msgid "Время на объяснение"
 msgstr "Explanation time"
 
 msgid "По окончании этого времени любое объяснение слов должно быть закончено."
-msgstr ""
+msgstr "Words explanations should be over when this time expires."
 
 msgid "Время на последнюю попытку"
-msgstr "Aftermath time"
+msgstr "Time for the final try"
 
 msgid "В течение этого времени отгадывающий может озвучить последнюю версию."
-msgstr ""
+msgstr "Guesser can fire his final suggestion during this time."
 
 msgid "Словарь"
 msgstr "Dictionary"
 
 msgid "Словарь определяет набор слов, из которых будут выбраны слова для этой партии."
-msgstr ""
+msgstr "Words for the game are randomly taken from particular dictionary."
 
 msgid "Строгий режим"
 msgstr "Strict mode"
+
+msgid "Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным."
+msgstr "Deathmatch for professional gamers 😊. Round is over when time expires, no chance for the final guess."
 
 msgid "Применить"
 msgstr "Apply"
@@ -188,9 +191,6 @@ msgstr "mistake"
 
 msgid "Оставьте свой комментарий здесь"
 msgstr "Leave your comment here"
-
-msgid "Режим для профессиональных шляпников 😊. По окончании всего времени раунд заканчивается, а последнее слово становится неугаданным."
-msgstr ""
 
 msgid "слово"
 msgstr[0] "word"
