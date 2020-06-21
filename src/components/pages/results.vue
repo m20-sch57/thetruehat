@@ -48,13 +48,15 @@ import hatHeader from "_/hatHeader.vue"
 export default {
 	computed: {
 		...mapState({
-			results: state => state.results
+			results: state => state.room.results
 		})
 	},
 	beforeRouteEnter: function(from, to, next) {
 		next(vm => {
-			if (!vm.$store.state.results) {
-				vm.$router.replace("/join");
+			if (!vm.$store.state.room.results) {
+				vm.$router.replace({path: "/join", query: vm.$route.query});
+			} else if (vm.$route.query.k != vm.$store.state.room.key) {
+				vm.$router.replace({query: {k: vm.$store.state.room.key}})
 			}
 		})
 	},

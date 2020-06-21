@@ -1,3 +1,6 @@
 <template>
-	<router-view></router-view>
-</template
+<div>
+	<router-view/>
+	<notifications/>
+</div>
+</template>

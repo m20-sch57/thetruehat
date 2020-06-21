@@ -96,7 +96,7 @@
 import { mapGetters, mapState } from 'vuex';
 
 import app from "__/app.js"
-import { animate, colorGradientRGB, stairs, timeSync, minSec, secMsec } from "__/lib"
+import { animate, colorGradientRGB, stairs, timeSync, minSec, secMsec, sound } from "__/lib"
 
 import speakerListener from "./boxes/speakerListener.vue"
 
@@ -117,7 +117,6 @@ export default {
 			listener: state => state.room.listener,
 			word: state => state.room.word,
 			startTime: state => state.room.startTime,
-			roundId: state => state.room.roundId,
 			settings: state => state.room.settings
 		}),
 		explanationTime: function() {
@@ -172,7 +171,7 @@ export default {
 					this.delayTimerBackground = `rgb(${gradient(progress).join()})`;
 				},
 				stopCondition: () => {
-					return this.roundId != roundId;
+					return roundId != this.$store.state.room.roundId;
 				}
 			})
 		},
@@ -185,7 +184,7 @@ export default {
 						stairs(1 - progress, this.settings.explanationTime / 1000) + 1;
 				},
 				stopCondition: () => {
-					return this.roundId != roundId;
+					return roundId != this.$store.state.room.roundId;
 				}
 			})
 			await animation;
@@ -200,7 +199,7 @@ export default {
 						stairs(1 - progress, this.settings.aftermathTime / 100) + 1;
 				},
 				stopCondition: () => {
-					return this.roundId != roundId;
+					return roundId != this.$store.state.room.roundId;
 				}
 			})
 			await animation;
@@ -208,10 +207,11 @@ export default {
 		}
 	},
 	mounted: function() {
-		let roundId = this.roundId;
+		let roundId = this.$store.state.room.roundId;
 		let delayStartTime = this.startTime - this.settings.delayTime;
 		let explanationStartTime = this.startTime;
 		let aftermathStartTime = this.startTime + this.settings.explanationTime;
+		let aftermathEndTime = aftermathStartTime + this.settings.aftermathTime;
         setTimeout(async () => {
 			this.state = "delay";
             await this.animateDelayTimer(delayStartTime, roundId);
@@ -220,7 +220,14 @@ export default {
 			await this.animateExplanationTimer(explanationStartTime, roundId);
 			this.state = "aftermath";
             await this.animateAftermathTimer(aftermathStartTime, roundId);
-        }, delayStartTime - timeSync.getTime());
+		}, delayStartTime - timeSync.getTime());
+        let stopCondition = () => roundId != this.$store.state.room.roundId
+        sound.playSound("start", explanationStartTime, stopCondition);
+        sound.playSound("final", aftermathStartTime, stopCondition);
+        sound.playSound("final+", aftermathEndTime, stopCondition);
+        for (let i = 1; i <= Math.floor(this.settings.delayTime / 1000); i++) {
+            sound.playSound("countdown", explanationStartTime - 1000 * i, stopCondition);
+        }
 	},
 	components: {speakerListener}
 }

@@ -25,7 +25,8 @@ const roomModule = {
 		wordsCount: null,
 		word: null,
 		editWords: null,
-		roundId: 0
+		roundId: 0,
+		results: null
 	},
 	mutations: {
 		leaveRoom(state) {
@@ -50,7 +51,7 @@ const roomModule = {
 			state.connection = "online";
 			set(["phase", "players", "host", "settings"])(state, payload);
 
-			if (payload.phase != "preparation") {
+			if (payload.phase != "preparation" && payload.phase != "end") {
 				set(["speaker", "listener", "wordsCount"])(state, payload);
 			}
 
@@ -71,7 +72,6 @@ const roomModule = {
 		},
 		explanationStarted(state, {startTime}) {
 			state.startTime = startTime;
-			state.roundId += 1;
 			state.phase = "explanation";
 		},
 		explanationEnded(state, {editWords}) {
@@ -86,6 +86,10 @@ const roomModule = {
 			state.phase = "wait";
 			set(["speaker", "listener", "wordsCount"])(state, payload);
 			state.editWords = null;
+			state.roundId += 1;
+		},
+		setResults(state, {results}) {
+			state.results = results
 		},
 		setPlayers: set("players"),
 		setHost: set("host"),
@@ -116,15 +120,7 @@ const roomModule = {
 }
 
 export default new Vuex.Store({
-	state: {
-		results: null
-	},
 	modules: {
 		room: roomModule
-	},
-	mutations: {
-		setResults(state, {results}) {
-			state.results = results
-		}
 	}
 })

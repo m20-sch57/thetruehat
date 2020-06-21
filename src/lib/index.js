@@ -1,5 +1,4 @@
-export * from "./warning.js"
+export * from "./other.js"
 export * from "./timeSync.js"
 export * from "./animate.js"
-export * from "./last.js"
-export * from "./timeFormat.js"
+export * from "./sound.js"

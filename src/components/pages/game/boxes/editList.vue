@@ -3,7 +3,6 @@
 	<div
 		v-for="(word, id) of words"
 		:key="id"
-		:id="`editPage_word_${word}`"
 		class="edit-item">
 		<h1 class="word">
 			{{ word.word }}

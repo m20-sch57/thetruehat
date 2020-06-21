@@ -28,4 +28,4 @@ class TimeSync {
     }
 }
 
-export let timeSync = new TimeSync();
+export const timeSync = new TimeSync();

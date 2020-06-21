@@ -4,7 +4,7 @@
 	<div class="content-small">
 		<div id="joinPage_header">
 			<input
-				v-model="key"
+				v-model.trim="key"
 				class="large-underlined-input"
 				id="joinPage_inputKey"
 				spellcheck="false"
@@ -25,7 +25,7 @@
 		</div>
 		<div id="joinPage_body">
 			<input
-				v-model="username"
+				v-model.trim="username"
 				class="medium-input"
 				id="joinPage_inputName"
 				spellcheck="false"
@@ -36,9 +36,10 @@
 				class="medium-button bg-green"
 				id="joinPage_go">Поехали!</button>
 			<p
+				v-if="!validated"
 				class="hint"
-				id="joinPage_goHint"
-				style="display: none;">
+				id="joinPage_goHint">
+				{{ validationMsg }}
 			</p>
 		</div>
 	</div>
@@ -55,7 +56,9 @@ export default {
 	data: function() {
 		return {
 			username: "",
-			key: this.$route.query.k
+			key: this.$route.query.k,
+			validated: true,
+			validationMsg: ""
 		}
 	},
 	methods: {
@@ -66,10 +69,28 @@ export default {
 			this.key = await navigator.clipboard.readText();
 		},
 		enterRoom: function() {
-			app.joinRoom({
-				username: this.username,
-				key: this.key
-			})
+			this.validate();
+			if (this.validated) {
+				app.joinRoom({
+					username: this.username,
+					key: this.key
+				})
+			}
+		},
+		validate: function() {
+			if (!this.key) {
+				this.validationError("Пустой ключ комнаты - низзя");
+				return
+			}
+			if (!this.username) {
+				this.validationError("Нужно представиться");
+				return
+			}
+			this.validated = true;
+		},
+		validationError: function(msg) {
+			this.validated = false;
+			this.validationMsg = msg;
 		}
 	},
 	watch: {

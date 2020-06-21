@@ -1,6 +1,9 @@
+import Vue from "vue"
+
 import store from "./store.js"
 import router from "./router.js"
 import { timeSync } from "./lib"
+import { ERROR_TIMEOUT } from "./config.js"
 
 const getTime = () => timeSync.getTime()
 
@@ -180,6 +183,13 @@ class App {
 				store.commit("leaveRoom");
 				store.commit("setResults", data);
 				router.push("/results");
+			},
+
+			sFailure: data => {
+				Vue.notify({
+					msg: data.msg,
+					duration: ERROR_TIMEOUT
+				});
 			}
 		}
 
