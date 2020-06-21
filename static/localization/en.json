@@ -23,8 +23,8 @@
     "Ты объясняешь": "You explain",
     "Ты отгадываешь": "You guess",
     "Редактирование раунда": "Round editing",
-    "отгадывает": "guesses",
     "объясняет": "explains",
+    "отгадывает": "guesses",
     "Я готов объяснять": "I am ready to explain",
     "Я готов отгадывать": "I am ready to guess",
     "Подожди напарника": "Wait for partner",
@@ -63,5 +63,9 @@
     "слово": [
         "word",
         "words"
-    ]
+    ],
+    "Вы уверены, что хотите завершить игру?": "Are you sure you want to finish the game?",
+    " Игра закончится, и вы сможете посмотреть результаты.": " You will see the results.",
+    " Игра закончится в конце текущего раунда.": " The game will finish at the end of the round.",
+    "Только хост может закончить игру": "The host only can finish the game"
 }
