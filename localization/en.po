@@ -163,7 +163,7 @@ msgid "Словарь"
 msgstr "Dictionary"
 
 msgid "Словарь определяет набор слов, из которых будут выбраны слова для этой партии."
-msgstr "Words for the game are randomly taken from particular dictionary."
+msgstr "Words for the game are randomly taken from this particular dictionary."
 
 msgid "Строгий режим"
 msgstr "Strict mode"
