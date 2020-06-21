@@ -542,6 +542,7 @@ class App {
         this.connected = false;
         this.settings = {};
         this.appLog = [];
+        this.svgCache = {};
 
         this.socket = io.connect(window.location.origin,
             {"path": window.location.pathname + "socket.io"});
@@ -574,9 +575,7 @@ class App {
             } else {
                 this.setLocale("ru");
             }
-        }).then(() => {
-            this.loadContent();
-        });
+        })
         this.helpPages.go(["helpPage_rulesBox"]);
     }
 
@@ -1292,8 +1291,13 @@ class App {
     async loadSvgs() {
         for (let curEl of els("svg")) {
             let name = curEl.attributes["src"].nodeValue;
-            let response = await fetch(name);
-            curEl.innerHTML = await response.text();
+            if (!this.svgCache[name]) {
+                console.log("load", name)
+                let response = await fetch(name);
+                let svg = await response.text();
+                this.svgCache[name] = svg;
+            }
+            curEl.innerHTML = this.svgCache[name];
         }
     }
 
