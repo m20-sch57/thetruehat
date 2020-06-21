@@ -2,7 +2,12 @@
 
 "use strict"
 
+const fetch = require("@lounres/flex_node_fetch").fetch;
+
 const config = require("./config.json");
+const version = require("./version.json");
+
+const mapOutcome = config.mapOutcome;
 
 const argv = require("yargs")
     .option('pidfile', {
@@ -218,8 +223,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
  */
 function startExplanation(key) {
     rooms[key].substate = "explanation";
-    const date = new Date();
-    const currentTime = date.getTime();
+    const currentTime = (new Date()).getTime();
     rooms[key].startTime = currentTime + (rooms[key].settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
 
@@ -236,7 +240,10 @@ function startExplanation(key) {
         }, (rooms[key].settings.delayTime + rooms[key].settings.explanationTime + rooms[key].settings.aftermathTime + TRANSFER_TIME));
     }
     setTimeout(() => Signals.sNewWord(key), TRANSFER_TIME);
-    Signals.sExplanationStarted(key)
+    rooms[key].explStartMainTime = rooms[key].startTime;
+    rooms[key].explStartExtraTime = rooms[key].startTime + rooms[key].settings.explanationTime;
+    rooms[key].explanationRecords.push([]);
+    Signals.sExplanationStarted(key);
 }
 
 /**
@@ -262,6 +269,14 @@ function finishExplanation(key) {
             "wordState": "notExplained",
             "transfer": true
         });
+        const currentTime = (new Date()).getTime()
+        rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1].push({
+            "from": rooms[key].speaker,
+            "to": rooms[key].listener,
+            "word": rooms[key].word,
+            "time": currentTime - rooms[key].explStartMainTime,
+            "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+        });
     }
 
     rooms[key].startTime = 0;
@@ -286,6 +301,9 @@ function finishExplanation(key) {
  * @param key --- key of the room
  */
 function endGame(key) {
+    // recording time
+    rooms[key].end_timestamp = (new Date()).getTime();
+
     // preparing results
     let results = [];
     for (let i = 0; i < rooms[key].users.length; ++i) {
@@ -302,6 +320,9 @@ function endGame(key) {
 
     Signals.sGameEnded(key, results)
 
+    // sending statistics
+    sendStat(Object.assign({}, rooms[key]));
+
     // removing room
     delete rooms[key];
 
@@ -314,6 +335,41 @@ function endGame(key) {
     });
 }
 
+/**
+ * Send statistics
+ *
+ * @param room --- room object
+ */
+function sendStat(room) {
+    let sendObject = {};
+    sendObject.version = config.protocolVersion;
+    sendObject.app = {
+        "name": config.appName,
+        "version": version.version
+    };
+    sendObject.mode = config.mode;
+    sendObject.start_timestamp = room.start_timestamp;
+    sendObject.end_timestamp = room.end_timestamp;
+    sendObject.player_time_zone_offsets = room.users.map(el => el.time_zone_offset);
+    sendObject.attempts = [];
+    for (let i = 0; i < room.explanationRecords.length; ++i) {
+        for (let j = 0; j < room.explanationRecords[i].length; ++j) {
+            room.explanationRecords[i][j].time -= room.explanationRecords[i][j].extra_time;
+            sendObject.attempts.push(room.explanationRecords[i][j]);
+        }
+    }
+    
+    // sending data
+    console.log("Send:");
+    console.log(sendObject);
+    try {
+        fetch(Object.assign({}, config.statSendConfig, {"data": sendObject}));
+    } catch (err) {
+        console.warn(err);
+    }
+}
+
+//----------------------------------------------------------
 
 class Signals {
     /**
@@ -669,6 +725,11 @@ app.get("/getRoomInfo", function(req, res) {
  *     - startTime --- UTC time of start of explanation (in milliseconds).
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
+ *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info, but `time` is `time` plus `extra_time`)
+ *     - start_timestamp --- start timestamp
+ *     - end_timestamp --- end timestamp
+ *     - explStartMainTime --- start timestamp of word explanation
+ *     - explStartExtraTime --- start timestamp of extra time
  */
 class Room {
     constructor() {
@@ -696,6 +757,7 @@ class Room {
         const numberOfPlayers = this.users.length;
         this.speaker = numberOfPlayers - 1;
         this.listener = numberOfPlayers - 2;
+        this.explanationRecords = [];
 
         this.roundPrepare()
     }
@@ -740,14 +802,16 @@ class Room {
  *     - online --- whether the player is online,
  *     - scoreExplained --- no comments,
  *     - scoreGuessed --- no comments,
+ *     - time_zone_offset --- no comments,
  */
 class User {
-    constructor(username, sids, online=true) {
+    constructor(username, sids, time_zone_offset, online=true) {
         this.username = username;
         this.sids = sids;
         this.online = online;
         this.scoreExplained = 0;
         this.scoreGuessed = 0;
+        this.time_zone_offset = time_zone_offset;
     }
 }
 
@@ -1114,6 +1178,7 @@ class Callbacks {
     static joinRoomCallback(socket, data, err) {
         const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
         const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
+        const time_zone_offset = data.time_zone_offset;
 
         // If any error happened
         if (err) {
@@ -1136,7 +1201,7 @@ class Callbacks {
         const pos = findFirstPos(rooms[key].users, "username", name);
         if (pos === -1) {
             // creating new one
-            rooms[key].users.push(new User(name, [socket.id]));
+            rooms[key].users.push(new User(name, [socket.id], time_zone_offset));
         } else {
             // logging in user
             rooms[key].users[pos].sids = [socket.id];
@@ -1246,12 +1311,17 @@ class Callbacks {
         // removing offline users
         rooms[key].users = onlineUsers;
 
+        // game preparation
         rooms[key].gamePrepare();
+
+        // recording time
+        rooms[key].start_timestamp = (new Date()).getTime();
 
         Signals.sGameStarted(key);
     }
 
     static cEndWordExplanation(socket, key, cause) {
+        const currentTime = (new Date()).getTime();
         switch (cause) {
             case "explained":
                 // logging the word
@@ -1259,6 +1329,13 @@ class Callbacks {
                     "word": rooms[key].word,
                     "wordState": "explained",
                     "transfer": true});
+                rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1].push({
+                    "from": rooms[key].speaker,
+                    "to": rooms[key].listener,
+                    "word": rooms[key].word,
+                    "time": currentTime - rooms[key].explStartMainTime,
+                    "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+                });
 
                 // removing the word from the 'word' container
                 rooms[key].word = "";
@@ -1278,6 +1355,9 @@ class Callbacks {
                     return;
                 }
 
+                // getting time
+                rooms[key].explStartMainTime = currentTime;
+
                 // emitting new word
                 rooms[key].word = rooms[key].freshWords.pop();
                 Signals.sNewWord(key)
@@ -1288,6 +1368,13 @@ class Callbacks {
                     "word": rooms[key].word,
                     "wordState": "mistake",
                     "transfer": true});
+                rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1].push({
+                    "from": rooms[key].speaker,
+                    "to": rooms[key].listener,
+                    "word": rooms[key].word,
+                    "time": currentTime - rooms[key].explStartMainTime,
+                    "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+                });
 
                 // word don't go to the hat
                 rooms[key].word = "";
@@ -1303,6 +1390,13 @@ class Callbacks {
                     "word": rooms[key].word,
                     "wordState": "notExplained",
                     "transfer": true});
+                rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1].push({
+                    "from": rooms[key].speaker,
+                    "to": rooms[key].listener,
+                    "word": rooms[key].word,
+                    "time": currentTime - rooms[key].explStartMainTime,
+                    "extra_time": (currentTime >= rooms[key].explStartExtraTime) ? currentTime - rooms[key].explStartExtraTime : 0
+                });
 
                 rooms[key].word = "";
 
@@ -1333,6 +1427,9 @@ class Callbacks {
                 case "mistake":
                     // transferring data to serer structure
                     rooms[key].editWords[i].wordState = editWords[i].wordState;
+                    rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1][findFirstPos(
+                        rooms[key].explanationRecords[rooms[key].explanationRecords.length - 1], "word", editWords[i].word
+                    )].outcome = mapOutcome[editWords[i].wordState];
                     break;
                 case "notExplained":
                     // returning not explained words to the hat
@@ -1431,7 +1528,7 @@ io.on("connection", function(socket) {
         }
 
         // Checking input format
-        if (!checkInputFormat(socket, data, {"key": "string", "username": "string"}, "cJoinRoom")) {
+        if (!checkInputFormat(socket, data, {"key": "string", "username": "string", "time_zone_offset": typeof(0)}, "cJoinRoom")) {
             return;
         }
 
