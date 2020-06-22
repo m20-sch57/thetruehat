@@ -977,7 +977,7 @@ class App {
         this.lang = lang;
         i18n.setLocale(lang);
         this.renderText();
-        await this.loadLanguageDependetContent();
+        await this.loadLanguageDependentContent();
         this.game.renderWordsCount();
     }
 
@@ -1299,8 +1299,9 @@ class App {
         await this.loadSvgs();
     }
 
-    async loadLanguageDependetContent() {
+    async loadLanguageDependentContent() {
         this.loadDictionaries();
+        this.loadHat();
         this.loadPages().then(() => {
             els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
             els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
@@ -1308,9 +1309,16 @@ class App {
         })
     }
 
+    async loadHat() {
+        let elem = el("gamePage_hatSvg");
+        let response = await fetch(elem.getAttribute("src"));
+        let svg = await response.text();
+        el("gamePage_hatSvg").innerHTML = svg;
+    }
+
     async loadSvgs() {
         const loaders = [...els("svg")].map(curEl => {
-            return this.loadFile(curEl.attributes["src"].nodeValue,
+            return this.loadFile(curEl.getAttribute("src"),
                 function(svg) {
                     curEl.innerHTML = svg;
             })
