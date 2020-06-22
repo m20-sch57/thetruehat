@@ -9,6 +9,9 @@ window.onload = function() {
             2px 2px 0px red, -2px 2px 0px red, -2px 2px 0px red, -2px -2px 0px red;
             `);
     }
+    if (ENV == STAGING) {
+        show("stagingMark");
+    }
     timeSync = new TimeSync(TIME_SYNC_DELTA);
     i18n=i18n();
     let _app = new App()
