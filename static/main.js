@@ -977,7 +977,7 @@ class App {
         this.lang = lang;
         i18n.setLocale(lang);
         this.renderText();
-        await this.loadLanguageDependetContent();
+        await this.loadLanguageDependentContent();
         this.game.renderWordsCount();
     }
 
@@ -1299,7 +1299,7 @@ class App {
         await this.loadSvgs();
     }
 
-    async loadLanguageDependetContent() {
+    async loadLanguageDependentContent() {
         this.loadDictionaries();
         this.loadHat();
         this.loadPages().then(() => {
