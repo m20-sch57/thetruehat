@@ -5,6 +5,9 @@ http://localhost:<port> {
 
     header / Cache-Control "private,max-age=3600,must-revalidate"
 
+    header /api Cache-Control no-store
+    header /socket.io Cache-Control no-store
+
     header /getTime {
         Cache-Control no-store
         X-Server-Timestamp {when_unix_ms}
