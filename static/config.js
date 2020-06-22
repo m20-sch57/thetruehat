@@ -3,7 +3,7 @@ const STAGING = "staging";
 const PROD = "prod";
 
 // Config
-const ENV = PROD;
+const ENV = DEVEL;
 
 const GLOBAL_APP_SCOPE = !(ENV == PROD);
 const DEBUG_OUTPUT = true;
