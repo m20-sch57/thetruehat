@@ -475,7 +475,6 @@ class Game {
     renderHost() {
         if (this.host) {
             el(`user_${this.host}`).classList.add("host");
-        } else {
         }
     }
 
@@ -809,36 +808,40 @@ class App {
         if (!(navigator.clipboard && navigator.clipboard.readText)) {
             disable("joinPage_pasteKey");
         } else {
-            navigator.permissions.query({"name": "clipboard-read"})
-            .then(result => {
-                if (result.state == "denied") {
-                    disable("joinPage_pasteKey");
-                }
-                result.onchange = function() {
-                    if (this.state == "denied") {
+            if (navigator.permissions) {
+                navigator.permissions.query({"name": "clipboard-read"})
+                .then(result => {
+                    if (result.state == "denied") {
                         disable("joinPage_pasteKey");
                     }
-                }
-            }).catch(err => {});
+                    result.onchange = function() {
+                        if (this.state == "denied") {
+                            disable("joinPage_pasteKey");
+                        }
+                    }
+                }).catch(err => {});
+            }
         }
         if (!(navigator.clipboard && navigator.clipboard.writeText)) {
             disable("preparationPage_copyKey");
             disable("preparationPage_copyLink");
         } else {
-            navigator.permissions.query({"name": "clipboard-write"})
-            .then(result => {
-                if (result.state == "denied") {
-                    disable("preparationPage_copyKey");
-                    disable("preparationPage_copyLink");
-                }
-                result.onchange = function() {
-                    console.log(this.state);
-                    if (this.state == "denied") {
+            if (navigator.permissions) {
+                navigator.permissions.query({"name": "clipboard-write"})
+                .then(result => {
+                    if (result.state == "denied") {
                         disable("preparationPage_copyKey");
                         disable("preparationPage_copyLink");
                     }
-                }
-            }).catch(err => {});
+                    result.onchange = function() {
+                        console.log(this.state);
+                        if (this.state == "denied") {
+                            disable("preparationPage_copyKey");
+                            disable("preparationPage_copyLink");
+                        }
+                    }
+                }).catch(err => {});
+            }
         }
     }
 
