@@ -1275,3 +1275,16 @@ svg {
     font-weight: lighter;
     line-height: 20px;
 }
+
+#stagingMark {
+    position: fixed;
+    bottom: -10px;
+    text-align: center;
+    width: 100%;
+    color: black;
+    font-size: 50px;
+    opacity: .2;
+    pointer-events: none;
+    z-index: 100;
+    user-select: none;
+}
