@@ -542,7 +542,6 @@ class App {
         this.connected = false;
         this.settings = {};
         this.appLog = [];
-        this.svgCache = {};
 
         this.socket = io.connect(window.location.origin,
             {"path": window.location.pathname + "socket.io"});
@@ -569,6 +568,7 @@ class App {
         }
 
         this.prepareGettext();
+        this.loadContent();
         this.loadTranslations().then(() => {
             if (localStorage.preferredLang) {
                 this.setLocale(localStorage.preferredLang);
@@ -964,14 +964,14 @@ class App {
         el("helpPage_newsOption").classList.remove("active");
     }
 
-    setLocale(lang) {
+    async setLocale(lang) {
         if (this.lang && lang == this.lang) return;
         localStorage.preferredLang = lang;
         this.lang = lang;
         i18n.setLocale(lang);
         this.renderText();
-        this.loadContent();
-        this.loadDictionaries()
+        await this.loadLanguageDependetContent();
+        this.game.renderWordsCount();
     }
 
     prepareGettext() {
@@ -1267,6 +1267,10 @@ class App {
         el("mainPage_ru").onclick = () => this.setLocale("ru");
         el("mainPage_en").onclick = () => this.setLocale("en");
 
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+        els("version").forEach((it) => it.innerText = VERSION);
+
         // Adding settings hint
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
             "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
@@ -1278,27 +1282,33 @@ class App {
         els("type.number").forEach(it => validateNumber(it.id));
     }
 
+    async loadFile(name, callback) {
+        let response = await fetch(name);
+        let data = await response.text();
+        callback(data)
+    }
+
     async loadContent() {
-        await this.loadPages();
         await this.loadSvgs();
-        await this.loadDictionaries();
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
-        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
-        els("version").forEach((it) => it.innerText = VERSION);
-        this.game.renderWordsCount();
+    }
+
+    async loadLanguageDependetContent() {
+        this.loadDictionaries();
+        this.loadPages().then(() => {
+            els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
+            els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+            els("version").forEach((it) => it.innerText = VERSION);
+        })
     }
 
     async loadSvgs() {
-        for (let curEl of els("svg")) {
-            let name = curEl.attributes["src"].nodeValue;
-            if (!this.svgCache[name]) {
-                console.log("load", name)
-                let response = await fetch(name);
-                let svg = await response.text();
-                this.svgCache[name] = svg;
-            }
-            curEl.innerHTML = this.svgCache[name];
-        }
+        const loaders = [...els("svg")].map(curEl => {
+            return this.loadFile(curEl.attributes["src"].nodeValue,
+                function(svg) {
+                    curEl.innerHTML = svg;
+            })
+        })
+        Promise.all(loaders);
     }
 
     async loadPages() {
@@ -1320,11 +1330,12 @@ class App {
                 "pageId": "helpPage_newsBox"
             }
         ];
-        for (let page of loadablePages) {
-            let response = (await fetch(page["pageFile"])).text();
-            let body = await response;
-            el(page["pageId"]).innerHTML = body;
-        }
+        const loaders = loadablePages.map(page => {
+            return this.loadFile(page.pageFile, function(body) {
+                el(page.pageId).innerHTML = body;
+            })
+        })
+        Promise.all(loaders);
     }
 
     async loadDictionaries() {
