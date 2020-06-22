@@ -1309,7 +1309,7 @@ class App {
                     curEl.innerHTML = svg;
             })
         })
-        Promise.all(loaders);
+        await Promise.all(loaders);
     }
 
     async loadPages() {
@@ -1336,7 +1336,7 @@ class App {
                 el(page.pageId).innerHTML = body;
             })
         })
-        Promise.all(loaders);
+        await Promise.all(loaders);
     }
 
     async loadDictionaries() {
