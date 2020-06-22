@@ -540,6 +540,10 @@ class Game {
 
 class App {
     constructor() {
+        this._constructor();
+    }
+
+    async _constructor() {
         this.debug = true;
         this.connected = false;
         this.settings = {};
@@ -571,14 +575,16 @@ class App {
 
         this.prepareGettext();
         this.loadContent();
-        this.loadTranslations().then(() => {
-            if (localStorage.preferredLang) {
-                this.setLocale(localStorage.preferredLang);
-            } else {
-                this.setLocale("ru");
-            }
-        })
-        this.helpPages.go(["helpPage_rulesBox"]);
+
+        await Promise.all([
+            this.loadHat(),
+            this.loadTranslations()
+        ]);
+        if (localStorage.preferredLang) {
+            this.setLocale(localStorage.preferredLang);
+        } else {
+            this.setLocale("ru");
+        }
     }
 
     log(data, level) {
@@ -1301,7 +1307,6 @@ class App {
 
     async loadLanguageDependentContent() {
         this.loadDictionaries();
-        this.loadHat();
         this.loadPages().then(() => {
             els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
             els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
