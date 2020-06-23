@@ -1130,6 +1130,11 @@ svg {
 
 /* Help page */
 
+#helpPage {
+    overflow-y: scroll;
+    height: 100vh;
+}
+
 #helpPage_header {
     width: 100%;
     text-align: center;
