@@ -947,7 +947,7 @@ class App {
         if (collectBrowserData) {
             this.addBrowserData(result);
         }
-        result.SID = app.socket.id;
+        result.SID = this.socket.id;
         result.version = VERSION;
         result.hash = HASH;
         result.message = message;
