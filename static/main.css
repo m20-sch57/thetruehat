@@ -1078,7 +1078,7 @@ svg {
     }
     #gamePage_editListScrollable {
         position: relative;
-        max-height: 400px;
+        max-height: 375px;
     }
 }
 

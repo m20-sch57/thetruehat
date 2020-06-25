@@ -471,7 +471,7 @@ class Game {
         this.app.renderText();
         // Fixed bug with padding in Firefox
         let eDiv = document.createElement("div");
-        eDiv.style.height = "15px";
+        eDiv.style.height = "30px";
         el("gamePage_editListScrollable").appendChild(eDiv);
     }
 
