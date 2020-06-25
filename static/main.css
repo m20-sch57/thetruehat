@@ -555,13 +555,8 @@ svg {
 }
 
 #preparationPage_openSettings {
-    margin-left: 10px;
     font-size: 30px;
-}
-
-#preparationPage_openSettings span {
-    width: 26px;
-    vertical-align: middle;
+    margin-left: 10px;
 }
 
 #preparationPage_copyKey {
