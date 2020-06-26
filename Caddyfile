@@ -3,7 +3,10 @@ http://localhost:<port> {
     log     <log_dir>/access.log
     errors  <error_dir>/errors.log
 
-    header / Cache-Control no-cache
+    header / Cache-Control "private,max-age=3600,must-revalidate"
+
+    header /api Cache-Control no-store
+    header /socket.io Cache-Control no-store
 
     header /getTime {
         Cache-Control no-store

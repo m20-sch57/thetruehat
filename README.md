@@ -5,7 +5,7 @@ TheTrueHat is a web-application for the game Alias. You can play the Alias with 
 This project supports a web-interface for the game, and a server that will took responsibility for all technical details.
 
 ## Play now!
-The beta test is available now [here](https://thetruehat.m20-sch57.site) and [here](https://m20-sch57.site/thetruehat).
+The game is available now [here](https://thetruehat.m20-sch57.site).
 
 ## Features
 * Cross-platform. You can set the server up on Windows, Linux and Mac OS X, and web-application supports Google Chrome (PC and Android), Mozilla Firefox (PC and Android) and latest Opera (PC and Android).
@@ -16,12 +16,12 @@ The beta test is available now [here](https://thetruehat.m20-sch57.site) and [he
 Warning. Don't use this instruction on production. See our [documentation](docs/main.md) before.
 
 ### Installation
-1. Install [Node.js](https://nodejs.org/)
-1. Install [Caddy v.1](https://caddyserver.com/v1/)
+1. Install [Node.js](https://nodejs.org/en/download/)
+1. Install [Caddy v.1](https://caddyserver.com/v1/download)
 1. Download the repository.
 1. Run in a console in the project directory:
     ```shell script
-    npm install
+    npm install --only=prod --no-fund
     ```
    
 ### Fast tuning
@@ -58,9 +58,12 @@ We want to express gratitude for their cooperation to [SIS.Hat project](https://
 ## License
 This project is available by [MIT license](LICENSE).
 
-## Used products    
+## Used products
 - [Caddy v.1](https://caddyserver.com/v1/)
+- [Node.js](https://nodejs.org/)
 - [Express](https://expressjs.com/)
 - [Socket.IO](https://socket.io/)
 - [body-parser](https://github.com/expressjs/body-parser#readme)
 - [yargs](https://yargs.js.org/)
+- [po2json](https://github.com/mikeedwards/po2json)
+- [gettext](https://github.com/guillaumepotier/gettext.js)
