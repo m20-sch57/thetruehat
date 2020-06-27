@@ -328,45 +328,150 @@ class Sound {
 }
 
 class Pages {
-    constructor(defaultPage) {
-        this.defaultPage = defaultPage || [];
-        this.pageLog = [];
-    }
+    constructor({defaultPage, pages}) {
+        this.pages = pages;
+        this.page = {};
+        this.context = "";
+        this.leaveStack = [];
 
-    hideLastPage() {
-        if (this.pageLog.length >= 1) {
-            this.pageLog.last().forEach(elem => {
-                hide(elem)
-            });
+        const fun = () => {};
+        const pageInterface = {
+            els: [],
+            classes: [],
+            styles: [],
+            onEnter: fun,
+            onLeave: fun,
+            render: fun
+        };
+
+        for (let pageName of Object.keys(pages)) {
+            if (["default"].indexOf(pageName) != -1) {
+                console.error(`Incorrect page name ${pageName}. This name is reserved.`);
+                continue;
+            }
+            if (pageName.startsWith("-")) {
+                console.error(`Incorrect page name  ${pageName}`);
+                continue;
+            }
+            if (typeof pages[pageName] == "string") {
+                this.pages[pageName] = {els: [pages[pageName]]};
+            } else if (Array.isArray(pages[pageName])) {
+                this.pages[pageName] = {els: pages[pageName]};
+            }
+            this.pages[pageName].name = pageName;
+            this.pages[pageName] = {...pageInterface, ...this.pages[pageName]}
         }
+
+        for (let pageName of Object.keys(pages)) {
+            this["$"+pageName] = {
+                replace: () => this.replace(pageName),
+                push: () => this.push(pageName)
+            }
+        }
+
+        this.registerPairedMethod("show", show, "hide", hide);
+        this.registerPairedMethod("disable", disable, "enable", enable);
+        const addClass = (elemId, _class) => el(elemId).classList.add(_class);
+        const removeClass = (elemId, _class) => el(elemId).classList.remove(_class);
+        this.registerPairedMethod("addClass", addClass, "removeClass", removeClass);
+        const addStyle = (elemId, styleName, value) => el(elemId).style[styleName] = value;
+        const removeStyle = (elemId, styleName, _, value) => el(elemId).style[styleName] = value || "";
+        this.registerPairedMethod("addStyle", addStyle, "removeStyle", removeStyle);
+
+        this.path = [];
+        this.pages.default = this.pages[defaultPage] || {name: "default", ...pageInterface};
+        this.push("default");
     }
 
-    showPage(page) {
-        page.forEach(elem =>{
-            show(elem);
-        })
+    pageByName(name) {
+        return this.pages[name];
+    }
+
+    leaveCurrentPage() {
+        this.withContext("leave", () => {
+            if (!this.currentPage) return;
+            this.currentPage.els.forEach(elem => {
+                hide(elem);
+            })
+            this.currentPage.classes.forEach(([elemId, _class]) => {
+                el(elemId).classList.remove(_class);
+            })
+            this.currentPage.styles.forEach(([elemId, styleName, _, value]) => {
+                el(elemId).style[styleName] = value;
+            })
+            while (this.leaveStack.length != 0) {
+                let [method, args] = this.leaveStack.pop();
+                method(...args);
+            }
+            this.currentPage.onLeave();
+        });
     }
 
     go(page) {
-        this.hideLastPage();
-        this.showPage(page);
-        this.pageLog.push(page);
+        this.withContext("enter", () => {
+            page.els.forEach(elem => {
+                show(elem);
+            })
+            page.classes.forEach(([elemId, _class]) => {
+                el(elemId).classList.add(_class);
+            })
+            page.styles.forEach(([elemId, styleName, value]) => {
+                el(elemId).style[styleName] = value || "";
+            })
+            page.render(this.page);
+            page.onEnter();
+            this.currentPage = page;
+        });
+    }
+
+    replace(pageName) {
+        let page = this.pageByName(pageName);
+        this.leaveCurrentPage()
+        this.go(page);
+    }
+
+    push(pageName) {
+        this.replace(pageName);
+        this.path.push(pageName);
     }
 
     goBack() {
-        this.hideLastPage();
-        this.pageLog.pop();
-        if (this.pageLog.length >= 1) {
-            this.showPage(this.pageLog.last());
+        this.leaveCurrentPage();
+        this.path.pop();
+        let previousPage;
+        if (this.path.length == 0) {
+            previousPage = this.pages.default
         } else {
-            this.pageLog = [[this.defaultPage]];
-            this.showPage(this.defaultPage);
+            previousPage = this.pageByName(this.path.last());
+        }
+        this.go(previousPage);
+        if (this.path.length == 0) {
+            this.path = ["default"];
         }
     }
 
     clear() {
-        this.hideLastPage();
-        this.pageLog = [];
+        this.leaveCurrentPage();
+        this.path = [];
+        this.currentPage = false;
+    }
+
+    withContext(context, f) {
+        let currentContext = this.context;
+        this.context = context;
+        f();
+        this.context = currentContext;
+    }
+
+    registerPairedMethod(firstMethodName, firstMethod, secondMethodName, secondMethod) {
+        this.page[firstMethodName] = (...args) => {
+            firstMethod(...args);
+            this.leaveStack.push([secondMethod, args]);
+        }
+        this.page[secondMethodName] = (...args) => {
+            secondMethod(...args);
+            this.leaveStack.push([firstMethod, args]);
+        }
     }
 }
 
@@ -436,6 +541,7 @@ class Game {
         // this.renderPlayersCnt();
         this.renderHost();
         this.renderHostActions();
+        this.renderStartAction();
         this.renderEditList();
         this.renderResults();
         this.renderSettings();
@@ -486,6 +592,24 @@ class Game {
             show("gamePage_finish");
         } else {
             hide("gamePage_finish");
+        }
+    }
+
+    renderStartAction() {
+        if (!this.isHost) {
+            hide("preparationPage_start")
+            hide("preparationPage_startHint");
+            show("preparationPage_startLabel");
+        } else {
+            show("preparationPage_start");
+            hide("preparationPage_startLabel");
+            if (this.players.length > 1) {
+                enable("preparationPage_start");
+                hide("preparationPage_startHint");
+            } else {
+                disable("preparationPage_start");
+                show("preparationPage_startHint");
+            }
         }
     }
 
@@ -553,20 +677,17 @@ class App {
             {"path": window.location.pathname + "socket.io"});
         this.sound = new Sound();
         this.game = new Game(this);
-        this.pages = new Pages(["mainPage"]);
-        this.gamePages = new Pages();
-        this.helpPages = new Pages();
 
-        this.helpPages.go(["helpPage_rulesBox"]);
+        this.initPages()
         this.setKey(readLocationHash());
         this.checkClipboard();
         this.setDOMEventListeners();
         this.setSocketioEventListeners();
 
         if (this.game.key != "") {
-            this.pages.go(["joinPage"]);
+            this.pages.$join.push()
         } else {
-            this.pages.go(["mainPage"]);
+            this.pages.$main.push()
         }
 
         if (localStorage.volume && localStorage.volume == "off") {
@@ -585,6 +706,137 @@ class App {
         } else {
             this.setLocale("ru");
         }
+    }
+
+    initPages() {
+        this.pages = new Pages({
+            defaultPage: "main",
+            pages: {
+                main: "mainPage",
+                join: "joinPage",
+                game: {
+                    els: ["gamePage"],
+                    onEnter: () => {
+                        this.sizeWord();
+                    }
+                },
+                results: "resultsPage",
+                settings: "gameSettingsPage",
+                feedback: "feedbackPage",
+                help: {
+                    els: ["helpPage"],
+                    onEnter: () => {
+                        document.body.style.overflowY = "scroll";
+                    },
+                    onLeave: () => {
+                        document.body.style.overflowY = "";
+                    }
+                },
+                preparation: {
+                    els: ["preparationPage"]
+                }
+            }
+        });
+
+        this.helpPages = new Pages({
+            defaultPage: "rules",
+            pages: {
+                rules: {
+                    els: ["helpPage_rulesBox"],
+                    classes: [["helpPage_rulesOption", "active"]]
+                },
+                faq: {
+                    els: ["helpPage_faqBox"],
+                    classes: [["helpPage_faqOption", "active"]]
+                },
+                about: {
+                    els: ["helpPage_aboutBox"],
+                    classes: [["helpPage_aboutOption", "active"]]
+                },
+                news: {
+                    els: ["helpPage_newsBox"],
+                    classes: [["helpPage_newsOption", "active"]]
+                }
+            }
+        });
+
+        this.gamePages = new Pages({
+            pages: {
+                wait: {
+                    els: ["gamePage_speakerListener"],
+                    onEnter: () => {
+                        show("gamePage_listenerReadyButton");
+                        show("gamePage_speakerReadyButton");
+                        hide("gamePage_listenerReady");
+                        hide("gamePage_speakerReady");
+                    },
+                    render: (p) => {
+                        p.enable("gamePage_finish");
+                        if (this.game.myRole == "speaker") {
+                            p.show("gamePage_speakerReadyBox");
+                            p.show("gamePage_speakerTitle");
+                        } else if (this.game.myRole == "listener") {
+                            p.show("gamePage_listenerReadyBox");
+                            p.show("gamePage_listenerTitle");
+                        } else {
+                            p.show("gamePage_waitTitle");
+                        }
+                    }
+                },
+                explanationDelay: {
+                    els: ["gamePage_explanationDelayBox"],
+                    render: (p) => {
+                        if (this.game.myRole == "speaker") {
+                            p.show("gamePage_speakerTitle");
+                            p.show("gamePage_additionalStatus");
+                        } else if (this.game.myRole == "listener") {
+                            p.show("gamePage_listenerTitle");
+                        } else if (this.game.myRole == "speaker") {
+                            p.show("gamePage_explanationTitle");
+                        }
+                    }
+                },
+                explanation: {
+                    render: (p) => {
+                        if (this.game.myRole == "speaker") {
+                            p.show("gamePage_explanationBox");
+                            p.show("gamePage_speakerTitle");
+                            p.show("gamePage_additionalStatus");
+                        } else if (this.game.myRole == "listener") {
+                            p.show("gamePage_speakerListener");
+                            p.show("gamePage_observerBox");
+                            p.show("gamePage_listenerTitle");
+                        } else {
+                            p.show("gamePage_speakerListener");
+                            p.show("gamePage_observerBox");
+                            p.show("gamePage_explanationTitle");
+                        }
+                    },
+                    onEnter: () => {
+                        this.sizeWord();
+                    }
+                },
+                edit: {
+                    els: ["gamePage_editTitle"],
+                    render: (p) => {
+                        if (this.game.myRole == "speaker") {
+                            p.show("gamePage_editBox");
+                        } else {
+                            p.show("gamePage_speakerListener")
+                        }
+                    },
+                    onEnter: () => {
+                        el("gamePage_editConfirm").classList.remove("shadow");
+                        el("gamePage_status").classList.remove("shadow");
+                        el("gamePage_editListScrollable").scrollTop = 0;
+                    },
+                    onLeave: () => {
+                        el("gamePage_editConfirm").classList.remove("shadow");
+                        el("gamePage_status").classList.remove("shadow");
+                    }
+                }
+            }
+        });
     }
 
     log(data, level) {
@@ -611,7 +863,7 @@ class App {
 
     leaveRoom() {
         this.pages.clear();
-        this.pages.go(["joinPage"]);
+        this.pages.$join.push();
         this.game.leave();
         this.emit("cLeaveRoom");
     }
@@ -619,7 +871,7 @@ class App {
     leaveResultsPage() {
         this.game.leave();
         this.pages.clear();
-        this.pages.go(["joinPage"]);
+        this.pages.$join.push();
     }
 
     setKey(value) {
@@ -658,108 +910,19 @@ class App {
         }
     }
 
-    renderPreparationPage() {
-        if (this.game.isHost) {
-            show("preparationPage_start");
-            hide("preparationPage_startLabel");
-            show("preparationPage_openSettings");
-        } else {
-            hide("preparationPage_start");
-            show("preparationPage_startLabel");
-            hide("preparationPage_openSettings");
-        }
-        if (this.game.players.length > 1) {
-            enable("preparationPage_start");
-            hide("preparationPage_startHint");
-        } else {
-            disable("preparationPage_start");
-            show("preparationPage_startHint");
-        }
-        hide("joinPage_goHint");
-    }
 
-    renderWaitPage() {
-        show("gamePage_listenerReadyButton");
-        hide("gamePage_listenerReady");
-        show("gamePage_speakerReadyButton");
-        hide("gamePage_speakerReady");
-        enable("gamePage_finish");
-
-        let page = ["gamePage_speakerListener"];
-        if (this.game.myRole == "speaker") {
-            // page.push("gamePage_additionalStatus");
-            page.push("gamePage_speakerReadyBox");
-            page.push("gamePage_speakerTitle");
-        } else if (this.game.myRole == "listener") {
-            page.push("gamePage_listenerReadyBox");
-            page.push("gamePage_listenerTitle");
-        } else {
-            page.push("gamePage_waitTitle");
-        }
-        this.gamePages.go(page);
-    }
-
-    async renderExplanationPage({startTime}) {
+    async startExplanation({startTime}) {
         let roundId = this.game.roundId;
         setTimeout(async () => {
-            disable("gamePage_finish");
-            if (this.game.roundId != roundId) return;
-            let page = ["gamePage_explanationDelayBox"];
-            if (this.game.myRole == "speaker") {
-                page.push("gamePage_speakerTitle");
-                page.push("gamePage_additionalStatus");
-            } else if (this.game.myRole == "listener") {
-                page.push("gamePage_listenerTitle");
-            } else {
-                page.push("gamePage_explanationTitle")
-            }
-            this.gamePages.go(page);
-            await this.animateDelayTimer(startTime -
-                this.game.settings.delayTime, roundId);
-            if (this.game.roundId != roundId) return;
-            if (this.game.myRole == "speaker") {
-                this.gamePages.go(["gamePage_explanationBox",
-                    "gamePage_speakerTitle", "gamePage_additionalStatus"]);
-            } else if (this.game.myRole == "listener") {
-                this.gamePages.go(["gamePage_speakerListener",
-                    "gamePage_observerBox", "gamePage_listenerTitle"]);
-            } else {
-                this.gamePages.go(["gamePage_speakerListener",
-                    "gamePage_observerBox", "gamePage_explanationTitle"]);
-            }
-            this.sizeWord();
-            await this.animateExplanationTimer(startTime, roundId)
-            this.animateAftermathTimer(startTime +
-                this.game.settings.explanationTime, roundId);
-
-        }, startTime - timeSync.getTime() - this.game.settings.delayTime);
-    }
-
-    renderEditPage() {
-        disable("gamePage_finish");
-        if (this.game.myRole == "speaker") {
-            this.gamePages.go(["gamePage_editBox", "gamePage_editTitle"]);
-            el("gamePage_editListScrollable").scrollTop = 0;
-            this.editPageUpdateShadows();
-        } else {
-            this.gamePages.go(["gamePage_speakerListener", "gamePage_editTitle"]);
-            el("gamePage_editConfirm").classList.remove("shadow");
-            el("gamePage_status").classList.remove("shadow");
-        }
-    }
-
-    editPageUpdateShadows() {
-        let elem = el("gamePage_editListScrollable");
-        if (elem.scrollTop == 0) {
-            el("gamePage_status").classList.remove("shadow");
-        } else {
-            el("gamePage_status").classList.add("shadow");
-        }
-        if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
-            el("gamePage_editConfirm").classList.remove("shadow");
-        } else {
-            el("gamePage_editConfirm").classList.add("shadow");
-        }
+            const delayStartTime = startTime - this.game.settings.delayTime;
+            const explanationStartTime = startTime;
+            const aftermathStartTime = startTime + this.game.settings.explanationTime;
+            this.gamePages.$explanationDelay.push();
+            await this.animateDelayTimer(delayStartTime, roundId);
+            this.gamePages.$explanation.push();
+            await this.animateExplanationTimer(explanationStartTime, roundId)
+            this.animateAftermathTimer(aftermathStartTime, roundId);
+        }, delayStartTime - timeSync.getTime());
     }
 
     playExplanationSounds({startTime}) {
@@ -773,6 +936,82 @@ class App {
             this.game.settings.aftermathTime, stopCondition);
         for (let i = 1; i <= Math.floor(this.game.settings.delayTime / 1000); i++) {
             this.sound.playSound("countdown", startTime - 1000 * i, stopCondition);
+        }
+    }
+
+    async animateDelayTimer(startTime, roundId) {
+        let gradient = colorGradientRGB(DELAY_COLORS);
+        await animate({
+            startTime,
+            duration: this.game.settings.delayTime,
+            draw: (progress) => {
+                let sec = stairs(1 - progress,
+                    this.game.settings.delayTime / 1000) + 1;
+                el("gamePage_explanationDelayTimer").innerText = sec;
+                el("gamePage_explanationDelayTimer").style.background =
+                    `rgb(${gradient(progress).join()})`;
+            },
+            stopCondition: () => {
+                return this.game.roundId != roundId;
+            }
+        })
+    }
+
+    async animateExplanationTimer(startTime, roundId) {
+        el("gamePage_explanationTimer").classList.remove("timer-aftermath");
+        el("gamePage_observerTimer").classList.remove("timer-aftermath");
+        let animation = animate({
+            startTime,
+            duration: this.game.settings.explanationTime,
+            draw: (progress) => {
+                let sec = stairs(1 - progress,
+                    this.game.settings.explanationTime / 1000) + 1;
+                let time = minSec(sec);
+                el("gamePage_explanationTimer").innerText = time;
+                el("gamePage_observerTimer").innerText = time;
+            },
+            stopCondition: () => {
+                return this.game.roundId != roundId;
+            }
+        })
+        await animation;
+        el("gamePage_explanationTimer").innerText = "00:00";
+        el("gamePage_observerTimer").innerText = "00:00";
+    }
+
+    async animateAftermathTimer(startTime, roundId) {
+        el("gamePage_explanationTimer").classList.add("timer-aftermath");
+        el("gamePage_observerTimer").classList.add("timer-aftermath");
+        let animation =  animate({
+            startTime,
+            duration: this.game.settings.aftermathTime,
+            draw: (progress) => {
+                let msec = stairs(1 - progress,
+                    this.game.settings.aftermathTime / 100) + 1;
+                let time = secMsec(msec);
+                el("gamePage_explanationTimer").innerText = time;
+                el("gamePage_observerTimer").innerText = time;
+            },
+            stopCondition: () => {
+                return this.game.roundId != roundId;
+            }
+        })
+        await animation;
+        el("gamePage_explanationTimer").innerText = "0.0";
+        el("gamePage_observerTimer").innerText = "0.0";
+    }
+
+    editPageUpdateShadows() {
+        let elem = el("gamePage_editListScrollable");
+        if (elem.scrollTop == 0) {
+            el("gamePage_status").classList.remove("shadow");
+        } else {
+            el("gamePage_status").classList.add("shadow");
+        }
+        if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
+            el("gamePage_editConfirm").classList.remove("shadow");
+        } else {
+            el("gamePage_editConfirm").classList.add("shadow");
         }
     }
 
@@ -843,7 +1082,6 @@ class App {
                         disable("preparationPage_copyLink");
                     }
                     result.onchange = function() {
-                        console.log(this.state);
                         if (this.state == "denied") {
                             disable("preparationPage_copyKey");
                             disable("preparationPage_copyLink");
@@ -864,68 +1102,6 @@ class App {
         this.emit("cSpeakerReady");
         hide("gamePage_speakerReadyButton");
         show("gamePage_speakerReady");
-    }
-
-    async animateDelayTimer(startTime, roundId) {
-        let gradient = colorGradientRGB(DELAY_COLORS);
-        await animate({
-            startTime,
-            duration: this.game.settings.delayTime,
-            draw: (progress) => {
-                let sec = stairs(1 - progress,
-                    this.game.settings.delayTime / 1000) + 1;
-                el("gamePage_explanationDelayTimer").innerText = sec;
-                el("gamePage_explanationDelayTimer").style.background =
-                    `rgb(${gradient(progress).join()})`;
-            },
-            stopCondition: () => {
-                return this.game.roundId != roundId;
-            }
-        })
-    }
-
-    async animateExplanationTimer(startTime, roundId) {
-        el("gamePage_explanationTimer").classList.remove("timer-aftermath");
-        el("gamePage_observerTimer").classList.remove("timer-aftermath");
-        let animation = animate({
-            startTime,
-            duration: this.game.settings.explanationTime,
-            draw: (progress) => {
-                let sec = stairs(1 - progress,
-                    this.game.settings.explanationTime / 1000) + 1;
-                let time = minSec(sec);
-                el("gamePage_explanationTimer").innerText = time;
-                el("gamePage_observerTimer").innerText = time;
-            },
-            stopCondition: () => {
-                return this.game.roundId != roundId;
-            }
-        })
-        await animation;
-        el("gamePage_explanationTimer").innerText = "00:00";
-        el("gamePage_observerTimer").innerText = "00:00";
-    }
-
-    async animateAftermathTimer(startTime, roundId) {
-        el("gamePage_explanationTimer").classList.add("timer-aftermath");
-        el("gamePage_observerTimer").classList.add("timer-aftermath");
-        let animation =  animate({
-            startTime,
-            duration: this.game.settings.aftermathTime,
-            draw: (progress) => {
-                let msec = stairs(1 - progress,
-                    this.game.settings.aftermathTime / 100) + 1;
-                let time = secMsec(msec);
-                el("gamePage_explanationTimer").innerText = time;
-                el("gamePage_observerTimer").innerText = time;
-            },
-            stopCondition: () => {
-                return this.game.roundId != roundId;
-            }
-        })
-        await animation;
-        el("gamePage_explanationTimer").innerText = "0.0";
-        el("gamePage_observerTimer").innerText = "0.0";
     }
 
     failedToJoin(msg) {
@@ -968,13 +1144,6 @@ class App {
             body: JSON.stringify(feedback)
         });
         this.pages.goBack();
-    }
-
-    deactivateHelpOptions() {
-        el("helpPage_rulesOption").classList.remove("active");
-        el("helpPage_faqOption").classList.remove("active");
-        el("helpPage_aboutOption").classList.remove("active");
-        el("helpPage_newsOption").classList.remove("active");
     }
 
     async setLocale(lang) {
@@ -1106,22 +1275,21 @@ class App {
                 data.state == "play" ? data.substate : data.state;
             switch (data.state) {
             case "wait":
-                this.renderPreparationPage()
-                this.pages.go(["preparationPage"]);
+                this.pages.$preparation.push();
                 break;
             case "play":
-                this.pages.go(["gamePage"]);
+                this.pages.$game.push();
                 switch(data.substate) {
                 case "wait":
-                    this.renderWaitPage();
+                    this.gamePages.$wait.push();
                     break;
                 case "explanation":
                     this.setWord(data.word);
-                    this.renderExplanationPage(data);
+                    this.startExplanation(data);
                     this.playExplanationSounds(data);
                     break;
                 case "edit":
-                    this.renderEditPage()
+                    this.gamePages.$edit.push();
                     break;
                 }
                 break;
@@ -1132,11 +1300,9 @@ class App {
         })
         this.socket.on("sPlayerJoined", data => {
             this.game.update(data);
-            this.renderPreparationPage();
         })
         this.socket.on("sPlayerLeft", data => {
             this.game.update(data);
-            this.renderPreparationPage()
         })
         this.socket.on("sNewSettings", data => {
             this.game.update(data);
@@ -1144,27 +1310,25 @@ class App {
         this.socket.on("sGameStarted", data => {
             this.game.state = "wait";
             this.game.update(data);
-            this.renderWaitPage();
-            this.pages.go(["gamePage"]);
+            this.gamePages.$wait.push();
+            this.pages.$game.push();
         })
         this.socket.on("sExplanationStarted", data => {
             this.game.state = "explanation";
-            this.renderExplanationPage(data);
+            this.startExplanation(data);
             this.playExplanationSounds(data);
         })
         this.socket.on("sNewWord", data => {
             this.setWord(data.word);
         })
         this.socket.on("sWordsToEdit", data => {
-            //Pages.go(Pages.edit.speaker);
             this.game.update(data);
-            this.renderEditPage(data);
+            this.gamePages.$edit.push();
         })
         this.socket.on("sNextTurn", data => {
-            el("gamePage_status").classList.remove("shadow");
             this.game.state = "wait";
             this.game.update(data);
-            this.renderWaitPage();
+            this.gamePages.$wait.push();
         })
         this.socket.on("sWordExplanationEnded", data => {
             this.game.state = "edit";
@@ -1173,14 +1337,12 @@ class App {
         this.socket.on("sExplanationEnded", data => {
             this.game.update(data);
             this.game.roundId += 1;
-            this.renderEditPage();
+            this.gamePages.$edit.push();
         })
         this.socket.on("sGameEnded", data => {
-            enable("gamePage_finish");
-            el("gamePage_status").classList.remove("shadow");
             this.game.state = "end";
             this.game.update(data);
-            this.pages.go(["resultsPage"]);
+            this.pages.$results.push();
             this.game.leave();
         })
         this.socket.on("sFailure", data =>  {
@@ -1202,11 +1364,11 @@ class App {
     setDOMEventListeners() {
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
-            this.pages.go(["joinPage"]);
+            this.pages.$join.push();
         }
         el("mainPage_joinRoom").onclick = () => {
             el("joinPage_inputKey").value = this.game.key;
-            this.pages.go(["joinPage"]);
+            this.pages.$join.push()
         }
         el("joinPage_goBack").onclick = () => this.pages.goBack();
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
@@ -1239,35 +1401,27 @@ class App {
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
             this.generateKey();
-            this.pages.go(["joinPage"]);
+            this.pages.$join.push()
         }
         el("helpPage_goBack").onclick = () => this.pages.goBack();
         el("helpPage_rulesOption").onclick = () => {
-            this.deactivateHelpOptions();
-            el("helpPage_rulesOption").classList.add("active");
-            this.helpPages.go(["helpPage_rulesBox"]);
+            this.helpPages.$rules.push()
         }
         el("helpPage_faqOption").onclick = () => {
-            this.deactivateHelpOptions();
-            el("helpPage_faqOption").classList.add("active");
-            this.helpPages.go(["helpPage_faqBox"]);
+            this.helpPages.$faq.push();
         }
         el("helpPage_aboutOption").onclick = () => {
-            this.deactivateHelpOptions();
-            el("helpPage_aboutOption").classList.add("active");
-            this.helpPages.go(["helpPage_aboutBox"]);
+            this.helpPages.$about.push();
         }
         el("helpPage_newsOption").onclick = () => {
-            this.deactivateHelpOptions();
-            el("helpPage_newsOption").classList.add("active");
-            this.helpPages.go(["helpPage_newsBox"]);
+            this.helpPages.$news.push();
         }
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
         el("failureClose").onclick = hideError;
         el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
         el("preparationPage_openSettings").onclick =
-            () => this.pages.go(["gameSettingsPage"]);
+            () => this.pages.$settings.push();
         el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
         el("gameSettingsPage_revertButton").onclick = () => {
             this.game.renderSettings();
@@ -1280,8 +1434,8 @@ class App {
         el("mainPage_ru").onclick = () => this.setLocale("ru");
         el("mainPage_en").onclick = () => this.setLocale("en");
 
-        els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
-        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+        els("helpButton").forEach((it) => it.onclick = () => this.pages.$help.push());
+        els("feedbackButton").forEach((it) => it.onclick = () => this.pages.$feedback.push());
         els("version").forEach((it) => it.innerText = VERSION);
 
         // Adding settings hint
@@ -1308,8 +1462,8 @@ class App {
     async loadLanguageDependentContent() {
         this.loadDictionaries();
         this.loadPages().then(() => {
-            els("helpButton").forEach((it) => it.onclick = () => this.pages.go(["helpPage"]));
-            els("feedbackButton").forEach((it) => it.onclick = () => this.pages.go(["feedbackPage"]));
+            els("helpButton").forEach((it) => it.onclick = () => this.pages.$help.push());
+            els("feedbackButton").forEach((it) => it.onclick = () => this.pages.$feedback.push());
             els("version").forEach((it) => it.innerText = VERSION);
         })
     }
