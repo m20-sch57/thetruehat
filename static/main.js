@@ -826,8 +826,7 @@ class App {
                         }
                     },
                     onEnter: () => {
-                        el("gamePage_editConfirm").classList.remove("shadow");
-                        el("gamePage_status").classList.remove("shadow");
+                        this.editPageUpdateShadows();
                         el("gamePage_editListScrollable").scrollTop = 0;
                     },
                     onLeave: () => {
@@ -913,10 +912,10 @@ class App {
 
     async startExplanation({startTime}) {
         let roundId = this.game.roundId;
+        const delayStartTime = startTime - this.game.settings.delayTime;
+        const explanationStartTime = startTime;
+        const aftermathStartTime = startTime + this.game.settings.explanationTime;
         setTimeout(async () => {
-            const delayStartTime = startTime - this.game.settings.delayTime;
-            const explanationStartTime = startTime;
-            const aftermathStartTime = startTime + this.game.settings.explanationTime;
             this.gamePages.$explanationDelay.push();
             await this.animateDelayTimer(delayStartTime, roundId);
             this.gamePages.$explanation.push();
