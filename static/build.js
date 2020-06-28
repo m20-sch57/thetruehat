@@ -1980,10 +1980,9 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue_
   !*** ./src/version.js ***!
   \************************/
 /*! exports provided: VERSION, HASH */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"VERSION\", function() { return VERSION; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"HASH\", function() { return HASH; });\nconst VERSION = \"v1.0.125\";\nconst HASH = \"g926a687\";\n\n\n\n//# sourceURL=webpack:///./src/version.js?");
+eval("throw new Error(\"Module build failed: Error: ENOENT: no such file or directory, open 'D:\\\\Documents\\\\Hub\\\\m20\\\\TheTrueHat\\\\rep\\\\src\\\\version.js'\");\n\n//# sourceURL=webpack:///./src/version.js?");
 
 /***/ }),
 
