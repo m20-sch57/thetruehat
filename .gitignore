@@ -437,4 +437,4 @@ src/version.js
 version.json
 
 # index bundle
-src/index.html
+static/index.html
