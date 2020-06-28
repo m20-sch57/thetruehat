@@ -18,7 +18,7 @@
 	<div
 		v-if="!hideHat && wordsCounter"
 		id="gamePage_hatSvg">
-		<hat-svg></hat-svg>
+		<hat-counter></hat-counter>
 	</div>
 </div>
 </template>
@@ -26,10 +26,10 @@
 <script>
 import arrowLeftSvg from "__/assets/svg/arrow_left.svg"
 import feedbackSvg from "__/assets/svg/feedback.svg"
-import hatSvg from "__/assets/svg/hat_words_small.svg"
+import hatCounter from "_/hatCounter.vue"
 
 export default {
 	props: ["hideHat", "wordsCounter"],
-	components: {arrowLeftSvg, feedbackSvg, hatSvg}
+	components: {arrowLeftSvg, feedbackSvg, hatCounter}
 }
 </script>

@@ -24,6 +24,15 @@ module.exports = {
 			}, {
 				test: /\.svg$/,
 				loader: 'vue-svg-loader',
+				options: {
+					svgo: {
+						plugins: [
+							{cleanupIDs: false},
+							{removeHiddenElems: false},
+							{convertStyleToAttrs: false}
+						]
+					}
+				}
 			},
 		]
 	},

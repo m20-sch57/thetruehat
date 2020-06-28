@@ -556,6 +556,11 @@ svg {
 
 #preparationPage_openSettings {
     font-size: 30px;
+}
+
+#preparationPage_openSettings span {
+    width: 26px;
+    vertical-align: middle;
     margin-left: 10px;
 }
 
@@ -745,6 +750,10 @@ svg {
 
 /* Game page */
 
+#gamePage .content-small {
+    padding: 0 30px 0 30px;
+}
+
 #gamePage_hatSvg {
     position: absolute;
     top: 20px;
@@ -776,7 +785,6 @@ svg {
 #gamePage_header {
     width: 100%;
     text-align: center;
-    padding: 0 30px 0 30px;
 }
 
 #gamePage_status {
@@ -787,7 +795,7 @@ svg {
     font-weight: lighter;
 }
 
-#gamePage_status.shadow {
+#gamePage_header.shadow {
     position: relative;
     box-shadow: 0 5px 5px -5px grey;
     z-index: 3;
@@ -804,7 +812,6 @@ svg {
 #gamePage_body {
     flex-grow: 1;
     width: 100%;
-    padding: 0 30px 0 30px;
 }
 
 #gamePage_speakerListener {

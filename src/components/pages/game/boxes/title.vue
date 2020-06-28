@@ -18,7 +18,7 @@
 			</span>
 			<span
 				id="gamePage_listenerTitle"
-				v-if="myRole == 'listener'">
+				v-if="myRole == 'listener' && phase != 'edit'">
 				Ты отгадываешь
 			</span>
 			<span
