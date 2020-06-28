@@ -26,7 +26,7 @@
 			ошибка
 		</button>
 	</div>
-	<div style="height: 15px"></div>
+	<div style="height: 30px"></div>
 </div>
 </template>
 

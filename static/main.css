@@ -788,7 +788,6 @@ svg {
 }
 
 #gamePage_status {
-    padding-bottom: 10px;
     margin-top: 10px;
     margin-bottom: 0;
     font-size: 30px;
@@ -803,7 +802,7 @@ svg {
 
 #gamePage_additionalStatus {
     margin-top: -5px;
-    margin-bottom: 0;
+    margin-bottom: 15px;
     color: grey;
     font-size: 18px;
     font-weight: lighter;
