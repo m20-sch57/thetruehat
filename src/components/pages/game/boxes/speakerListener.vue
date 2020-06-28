@@ -2,7 +2,7 @@
 <div id="gamePage_speakerListener">
 	<div id="gamePage_speakerBox">
 		<h1 id="gamePage_speakerLabel">
-			<span class="fa fa-microphone"></span>
+			<span id="gamePage_speakerIcon"><microphone-svg/></span>
 			<span id="gamePage_speaker"> {{ speaker }} </span>
 		</h1>
 		<p id="gamePage_speakerHint">объясняет</p>
@@ -11,7 +11,7 @@
 		<p id="gamePage_listenerHint">отгадывает</p>
 		<h1 id="gamePage_listenerLabel">
 			<span id="gamePage_listener"> {{ listener }} </span>
-			<span class="fa fa-headphones"></span>
+			<span id="gamePage_listenerIcon"><headphones-svg/></span>
 		</h1>
 	</div>
 </div>
@@ -19,6 +19,8 @@
 
 <script>
 import { mapState } from 'vuex'
+import microphoneSvg from "__/assets/svg/microphone.svg"
+import headphonesSvg from "__/assets/svg/headphones.svg"
 
 export default {
 	computed: {
@@ -26,6 +28,7 @@ export default {
 			listener: state => state.room.listener,
 			speaker: state => state.room.speaker
 		})
-	}
+	},
+	components: {microphoneSvg, headphonesSvg}
 }
 </script>

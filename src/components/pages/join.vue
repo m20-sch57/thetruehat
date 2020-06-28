@@ -34,7 +34,9 @@
 			<button
 				@click="enterRoom"
 				class="medium-button bg-green"
-				id="joinPage_go">Поехали!</button>
+				id="joinPage_go">
+				Поехали!
+			</button>
 			<p
 				v-if="!validated"
 				class="hint"

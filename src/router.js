@@ -6,7 +6,7 @@ import joinPage from "_/pages/join.vue"
 import helpPage from "_/pages/help.vue"
 import feedbackPage from "_/pages/feedback.vue"
 import gamePage from "_/pages/game.vue"
-import gameSettings from "_/pages/game/settings.vue"
+import gameSettings from "_/pages/settings.vue"
 import resultsPage from "_/pages/results.vue"
 import notFoundPage from "_/pages/notFound.vue"
 

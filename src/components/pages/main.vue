@@ -16,5 +16,17 @@
 			@click="$router.push('/help/rules')">
 		</button>
 	</div>
+        <div id="mainPage_languages">
+            <button
+				class="flat-button"
+				id="mainPage_ru">
+                <img src="img/rus.png">
+            </button><!--
+		 --><button
+		 		class="flat-button"
+				id="mainPage_en">
+                <img src="img/eng.png">
+            </button>
+        </div>
 </div>
 </template>

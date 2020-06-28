@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="helpPage_newsBox">
 	<h1 id="helpPage_newsTitle">Новости</h1>
 
 	<h2 class="title">Настройки в студию, вы все этого просили</h2>

@@ -18,8 +18,9 @@
 						<span
 							:class="{active: hints.wordNumber}"
 							@click="showHint('wordNumber')"
-							class="fa fa-info-circle info"
+							class="info"
 							id="gameSettingsPage_wordNumberInfo">
+							<span><info-svg/></span>
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -38,8 +39,9 @@
 						<span
 							:class="{active: hints.delayTime}"
 							@click="showHint('delayTime')"
-							class="fa fa-info-circle info"
+							class="info"
 							id="gameSettingsPage_delayTimeInfo">
+							<span><info-svg/></span>
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -57,7 +59,8 @@
 						<span
 							:class="{active: hints.explanationTime}"
 							@click="showHint('explanationTime')"
-							class="fa fa-info-circle info" id="gameSettingsPage_explanationTimeInfo">
+							class="info" id="gameSettingsPage_explanationTimeInfo">
+							<span><info-svg/></span>
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -75,7 +78,8 @@
 						<span
 							:class="{active: hints.aftermathTime}"
 							@click="showHint('aftermathTime')"
-							class="fa fa-info-circle info" id="gameSettingsPage_aftermathTimeInfo">
+							class="info" id="gameSettingsPage_aftermathTimeInfo">
+							<span><info-svg/></span>
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -93,8 +97,9 @@
 						<span
 							:class="{active: hints.dictionaryId}"
 							@click="showHint('dictionaryId')"
-							class="fa fa-info-circle info"
+							class="info"
 							id="gameSettingsPage_dictionarySelectionInfo">
+							<span><info-svg/></span>
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -114,14 +119,15 @@
 						v-model="settings.strictMode"
 						type="checkbox"
 						id="gameSettingsPage_strictModeCheckbox">
-					<label for="gameSettingsPage_strictModeCheckbox"><span class="fa fa-check"></span></label>
+					<label for="gameSettingsPage_strictModeCheckbox"><span><check-svg/></span></label>
 					<label>
 						Строгий режим
 						<span
 							:class="{active: hints.strictMode}"
 							@click="showHint('strictMode')"
-							class="fa fa-info-circle info"
+							class="info"
 							id="gameSettingsPage_strictModeInfo">
+							<span><info-svg/></span>
 							<div class="arrow"></div>
 						</span>
 						<div class="popup-hint">
@@ -154,6 +160,8 @@ import hatHeader from "_/hatHeader.vue"
 import store from "__/store.js"
 import router from "__/router"
 import app from "__/app.js"
+import infoSvg from "__/assets/svg/info.svg"
+import checkSvg from "__/assets/svg/check.svg"
 
 function number(value, {caretPosition}) {
 	caretPosition = value.slice(0, caretPosition).replace(/\D+/g,"").length;
@@ -226,7 +234,7 @@ export default {
 			number, max: {filter: max(999), when: "blur"}
 		}
 	},
-	components: {hatHeader},
+	components: {hatHeader, infoSvg, checkSvg},
 	beforeRouteEnter: function(to, from, next) {
 		if (store.state.room.connection != "online") {
 			router.replace({path: "/join", query: {k: store.state.room.key, ...to.query}});

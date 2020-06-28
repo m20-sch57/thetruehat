@@ -1,11 +1,8 @@
 <template>
 <div class="page" id="gamePage">
 	<hat-header
-		:hat-picture="true"
+		:words-counter="phase != 'preparation'"
 		@go-back="goBack">
-		<template v-if="phase != 'preparation'">
-			Слов в шляпе: <span id="gamePage_wordsCnt"> {{wordsCount }} </span>
-		</template>
 	</hat-header>
 	<component :is="gamePage"></component>
 </div>

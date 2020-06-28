@@ -50,25 +50,19 @@ input[type=checkbox]:checked + label:hover {
 }
 
 input[type=checkbox] + label span {
-    display: none;
-    height: 17px;
+    height: 15px;
     width: 15px;
-    fill: white;
-    stroke: white;
     margin: auto;
+    font-size: 15px;
+    visibility: hidden;
 }
 
 input[type=checkbox]:checked + label span {
-    display: inline-block;
+    visibility: visible;
 }
 
 input[type=checkbox] + label + label {
     font-size: 20px;
-}
-
-svg {
-    height: inherit;
-    width: inherit;
 }
 
 /* Common classes */
@@ -159,20 +153,13 @@ svg {
 
 .flat-button {
     padding: 0;
-    --color: dimgrey;
-    color: var(--color);
-    fill: var(--color);
-    stroke: var(--color);
+    color: dimgrey;
     background-color: inherit;
     border: none;
-    font-size: inherit;
 }
 
 .flat-button:hover:enabled {
-    --color: rgb(33, 164, 216);
-    color: var(--color);
-    fill: var(--color);
-    stroke: var(--color);
+    color: rgb(33, 164, 216);
     cursor: pointer;
 }
 
@@ -264,32 +251,20 @@ svg {
 }
 
 .white-bubble {
-    --color: rgb(120, 120, 120);
-    color: var(--color);
-    fill: var(--color);
-    stroke: var(--color);
+    color: rgb(100, 100, 100);
     background-color: white;
     border-radius: 50%;
-    border: 1px solid rgb(160, 160, 160);
+    border: 1px solid grey;
     box-shadow: 0 0 3px grey;
 }
 
-.white-bubble:hover:enabled {
-    background-color: rgb(240, 240, 240);
+.white-bubble:hover {
+    background-color: rgb(233, 233, 233);
     box-shadow: 0 0 5px grey;
 }
 
-.white-bubble:active:enabled {
-    background-color: rgb(225, 225, 225);
-}
-
-.white-bubble:disabled {
-    --color: lightgrey;
-    color: var(--color);
-    fill: var(--color);
-    stroke: var(--color);
-    border: 1px solid var(--color);
-    box-shadow: none;
+.white-bubble:active {
+    background-color: lightgrey;
 }
 
 .go-back {
@@ -302,9 +277,9 @@ svg {
 }
 
 .go-back span {
-    height: 17px;
-    width: 17px;
+    padding-right: 4px;
     margin: auto;
+    font-size: 20px;
 }
 
 .view-help {
@@ -315,8 +290,8 @@ svg {
     width: 150px;
     font-size: 20px;
     padding-top: 50px;
-    background-image: url(img/hat.png);
-    background-size: 40%;
+    background-image: url(\hat.png);
+    background-size: 35%;
     background-position: center 85px;
     background-repeat: no-repeat;
 }
@@ -331,9 +306,8 @@ svg {
 }
 
 .feedback span {
-    height: 20px;
-    width: 20px;
     margin: auto;
+    font-size: 20px;
 }
 
 .faq-question {
@@ -399,7 +373,6 @@ svg {
     width: 100%;
     max-height: 800px;
     max-width: 400px;
-    padding: 30px;
     margin: auto;
 }
 
@@ -449,7 +422,7 @@ svg {
     box-shadow: 0 0 3px grey;
     z-index: 20;
     background-color: rgb(240, 234, 154);
-    background-image: url(img/hat.png);
+    background-image: url(\hat.png);
     background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
@@ -457,22 +430,6 @@ svg {
 
 #mainPage_viewHelp:hover {
     background-color: rgb(223, 216, 128);
-}
-
-#mainPage_languages {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-
-#mainPage_ru, #mainPage_en {
-    margin: 5px;
-}
-
-#mainPage_languages img {
-    height: 30px;
-    width: 40px;
-    border: 1px solid lightgrey;
 }
 
 @media (min-width: 1000px) {
@@ -557,11 +514,7 @@ svg {
 #preparationPage_openSettings {
     margin-left: 10px;
     font-size: 30px;
-}
-
-#preparationPage_openSettings span {
-    width: 26px;
-    vertical-align: middle;
+    font-weight: lighter;
 }
 
 #preparationPage_copyKey {
@@ -600,7 +553,7 @@ svg {
     height: 20px;
     width: 20px;
     margin-right: -20px;
-    background-image: url(img/hat.png);
+    background-image: url(\hat.png);
     background-size: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -644,6 +597,14 @@ svg {
     font-weight: lighter;
 }
 
+#gameSettingsPage_subtitle {
+    margin-top: -5px;
+    margin-bottom: 0;
+    color: grey;
+    font-size: 18px;
+    font-weight: lighter;
+}
+
 #gameSettingsPage_body {
     padding: 0 30px 30px 30px;
 }
@@ -666,30 +627,22 @@ svg {
 }
 
 #gameSettingsPage_layers .info {
-    --color: grey;
-    fill: var(--color);
-    stroke: var(--color);
-    line-height: 20px;
-    vertical-align: middle;
     position: relative;
+    color: grey;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
 }
 
 #gameSettingsPage_layers .info.active {
-    --color: rgb(33, 164, 216);
-    fill: var(--color);
-    stroke: var(--color);
-}
-
-#gameSettingsPage_layers .info span {
-    height: 20px;
+    color: rgb(33, 164, 216);
 }
 
 #gameSettingsPage_layers .info.active .arrow {
     position: absolute;
     top: 100%;
     left: 50%;
-    transform: translate(-50%, -15px);
+    transform: translate(-50%, -7px);
     border: 10px solid transparent;
     border-bottom-color: white;
     z-index: 2;
@@ -750,59 +703,43 @@ svg {
 
 /* Game page */
 
-#gamePage_hatSvg {
+#gamePage_hatPicture {
     position: absolute;
-    top: 20px;
-    left: calc(50% - 50px);
-    height: 100px;
-    width: 100px;
+    top: 10px;
+    left: calc(50% - 30px);
+    height: 60px;
+    width: 60px;
+    background-image: url(\hat.png);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-#gamePage_gameActions {
-    margin-top: 25px;
-    display: flex;
-    justify-content: center;
+#gamePage_hatText {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-#gamePage_gameActions .action {
-    display: flex;
-    height: 50px;
-    width: 50px;
-    margin: 10px;
-    flex-shrink: 0;
-}
-
-#gamePage_gameActions .action span {
-    margin: auto;
-    height: 25px;
-    width: 25px;
+#gamePage_wordsCnt {
+    font-style: italic;
+    font-weight: bold;
 }
 
 #gamePage_header {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
     width: 100%;
     text-align: center;
     padding: 0 30px 0 30px;
 }
 
-#gamePage_status {
+#gamePage_header .game-title {
     padding-bottom: 10px;
-    margin-top: 10px;
     margin-bottom: 0;
-    font-size: 30px;
-    font-weight: lighter;
-}
-
-#gamePage_header.shadow {
-    position: relative;
-    box-shadow: 0 5px 5px -5px grey;
-    z-index: 3;
-}
-
-#gamePage_additionalStatus {
-    margin-top: -5px;
-    margin-bottom: 0;
-    color: grey;
-    font-size: 18px;
+    font-size: 27px;
     font-weight: lighter;
 }
 
@@ -827,12 +764,6 @@ svg {
 #gamePage_speakerLabel {
     font-size: 20px;
     margin-bottom: 0;
-}
-
-#gamePage_speakerIcon {
-    height: 18px;
-    fill: black;
-    stroke: black;
 }
 
 #gamePage_speaker {
@@ -860,12 +791,6 @@ svg {
 #gamePage_listenerLabel {
     font-size: 20px;
     margin-top: 0;
-}
-
-#gamePage_listenerIcon {
-    height: 18px;
-    fill: black;
-    stroke: black;
 }
 
 #gamePage_listener {
@@ -937,7 +862,7 @@ svg {
     text-align: center;
     font-size: 30px;
     font-weight: lighter;
-    margin-top: -10px;
+    margin-top: 0;
     margin-bottom: auto;
     user-select: none;
 }
@@ -947,12 +872,12 @@ svg {
     width: 100%;
     margin-top: 20px;
     font-size: 30px;
-    border-radius: 38px;
+    border-radius: 15px;
 }
 
 #gamePage_explanationFailed {
     width: calc(50% + 0.5px);
-    border-radius: 26px;
+    border-radius: 15px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     margin-top: -1px;
@@ -960,11 +885,21 @@ svg {
 
 #gamePage_explanationMistake {
     width: calc(50% + 0.5px);
-    border-radius: 26px;
+    border-radius: 15px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     margin-top: -1px;
     margin-left: -1px;
+}
+
+#gamePage_editTitle {
+    width: 100%;
+    z-index: 1;
+}
+
+#gamePage_editTitle.shadow {
+     box-shadow: 0 5px 5px -5px grey;
+     z-index: 3;
 }
 
 #gamePage_editBox {
@@ -1061,7 +996,7 @@ svg {
 }
 
 #gamePage_editConfirm.shadow {
-    box-shadow: 0 -10px 10px -10px grey;
+     box-shadow: 0 -10px 10px -10px grey;
 }
 
 @media (min-width: 500px) {
@@ -1083,7 +1018,7 @@ svg {
     }
     #gamePage_editListScrollable {
         position: relative;
-        max-height: 400px;
+        max-height: 470px;
     }
 }
 

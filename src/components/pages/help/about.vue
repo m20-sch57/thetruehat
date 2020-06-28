@@ -1,7 +1,7 @@
 <template>
-<div>
+<div id="helpPage_aboutBox">
 	<h2 id="helpPage_aboutTitle">TheTrueHat</h2>
-	<h3 id="helpPage_aboutVersion">Игра в Шляпу <span name="version"></span></h3>
+	<h3 id="helpPage_aboutVersion">Игра в Шляпу <version/></h3>
 
 	<h3>Проект разработан школьниками класса m20 57-й школы:</h3>
 	<p>

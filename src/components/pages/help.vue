@@ -37,7 +37,9 @@
 				</button>
 			</div>
 		</div>
-		<div id="helpPage_body" :is="option"></div>
+		<div id="helpPage_body">
+			<component :is="option"/>
+		</div>
 	</div>
 </div>
 </template>

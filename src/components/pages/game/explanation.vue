@@ -1,25 +1,6 @@
 <template>
 <div class="content-small">
-	<div id="gamePage_header">
-		<h1
-			v-if="myRole == 'observere'"
-			class="game-title"
-			id="gamePage_waitTitle">
-			Идёт объяснение
-		</h1>
-		<h1
-			v-if="myRole == 'speaker'"
-			class="game-title"
-			id="gamePage_speakerTitle">
-			Ты объясняешь
-		</h1>
-		<h1
-			v-if="myRole == 'listener'"
-			class="game-title"
-			id="gamePage_listenerTitle">
-			Ты отгадываешь
-		</h1>
-	</div>
+	<game-head/>
 	<div id="gamePage_body">
 		<speaker-listener
 			v-if="(myRole == 'observer' || myRole == 'listener') && state != 'delay'">
@@ -99,6 +80,7 @@ import app from "__/app.js"
 import { animate, colorGradientRGB, stairs, timeSync, minSec, secMsec, sound } from "__/lib"
 
 import speakerListener from "./boxes/speakerListener.vue"
+import gameHead from "./boxes/head.vue"
 
 export default {
 	data: function() {
@@ -229,6 +211,6 @@ export default {
             sound.playSound("countdown", explanationStartTime - 1000 * i, stopCondition);
         }
 	},
-	components: {speakerListener}
+	components: {speakerListener, gameHead}
 }
 </script>

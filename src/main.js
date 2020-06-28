@@ -7,11 +7,19 @@ import view from "./view.vue"
 import router from "./router.js"
 import store from "./store.js"
 import app from "./app.js"
+import {VERSION, HASH} from "./version.js"
 
 import {userWarning, timeSync, sound} from "./lib"
 
 Vue.use(Filtrations);
 Vue.use(Notifications);
+
+Vue.component("version", {
+	functional: true,
+	render: function(createElement) {
+		return createElement("span", VERSION);
+	}
+})
 
 let vue = new Vue({
 	router,
@@ -30,6 +38,8 @@ if (config.DEBUG) {
 	window.router = router;
 	window.store = store;
 	window.sound = sound;
+	window.VERSION = VERSION;
+	window.HASH = HASH;
 }
 
 if (config.ENV == config.PROD) {

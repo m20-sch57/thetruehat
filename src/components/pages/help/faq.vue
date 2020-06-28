@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="helpPage_faqBox">
 	<h1 id="helpPage_faqTitle">Ответы на частые вопросы</h1>
 
 	<div id="helpPage_faqList">

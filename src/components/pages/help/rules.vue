@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="helpPage_rulesBox">
 	<h1 id="helpPage_rulesTitle">Правила</h1>
 
 	<h2>Общее</h2>

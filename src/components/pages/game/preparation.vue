@@ -9,7 +9,7 @@
 			 		@click="$router.push('/game/settings')"
 			 		class="flat-button"
 					id="preparationPage_openSettings">
-					<span class="fa fa-cog"></span>
+					<span><settings-svg/></span>
 				</button>
 			</div>
 			<button
@@ -61,9 +61,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import usersTable from "_/usersTable.vue"
 import app from "__/app.js"
-import { mapGetters } from 'vuex'
+import settingsSvg from "__/assets/svg/settings.svg"
 
 export default {
 	data: function() {
@@ -97,6 +98,6 @@ export default {
 			app.startGame()
 		}
 	},
-	components: {usersTable}
+	components: {usersTable, settingsSvg}
 }
 </script>

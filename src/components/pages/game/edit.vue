@@ -1,19 +1,11 @@
 <template>
 <div class="content-small">
-	<div id="gamePage_header">
-		<h1
-			:class="{shadow: !maxTopScroll}"
-			class="game-title"
-			id="gamePage_editTitle">
-			Редактирование раунда
-		</h1>
-	</div>
+	<game-head :class="{shadow: !maxTopScroll}" />
 	<div id="gamePage_body">
 		<div
 			v-if="myRole == 'speaker'"
 			id="gamePage_editBox">
 			<div
-				@scroll="console.log('kek2')"
 				id="gamePage_editList">
 				<edit-list
 					v-scroll-top="maxTopScroll"
@@ -42,6 +34,7 @@ import Vue from "vue"
 
 import editList from "./boxes/editList.vue"
 import speakerListenerBox from "./boxes/speakerListener.vue"
+import gameHead from "./boxes/head.vue"
 
 export default {
 	data: function() {
@@ -67,7 +60,7 @@ export default {
 			bind: function(el, binding, vnode) {
 				el.addEventListener("scroll", () => {
 					// Можно использовать eval для более честого получения реактивного поля
-					// Без eval можно обращаться только к корневым поля vue.
+					// Без eval можно обращаться только к корневым полям vue.
 					// eval("vnode.context."+binding.expression+"= el.scrollTop == 0");
 					vnode.context[binding.expression] = el.scrollTop == 0;
 				})
@@ -87,6 +80,6 @@ export default {
 			}
 		}
 	},
-	components: {editList, speakerListenerBox}
+	components: {editList, speakerListenerBox, gameHead}
 }
 </script>
