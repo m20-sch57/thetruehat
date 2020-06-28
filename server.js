@@ -441,7 +441,13 @@ class Signals {
                 break;
             case "play":
                 joinObj.state = "play";
-                joinObj.wordsCount = room.freshWords.length;
+                if (room.settings.termCondition === "words") {
+                    joinObj.wordsLeft = room.freshWords.length;
+                } else if (room.settings.termCondition === "turns") {
+                    joinObj.turnsLeft = room.settings.turnNumber - room.numberOfTurn;
+                } else {
+                    console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                }
                 switch (room.substate) {
                     case "wait":
                         joinObj.substate = "wait";
@@ -453,7 +459,9 @@ class Signals {
                         joinObj.speaker = room.users[room.speaker].username;
                         joinObj.listener = room.users[room.listener].username;
                         joinObj.startTime = room.startTime;
-                        joinObj.wordsCount++;
+                        if (room.settings.termCondition === "words") {
+                            joinObj.wordsLeft++;
+                        }
                         if (joinObj.speaker === name) {
                             joinObj.word = room.word;
                         }
@@ -508,10 +516,22 @@ class Signals {
      * @param key Key of the Room
      */
     static sGameStarted(key) {
-        Signals.emit(key, "sGameStarted", {
+        let leftObj = {};
+        if (rooms[key].settings.termCondition === "words") {
+            leftObj = {
+                "wordsLeft": rooms[key].freshWords.length
+            };
+        } else if (rooms[key].settings.termCondition === "turns") {
+            leftObj = {
+                "turnsLeft": rooms[key].settings.turnNumber - rooms[key].numberOfTurn
+            };
+        } else {
+            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        }
+        Signals.emit(key, "sGameStarted", Object.assign({
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
-            "wordsCount": rooms[key].freshWords.length});
+        }, leftObj));
     }
 
     /**
@@ -522,11 +542,23 @@ class Signals {
      * @param words Words' statistic
      */
     static sNextTurn(key, words) {
-        Signals.emit(key, "sNextTurn", {
+        let leftObj = {};
+        if (rooms[key].settings.termCondition === "words") {
+            leftObj = {
+                "wordsLeft": rooms[key].freshWords.length
+            };
+        } else if (rooms[key].settings.termCondition === "turns") {
+            leftObj = {
+                "turnsLeft": rooms[key].settings.turnNumber - rooms[key].numberOfTurn
+            };
+        } else {
+            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        }
+        Signals.emit(key, "sNextTurn", Object.assign({
             "speaker": rooms[key].users[rooms[key].speaker].username,
             "listener": rooms[key].users[rooms[key].listener].username,
-            "words": words,
-            "wordsCount": rooms[key].freshWords.length});
+            "words": words
+        }, leftObj));
     }
 
     /**
@@ -557,10 +589,20 @@ class Signals {
      * @param cause Result of word explanation
      */
     static sWordExplanationEnded(key, cause) {
-        Signals.emit(key, "sWordExplanationEnded", {
-            "cause": cause,
-            "wordsCount": rooms[key].freshWords.length +
-            ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
+        let leftObj = {};
+        if (rooms[key].settings.termCondition === "words") {
+            leftObj = {
+                "wordsLeft": rooms[key].freshWords.length +
+                ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
+            };
+        } else if (rooms[key].settings.termCondition === "turns") {
+            leftObj = {};
+        } else {
+            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        }
+        Signals.emit(key, "sWordExplanationEnded", Object.assign({
+            "cause": cause
+        }, leftObj));
     }
 
     /**
@@ -570,9 +612,18 @@ class Signals {
      * @param key Key of the room
      */
     static sExplanationEnded(key) {
-        Signals.emit(key, "sExplanationEnded", {
-            "wordsCount": rooms[key].freshWords.length +
-            ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)});
+        let leftObj = {};
+        if (rooms[key].settings.termCondition === "words") {
+            leftObj = {
+                "wordsLeft": rooms[key].freshWords.length +
+                ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
+            };
+        } else if (rooms[key].settings.termCondition === "turns") {
+            leftObj = {};
+        } else {
+            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        }
+        Signals.emit(key, "sExplanationEnded", leftObj);
     }
 
     /**
