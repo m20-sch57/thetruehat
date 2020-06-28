@@ -555,13 +555,8 @@ svg {
 }
 
 #preparationPage_openSettings {
-    margin-left: 10px;
     font-size: 30px;
-}
-
-#preparationPage_openSettings span {
-    width: 26px;
-    vertical-align: middle;
+    margin-left: 10px;
 }
 
 #preparationPage_copyKey {
@@ -792,7 +787,7 @@ svg {
     font-weight: lighter;
 }
 
-#gamePage_header.shadow {
+#gamePage_status.shadow {
     position: relative;
     box-shadow: 0 5px 5px -5px grey;
     z-index: 3;
@@ -1064,7 +1059,7 @@ svg {
     box-shadow: 0 -10px 10px -10px grey;
 }
 
-@media (min-width: 500px) {
+@media (min-width: 500px) and (min-height: 800px) {
     #gamePage_speakerListener {
         height: 250px;
     }
@@ -1083,7 +1078,7 @@ svg {
     }
     #gamePage_editListScrollable {
         position: relative;
-        max-height: 400px;
+        max-height: 375px;
     }
 }
 
@@ -1274,4 +1269,17 @@ svg {
     font-size: 18px;
     font-weight: lighter;
     line-height: 20px;
+}
+
+#stagingMark {
+    position: fixed;
+    bottom: -10px;
+    text-align: center;
+    width: 100%;
+    color: black;
+    font-size: 50px;
+    opacity: .2;
+    pointer-events: none;
+    z-index: 100;
+    user-select: none;
 }

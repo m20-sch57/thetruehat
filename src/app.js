@@ -51,7 +51,8 @@ class App {
 
 	joinRoom({username, key}) {
 		store.commit("connectRoom", {username, key});
-		this.emit("cJoinRoom", {username, key});
+		this.emit("cJoinRoom", {username, key,
+			time_zone_offset: (new Date()).getTimezoneOffset() * (-60000)});
 	}
 
 	leaveRoom() {

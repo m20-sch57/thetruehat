@@ -1,6 +1,7 @@
 #!/bin/bash
 
-output=${1:-../src/version.js}
+outputClient=${1:-../src/version.js}
+outputServer=${1:-../version.json}
 
 describe=$(git describe --tags --long  --always --match=v[0-9]*.[0-9]*)
 
@@ -13,4 +14,6 @@ cd $(dirname "$0")
 echo $version > version.txt
 echo $hash > hash.txt
 
-echo -e "export const VERSION = \"${version}\";\nexport const HASH = \"${hash}\";\n" > $output
+echo -e "export const VERSION = \"${version}\";\nexport const HASH = \"${hash}\";\n" > $outputClient
+
+echo -e "{\"version\": \"${version}\",\"hash\": \"${hash}\"}" > $outputServer
