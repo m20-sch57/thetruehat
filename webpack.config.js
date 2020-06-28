@@ -6,8 +6,8 @@ module.exports = {
 	entry: './src/main.js',
 	mode: "development",
 	output: {
-		path: path.resolve(__dirname, './static'),
-		publicPath: '/',
+		path: path.resolve(__dirname, './static/dist'),
+		publicPath: '/dist/',
 		filename: 'build.js'
 	},
 	module: {
@@ -38,7 +38,7 @@ module.exports = {
 		new HTMLWebpackPlugin({
 			template: path.join(__dirname, "src/index.html"),
 			hash: true,
-			filename: "index.html"
+			filename: "../index.html"
 		})
 	]
 }
