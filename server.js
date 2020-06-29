@@ -186,7 +186,11 @@ function generateWords(settings) {
     let used = {};
     let dict = dicts[settings.dictionaryId];
     const numberOfAllWords = dict.wordNumber;
-    while (words.length < settings.wordNumber) {
+    let wordNumber = numberOfAllWords;
+    if ("wordNumber" in settings) {
+        wordNumber = settings["wordNumber"];
+    }
+    while (words.length < wordNumber) {
         const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
             used[pos] = true;
@@ -798,12 +802,13 @@ class Room {
 
         // generating word list
         this.freshWords = generateWords(this.settings);
+        console.log(this.freshWords);
 
         // preparing storage for explained words
         this.usedWords = {};
 
         // setting number of turn
-        this.numberOfTurn = 0;
+        this.numberOfTurn = -1;
 
         const numberOfPlayers = this.users.length;
         this.speaker = numberOfPlayers - 1;
@@ -1284,7 +1289,36 @@ class Callbacks {
 
     static cApplySettings(socket, key, settings) {
         // special case: "dictionaryId" (it changes ranges for other settings)
-        let warn = false;
+        let warnWordsDecrease = false;
+        let warnTurnDefault = false;
+        let warnWordsDefault = false;
+        if ("termCondition" in settings) {
+            if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверный тип поля настроек termCondition: " +
+                    typeof(settings["termCondition"]) + " вместо " +
+                    typeof(rooms[key].settings["termCondition"]) + ", пропускаю");
+            } else {
+                if (!(settings["termCondition"] in {"words": null, "turns": null})) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
+                } else {
+                    rooms[key].settings["termCondition"] = settings["termCondition"];
+                    if (rooms[key].settings["termCondition"] === "words") {
+                        rooms[key].settings["wordNumber"] = config.defaultWordNumber;
+                        if ("turnNumber" in rooms[key].settings) {
+                            delete rooms[key].settings["turnNumber"];
+                        }
+                        warnWordsDefault = true;
+                    } else if (rooms[key].settings["termCondition"] === "turns") {
+                        rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
+                        if ("wordNumber" in rooms[key].settings) {
+                            delete rooms[key].settings["wordNumber"];
+                        }
+                        warnTurnDefault = true;
+                    }
+                }
+            }
+        }
         if ("dictionaryId" in settings) {
             if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
@@ -1298,7 +1332,7 @@ class Callbacks {
                     rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
                     if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
                         rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
-                        warn = true;
+                        warnWordsDecrease = true;
                     }
                 }
             }
@@ -1308,6 +1342,7 @@ class Callbacks {
         const settingsKeys = Object.keys(settings);
         for (let i = 0; i < settingsKeys.length; ++i) {
             if (settingsKeys[i] === "dictionaryId") continue; // already done
+            if (settingsKeys[i] === "termCondition") continue; // already done
 
             if (settingsKeys[i] in rooms[key].settings) {
                 if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
@@ -1328,7 +1363,11 @@ class Callbacks {
                         Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                         continue;
                     }
-                    warn = false;
+                    warnWordsDecrease = false;
+                    warnWordsDefault = false;
+                }
+                if (settingsKeys[i] === "turnNumber") {
+                    warnTurnDefault = false;
                 }
                 rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
             } else {
@@ -1337,9 +1376,17 @@ class Callbacks {
             }
         }
 
-        if (warn) {
+        if (warnWordsDecrease) {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Количество слов уменьшено до максимально возможного для данного словаря");
+        }
+        if (warnWordsDefault) {
+            Signals.sFailure(sockwet.id, "cApplySettings", null,
+                "Использовано количество слов по умолчанию.")
+        }
+        if (warnTurnDefault) {
+            Signals.sFailure(socket.id, "cApplySettings", null,
+                "Использовано количество ходов по умолчанию.");
         }
 
         Signals.sNewSettings(key);
@@ -1516,6 +1563,11 @@ class Callbacks {
         }
 
         rooms[key].roundPrepare();
+
+        if ("turnNumber" in rooms[key].settings && rooms[key].numberOfTurn === rooms[key].settings["turnNumber"]) {
+            endGame(key);
+            return;
+        }
 
         Signals.sNextTurn(key, words);
     }

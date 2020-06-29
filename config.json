@@ -30,6 +30,8 @@
         "termCondition": "words",
         "wordNumber": 100
     },
+    "defaultWordNumber": 100,
+    "defaultTurnNumber": 10,
     "settingsRange": {
         "delayTime": {
             "min": 0,
