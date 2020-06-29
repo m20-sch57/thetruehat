@@ -85,6 +85,28 @@ function checkObject(object, pattern) {
 }
 
 /**
+ * Generate free key
+ *
+ * @return free key (random one)
+ */
+function genFreeKey() {
+    // getting the settings
+    const minKeyLength = config.minKeyLength;
+    const maxKeyLength = config.maxKeyLength;
+    const keyConsonant = config.keyConsonant;
+    const keyVowels = config.keyVowels;
+    // getting the key length
+    const keyLength = randrange(minKeyLength, maxKeyLength + 1);
+    // generating the key
+    let key = "";
+    for (let i = 0; i < keyLength; ++i) {
+        const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
+        key += charList[randrange(charList.length)];
+    }
+    return key;
+}
+
+/**
  * Returns playerList structure,
  * @see API.md
  *
@@ -318,7 +340,21 @@ function endGame(key) {
         return 0 - (a.scoreExplained + a.scoreGuessed - b.scoreExplained - b.scoreGuessed);
     });
 
-    Signals.sGameEnded(key, results)
+    // preparing key for next game
+    const nextKey = genFreeKey();
+
+    // copying users and settings to next room
+    rooms[nextKey] = new Room();
+    rooms[nextKey].settings = Object.assign({}, rooms[key].settings);
+    rooms[nextKey].users = rooms[key].users;
+    for (let i = 0; i < rooms[nextKey].users.length; ++i) {
+        rooms[nextKey].users[i].sids = [];
+        rooms[nextKey].users[i].online = false;
+    }
+
+    console.log(rooms[nextKey]);
+
+    Signals.sGameEnded(key, results, nextKey);
 
     // sending statistics
     sendStat(Object.assign({}, rooms[key]));
@@ -593,9 +629,10 @@ class Signals {
      *
      * @param key Key of the room
      * @param results Results of the game
+     * @param nextKey key of next game
      */
-    static sGameEnded(key, results) {
-        Signals.emit(key, "sGameEnded", {"results": results});
+    static sGameEnded(key, results, nextKey) {
+        Signals.emit(key, "sGameEnded", {"results": results, "nextKey": nextKey});
     }
 }
 //----------------------------------------------------------
@@ -637,19 +674,7 @@ app.get("/getDictionaryList", function(req, res) {
  * @see API.md
  */
 app.get("/getFreeKey", function(req, res) {
-    // getting the settings
-    const minKeyLength = config.minKeyLength;
-    const maxKeyLength = config.maxKeyLength;
-    const keyConsonant = config.keyConsonant;
-    const keyVowels = config.keyVowels;
-    // getting the key length
-    const keyLength = randrange(minKeyLength, maxKeyLength + 1);
-    // generating the key
-    let key = "";
-    for (let i = 0; i < keyLength; ++i) {
-        const charList = (i % 2 === 0) ? keyConsonant : keyVowels;
-        key += charList[randrange(charList.length)];
-    }
+    const key = genFreeKey();
     sendResponse(req, res, {"key": key});
 });
 
