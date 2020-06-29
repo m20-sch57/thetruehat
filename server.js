@@ -240,6 +240,27 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 }
 
 /**
+ * Get timetable for N turns
+ *
+ * @param key key of the room
+ * @return array of speaker and listeners' names
+ */
+function getTimetable(key) {
+    let timetable = [];
+    let obj = {};
+    obj.speaker = rooms[key].speaker;
+    obj.listener = rooms[key].listener;
+    for (let i = 0; i < config.timetableDepth; ++i) {
+        timetable.push({
+            "speaker": rooms[key].users[obj.speaker].username,
+            "listener": rooms[key].users[obj.listener].username
+        });
+        obj = getNextPair(rooms[key].users.length, obj.speaker, obj.listener);
+    }
+    return timetable;
+}
+
+/**
  * Start an explanation
  *
  * @param key --- key of the room
@@ -352,8 +373,6 @@ function endGame(key) {
         rooms[nextKey].users[i].sids = [];
         rooms[nextKey].users[i].online = false;
     }
-
-    console.log(rooms[nextKey]);
 
     Signals.sGameEnded(key, results, nextKey);
 
@@ -478,6 +497,7 @@ class Signals {
                 break;
             case "play":
                 joinObj.state = "play";
+                joinObj.timetable = getTimetable(key);
                 if (room.settings.termCondition === "words") {
                     joinObj.wordsLeft = room.freshWords.length;
                 } else if (room.settings.termCondition === "turns") {
@@ -488,13 +508,9 @@ class Signals {
                 switch (room.substate) {
                     case "wait":
                         joinObj.substate = "wait";
-                        joinObj.speaker = room.users[room.speaker].username;
-                        joinObj.listener = room.users[room.listener].username;
                         break;
                     case "explanation":
                         joinObj.substate = "explanation";
-                        joinObj.speaker = room.users[room.speaker].username;
-                        joinObj.listener = room.users[room.listener].username;
                         joinObj.startTime = room.startTime;
                         if (room.settings.termCondition === "words") {
                             joinObj.wordsLeft++;
@@ -505,8 +521,6 @@ class Signals {
                         break;
                     case "edit":
                         joinObj.substate = "edit";
-                        joinObj.speaker = room.users[room.speaker].username;
-                        joinObj.listener = room.users[room.listener].username;
                         if (joinObj.speaker === name) {
                             joinObj.editWords = room.editWords;
                         }
@@ -566,8 +580,7 @@ class Signals {
             console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
         }
         Signals.emit(key, "sGameStarted", Object.assign({
-            "speaker": rooms[key].users[rooms[key].speaker].username,
-            "listener": rooms[key].users[rooms[key].listener].username,
+            "timetable": getTimetable(key)
         }, leftObj));
     }
 
@@ -592,8 +605,7 @@ class Signals {
             console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
         }
         Signals.emit(key, "sNextTurn", Object.assign({
-            "speaker": rooms[key].users[rooms[key].speaker].username,
-            "listener": rooms[key].users[rooms[key].listener].username,
+            "timetable": getTimetable(key),
             "words": words
         }, leftObj));
     }
@@ -824,7 +836,6 @@ class Room {
 
         // generating word list
         this.freshWords = generateWords(this.settings);
-        console.log(this.freshWords);
 
         // preparing storage for explained words
         this.usedWords = {};
