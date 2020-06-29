@@ -27,12 +27,12 @@ Query string:
     - `wait` - идёт набор игроков либо комната не создана.
     - `play` - идёт игра. Подключиться можно только по имени из списка.
     - `end` - игра закончена.
-- `playerList` - Если `status = wait, play`. Список игроков. Описание игрока состоит из:
+- `playerList` - Если `state = wait, play`. Список игроков. Описание игрока состоит из:
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
-- `host` - Если `status = wait, play`. Хост комнаты.
-- `settings` - Если `status = wait, play`. Словарь с настройками комнаты.
-- `results (array)` - Если `status = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
+- `host` - Если `state = wait, play`. Хост комнаты.
+- `settings` - Если `state = wait, play`. Словарь с настройками комнаты.
+- `results (array)` - Если `state = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
     - `username (string)` - имя игрока.
     - `scoreExplained (int)` - количество объяснённых слов.
     - `scoreGuessed (int)` - количество отгаданных слов.
@@ -104,7 +104,7 @@ __8.__ `io` <a name="sYouJoined">`sYouJoined`</a> - сигнал, посылае
     - `username (string)` - имя игрока.
     - `online (bool)` - подключен ли игрок к серверу.
 - `host` - Если `state = wait, play`. Хост комнаты.
-- `settings` - Если `status = wait, play`. Словарь с настройками комнаты.
+- `settings` - Если `state = wait, play`. Словарь с настройками комнаты.
 - `wordsCount (int)` - Если `state = play`. Кол-во оставшихся слов.
 
 Если `state = play`:
