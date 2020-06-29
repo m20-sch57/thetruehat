@@ -208,10 +208,7 @@ function generateWords(settings) {
     let used = {};
     let dict = dicts[settings.dictionaryId];
     const numberOfAllWords = dict.wordNumber;
-    let wordNumber = numberOfAllWords;
-    if ("wordNumber" in settings) {
-        wordNumber = settings["wordNumber"];
-    }
+    const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
     while (words.length < wordNumber) {
         const pos = randrange(numberOfAllWords);
         if (!(pos in used)) {
