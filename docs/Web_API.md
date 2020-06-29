@@ -27,12 +27,12 @@ Query string:
     - `wait` - идёт набор игроков либо комната не создана.
     - `play` - идёт игра. Подключиться можно только по имени из списка.
     - `end` - игра закончена.
-- `playerList` - Если `status = wait, play`. Список игроков. Описание игрока состоит из:
+- `playerList` - Если `state = wait, play`. Список игроков. Описание игрока состоит из:
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
-- `host` - Если `status = wait, play`. Хост комнаты.
-- `settings` - Если `status = wait, play`. Словарь с настройками комнаты.
-- `results (array)` - Если `status = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
+- `host` - Если `state = wait, play`. Хост комнаты.
+- `settings` - Если `state = wait, play`. Словарь с настройками комнаты.
+- `results (array)` - Если `state = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
     - `username (string)` - имя игрока.
     - `scoreExplained (int)` - количество объяснённых слов.
     - `scoreGuessed (int)` - количество отгаданных слов.
@@ -96,27 +96,28 @@ __8.__ `io` <a name="sYouJoined">`sYouJoined`</a> - сигнал, посылае
     - `wait` - идёт набор игроков либо комната не создана.
     - `play` - идёт игра. Подключиться можно только по имени из списка, за которым никто не стоит.
     - `end` - игра закончена.
-- `substate (string)` - Если `state = play`. Состояние комнаты во время игры. Оно может принимать такие значения:
-    - `wait` - ожидаем готовности объясняющего и слушающего.
-    - `explanation` - идёт объяснение слова.
-    - `edit` - вносятся правки в прошедший раунд.
-- `playerList` - Если `state = wait, play`. Cписок игроков. Игроки описаны так:
+
+Если `state = wait, play`:
+- `playerList` - Cписок игроков. Игроки описаны так:
     - `username (string)` - имя игрока.
     - `online (bool)` - подключен ли игрок к серверу.
-- `host` - Если `state = wait, play`. Хост комнаты.
-- `settings` - Если `status = wait, play`. Словарь с настройками комнаты.
-
-- `wordsLeft (int)` - Если `state = play` и `settings.termCondition = words`. Кол-во оставшихся слов.
-- `turnsLeft (int)` - Если `state = play` и `settings.termCondition = turns`. Кол-во оставшихся кругов.
+- `host` - Хост комнаты.
+- `settings` - Словарь с настройками комнаты.
 
 Если `state = play`:
 - `speaker (string)` - Кто будет объяснять.
 - `listener (string)` - Кому будут объяснять.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Кол-во оставшихся слов.
+- `turnsLeft (int)` - Если `settings.termCondition = turns`. Кол-во оставшихся кругов.
+- `substate (string)` - Состояние комнаты во время игры. Оно может принимать такие значения:
+    - `wait` - ожидаем готовности объясняющего и слушающего.
+    - `explanation` - идёт объяснение слова.
+    - `edit` - вносятся правки в прошедший раунд.
 
 Если `substate = explanation`:
 
-- `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
-- `endTime` - Время окончания объяснения.
+  + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
+  + `endTime` - Время окончания объяснения.
 
 Если `substate = edit`:
 
