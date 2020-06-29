@@ -113,19 +113,19 @@ __8.__ `io` <a name="sYouJoined">`sYouJoined`</a> - сигнал, посылае
     - `explanation` - идёт объяснение слова.
     - `edit` - вносятся правки в прошедший раунд.
 
-  Если `substate = explanation`:
+Если `substate = explanation`:
 
   + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
   + `endTime` - Время окончания объяснения.
 
-  Если `substate = edit`:
+Если `substate = edit`:
 
-  - `editWords (array)` - список слов для правки. Состоит из:
-    + `word (string)` - само слово, которые объясняли.
-    + `wordState (string)` - состояние слова (угадано/не угадано/etc.).
-      * `notExplained` - слово не было объяснено.
-      * `explained` - слово было объяснено.
-      * `mistake` - слово было объяснено с ошибкой.
+- `editWords (array)` - список слов для правки. Состоит из:
+  + `word (string)` - само слово, которые объясняли.
+  + `wordState (string)` - состояние слова (угадано/не угадано/etc.).
+    * `notExplained` - слово не было объяснено.
+    * `explained` - слово было объяснено.
+    * `mistake` - слово было объяснено с ошибкой.
 
 ---
 
