@@ -1597,7 +1597,7 @@ class Callbacks {
 
         rooms[key].roundPrepare();
 
-        if ("turnNumber" in rooms[key].settings && rooms[key].numberOfTurn === rooms[key].settings["turnNumber"]) {
+        if ("turnNumber" in rooms[key].settings && rooms[key].numberOfTurn === rooms[key].settings["turnNumber"] * rooms[key].users.length * (rooms[key].users.length - 1)) {
             endGame(key);
             return;
         }
