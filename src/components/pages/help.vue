@@ -57,6 +57,12 @@ export default {
 			return this.$route.params.option
 		}
 	},
+	mounted() {
+		document.body.style.overflowY = "scroll";
+	},
+	destroyed() {
+		document.body.style.overflowY = "";
+	},
 	components: {hatHeader, news, rules, faq, about}
 }
 </script>

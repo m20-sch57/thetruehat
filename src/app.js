@@ -94,6 +94,10 @@ class App {
 		this.emit("cWordsEdited", {editWords});
 	}
 
+	finish() {
+		this.emit("cEndGame");
+	}
+
 	listen() {
         const events = [
 			"sFailure", "sPlayerJoined", "sPlayerLeft",

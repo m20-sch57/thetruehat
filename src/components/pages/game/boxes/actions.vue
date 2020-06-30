@@ -36,7 +36,7 @@ import flagCheckSvg from "__/assets/svg/flag_check.svg"
 export default {
 	data: function() {
 		return {
-			muted: true
+			muted: sound.isMuted
 		}
 	},
 	computed: {
@@ -53,9 +53,14 @@ export default {
 		},
 		toggleSound: function() {
 			sound.toggleMute();
+			this.muted = !this.muted;
 		},
 		finishGame: function() {
-			app.finish();
+			if (confirm(
+				"Вы уверены, что хотите завершить игру?"+
+				" Игра закончится, и вы сможете посмотреть результаты.")) {
+				app.finish();
+			}
 		}
 	},
 	components: {exitLeftSvg, volumeOnSvg, volumeOffSvg, flagCheckSvg}
