@@ -565,7 +565,7 @@ class Signals {
                 leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
                 break;
             default:
-                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
                 break;
         }
         Signals.emit(key, "sGameStarted", Object.assign({
@@ -591,7 +591,7 @@ class Signals {
                 leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
                 break;
             default:
-                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
                 break;
         }
         Signals.emit(key, "sNextTurn", Object.assign({
@@ -638,7 +638,7 @@ class Signals {
             case "turns":
                 break;
             default:
-                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
                 break;
         }
         Signals.emit(key, "sWordExplanationEnded", Object.assign({
@@ -662,7 +662,7 @@ class Signals {
             case "turns":
                 break;
             default:
-                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
         }
         Signals.emit(key, "sExplanationEnded", leftObj);
     }
@@ -1398,9 +1398,6 @@ class Callbacks {
                         break;
                     case "turnNumber":
                         warnTurnDefault = false;
-                        break;
-                    default:
-                        console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
                         break;
                 }
                 rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
