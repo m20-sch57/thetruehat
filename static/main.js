@@ -531,6 +531,10 @@ class Game {
             this.results = data.results;
         }
 
+        if ("nextKey" in data) {
+            this.nextKey = data.nextKey;
+        }
+
         this.render();
     }
 
@@ -590,8 +594,10 @@ class Game {
     renderHostActions() {
         if (this.isHost) {
             show("gamePage_finish");
+            show("preparationPage_openSettings");
         } else {
             hide("gamePage_finish");
+            hide("preparationPage_openSettings");
         }
     }
 
@@ -1341,8 +1347,8 @@ class App {
         this.socket.on("sGameEnded", data => {
             this.game.state = "end";
             this.game.update(data);
-            this.pages.$results.push();
             this.game.leave();
+            this.pages.$results.push();
         })
         this.socket.on("sFailure", data =>  {
             switch(data.code) {
@@ -1399,8 +1405,8 @@ class App {
             this.game.editedWordsObject());
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
-            this.generateKey();
-            this.pages.$join.push()
+            this.setKey(this.game.nextKey);
+            this.enterRoom();
         }
         el("helpPage_goBack").onclick = () => this.pages.goBack();
         el("helpPage_rulesOption").onclick = () => {
