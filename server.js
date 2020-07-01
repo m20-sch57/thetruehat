@@ -559,14 +559,10 @@ class Signals {
         let leftObj = {};
         switch (rooms[key].settings.termCondition) {
             case "words":
-                leftObj = {
-                    "wordsLeft": rooms[key].freshWords.length
-                };
+                leftObj.wordsLeft = rooms[key].freshWords.length
                 break;
             case "turns":
-                leftObj = {
-                    "turnsLeft": rooms[key].settings.turnNumber - rooms[key].numberOfTurn
-                };
+                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
@@ -589,14 +585,10 @@ class Signals {
         let leftObj = {};
         switch (rooms[key].settings.termCondition) {
             case "words":
-                leftObj = {
-                    "wordsLeft": rooms[key].freshWords.length
-                };
+                leftObj.wordsLeft = rooms[key].freshWords.length
                 break;
             case "turns":
-                leftObj = {
-                    "turnsLeft": rooms[key].settings.turnNumber - rooms[key].numberOfTurn
-                };
+                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
@@ -640,10 +632,8 @@ class Signals {
         let leftObj = {};
         switch (rooms[key].settings.termCondition) {
             case "words":
-                leftObj = {
-                    "wordsLeft": rooms[key].freshWords.length +
+                leftObj.wordsLeft = rooms[key].freshWords.length +
                     ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
-                };
                 break;
             case "turns":
                 break;
@@ -666,10 +656,8 @@ class Signals {
         let leftObj = {};
         switch (rooms[key].settings.termCondition) {
             case "words":
-                leftObj = {
-                    "wordsLeft": rooms[key].freshWords.length +
+                leftObj.wordsLeft = rooms[key].freshWords.length +
                     ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
-                };
                 break;
             case "turns":
                 break;
