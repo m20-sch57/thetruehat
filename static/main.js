@@ -594,8 +594,10 @@ class Game {
     renderHostActions() {
         if (this.isHost) {
             show("gamePage_finish");
+            show("preparationPage_openSettings");
         } else {
             hide("gamePage_finish");
+            hide("preparationPage_openSettings");
         }
     }
 
