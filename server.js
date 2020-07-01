@@ -1344,9 +1344,6 @@ class Callbacks {
                             }
                             warnTurnDefault = true;
                             break;
-                        default:
-                            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
-                            break;
                     }
                 }
             }
