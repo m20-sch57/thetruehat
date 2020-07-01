@@ -241,7 +241,7 @@
                         <span id="gamePage_volumeOn" src="svg/volume_on.svg" name="svg"></span>
                         <span id="gamePage_volumeOff" src="svg/volume_off.svg" name="svg" style="display: none;"></span>
                     </button>
-                    <button class="white-bubble action" id="gamePage_finish">
+                    <button class="white-bubble action" id="gamePage_finish" disabled>
                         <span src="svg/flag_check.svg" name="svg"></span>
                     </button>
                 </div>
@@ -282,7 +282,7 @@
                     <button class="medium-button bg-green" id="gamePage_speakerReadyButton" gt gt-text>
                         Я готов объяснять
                     </button>
-                    <button class="medium-button bg-green" id="gamePage_speakerReady" disabled gt gt-text>
+                    <button class="medium-button bg-green" style="display:none" id="gamePage_speakerReady" disabled gt gt-text>
                         Подожди напарника
                     </button>
                 </div>
@@ -361,8 +361,11 @@
                     Оставить отзыв
                 </button>
                 <button class="medium-button bg-green" id="resultsPage_newGame" gt gt-text>
-                    Новая игра
+                    Играть ещё раз
                 </button>
+                <p class="hint" id="resultsPage_newGameHint">
+                    Жми сюда, чтобы ещё раз сыграть с друзьями.
+                </p>
             </div>
         </div>
     </div>

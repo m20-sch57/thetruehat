@@ -498,12 +498,15 @@ class Signals {
             case "play":
                 joinObj.state = "play";
                 joinObj.timetable = getTimetable(key);
-                if (room.settings.termCondition === "words") {
-                    joinObj.wordsLeft = room.freshWords.length;
-                } else if (room.settings.termCondition === "turns") {
-                    joinObj.turnsLeft = room.settings.turnNumber - room.numberOfTurn;
-                } else {
-                    console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                switch (room.settings.termCondition) {
+                    case "words":
+                        joinObj.wordsLeft = room.freshWords.length;
+                        break;
+                    case "turns":
+                        joinObj.turnsLeft = room.settings.turnNumber - room.numberOfTurn;
+                        break;
+                    default:
+                        console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
                 }
                 switch (room.substate) {
                     case "wait":
@@ -568,16 +571,16 @@ class Signals {
      */
     static sGameStarted(key) {
         let leftObj = {};
-        if (rooms[key].settings.termCondition === "words") {
-            leftObj = {
-                "wordsLeft": rooms[key].freshWords.length
-            };
-        } else if (rooms[key].settings.termCondition === "turns") {
-            leftObj = {
-                "turnsLeft": rooms[key].settings.turnNumber - rooms[key].numberOfTurn
-            };
-        } else {
-            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        switch (rooms[key].settings.termCondition) {
+            case "words":
+                leftObj.wordsLeft = rooms[key].freshWords.length
+                break;
+            case "turns":
+                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
+                break;
+            default:
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                break;
         }
         Signals.emit(key, "sGameStarted", Object.assign({
             "timetable": getTimetable(key)
@@ -593,16 +596,16 @@ class Signals {
      */
     static sNextTurn(key, words) {
         let leftObj = {};
-        if (rooms[key].settings.termCondition === "words") {
-            leftObj = {
-                "wordsLeft": rooms[key].freshWords.length
-            };
-        } else if (rooms[key].settings.termCondition === "turns") {
-            leftObj = {
-                "turnsLeft": rooms[key].settings.turnNumber - rooms[key].numberOfTurn
-            };
-        } else {
-            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        switch (rooms[key].settings.termCondition) {
+            case "words":
+                leftObj.wordsLeft = rooms[key].freshWords.length
+                break;
+            case "turns":
+                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
+                break;
+            default:
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                break;
         }
         Signals.emit(key, "sNextTurn", Object.assign({
             "timetable": getTimetable(key),
@@ -639,15 +642,16 @@ class Signals {
      */
     static sWordExplanationEnded(key, cause) {
         let leftObj = {};
-        if (rooms[key].settings.termCondition === "words") {
-            leftObj = {
-                "wordsLeft": rooms[key].freshWords.length +
-                ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
-            };
-        } else if (rooms[key].settings.termCondition === "turns") {
-            leftObj = {};
-        } else {
-            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        switch (rooms[key].settings.termCondition) {
+            case "words":
+                leftObj.wordsLeft = rooms[key].freshWords.length +
+                    ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
+                break;
+            case "turns":
+                break;
+            default:
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                break;
         }
         Signals.emit(key, "sWordExplanationEnded", Object.assign({
             "cause": cause
@@ -662,15 +666,15 @@ class Signals {
      */
     static sExplanationEnded(key) {
         let leftObj = {};
-        if (rooms[key].settings.termCondition === "words") {
-            leftObj = {
-                "wordsLeft": rooms[key].freshWords.length +
-                ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
-            };
-        } else if (rooms[key].settings.termCondition === "turns") {
-            leftObj = {};
-        } else {
-            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+        switch (rooms[key].settings.termCondition) {
+            case "words":
+                leftObj.wordsLeft = rooms[key].freshWords.length +
+                    ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
+                break;
+            case "turns":
+                break;
+            default:
+                console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
         }
         Signals.emit(key, "sExplanationEnded", leftObj);
     }
@@ -1336,18 +1340,21 @@ class Callbacks {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
                 } else {
                     rooms[key].settings["termCondition"] = settings["termCondition"];
-                    if (rooms[key].settings["termCondition"] === "words") {
-                        rooms[key].settings["wordNumber"] = config.defaultWordNumber;
-                        if ("turnNumber" in rooms[key].settings) {
-                            delete rooms[key].settings["turnNumber"];
-                        }
-                        warnWordsDefault = true;
-                    } else if (rooms[key].settings["termCondition"] === "turns") {
-                        rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
-                        if ("wordNumber" in rooms[key].settings) {
-                            delete rooms[key].settings["wordNumber"];
-                        }
-                        warnTurnDefault = true;
+                    switch (rooms[key].settings["termCondition"]) {
+                        case "words":
+                            rooms[key].settings["wordNumber"] = config.defaultWordNumber;
+                            if ("turnNumber" in rooms[key].settings) {
+                                delete rooms[key].settings["turnNumber"];
+                            }
+                            warnWordsDefault = true;
+                            break;
+                        case "turns":
+                            rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
+                            if ("wordNumber" in rooms[key].settings) {
+                                delete rooms[key].settings["wordNumber"];
+                            }
+                            warnTurnDefault = true;
+                            break;
                     }
                 }
             }
@@ -1391,16 +1398,21 @@ class Callbacks {
                     Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
                     continue;
                 }
-                if (settingsKeys[i] === "wordNumber") {
-                    if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
-                        continue;
-                    }
-                    warnWordsDecrease = false;
-                    warnWordsDefault = false;
-                }
-                if (settingsKeys[i] === "turnNumber") {
-                    warnTurnDefault = false;
+                switch (settingsKeys[i]) {
+                    case "wordNumber":
+                        if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                            Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                            continue;
+                        }
+                        warnWordsDecrease = false;
+                        warnWordsDefault = false;
+                        break;
+                    case "turnNumber":
+                        warnTurnDefault = false;
+                        break;
+                    default:
+                        console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                        break;
                 }
                 rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
             } else {
