@@ -498,6 +498,8 @@ class Signals {
             case "play":
                 joinObj.state = "play";
                 joinObj.timetable = getTimetable(key);
+                joinObj.speaker = room.users[room.speaker].username;
+                joinObj.listener = room.users[room.listener].username;
                 switch (room.settings.termCondition) {
                     case "words":
                         joinObj.wordsLeft = room.freshWords.length;
@@ -583,7 +585,9 @@ class Signals {
                 break;
         }
         Signals.emit(key, "sGameStarted", Object.assign({
-            "timetable": getTimetable(key)
+            "timetable": getTimetable(key),
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username
         }, leftObj));
     }
 
@@ -609,6 +613,8 @@ class Signals {
         }
         Signals.emit(key, "sNextTurn", Object.assign({
             "timetable": getTimetable(key),
+            "speaker": rooms[key].users[rooms[key].speaker].username,
+            "listener": rooms[key].users[rooms[key].listener].username,
             "words": words
         }, leftObj));
     }
