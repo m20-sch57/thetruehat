@@ -562,6 +562,7 @@ class Signals {
                 leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
             case "turns":
+                console.log(rooms[key].numberOfLap);
                 leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfLap;
                 break;
             default:
@@ -868,15 +869,16 @@ class Room {
 
         // updating number of the turn
         this.numberOfTurn++;
-        if (this.speaker === 0 && this.listener === 1) {
-            this.numberOfLap++;
-        }
 
         // preparing 'speaker' and 'listener'
         const numberOfPlayers = this.users.length;
         const nextPair = getNextPair(numberOfPlayers, this.speaker, this.listener);
         this.speaker = nextPair.speaker;
         this.listener = nextPair.listener;
+
+        if (this.speaker === 0 && this.listener === 1) {
+            this.numberOfLap++;
+        }
     }
 }
 
