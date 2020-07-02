@@ -483,7 +483,7 @@ class Signals {
                         joinObj.wordsLeft = room.freshWords.length;
                         break;
                     case "turns":
-                        joinObj.turnsLeft = room.settings.turnNumber - room.numberOfTurn;
+                        joinObj.turnsLeft = room.settings.turnNumber - room.numberOfLap;
                         break;
                     default:
                         console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
@@ -559,10 +559,10 @@ class Signals {
         let leftObj = {};
         switch (rooms[key].settings.termCondition) {
             case "words":
-                leftObj.wordsLeft = rooms[key].freshWords.length
+                leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
             case "turns":
-                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
+                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfLap;
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -585,10 +585,10 @@ class Signals {
         let leftObj = {};
         switch (rooms[key].settings.termCondition) {
             case "words":
-                leftObj.wordsLeft = rooms[key].freshWords.length
+                leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
             case "turns":
-                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfTurn
+                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfLap;
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -806,6 +806,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - startTime --- UTC time of start of explanation (in milliseconds).
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
+ *     - numberOfLap --- number of lap
  *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info, but `time` is `time` plus `extra_time`)
  *     - start_timestamp --- start timestamp
  *     - end_timestamp --- end timestamp
@@ -834,7 +835,8 @@ class Room {
         this.usedWords = {};
 
         // setting number of turn
-        this.numberOfTurn = -1;
+        this.numberOfTurn = 0;
+        this.numberOfLap = -1;
 
         const numberOfPlayers = this.users.length;
         this.speaker = numberOfPlayers - 1;
@@ -866,6 +868,9 @@ class Room {
 
         // updating number of the turn
         this.numberOfTurn++;
+        if (this.speaker === 0 && this.listener === 1) {
+            this.numberOfLap++;
+        }
 
         // preparing 'speaker' and 'listener'
         const numberOfPlayers = this.users.length;
@@ -1595,7 +1600,7 @@ class Callbacks {
 
         rooms[key].roundPrepare();
 
-        if ("turnNumber" in rooms[key].settings && rooms[key].numberOfTurn === rooms[key].settings["turnNumber"] * rooms[key].users.length * (rooms[key].users.length - 1)) {
+        if ("turnNumber" in rooms[key].settings && rooms[key].numberOfLap === rooms[key].settings["turnNumber"]) {
             endGame(key);
             return;
         }
