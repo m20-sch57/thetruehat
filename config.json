@@ -55,6 +55,7 @@
         }
     },
     "transferTime": 1000,
+    "timetableDepth": 10,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [
