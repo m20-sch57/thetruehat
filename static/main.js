@@ -2,6 +2,7 @@
 
 let app, timeSync;
 window.onload = function() {
+    let _app;
     if (ENV == PROD) {
         console.log("%c Не лезь сюда, оно сожрёт тебя !", `
             font-size: 100px;
@@ -14,7 +15,7 @@ window.onload = function() {
     }
     timeSync = new TimeSync(TIME_SYNC_DELTA);
     i18n=i18n();
-    let _app = new App()
+    _app = new App()
     if (GLOBAL_APP_SCOPE) {
         app = _app;
     }
@@ -38,22 +39,36 @@ if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
     HTMLCollection.prototype.forEach = Array.prototype.forEach;
 }
 
-function animate({startTime, timing, draw, duration, stopCondition}) {
+function animate({startTime, timing, draw, duration, stopCondition, onStart, mustCall}) {
     // Largely taken from https://learn.javascript.ru
     timing = timing || (time => time);
-    stopCondition = stopCondition || (() => false)
+    stopCondition = stopCondition || (() => false);
+    onStart = onStart || (() => {});
+    mustCall = mustCall || false;
+    let firstFrame = true;
     return new Promise(function(resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
             let time = timeSync.getTime();
             let timeFraction = (time - start) / duration;
-            if (timeFraction > 1) timeFraction = 1;
+            if (timeFraction < 0) {
+                requestAnimationFrame(animate);
+                return;
+            }
+            if (timeFraction > 1) {
+                timeFraction = 1;
+                firstFrame = mustCall;
+            }
+
+            if (stopCondition()) return;
 
             let progress = timing(timeFraction);
 
+            if (firstFrame) {
+                firstFrame = false;
+                onStart();
+            }
             draw(progress);
-
-            if (stopCondition()) return;
 
             if (timeFraction < 1) {
                 requestAnimationFrame(animate);
@@ -702,36 +717,50 @@ class App {
     async renderExplanationPage({startTime}) {
         let roundId = this.game.roundId;
         setTimeout(async () => {
-            disable("gamePage_finish");
-            if (this.game.roundId != roundId) return;
-            let page = ["gamePage_explanationDelayBox"];
-            if (this.game.myRole == "speaker") {
-                page.push("gamePage_speakerTitle");
-                page.push("gamePage_additionalStatus");
-            } else if (this.game.myRole == "listener") {
-                page.push("gamePage_listenerTitle");
-            } else {
-                page.push("gamePage_explanationTitle")
+            const delayStartTime = startTime - this.game.settings.delayTime;
+            const delayOnStart = () => {
+                disable("gamePage_finish");
+                let page = ["gamePage_explanationDelayBox"];
+                if (this.game.myRole == "speaker") {
+                    page.push("gamePage_speakerTitle");
+                    page.push("gamePage_additionalStatus");
+                } else if (this.game.myRole == "listener") {
+                    page.push("gamePage_listenerTitle");
+                } else {
+                    page.push("gamePage_explanationTitle")
+                }
+                this.gamePages.go(page);
             }
-            this.gamePages.go(page);
-            await this.animateDelayTimer(startTime -
-                this.game.settings.delayTime, roundId);
-            if (this.game.roundId != roundId) return;
-            if (this.game.myRole == "speaker") {
-                this.gamePages.go(["gamePage_explanationBox",
-                    "gamePage_speakerTitle", "gamePage_additionalStatus"]);
-            } else if (this.game.myRole == "listener") {
-                this.gamePages.go(["gamePage_speakerListener",
-                    "gamePage_observerBox", "gamePage_listenerTitle"]);
-            } else {
-                this.gamePages.go(["gamePage_speakerListener",
-                    "gamePage_observerBox", "gamePage_explanationTitle"]);
+            await this.animateDelayTimer({
+                startTime: delayStartTime,
+                onStart: delayOnStart,
+                roundId
+            });
+            const explanationStartTime = startTime;
+            const explanationOnStart = () => {
+                if (this.game.myRole == "speaker") {
+                    this.gamePages.go(["gamePage_explanationBox",
+                        "gamePage_speakerTitle", "gamePage_additionalStatus"]);
+                } else if (this.game.myRole == "listener") {
+                    this.gamePages.go(["gamePage_speakerListener",
+                        "gamePage_observerBox", "gamePage_listenerTitle"]);
+                } else {
+                    this.gamePages.go(["gamePage_speakerListener",
+                        "gamePage_observerBox", "gamePage_explanationTitle"]);
+                }
+                this.sizeWord();
             }
-            this.sizeWord();
-            await this.animateExplanationTimer(startTime, roundId)
-            this.animateAftermathTimer(startTime +
-                this.game.settings.explanationTime, roundId);
-
+            await this.animateExplanationTimer({
+                startTime: explanationStartTime,
+                onStart: explanationOnStart,
+                mustCall: true,
+                roundId
+            });
+            const aftermathStartTime = startTime + this.game.settings.explanationTime;
+            this.animateAftermathTimer({
+                startTime: aftermathStartTime,
+                roundId
+            });
         }, startTime - timeSync.getTime() - this.game.settings.delayTime);
     }
 
@@ -866,64 +895,56 @@ class App {
         show("gamePage_speakerReady");
     }
 
-    async animateDelayTimer(startTime, roundId) {
+    async animateDelayTimer({startTime, roundId, onStart, mustCall}) {
         let gradient = colorGradientRGB(DELAY_COLORS);
-        await animate({
-            startTime,
-            duration: this.game.settings.delayTime,
-            draw: (progress) => {
-                let sec = stairs(1 - progress,
-                    this.game.settings.delayTime / 1000) + 1;
-                el("gamePage_explanationDelayTimer").innerText = sec;
-                el("gamePage_explanationDelayTimer").style.background =
-                    `rgb(${gradient(progress).join()})`;
-            },
-            stopCondition: () => {
-                return this.game.roundId != roundId;
-            }
-        })
+        const duration = this.game.settings.delayTime;
+        const draw = (progress) => {
+            let sec = stairs(1 - progress,
+                this.game.settings.delayTime / 1000) + 1;
+            el("gamePage_explanationDelayTimer").innerText = sec;
+            el("gamePage_explanationDelayTimer").style.background =
+                `rgb(${gradient(progress).join()})`;
+        }
+        const stopCondition = () => {
+            return this.game.roundId != roundId;
+        }
+        await animate({startTime, onStart, draw, duration, stopCondition, mustCall});
     }
 
-    async animateExplanationTimer(startTime, roundId) {
+    async animateExplanationTimer({startTime, roundId, onStart, mustCall}) {
         el("gamePage_explanationTimer").classList.remove("timer-aftermath");
         el("gamePage_observerTimer").classList.remove("timer-aftermath");
-        let animation = animate({
-            startTime,
-            duration: this.game.settings.explanationTime,
-            draw: (progress) => {
-                let sec = stairs(1 - progress,
-                    this.game.settings.explanationTime / 1000) + 1;
-                let time = minSec(sec);
-                el("gamePage_explanationTimer").innerText = time;
-                el("gamePage_observerTimer").innerText = time;
-            },
-            stopCondition: () => {
-                return this.game.roundId != roundId;
-            }
-        })
-        await animation;
+        const duration = this.game.settings.explanationTime;
+        const draw = (progress) => {
+            let sec = stairs(1 - progress,
+                this.game.settings.explanationTime / 1000) + 1;
+            let time = minSec(sec);
+            el("gamePage_explanationTimer").innerText = time;
+            el("gamePage_observerTimer").innerText = time;
+        }
+        const stopCondition = () => {
+            return this.game.roundId != roundId;
+        }
+        await animate({startTime, onStart, draw, duration, stopCondition, mustCall});
         el("gamePage_explanationTimer").innerText = "00:00";
         el("gamePage_observerTimer").innerText = "00:00";
     }
 
-    async animateAftermathTimer(startTime, roundId) {
+    async animateAftermathTimer({startTime, roundId, onStart, mustCall}) {
         el("gamePage_explanationTimer").classList.add("timer-aftermath");
         el("gamePage_observerTimer").classList.add("timer-aftermath");
-        let animation =  animate({
-            startTime,
-            duration: this.game.settings.aftermathTime,
-            draw: (progress) => {
-                let msec = stairs(1 - progress,
-                    this.game.settings.aftermathTime / 100) + 1;
-                let time = secMsec(msec);
-                el("gamePage_explanationTimer").innerText = time;
-                el("gamePage_observerTimer").innerText = time;
-            },
-            stopCondition: () => {
-                return this.game.roundId != roundId;
-            }
-        })
-        await animation;
+        const duration = this.game.settings.aftermathTime;
+        const draw = (progress) => {
+            let msec = stairs(1 - progress,
+                this.game.settings.aftermathTime / 100) + 1;
+            let time = secMsec(msec);
+            el("gamePage_explanationTimer").innerText = time;
+            el("gamePage_observerTimer").innerText = time;
+        }
+        const stopCondition = () => {
+            return this.game.roundId != roundId;
+        }
+        await animate({startTime, onStart, draw, duration, stopCondition, mustCall});
         el("gamePage_explanationTimer").innerText = "0.0";
         el("gamePage_observerTimer").innerText = "0.0";
     }
