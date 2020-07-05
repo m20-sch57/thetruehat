@@ -685,7 +685,7 @@ class Game {
         let count = this.turnsCount;
         let mark = this.turnsCountCorrect;
         el("gamePage_additionalStatus_turnsCounter_counter").innerText =
-            `${mark ? "" : ">"}${count} ${_("круг", count)}`
+            `${mark ? "" : ">"}${count} ${_("ход", count)}`
     }
 
     changeWordState(word, state) {
@@ -840,6 +840,11 @@ class App {
                             }
                         } else if (this.game.turnsCount > 0) {
                             p.show("gamePage_additionalStatus_turnsCounter");
+                            if (this.game.myNextRole == "speaker") {
+                                p.show("gamePage_additionalStatus_turnsCounter_speaker");
+                            } else {
+                                p.show("gamePage_additionalStatus_turnsCounter_listener");
+                            }
                         }
                     }
                 },
@@ -881,6 +886,11 @@ class App {
                             }
                         } else if (this.game.turnsCount > 0) {
                             p.show("gamePage_additionalStatus_turnsCounter");
+                            if (this.game.myNextRole == "speaker") {
+                                p.show("gamePage_additionalStatus_turnsCounter_speaker");
+                            } else {
+                                p.show("gamePage_additionalStatus_turnsCounter_listener");
+                            }
                         }
                     },
                     onEnter: () => {
@@ -906,6 +916,11 @@ class App {
                             }
                         } else if (this.game.turnsCount > 0) {
                             p.show("gamePage_additionalStatus_turnsCounter");
+                            if (this.game.myNextRole == "speaker") {
+                                p.show("gamePage_additionalStatus_turnsCounter_speaker");
+                            } else {
+                                p.show("gamePage_additionalStatus_turnsCounter_listener");
+                            }
                         }
                     },
                     onEnter: () => {
