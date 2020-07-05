@@ -116,7 +116,25 @@
             </div>
             <div id="gameSettingsPage_body">
                 <div id="gameSettingsPage_layers">
-                    <div class="layer">
+                    <div class="layer" id="gameSettingsPage_termCondition">
+                        <div class="label" id="gameSettingsPage_termConditionLabel">
+                            <span id="gameSettingsPage_termConditionText" gt gt-text>
+                                Заканчивать по ...
+                            </span>
+                            <span class="info" id="gameSettingsPage_termConditionInfo">
+                                <span src="svg/info.svg" name="svg"></span>
+                                <div class="arrow"></div>
+                            </span>
+                            <div class="popup-hint" id="gameSettingsPage_termConditionHint" gt gt-text>
+                                Условие конца игры.
+                            </div>
+                        </div>
+                        <select class="medium-select" id="gameSettingsPage_termConditionList">
+                            <option value="words">кол-ву слов</option>
+                            <option value="turns">кол-ву кругов</option>
+                        </select>
+                    </div>
+                    <div class="layer" id="gameSettingsPage_wordNumber">
                         <div class="label">
                             <span id="gameSettingsPage_wordNumberText" gt gt-text>
                                 Количество слов в шляпе
@@ -130,6 +148,21 @@
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_wordNumberField" name="type.number">
+                    </div>
+                    <div class="layer" id="gameSettingsPage_turnNumber">
+                        <div class="label">
+                            <span id="gameSettingsPage_turnNumberText" gt gt-text>
+                                Количество кругов
+                            </span>
+                            <span class="info" id="gameSettingsPage_turnNumberInfo">
+                                <span src="svg/info.svg" name="svg"></span>
+                                <div class="arrow"></div>
+                            </span>
+                            <div class="popup-hint" id="gameSettingsPage_turnNumberHint" gt gt-text>
+                                Игра закончивается через такое количество кругов. *описание того, что такое круг*.
+                            </div>
+                        </div>
+                        <input class="small-underlined-input input" id="gameSettingsPage_turnNumberField" name="type.number">
                     </div>
                     <div class="layer" id="gameSettingsPage_delayTime">
                         <div class="label">

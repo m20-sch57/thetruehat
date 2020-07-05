@@ -505,8 +505,12 @@ class Game {
                 .map(user => user.username);
         }
 
-        if ("wordsCount" in data) {
-            this.wordsCount = data.wordsCount;
+        if ("wordsLeft" in data) {
+            this.wordsLeft = data.wordsLeft;
+        }
+
+        if ("turnsLeft" in data) {
+            this.turnsLeft = data.turnsLeft;
         }
 
         if ("host" in data) {
@@ -540,7 +544,7 @@ class Game {
 
     render() {
         this.renderSpeakerListener();
-        this.renderWordsCount();
+        this.renderHatCounter();
         this.renderPlayersList();
         // this.renderPlayersCnt();
         this.renderHost();
@@ -555,9 +559,12 @@ class Game {
         el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
         el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
         el("gameSettingsPage_aftermathTimeField").value = this.settings.aftermathTime/1000;
-        el("gameSettingsPage_wordNumberField").value = this.settings.wordNumber;
+        el("gameSettingsPage_termConditionList").value = this.settings.termCondition;
+        el("gameSettingsPage_wordNumberField").value = this.settings.wordNumber || DEFAULT_SETTINGS.wordNumber;
+        el("gameSettingsPage_turnNumberField").value = this.settings.turnNumber || DEFAULT_SETTINGS.turnNumber;
         el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
         el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId;
+        this.app.updateSettings();
     }
 
     renderResults() {
@@ -635,8 +642,13 @@ class Game {
         });
     }
 
-    renderWordsCount() {
-        setValue(this.wordsCount, this.app.lang);
+    renderHatCounter() {
+        if (this.settings.termCondition == "turns") {
+            setValue(this.turnsLeft, this.app.lang);
+        }
+        if (this.settings.termCondition == "words") {
+            setValue(this.wordsLeft, this.app.lang);
+        }
     }
 
     renderSpeakerListener() {
@@ -1158,7 +1170,7 @@ class App {
         i18n.setLocale(lang);
         this.renderText();
         await this.loadLanguageDependentContent();
-        this.game.renderWordsCount();
+        this.game.renderHatCounter();
     }
 
     prepareGettext() {
@@ -1188,7 +1200,13 @@ class App {
         settings.delayTime = +el("gameSettingsPage_delayTimeField").value*1000;
         settings.explanationTime = +el("gameSettingsPage_explanationTimeField").value*1000;
         settings.aftermathTime = +el("gameSettingsPage_aftermathTimeField").value*1000;
-        settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
+        settings.termCondition = el("gameSettingsPage_termConditionList").value;
+        if (settings.termCondition == "words") {
+            settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
+        }
+        if (settings.termCondition == "turns") {
+            settings.turnNumber = +el("gameSettingsPage_turnNumberField").value;
+        }
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
         settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex;
         this.emit("cApplySettings", {settings});
@@ -1236,6 +1254,18 @@ class App {
                     counter += 1;
                 });
             }
+        }
+    }
+
+    updateSettings() {
+        let elem = el("gameSettingsPage_termConditionList");
+        hide("gameSettingsPage_wordNumber");
+        hide("gameSettingsPage_turnNumber");
+        if (elem.value == "words") {
+            show("gameSettingsPage_wordNumber");
+        }
+        if (elem.value == "turns") {
+            show("gameSettingsPage_turnNumber");
         }
     }
 
@@ -1375,6 +1405,9 @@ class App {
             el("joinPage_inputKey").value = this.game.key;
             this.pages.$join.push()
         }
+        el("mainPage_ru").onclick = () => this.setLocale("ru");
+        el("mainPage_en").onclick = () => this.setLocale("en");
+
         el("joinPage_goBack").onclick = () => this.pages.goBack();
         el("joinPage_pasteKey").onclick = () => this.pasteKey();
         el("joinPage_generateKey").onclick = () => this.generateKey();
@@ -1383,10 +1416,12 @@ class App {
             this.game.myUsername = el("joinPage_inputName").value;
             this.enterRoom();
         }
+
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
         el("preparationPage_start").onclick = () => this.emit("cStartGame");
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
+
         el("gamePage_listenerReadyButton").onclick = () =>
             this.listenerReady();
         el("gamePage_speakerReadyButton").onclick = () =>
@@ -1403,6 +1438,24 @@ class App {
         el("gamePage_finish").onclick = () => this.finishGame();
         el("gamePage_editConfirm").onclick = () => this.emit("cWordsEdited",
             this.game.editedWordsObject());
+        el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
+
+        el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
+        el("gameSettingsPage_revertButton").onclick = () => {
+            this.game.renderSettings();
+            this.pages.goBack();
+        }
+        el("gameSettingsPage_applyButton").onclick = () => {
+            this.applySettings();
+            this.pages.goBack();
+        }
+        el("gameSettingsPage_termConditionList").onchange = () => {
+            this.updateSettings();
+        }
+
+        el("preparationPage_openSettings").onclick =
+            () => this.pages.$settings.push();
+
         el("resultsPage_goBack").onclick = () => this.leaveResultsPage();
         el("resultsPage_newGame").onclick = () => {
             this.setKey(this.game.nextKey);
@@ -1421,23 +1474,11 @@ class App {
         el("helpPage_newsOption").onclick = () => {
             this.helpPages.$news.push();
         }
+
         el("feedbackPage_goBack").onclick = () => this.pages.goBack();
         el("feedbackPage_submit").onclick = () => this.sendFeedback();
+
         el("failureClose").onclick = hideError;
-        el("gamePage_editListScrollable").onscroll = () => this.editPageUpdateShadows();
-        el("preparationPage_openSettings").onclick =
-            () => this.pages.$settings.push();
-        el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
-        el("gameSettingsPage_revertButton").onclick = () => {
-            this.game.renderSettings();
-            this.pages.goBack();
-        }
-        el("gameSettingsPage_applyButton").onclick = () => {
-            this.applySettings();
-            this.pages.goBack();
-        }
-        el("mainPage_ru").onclick = () => this.setLocale("ru");
-        el("mainPage_en").onclick = () => this.setLocale("en");
 
         els("helpButton").forEach((it) => it.onclick = () => this.pages.$help.push());
         els("feedbackButton").forEach((it) => it.onclick = () => this.pages.$feedback.push());
@@ -1446,7 +1487,8 @@ class App {
         // Adding settings hint
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
             "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
-            "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode"]
+            "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode",
+            "gameSettingsPage_termCondition", "gameSettingsPage_turnNumber"]
         for (let idPrefix of prefixes) {
             this.addHint(idPrefix+"Info");
         }
