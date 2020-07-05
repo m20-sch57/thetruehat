@@ -482,6 +482,7 @@ class Game {
         this.editWords = [];
         this.results = [];
         this.roundId = 0;
+        this.timetable = [];
         this.inGame = false;
         this.app = app;
     }
@@ -539,6 +540,28 @@ class Game {
             this.nextKey = data.nextKey;
         }
 
+        if ("timetable" in data) {
+            this.timetable = data.timetable;
+            this.timetableDepth = this.timetable.length;
+            this.turnsCount = this.timetableDepth - 1;
+            this.turnsCountCorrect = false;
+            for (let i=0; i < this.timetable.length; i++) {
+                let pair = this.timetable[i];
+                if (pair.speaker == this.myUsername) {
+                    this.turnsCount = i-1;
+                    this.myNextRole = "speaker";
+                    this.turnsCountCorrect = true;
+                    break;
+                }
+                if (pair.listener == this.myUsername) {
+                    this.turnsCount = i-1;
+                    this.myNextRole = "listener";
+                    this.turnsCountCorrect = true;
+                    break;
+                }
+            }
+        }
+
         this.render();
     }
 
@@ -553,6 +576,7 @@ class Game {
         this.renderEditList();
         this.renderResults();
         this.renderSettings();
+        this.renderAdditionalStatus();
     }
 
     renderSettings() {
@@ -655,6 +679,13 @@ class Game {
         el("gamePage_speaker").innerText = this.speaker;
         el("gamePage_listener").innerText = this.listener;
         el("gamePage_additionalStatusListener").innerText = this.listener;
+    }
+
+    renderAdditionalStatus() {
+        let count = this.turnsCount;
+        let mark = this.turnsCountCorrect;
+        el("gamePage_additionalStatus_turnsCounter_counter").innerText =
+            `${mark ? "" : ">"}${count} ${_("круг", count)}`
     }
 
     changeWordState(word, state) {
@@ -799,6 +830,17 @@ class App {
                         } else {
                             p.show("gamePage_waitTitle");
                         }
+
+                        if (this.game.turnsCount == 0) {
+                            p.show("gamePage_additionalStatus_nextTurn");
+                            if (this.game.myNextRole == "speaker") {
+                                p.show("gamePage_additionalStatus_nextTurn_speaker")
+                            } else {
+                                p.show("gamePage_additionalStatus_nextTurn_listener")
+                            }
+                        } else if (this.game.turnsCount > 0) {
+                            p.show("gamePage_additionalStatus_turnsCounter");
+                        }
                     }
                 },
                 explanationDelay: {
@@ -806,10 +848,9 @@ class App {
                     render: (p) => {
                         if (this.game.myRole == "speaker") {
                             p.show("gamePage_speakerTitle");
-                            p.show("gamePage_additionalStatus");
                         } else if (this.game.myRole == "listener") {
                             p.show("gamePage_listenerTitle");
-                        } else if (this.game.myRole == "speaker") {
+                        } else {
                             p.show("gamePage_explanationTitle");
                         }
                     }
@@ -819,7 +860,6 @@ class App {
                         if (this.game.myRole == "speaker") {
                             p.show("gamePage_explanationBox");
                             p.show("gamePage_speakerTitle");
-                            p.show("gamePage_additionalStatus");
                         } else if (this.game.myRole == "listener") {
                             p.show("gamePage_speakerListener");
                             p.show("gamePage_observerBox");
@@ -829,6 +869,19 @@ class App {
                             p.show("gamePage_observerBox");
                             p.show("gamePage_explanationTitle");
                         }
+
+                        if (this.game.myRole == "speaker") {
+                            p.show("gamePage_additionalStatus_youExplain");
+                        } else if (this.game.turnsCount == 0) {
+                            p.show("gamePage_additionalStatus_nextTurn");
+                            if (this.game.myNextRole == "speaker") {
+                                p.show("gamePage_additionalStatus_nextTurn_speaker")
+                            } else {
+                                p.show("gamePage_additionalStatus_nextTurn_listener")
+                            }
+                        } else if (this.game.turnsCount > 0) {
+                            p.show("gamePage_additionalStatus_turnsCounter");
+                        }
                     },
                     onEnter: () => {
                         this.sizeWord();
@@ -837,10 +890,22 @@ class App {
                 edit: {
                     els: ["gamePage_editTitle"],
                     render: (p) => {
+                        hide("gamePage_additionalStatus_youExplain");
                         if (this.game.myRole == "speaker") {
                             p.show("gamePage_editBox");
                         } else {
                             p.show("gamePage_speakerListener")
+                        }
+
+                        if (this.game.turnsCount == 0) {
+                            p.show("gamePage_additionalStatus_nextTurn");
+                            if (this.game.myNextRole == "speaker") {
+                                p.show("gamePage_additionalStatus_nextTurn_speaker")
+                            } else {
+                                p.show("gamePage_additionalStatus_nextTurn_listener")
+                            }
+                        } else if (this.game.turnsCount > 0) {
+                            p.show("gamePage_additionalStatus_turnsCounter");
                         }
                     },
                     onEnter: () => {

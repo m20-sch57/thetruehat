@@ -8,3 +8,8 @@ msgid "слово"
 msgstr[0] "слово"
 msgstr[1] "слова"
 msgstr[2] "слов"
+
+msgid "круг"
+msgstr[0] "круг"
+msgstr[1] "круга"
+msgstr[2] "кругов"
