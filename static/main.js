@@ -543,7 +543,7 @@ class Game {
         if ("timetable" in data) {
             this.timetable = data.timetable;
             this.timetableDepth = this.timetable.length;
-            this.turnsCount = this.timetableDepth - 1;
+            this.turnsCount = this.timetableDepth - 2;
             this.turnsCountCorrect = false;
             for (let i=0; i < this.timetable.length; i++) {
                 let pair = this.timetable[i];
