@@ -1,6 +1,6 @@
 {
   "name": "thetruehat",
-  "description": "The implementation of well-known game Alias.",
+  "description": "The implementation of well-known game Alias (or Hat).",
   "homepage": "https://github.com/m20-sch57/thetruehat#readme",
   "bugs": {
     "url": "https://github.com/m20-sch57/thetruehat/issues"
