@@ -5,7 +5,7 @@ if len(URL) != 0 and URL[-1] == "/":
     URL = URL[:-1]
 URL = urlparse(URL)
 
-robotsTxt = open("robots.txt", "w", encoding="utf-8")
+robotsTxt = open("static/robots.txt", "w", encoding="utf-8")
 
 robotsTxt.write("user-agent: * # All bots\n")
 robotsTxt.write("disallow: " + URL.path + "/\n")
@@ -15,7 +15,7 @@ robotsTxt.write("# allow: " + URL.path + "/about.ru.html\n")
 
 robotsTxt.close()
 
-indexHTML = open("index.html", "r", encoding="utf-8")
+indexHTML = open("static/index.html", "r", encoding="utf-8")
 
 allIndexHTML = indexHTML.readlines()
 
@@ -28,7 +28,7 @@ if "<!-- Social Media tag Starts -->" in tempAll:
     end = tempAll.index("<!-- Social Media tag Ends -->") + 1
 
     allIndexHTML[start:end] = list(map(lambda line: line + "\n",
-f"""    <!-- Social Media tag Starts -->
+                                       f"""    <!-- Social Media tag Starts -->
     <!-- Common Data -->
     <meta name="description"
           content="Известная игра Шляпа теперь онлайн в удобном интерфейсе. Играй уже сейчас!">
@@ -47,7 +47,7 @@ f"""    <!-- Social Media tag Starts -->
     <!-- Twitter Card data -->
     <!-- Social Media tag Ends -->""".split("\n")))
 
-    indexHTML = open("index.html", "w", encoding="utf-8")
+    indexHTML = open("static/index.html", "w", encoding="utf-8")
 
     print(*allIndexHTML, sep="", end="", file=indexHTML)
 

@@ -1,5 +1,5 @@
 user-agent: * # All bots
-disallow: /
-allow: /hat2
-allow: /index.html
-# allow: /about.ru.html
+disallow: /TTH-SM/
+allow: /TTH-SM/hat2
+allow: /TTH-SM/index.html
+# allow: /TTH-SM/about.ru.html
