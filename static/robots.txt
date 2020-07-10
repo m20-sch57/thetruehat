@@ -1,5 +1,2 @@
 user-agent: * # All bots
-disallow: /TTH-SM/
-allow: /TTH-SM/hat2
-allow: /TTH-SM/index.html
-# allow: /TTH-SM/about.ru.html
+allow: /
