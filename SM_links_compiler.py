@@ -13,15 +13,27 @@ URL = urlunparse((URL.scheme,
                   URL.fragment))
 URL = urlparse(URL)
 
+"""
+Rules for robots.compileme:
+- "%" will be replaced by URL
+"""
 with open("static/robots.compileme", "r", encoding="utf-8") as robotsPrecompile,\
         open("static/robots.txt", "w", encoding="utf-8") as robotsTxt:
     for line in robotsPrecompile:
         robotsTxt.write(line.replace("%", URL.path))
 
 """
-Rules for index.html:
+Rules for meta.html:
 - "$P" will be replaced by URL 
 - "$D" will be replaced by date
+Rules for index.html:
+- if there no substring "<!-- Social Media tag Starts -->", file isn't changed
+- if there line #i with substring "<!-- Social Media tag Starts -->",
+     - if there no substring "<!-- Social Media tag Ends -->" after line #i,
+       all text after line #i is replaced with meta.html and string "<!-- Social Media tag Ends -->"
+       after it
+     - if there is line #j>i with substring "<!-- Social Media tag Ends -->",
+       all lines between lines #i and #j is replaced with meta.html
 """
 with TemporaryFile() as tempIndex:
     with open("static/index.html", "r", encoding="utf-8") as indexHTML:
