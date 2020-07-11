@@ -1,54 +1,57 @@
-from urllib.parse import urlparse
+import sys
+import time
+from urllib.parse import urlparse, urlunparse
+from tempfile import TemporaryFile
 
 URL = input("URL for use: ")
-if len(URL) != 0 and URL[-1] == "/":
-    URL = URL[:-1]
+URL = urlparse(URL)
+URL = urlunparse((URL.scheme,
+                  URL.netloc,
+                  URL.path if (len(URL.path) == 0 or URL.path[-1] != "/") else URL.path[:-1],
+                  URL.params,
+                  URL.query,  # Maybe replace (and some other parameters) by empty string
+                  URL.fragment))
 URL = urlparse(URL)
 
-robotsTxt = open("static/robots.txt", "w", encoding="utf-8")
+with open("static/robots.compileme", "r", encoding="utf-8") as robotsPrecompile,\
+        open("static/robots.txt", "w", encoding="utf-8") as robotsTxt:
+    for line in robotsPrecompile:
+        robotsTxt.write(line.replace("%", URL.path))
 
-robotsTxt.write("user-agent: * # All bots\n")
-robotsTxt.write("disallow: " + URL.path + "/\n")
-robotsTxt.write("allow: " + URL.path + "/hat2\n")
-robotsTxt.write("allow: " + URL.path + "/index.html\n")
-robotsTxt.write("# allow: " + URL.path + "/about.ru.html\n")
+"""
+Rules for index.html:
+- "$P" will be replaced by URL 
+- "$D" will be replaced by date
+"""
+with TemporaryFile() as tempIndex:
+    with open("static/index.html", "r", encoding="utf-8") as indexHTML:
+        for line in indexHTML:
+            tempIndex.write(bytes(line, encoding="utf-8"))
 
-robotsTxt.close()
+    tempIndex.seek(0)
 
-indexHTML = open("static/index.html", "r", encoding="utf-8")
+    with open("static/index.html", "w", encoding="utf-8") as indexHTML,\
+            open("static/meta.html", "r", encoding="utf-8") as meta:
+        prefix = ""
+        for line in tempIndex:
+            line = str(line, encoding="utf-8")
+            indexHTML.write(line)
+            if "<!-- Social Media tag Starts -->" in line:
+                prefix = line[:-len(line.lstrip())]
+                break
+        else:
+            sys.exit()
 
-allIndexHTML = indexHTML.readlines()
+        for line in meta:
+            indexHTML.write(prefix + line.replace("$P", URL.geturl()).replace("$R", "?rubbish=" +
+                                                                              str(int(time.time() * 10_000_000))))
 
-indexHTML.close()
+        for line in tempIndex:
+            line = str(line, encoding="utf-8")
+            if "<!-- Social Media tag Ends -->" in line:
+                indexHTML.write(line)
+                break
+        else:
+            indexHTML.write("<!-- Social Media tag Ends -->")
 
-tempAll = list(map(lambda line: line.strip(), allIndexHTML))
-
-if "<!-- Social Media tag Starts -->" in tempAll:
-    start = tempAll.index("<!-- Social Media tag Starts -->")
-    end = tempAll.index("<!-- Social Media tag Ends -->") + 1
-
-    allIndexHTML[start:end] = list(map(lambda line: line + "\n",
-                                       f"""    <!-- Social Media tag Starts -->
-    <!-- Common Data -->
-    <meta name="description"
-          content="Известная игра Шляпа теперь онлайн в удобном интерфейсе. Играй уже сейчас!">
-    <!-- Open Graph data -->
-    <meta property="og:title" content="TheTrueHat" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="{URL.geturl()}/hat2-SM.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="Цилиндр - символ игры и TheTrueHat" />
-    <meta property="og:url" content="{URL.geturl()}/" />
-    <meta property="og:description"
-          content="Известная игра Шляпа теперь онлайн в удобном интерфейсе. Играй уже сейчас!" />
-    <meta property="og:determiner" content="" />
-    <meta property="og:locale" content="ru_RU" />
-    <meta property="og:locale:alternate" content="en_US" />
-    <!-- Twitter Card data -->
-    <!-- Social Media tag Ends -->""".split("\n")))
-
-    indexHTML = open("static/index.html", "w", encoding="utf-8")
-
-    print(*allIndexHTML, sep="", end="", file=indexHTML)
-
-    indexHTML.close()
+        indexHTML.write(str(tempIndex.read(), encoding="utf-8"))

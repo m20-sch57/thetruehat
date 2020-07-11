@@ -1,0 +1,4 @@
+user-agent: * # All bots
+allow: %/
+disallow: %/meta.html
+disallow: %/robots.compileme
