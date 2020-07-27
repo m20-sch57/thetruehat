@@ -44,10 +44,14 @@
     - `termCondition (string)` - условие окончания игры
       - `words` - по кол-ву слов
       - `turns` - по кол-ву кругов
-    - `wordNumber (int)` - если `termCondition = words`. Начальное количество слов в шляпе
+    - `wordNumber (int)` - если `termCondition = words` и `wordsetType = *Dictionary`. Начальное количество слов в шляпе
     - `turnsNumber (int)` - если `termCondition = turns`. Количество кругов
     - `strictMode (bool)` - используется ли строгий режим (при строгом режиме раунд сразу заканчивается после истечению времени)
-    - `dictionaryId (int)` - идентификатор словаря, откуда берутся слова в игре
+    - `wordsetType (string)` - способ, по которому формируются слова для игры
+      - `serverDictionary` - из словаря на сервере берётся `wordNumber` слов
+      - `hostDictionary` - из словаря, загружаемого хостом берётся `wordNumber` слов
+      - `playerWords` - список слов для игры формируется из списков слов, которые присылают игроки на этапе `wordCollection`.
+    - `dictionaryId (int)` - если `wordsetType = serverDictionary`. идентификатор словаря, откуда берутся слова в игре
 2. Текст на нескольких языках (LanguageDictionary)
     - `ru (string)` - текст на русском языке
     - `en (string)` - текст на английском языке
