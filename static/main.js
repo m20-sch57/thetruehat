@@ -1393,6 +1393,8 @@ class App {
         }
         if (wordsetType == "hostDictionary") {
             show("gameSettingsPage_loadDictionary");
+        } else {
+            this.removeSelectedDictionaryFile();
         }
         this.updateDictionaryFileLoaderText();
     }
