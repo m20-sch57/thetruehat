@@ -1744,6 +1744,25 @@ io.on("connection", function(socket) {
     });
 
     /**
+     * Implementation of cStartWordCollection function
+     * @see API.md
+     */
+    socket.on("cStartWordCollection", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cStartWordCollection", undefined);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        //checking signal conditions
+        if (!CheckConditions.cStartWordCollection(socket, key)) {
+            return;
+        }
+
+        Callbacks.cStartWordCollection(socket, key);
+    });
+
+    /**
      * Implementation of cStartGame function
      * @see API.md
      */
