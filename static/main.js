@@ -24,6 +24,7 @@ window.onload = function() {
 
 const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
 const WORD_MAX_SIZE = 50;
+const DICTIONARY_MAX_SIZE = 64 * 1024 * 1024
 
 Array.prototype.last = function() {
     console.assert(this.length >= 1,
@@ -1393,6 +1394,7 @@ class App {
         if (wordsetType == "hostDictionary") {
             show("gameSettingsPage_loadDictionary");
         }
+        this.updateDictionaryFileLoaderText();
     }
 
     setSocketioEventListeners() {
@@ -1623,6 +1625,68 @@ class App {
         }
 
         els("type.number").forEach(it => validateNumber(it.id));
+
+        el("gameSettingsPage_loadFile").addEventListener('change', () => this.parseDictionaryFile());
+    }
+
+    updateDictionaryFileLoaderText() {
+        let elem = el("gameSettingsPage_loadFile"), label = el("gameSettingsPage_loadFileLabel");
+        if (elem.files.length) {
+            if (this.dictionaryFileWordNumber !== undefined) {
+                label.innerText = `${elem.files[0].name}, ${this.dictionaryFileWordNumber} words`;
+            } else {
+                label.innerText = `${elem.files[0].name} (loading...)`
+            }
+        } else {
+            label.innerText = "Choose a file";
+        }
+    }
+
+    calcWordHostDictionaryNumber(evt) {
+        let lines = evt.target.result.split('\n');
+        this.dictionaryFileWordNumber = 0;
+        for (let line of lines) {
+            if (line != "") {
+                this.dictionaryFileWordNumber++;
+            }
+        }
+        this.updateDictionaryFileLoaderText();
+    }
+
+    dictionatyLoadError(evt) {
+        showError("Can't open file");
+        this.removeSelectedDictionaryFile();
+    }
+
+    validateDictionaryFile(file) {
+        if (file.type != "" && file.type != "text/plain") {
+            showError("You should send a text file");
+            return false;
+        }
+        if (file.size > DICTIONARY_MAX_SIZE) {
+            showError("Max dictionary size is 64 MiB");
+            return false;
+        }
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = (evt) => this.calcWordHostDictionaryNumber(evt);
+        reader.onerror = (evt) => this.dictinaryLoadError(evt);
+        return true;
+    }
+
+    removeSelectedDictionaryFile() {
+        el("gameSettingsPage_loadFile").value = "";
+        this.dictionaryFileWordNumber = undefined;
+    }
+
+    parseDictionaryFile() {
+        if (el("gameSettingsPage_loadFile").files.length) {
+            let file = el("gameSettingsPage_loadFile").files[0];
+            if (!this.validateDictionaryFile(file)) {
+                removeSelectedDictionaryFile();
+            }
+        }
+        this.updateDictionaryFileLoaderText();
     }
 
     async loadFile(name, callback) {
