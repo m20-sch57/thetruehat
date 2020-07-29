@@ -2,6 +2,8 @@
 
 "use strict"
 
+// region
+
 const fetch = require("@lounres/flex_node_fetch").fetch;
 
 const config = require("./config.json");
@@ -20,15 +22,14 @@ const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
 const dictsConf = config.dicts;
-let _dicts = [];
+const dicts = [];
 for (let i = 0; i < dictsConf.length; ++i) {
     let dict = {};
     dict["words"] = require(dictsConf[i].path).words;
     dict["name"] = dictsConf[i].name;
     dict["wordNumber"] = dict.words.length;
-    _dicts.push(dict);
+    dicts.push(dict);
 }
-const dicts = _dicts;
 
 const settingsRange = config.settingsRange;
 
@@ -47,8 +48,9 @@ const io = require("socket.io")(server);
 server.listen(PORT);
 console.log("Listening on port " + PORT);
 
+// endregion
 //----------------------------------------------------------
-// Handy functions
+// region Handy functions
 
 /**
  * Checks object with the pattern
@@ -59,10 +61,7 @@ console.log("Listening on port " + PORT);
  */
 function checkObject(object, pattern) {
     // checking object for undefined or null
-    if (object === undefined) {
-        return false;
-    }
-    if (object === null) {
+    if (object === undefined || object === null) {
         return false;
     }
 
@@ -425,7 +424,9 @@ function sendStat(room) {
     }
 }
 
+// endregion
 //----------------------------------------------------------
+// region Signals
 
 class Signals {
     /**
@@ -556,13 +557,24 @@ class Signals {
      * Implementation of sFailure signal
      * @see API.md
      *
-     *
      * @param sid Id of socket to emit
      * @param request Request that is failed
+     * @param code Error code
      * @param msg Message to send
      */
     static sFailure(sid, request, code, msg) {
         Signals.emit(sid, "sFailure", {"request": request, "msg": msg, "code": code});
+    }
+
+    /**
+     * Implementation of sWordCollectionStarted signal
+     * @see API.md
+     *
+     * @param key Id of socket to emit
+     */
+    static sWordCollectionStarted(key) {
+        // TODO: to implement
+        Signals.emit(key, "sWordCollectionStarted")
     }
 
     /**
@@ -710,8 +722,10 @@ class Signals {
         Signals.emit(key, "sGameEnded", {"results": results, "nextKey": nextKey});
     }
 }
+
+// endregion
 //----------------------------------------------------------
-// HTTP functions
+// region HTTP functions
 
 /**
  * Send response
@@ -803,7 +817,9 @@ app.get("/getRoomInfo", function(req, res) {
     }
 });
 
+// endregion
 //----------------------------------------------------------
+// region Room and User
 
 /**
  * Room class
@@ -812,6 +828,12 @@ app.get("/getRoomInfo", function(req, res) {
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *     - settings --- room settings
+ *
+ * if state === "prepare" and settings.wordsetType === "":
+ *     - enteredWords --- dictionary, its keys --- users, its values is `true` when user entered values
+ *     and `false` or `null` otherwise,
+ *     - freshWords --- list of words in hat.
+ *
  * if state === "play":
  *     - substate --- substate of the room,
  *     - freshWords --- list of words in hat,
@@ -826,7 +848,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
  *     - numberOfLap --- number of lap
- *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info, but `time` is `time` plus `extra_time`)
+ *     - explanationRecords --- array with explanation records (see [here](https://sombreroapi.docs.apiary.io/#reference/1/gamelog) for more info, but `time` is `time` plus `extra_time`)
  *     - start_timestamp --- start timestamp
  *     - end_timestamp --- end timestamp
  *     - explStartMainTime --- start timestamp of word explanation
@@ -927,8 +949,9 @@ class User {
  */
 const rooms = {};
 
+// endregion
 //----------------------------------------------------------
-// Checks for socket signals
+// region Checks for socket signals
 
 function checkInputFormat(socket, data, format, signal) {
     if (!checkObject(data, format)) {
@@ -1039,7 +1062,58 @@ class CheckConditions {
         return true;
     }
 
-    static cStartGame(socket, key) {
+    static cStartWordCollection(socket, key) {
+        // TODO: to implement
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "wait") {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать игру");
+            return false;
+        }
+
+        // Fail if only one user is online
+        let cnt = 0
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                cnt++;
+            }
+        }
+        if (cnt < 2) {
+            Signals.sFailure(socket.id,"cStartWordCollection", 302,
+                "Недостаточно игроков онлайн в комнате, чтобы начать игру (необходимо хотя бы два)");
+            return false;
+        }
+        return true;
+    }
+
+    static cWordsReady() {
+        // TODO: to implement
+    }
+
+    static cStartGame(socket, key) { // TODO: Check if everything is OK
         // Checking if user is not in the room
         if (key === socket.id) {
             Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
@@ -1281,9 +1355,9 @@ class CheckConditions {
 }
 
 class Callbacks {
-    static joinRoomCallback(socket, data, err) {
+    static cJoinRoom(socket, data, err) {
         const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
-        const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
+        const name = data.username.trim().replace(/\s+/g, " "); // name of the user
         const time_zone_offset = data.time_zone_offset;
 
         // If any error happened
@@ -1319,7 +1393,7 @@ class Callbacks {
         Signals.sYouJoined(socket.id, key);
     }
 
-    static leaveRoomCallback(socket, key, err) {
+    static cLeaveRoom(socket, key, err) {
         const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
         if (usernamePos === -1) return;
         const username = rooms[key].users[usernamePos].username;
@@ -1445,6 +1519,14 @@ class Callbacks {
         }
 
         Signals.sNewSettings(key);
+    }
+
+    static cStartWordCollection() {
+        // TODO: to implement
+    }
+
+    static cWordsReady() {
+        // TODO: to implement
     }
 
     static cStartGame(socket, key) {
@@ -1668,8 +1750,9 @@ class Callbacks {
     }
 }
 
+// endregion
 //----------------------------------------------------------
-// Socket.IO functions
+// region Socket.IO functions
 
 io.on("connection", function(socket) {
     if (WRITE_LOGS) {
@@ -1696,7 +1779,7 @@ io.on("connection", function(socket) {
         }
 
         // Adding the user to the room
-        socket.join(data.key.toLowerCase().replace(/\s+/g, ""), (err) => Callbacks.joinRoomCallback(socket, data, err));
+        socket.join(data.key.toLowerCase().replace(/\s+/g, ""), (err) => Callbacks.cJoinRoom(socket, data, err));
     });
 
     /**
@@ -1716,7 +1799,7 @@ io.on("connection", function(socket) {
         }
 
         // Removing the user from the room
-        socket.leave(key, (err) => Callbacks.leaveRoomCallback(socket, key, err));
+        socket.leave(key, (err) => Callbacks.cLeaveRoom(socket, key, err));
     });
 
     /**
@@ -1741,6 +1824,51 @@ io.on("connection", function(socket) {
         }
 
         Callbacks.cApplySettings(socket, key, data.settings);
+    });
+
+    /**
+     * Implementation of cStartWordCollection function
+     * @see API.md
+     */
+    socket.on("cStartWordCollection", function() {
+        // TODO: to implement
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cStartWordCollection", undefined);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking signal conditions
+        if (!CheckConditions.cStartWordCollection(socket, key)) {
+            return;
+        }
+
+        Callbacks.cStartWordCollection(socket, key);
+    });
+
+    /**
+     * Implementation of cWordsReady function
+     * @see API.md
+     */
+    socket.on("cWordsReady", function(data) {
+        // TODO: to implement
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cWordsReady", undefined);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"words": "object"}, "cWordsReady")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cWordsReady(socket, key, data.settings)) {
+            return;
+        }
+
+        Callbacks.cWordsReady(socket, key, data.settings);
     });
 
     /**
@@ -1904,3 +2032,5 @@ io.on("connection", function(socket) {
         Callbacks.disconnect(socket)
     });
 });
+
+// endregion

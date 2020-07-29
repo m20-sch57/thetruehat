@@ -25,10 +25,11 @@
         "delayTime": 3000,
         "explanationTime": 40000,
         "aftermathTime": 3000,
-        "dictionaryId": 0,
-        "strictMode": false,
         "termCondition": "words",
-        "wordNumber": 100
+        "wordsetType": "serverDictionary",
+        "dictionaryId": 0,
+        "wordNumber": 100,
+        "strictMode": false
     },
     "defaultWordNumber": 100,
     "defaultTurnNumber": 10,
