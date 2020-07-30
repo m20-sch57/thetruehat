@@ -1090,7 +1090,7 @@ class CheckConditions {
             return false;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать игру");
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать приготовление к игре");
             return false;
         }
 
@@ -1103,7 +1103,7 @@ class CheckConditions {
         }
         if (cnt < 2) {
             Signals.sFailure(socket.id,"cStartWordCollection", 302,
-                "Недостаточно игроков онлайн в комнате, чтобы начать игру (необходимо хотя бы два)");
+                "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
             return false;
         }
         return true;
@@ -1113,7 +1113,7 @@ class CheckConditions {
         // TODO: to implement
     }
 
-    static cStartGame(socket, key) { // TODO: Check if everything is OK
+    static cStartGame(socket, key) {
         // Checking if user is not in the room
         if (key === socket.id) {
             Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
@@ -1129,6 +1129,12 @@ class CheckConditions {
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "wait") {
             Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
+            return false;
+        }
+
+        // if the should be preparation --- this signal can't be sent from client
+        if (rooms[key].settings.wordsetType === "playerWords") {
+            // TODO: ban
             return false;
         }
 
