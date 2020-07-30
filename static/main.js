@@ -191,6 +191,17 @@ function colorGradientRGB(colors) {
     }
 }
 
+function throttle(fun, cooldownTime) {
+    let callTime = performance.now() - cooldownTime;
+    return function() {
+        let now = performance.now();
+        if (now - callTime >= cooldownTime) {
+            callTime = now;
+            return fun(...arguments)
+        }
+    }
+}
+
 class TimeSync {
     constructor(syncInterval) {
         this.syncInterval = syncInterval;
@@ -1525,12 +1536,12 @@ class App {
             this.listenerReady();
         el("gamePage_speakerReadyButton").onclick = () =>
             this.speakerReady();
-        el("gamePage_explanationSuccess").onclick = () => this.emit(
-            "cEndWordExplanation", {"cause": "explained"});
-        el("gamePage_explanationFailed").onclick = () => this.emit(
-            "cEndWordExplanation", {"cause": "notExplained"});
-        el("gamePage_explanationMistake").onclick = () => this.emit(
-            "cEndWordExplanation", {"cause": "mistake"});
+        el("gamePage_explanationSuccess").onclick = throttle(() => {this.emit(
+            "cEndWordExplanation", {"cause": "explained"})}, GAME_BUTTON_COOLDOWN_TIME);
+        el("gamePage_explanationFailed").onclick = throttle(() => this.emit(
+            "cEndWordExplanation", {"cause": "notExplained"}), GAME_BUTTON_COOLDOWN_TIME);
+        el("gamePage_explanationMistake").onclick = throttle(() => this.emit(
+            "cEndWordExplanation", {"cause": "mistake"}), GAME_BUTTON_COOLDOWN_TIME);
         el("gamePage_goBack").onclick = () => this.leaveRoom();
         el("gamePage_leave").onclick = () => this.leaveRoom();
         el("gamePage_volume").onclick = () => this.toggleVolume();
