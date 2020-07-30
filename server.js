@@ -265,7 +265,6 @@ function getTimetable(key) {
  * @param key --- key of the room
  */
 function processPreparationResults(key) {
-    rooms[key].state = "play";
     let wordList = [];
     let allWords = {};
     for (let i = 0; i < rooms[key].users.length; ++i) {
@@ -279,7 +278,15 @@ function processPreparationResults(key) {
         delete rooms[key].users[i].userWords;
     }
 
+    // checking number of words
+    if (wordList.length >= config.settingsRange.wordNumber.max) {
+        Signals.sFailure(key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
+        wordList.length = config.settingsRange.wordNumber.max - 1;
+    }
+
     rooms[key].freshWords = wordList;
+
+    rooms[key].state = "play";
 }
 
 /**
@@ -851,9 +858,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - users --- list of users (User objects)
  *     - settings --- room settings
  *
- * if state === "prepare" and settings.wordsetType === "":
- *     - enteredWords --- dictionary, its keys --- users, its values is `true` when user entered values
- *     and `false` or `null` otherwise,
+ * if state === "prepare" and settings.wordsetType === "playerWords":
  *     - freshWords --- list of words in hat.
  *
  * if state === "play":
@@ -1620,6 +1625,12 @@ class Callbacks {
         let userPos = findFirstSidPos(rooms[key].users, socket.id);
         rooms[key].users[userPos].userReady = true;
         rooms[key].users[userPos].userWords = words;
+
+        // checkig words number
+        if (rooms[key].users[userPos].usedWords.length >= config.settingsRange.wordNumber.max) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
+            rooms[key].users[userPos].usedWords.length = config.settingsRange.wordNumber.max - 1
+        }
 
         // if everyone is ready --- let's start!
         let allReady = true;
