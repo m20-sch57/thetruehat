@@ -526,20 +526,25 @@ class Signals {
             case "wait":
                 joinObj.state = "wait";
                 break;
+            case "prepare":
+                joinObj.state = "prepare";
+                break;
             case "play":
                 joinObj.state = "play";
                 joinObj.timetable = getTimetable(key);
                 joinObj.speaker = room.users[room.speaker].username;
                 joinObj.listener = room.users[room.listener].username;
-                switch (room.settings.termCondition) {
-                    case "words":
-                        joinObj.wordsLeft = room.freshWords.length;
-                        break;
-                    case "turns":
-                        joinObj.turnsLeft = room.settings.turnNumber - room.numberOfLap;
-                        break;
-                    default:
-                        console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                if (joinObj.settings.wordsetType !== "playerWords") {
+                    switch (room.settings.termCondition) {
+                        case "words":
+                            joinObj.wordsLeft = room.freshWords.length;
+                            break;
+                        case "turns":
+                            joinObj.turnsLeft = room.settings.turnNumber - room.numberOfLap;
+                            break;
+                        default:
+                            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
+                    }
                 }
                 switch (room.substate) {
                     case "wait":
@@ -1484,38 +1489,56 @@ class Callbacks {
     }
 
     static cApplySettings(socket, key, settings) {
-        // special case: "dictionaryId" (it changes ranges for other settings) (also "termCondition" should be processes out of turn)
+        // special case: "dictionaryId" (it changes ranges for other settings) (also "termCondition" should be processes out of turn (and "wordsetType"))
         let warnWordsDecrease = false;
         let warnTurnDefault = false;
         let warnWordsDefault = false;
-        if ("termCondition" in settings) {
-            if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
+        let ignoreTermCondition = false;
+        if ("wordsetType" in settings) {
+            if (typeof(rooms[key].settings["wordsetType"]) !== typeof(settings["wordsetType"])) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Неверный тип поля настроек termCondition: " +
-                    typeof(settings["termCondition"]) + " вместо " +
-                    typeof(rooms[key].settings["termCondition"]) + ", пропускаю");
+                    "Неверный тип поля настроек wordsetType: "+
+                    typeof(settings["wordsetType"]) + " вместо " +
+                    typeof(rooms[key].settings["wordsetType"]) + ", пропускаю");
             } else {
-                if (!(settings["termCondition"] in {"words": null, "turns": null})) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
+                rooms[key].settings["wordsetType"] = settings["wordsetType"];
+                if (rooms[key].settings["wordsetType"] === "playerWords") {
+                    ignoreTermCondition = true;
+                }
+            }
+        }
+        if ("termCondition" in settings) {
+            if (!ignoreTermCondition) {
+                if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверный тип поля настроек termCondition: " +
+                        typeof(settings["termCondition"]) + " вместо " +
+                        typeof(rooms[key].settings["termCondition"]) + ", пропускаю");
                 } else {
-                    rooms[key].settings["termCondition"] = settings["termCondition"];
-                    switch (rooms[key].settings["termCondition"]) {
-                        case "words":
-                            rooms[key].settings["wordNumber"] = config.defaultWordNumber;
-                            if ("turnNumber" in rooms[key].settings) {
-                                delete rooms[key].settings["turnNumber"];
-                            }
-                            warnWordsDefault = true;
-                            break;
-                        case "turns":
-                            rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
-                            if ("wordNumber" in rooms[key].settings) {
-                                delete rooms[key].settings["wordNumber"];
-                            }
-                            warnTurnDefault = true;
-                            break;
+                    if (!(settings["termCondition"] in {"words": null, "turns": null})) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
+                    } else {
+                        rooms[key].settings["termCondition"] = settings["termCondition"];
+                        switch (rooms[key].settings["termCondition"]) {
+                            case "words":
+                                rooms[key].settings["wordNumber"] = config.defaultWordNumber;
+                                if ("turnNumber" in rooms[key].settings) {
+                                    delete rooms[key].settings["turnNumber"];
+                                }
+                                warnWordsDefault = true;
+                                break;
+                            case "turns":
+                                rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
+                                if ("wordNumber" in rooms[key].settings) {
+                                    delete rooms[key].settings["wordNumber"];
+                                }
+                                warnTurnDefault = true;
+                                break;
+                        }
                     }
                 }
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"playerWords\", игнорирую \"termCondition\"");
             }
         }
         if ("dictionaryId" in settings) {
