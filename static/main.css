@@ -66,6 +66,18 @@ input[type=checkbox] + label + label {
     font-size: 20px;
 }
 
+select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    background-image: url(/svg/arrow_down.svg);
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 3px);
+    background-position-y: calc(50% - 1px);
+    outline: none;
+}
+
 svg {
     height: inherit;
     width: inherit;
@@ -222,7 +234,7 @@ svg {
 
 .medium-select {
     height: 40px;
-    padding: 0 10px 0 10px;
+    padding: 0 30px 0 10px;
     border: 1px solid grey;
     border-radius: 20px;
     font-size: 18px;
