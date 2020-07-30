@@ -1082,6 +1082,12 @@ class CheckConditions {
             return false;
         }
 
+        // if this state should be present
+        if (rooms[key].settings["wordsetType"] !== "playerWords") {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
+            return false;
+        }
+
         // checking whether signal owner is host
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
@@ -1109,8 +1115,28 @@ class CheckConditions {
         return true;
     }
 
-    static cWordsReady() {
-        // TODO: to implement
+    static cWordsReady(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cWordsReady", 304, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cWordsReady", 300, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "prepare") {
+            Signals.sFailure(socket.id, "cWordsReady", 301, "Игра уже начата");
+            return false;
+        }
+
+        // if is already ready TODO
+
+        return true;
     }
 
     static cStartGame(socket, key) {
@@ -1133,8 +1159,8 @@ class CheckConditions {
         }
 
         // if the should be preparation --- this signal can't be sent from client
-        if (rooms[key].settings.wordsetType === "playerWords") {
-            // TODO: ban
+        if (rooms[key].settings["wordsetType"] === "playerWords") {
+            Signals.sFailure(socket.id, "cStartGame", null, "Игра предусматривает набор слов, нельзя начать игру");
             return false;
         }
 
@@ -1528,7 +1554,23 @@ class Callbacks {
     }
 
     static cStartWordCollection() {
-        // TODO: to implement
+        /**
+         * kicking off offline users
+         */
+        // preparing containers
+        let onlineUsers = [];
+
+        // copying each user in proper container
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                onlineUsers.push(rooms[key].users[i]);
+            }
+        }
+
+        // removing offline users
+        rooms[key].users = onlineUsers;
+
+        // TODO: other stuff (preparing storage, flags (userReady) and emitting signal)
     }
 
     static cWordsReady() {
