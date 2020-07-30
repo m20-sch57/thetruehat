@@ -260,6 +260,29 @@ function getTimetable(key) {
 }
 
 /**
+ * Process results of preparation
+ *
+ * @param key --- key of the room
+ */
+function processPreparationResults(key) {
+    rooms[key].state = "play";
+    let wordList = [];
+    let allWords = {};
+    for (let i = 0; i < rooms[key].users.length; ++i) {
+        for (let j = 0; j < rooms[key].users[i].userWords.length; ++j) {
+            if (!(rooms[key].users[i].userWords[j] in allWords)) {
+                wordList.push(rooms[key].users[i].userWords[j]);
+                allWords[rooms[key].users[i].userWords[j]] = true;
+            }
+        }
+        delete rooms[key].users[i].userReady;
+        delete rooms[key].users[i].userWords;
+    }
+
+    rooms[key].freshWords = wordList;
+}
+
+/**
  * Start an explanation
  *
  * @param key --- key of the room
@@ -570,10 +593,9 @@ class Signals {
      * Implementation of sWordCollectionStarted signal
      * @see API.md
      *
-     * @param key Id of socket to emit
+     * @param key Id of the Room
      */
     static sWordCollectionStarted(key) {
-        // TODO: to implement
         Signals.emit(key, "sWordCollectionStarted")
     }
 
@@ -864,12 +886,14 @@ class Room {
     /**
      * Preparing room for the game
      */
-    gamePrepare() {
+    gamePrepare(prepareWords = true) {
         // changing state to 'play'
         this.state = "play";
 
-        // generating word list
-        this.freshWords = generateWords(this.settings);
+        if (prepareWords) {
+            // generating word list
+            this.freshWords = generateWords(this.settings);
+        }
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -931,6 +955,8 @@ class Room {
  *     - scoreExplained --- no comments,
  *     - scoreGuessed --- no comments,
  *     - time_zone_offset --- no comments,
+ *     - userWords --- if game setting `wordsetType === playerWords`, words from this user
+ *     - userReady --- if game setting `wordsetType === playerWords`, whether this user is ready
  */
 class User {
     constructor(username, sids, time_zone_offset, online=true) {
@@ -1063,7 +1089,6 @@ class CheckConditions {
     }
 
     static cStartWordCollection(socket, key) {
-        // TODO: to implement
         // Checking if user is not in the room
         if (key === socket.id) {
             Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
@@ -1115,26 +1140,36 @@ class CheckConditions {
         return true;
     }
 
-    static cWordsReady(socket, key) {
+    static cWordsReady(socket, key, words) {
         // Checking if user is not in the room
         if (key === socket.id) {
-            Signals.sFailure(socket.id, "cWordsReady", 304, "Вы не в комнате");
+            Signals.sFailure(socket.id, "cWordsReady", null, "Вы не в комнате");
             return false;
         }
 
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket.id, "cWordsReady", 300, "Игра закончена");
+            Signals.sFailure(socket.id, "cWordsReady", null, "Игра закончена");
             return false;
         }
 
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "prepare") {
-            Signals.sFailure(socket.id, "cWordsReady", 301, "Игра уже начата");
+            Signals.sFailure(socket.id, "cWordsReady", null, "Игра уже начата");
             return false;
         }
 
-        // if is already ready TODO
+        // if user is already ready
+        if (rooms[key].users[findFirstSidPos(rooms[key].users, socket.id)].userReady) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Игрок уже и так готов");
+            return false;
+        }
+
+        // cheking words
+        if (!Array.isArray(words)) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Неверный формат слов");
+            return false;
+        }
 
         return true;
     }
@@ -1444,7 +1479,7 @@ class Callbacks {
     }
 
     static cApplySettings(socket, key, settings) {
-        // special case: "dictionaryId" (it changes ranges for other settings)
+        // special case: "dictionaryId" (it changes ranges for other settings) (also "termCondition" should be processes out of turn)
         let warnWordsDecrease = false;
         let warnTurnDefault = false;
         let warnWordsDefault = false;
@@ -1570,11 +1605,37 @@ class Callbacks {
         // removing offline users
         rooms[key].users = onlineUsers;
 
-        // TODO: other stuff (preparing storage, flags (userReady) and emitting signal)
+        rooms[key].state = "prepare";
+
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            rooms[key].users[i].userWords = [];
+            rooms[key].users[i].userReady = false;
+        }
+
+        Signals.sWordCollectionStarted(key);
     }
 
-    static cWordsReady() {
-        // TODO: to implement
+    static cWordsReady(socket, key, words) {
+        // setting ready flag and storing words
+        let userPos = findFirstSidPos(rooms[key].users, socket.id);
+        rooms[key].users[userPos].userReady = true;
+        rooms[key].users[userPos].userWords = words;
+
+        // if everyone is ready --- let's start!
+        let allReady = true;
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (!(rooms[key].users[i].userReady)) {
+                allReady = false;
+                break;
+            }
+        }
+
+        if (allReady) {
+            processPreparationResults(key);
+            rooms[key].gamePrepare(false);
+            rooms[key].start_timestamp = (new Date()).getTime();
+            Signals.sGameStarted(key);
+        }
     }
 
     static cStartGame(socket, key) {
@@ -1879,7 +1940,6 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cStartWordCollection", function() {
-        // TODO: to implement
         if (WRITE_LOGS) {
             console.log(socket.id, "cStartWordCollection", undefined);
         }
@@ -1899,9 +1959,8 @@ io.on("connection", function(socket) {
      * @see API.md
      */
     socket.on("cWordsReady", function(data) {
-        // TODO: to implement
         if (WRITE_LOGS) {
-            console.log(socket.id, "cWordsReady", undefined);
+            console.log(socket.id, "cWordsReady", data);
         }
 
         const key = getRoom(socket); // key of the room
@@ -1912,11 +1971,11 @@ io.on("connection", function(socket) {
         }
 
         // checking signal conditions
-        if (!CheckConditions.cWordsReady(socket, key, data.settings)) {
+        if (!CheckConditions.cWordsReady(socket, key, data.words)) {
             return;
         }
 
-        Callbacks.cWordsReady(socket, key, data.settings);
+        Callbacks.cWordsReady(socket, key, data.words);
     });
 
     /**
