@@ -127,6 +127,29 @@
                             <option value="turns">заданное число кругов</option>
                         </select>
                     </div>
+                    <div class="layer" id="gameSettingsPage_dictionarySelection">
+                        <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
+                            <div id="gameSettingsPage_dictionarySelectionText" gt gt-text>
+                                Слова
+                            </div>
+                        </div>
+                        <select class="medium-select" id="gameSettingsPage_dictionaryList">
+                        </select>
+                    </div>
+                    <div class="layer" id="gameSettingsPage_loadDictionary">
+                        <input type="file" id="gameSettingsPage_loadFileInput">
+                        <label for="gameSettingsPage_loadFileInput" class="small-button bg-blue" id="gameSettingsPage_loadFileButton" gt gt-text>
+                            Выбрать файл
+                        </label>
+                        <div id="gameSettingsPage_loadFileLabel" gt gt-text>
+                        </div>
+                        <div class="info" id="gameSettingsPage_loadFileInfo">
+                            <div src="svg/info.svg" name="svg"></div>
+                        </div>
+                        <div class="popup-hint" id="gameSettingsPage_loadFileHint" gt gt-text>
+                            Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке.
+                        </div>
+                    </div>
                     <div class="layer" id="gameSettingsPage_wordNumber">
                         <div class="label">
                             <div id="gameSettingsPage_wordNumberText" gt gt-text>
@@ -196,35 +219,6 @@
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_aftermathTimeField" name="type.number">
-                    </div>
-                    <div class="layer" id="gameSettingsPage_dictionarySelection">
-                        <div class="label" id="gameSettingsPage_dictionarySelectionLabel">
-                            <div id="gameSettingsPage_dictionarySelectionText" gt gt-text>
-                                Словарь
-                            </div>
-                            <div class="info" id="gameSettingsPage_dictionarySelectionInfo">
-                                <div src="svg/info.svg" name="svg"></div>
-                            </div>
-                            <div class="popup-hint" id="gameSettingsPage_dictionarySelectionHint" gt gt-text>
-                                Словарь определяет набор слов, из которых будут выбраны слова для этой партии.
-                            </div>
-                        </div>
-                        <select class="medium-select" id="gameSettingsPage_dictionaryList">
-                        </select>
-                    </div>
-                    <div class="layer" id="gameSettingsPage_loadDictionary">
-                        <input type="file" id="gameSettingsPage_loadFileInput">
-                        <label for="gameSettingsPage_loadFileInput" class="small-button bg-blue" id="gameSettingsPage_loadFileButton" gt gt-text>
-                            Выбрать файл
-                        </label>
-                        <div id="gameSettingsPage_loadFileLabel" gt gt-text>
-                        </div>
-                        <div class="info" id="gameSettingsPage_loadFileInfo">
-                            <div src="svg/info.svg" name="svg"></div>
-                        </div>
-                        <div class="popup-hint" id="gameSettingsPage_loadFileHint" gt gt-text>
-                            Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке.
-                        </div>
                     </div>
                     <div class="layer" id="gameSettingsPage_strictMode">
                         <input type="checkbox" id="gameSettingsPage_strictModeCheckbox">

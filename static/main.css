@@ -739,13 +739,20 @@ svg {
     text-align: center;
 }
 
-#gameSettingsPage_dictionarySelection {
+#gameSettingsPage_termCondition, #gameSettingsPage_dictionarySelection {
     flex-wrap: wrap !important;
-    margin-top: 30px !important;
 }
 
-#gameSettingsPage_dictionarySelectionLabel {
+#gameSettingsPage_termConditionLabel, #gameSettingsPage_dictionarySelectionLabel {
     padding: 5px 0 5px 0;
+}
+
+#gameSettingsPage_termConditionList, #gameSettingsPage_dictionaryList {
+    min-width: 300px;
+}
+
+#gameSettingsPage_loadDictionary {
+    margin-bottom: 20px !important;
 }
 
 #gameSettingsPage_loadFileButton {

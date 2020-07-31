@@ -1342,7 +1342,6 @@ class App {
             return;
         }
 
-        // In English?
         if (confirm(_("Вы уверены, что хотите завершить игру?")+ (this.game.state == "wait" ?
             _(" Игра закончится, и вы сможете посмотреть результаты.") :
             _(" Игра закончится в конце текущего раунда.")))) {
@@ -1618,10 +1617,15 @@ class App {
         els("version").forEach((it) => it.innerText = VERSION);
 
         // Adding settings hint
-        let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
-            "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
-            "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode",
-            "gameSettingsPage_turnNumber", "gameSettingsPage_loadFile"];
+        let prefixes = [
+            "gameSettingsPage_wordNumber",
+            "gameSettingsPage_delayTime",
+            "gameSettingsPage_explanationTime",
+            "gameSettingsPage_aftermathTime",
+            "gameSettingsPage_strictMode",
+            "gameSettingsPage_turnNumber",
+            "gameSettingsPage_loadFile"
+        ];
         for (let idPrefix of prefixes) {
             this.addHint(idPrefix+"Info");
         }
@@ -1758,7 +1762,7 @@ class App {
     initDictionaryListExtraOptions() {
         this.dictionaryListExtraOptions = [
             {
-                "name": "Слова пишут игроки",
+                "name": "От каждого игрока",
                 "wordsetType": "playerWords",
             },
             {
