@@ -1436,7 +1436,7 @@ class Callbacks {
                 "Количество слов уменьшено до максимально возможного для данного словаря");
         }
         if (warnWordsDefault) {
-            Signals.sFailure(sockwet.id, "cApplySettings", null,
+            Signals.sFailure(socket.id, "cApplySettings", null,
                 "Использовано количество слов по умолчанию.")
         }
         if (warnTurnDefault) {

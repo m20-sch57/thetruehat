@@ -53,6 +53,8 @@
     - `wordNumber (int)` - если `termCondition = words` и `wordsetType = *Dictionary`. Начальное количество слов в шляпе
     - `turnsNumber (int)` - если `termCondition = turns`. Количество кругов
     - `strictMode (bool)` - используется ли строгий режим (при строгом режиме раунд сразу заканчивается после истечению времени)
+    - `dictionaryFilename (string)` - если `wordsetType = hostDictionary`. Название файла словаря, загруженного хостом.
+    - `words (string)` - если `wordsetType = hostDictionary`. Список слова в словаре, загруженном хостом.
 2. Текст на нескольких языках (LanguageDictionary)
     - `ru (string)` - текст на русском языке
     - `en (string)` - текст на английском языке

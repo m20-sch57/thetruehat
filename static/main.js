@@ -596,6 +596,8 @@ class Game {
     }
 
     renderSettings() {
+        console.log('render');
+        console.log(this.settings);
         el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
         el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
         el("gameSettingsPage_aftermathTimeField").value = this.settings.aftermathTime/1000;
@@ -609,6 +611,10 @@ class Game {
         } else {
             el("gameSettingsPage_dictionaryList").selectedIndex = 
                 this.app.wordsetTypeDict[this.settings.wordsetType];
+        }
+        if (this.settings.wordsetType == "hostDictionary") {
+            this.app.dictionaryFileWords = this.settings.words;
+            this.app.dictionaryFilename = this.settings.dictionaryFilename;
         }
         this.app.updateSettings();
     }
@@ -778,6 +784,8 @@ class App {
         } else {
             this.setLocale("ru");
         }
+
+        this.isDictionaryFileLoading = false;
     }
 
     initPages() {
@@ -1321,6 +1329,14 @@ class App {
             settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex -
                 this.dictionaryListExtraOptions.length;
         }
+        if (settings.wordsetType == "hostDictionary") {
+            settings.dictionaryFilename = this.dictionaryFilename;
+            if (this.dictionaryFileWords !== undefined) {
+                settings.words = this.dictionaryFileWords;
+            }
+        }
+        console.log("cApplySettings");
+        console.log(settings);
         this.emit("cApplySettings", {settings});
     }
 
@@ -1525,6 +1541,18 @@ class App {
         })
     }
 
+    validateSettings() {
+        console.log('kek');
+        console.log(this.game.settings);
+        console.log(this.game.settings.wordsetType);
+        if (this.getWordsetType() == "hostDictionary" && 
+            this.dictionaryFilename === undefined) {
+            showError("Нужно выбрать файл");
+            return false;
+        }
+        return true;
+    }
+
     setDOMEventListeners() {
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
@@ -1575,8 +1603,10 @@ class App {
             this.pages.goBack();
         }
         el("gameSettingsPage_applyButton").onclick = () => {
-            this.applySettings();
-            this.pages.goBack();
+            if (this.validateSettings()) {
+                this.applySettings();
+                this.pages.goBack();
+            }
         }
         el("gameSettingsPage_termConditionList").onchange = () => {
             this.updateSettings();
@@ -1638,31 +1668,33 @@ class App {
     updateDictionaryFileLoaderText() {
         let input = el("gameSettingsPage_loadFileInput");
         let label = el("gameSettingsPage_loadFileLabel");
-        if (input.files.length) {
-            if (this.dictionaryFileWordNumber !== undefined) {
-                label.innerText = `${input.files[0].name}, ${this.dictionaryFileWordNumber} words`;
+        if (this.dictionaryFilename !== undefined) {
+            if (this.dictionaryFileWords !== undefined) {
+                label.innerText = `${this.dictionaryFilename}, ${this.dictionaryFileWords.length} words`;
             } else {
-                label.innerText = `${input.files[0].name} (loading...)`
+                label.innerText = `${this.dictionaryFilename} (loading...)`
             }
         } else {
             label.innerText = "Файл не выбран";
         }
     }
 
-    calcWordHostDictionaryNumber(evt) {
+    loadWordsFromFile(evt) {
         let lines = evt.target.result.split('\n');
-        this.dictionaryFileWordNumber = 0;
+        this.dictionaryFileWords = [];
         for (let line of lines) {
             if (line != "") {
-                this.dictionaryFileWordNumber++;
+                this.dictionaryFileWords.push(line);
             }
         }
         this.updateDictionaryFileLoaderText();
+        this.isDictionaryFileLoading = false;
     }
 
     dictionatyLoadError(evt) {
         showError("Can't open file");
         this.removeSelectedDictionaryFile();
+        this.isDictionaryFileLoading = false;
     }
 
     validateDictionaryFile(file) {
@@ -1674,21 +1706,24 @@ class App {
             showError("Max dictionary size is 64 MiB");
             return false;
         }
+        this.isDictionaryFileLoading = true;
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
-        reader.onload = (evt) => this.calcWordHostDictionaryNumber(evt);
+        reader.onload = (evt) => this.loadWordsFromFile(evt);
         reader.onerror = (evt) => this.dictinaryLoadError(evt);
         return true;
     }
 
     removeSelectedDictionaryFile() {
         el("gameSettingsPage_loadFileInput").value = "";
-        this.dictionaryFileWordNumber = undefined;
+        delete this.dictionaryFileWords;
+        delete this.dictionaryFilename;
     }
 
     parseDictionaryFile() {
         if (el("gameSettingsPage_loadFileInput").files.length) {
             let file = el("gameSettingsPage_loadFileInput").files[0];
+            this.dictionaryFilename = file.name;
             if (!this.validateDictionaryFile(file)) {
                 this.removeSelectedDictionaryFile();
             }
