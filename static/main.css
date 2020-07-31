@@ -1332,12 +1332,3 @@ svg {
     z-index: 100;
     user-select: none;
 }
-
-/* #gameSettingsPage_loadFile {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-} */
