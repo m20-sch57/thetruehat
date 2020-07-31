@@ -372,6 +372,8 @@ function endGame(key) {
     for (let i = 0; i < rooms[nextKey].users.length; ++i) {
         rooms[nextKey].users[i].sids = [];
         rooms[nextKey].users[i].online = false;
+        rooms[nextKey].users[i].scoreExplained = 0;
+        rooms[nextKey].users[i].scoreGuessed = 0;
     }
 
     Signals.sGameEnded(key, results, nextKey);
