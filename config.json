@@ -28,7 +28,8 @@
         "dictionaryId": 0,
         "strictMode": false,
         "termCondition": "words",
-        "wordNumber": 100
+        "wordNumber": 100,
+        "wordsetType": "serverDictionary"
     },
     "defaultWordNumber": 100,
     "defaultTurnNumber": 10,
