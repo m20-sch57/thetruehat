@@ -1621,26 +1621,27 @@ class App {
         let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
             "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
             "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode",
-            "gameSettingsPage_termCondition", "gameSettingsPage_turnNumber"]
+            "gameSettingsPage_turnNumber", "gameSettingsPage_loadFile"];
         for (let idPrefix of prefixes) {
             this.addHint(idPrefix+"Info");
         }
 
         els("type.number").forEach(it => validateNumber(it.id));
 
-        el("gameSettingsPage_loadFile").addEventListener('change', () => this.parseDictionaryFile());
+        el("gameSettingsPage_loadFileInput").addEventListener('change', () => this.parseDictionaryFile());
     }
 
     updateDictionaryFileLoaderText() {
-        let elem = el("gameSettingsPage_loadFile"), label = el("gameSettingsPage_loadFileLabel");
-        if (elem.files.length) {
+        let input = el("gameSettingsPage_loadFileInput");
+        let label = el("gameSettingsPage_loadFileLabel");
+        if (input.files.length) {
             if (this.dictionaryFileWordNumber !== undefined) {
-                label.innerText = `${elem.files[0].name}, ${this.dictionaryFileWordNumber} words`;
+                label.innerText = `${input.files[0].name}, ${this.dictionaryFileWordNumber} words`;
             } else {
-                label.innerText = `${elem.files[0].name} (loading...)`
+                label.innerText = `${input.files[0].name} (loading...)`
             }
         } else {
-            label.innerText = "Choose a file";
+            label.innerText = "Файл не выбран";
         }
     }
 
@@ -1677,15 +1678,15 @@ class App {
     }
 
     removeSelectedDictionaryFile() {
-        el("gameSettingsPage_loadFile").value = "";
+        el("gameSettingsPage_loadFileInput").value = "";
         this.dictionaryFileWordNumber = undefined;
     }
 
     parseDictionaryFile() {
-        if (el("gameSettingsPage_loadFile").files.length) {
-            let file = el("gameSettingsPage_loadFile").files[0];
+        if (el("gameSettingsPage_loadFileInput").files.length) {
+            let file = el("gameSettingsPage_loadFileInput").files[0];
             if (!this.validateDictionaryFile(file)) {
-                removeSelectedDictionaryFile();
+                this.removeSelectedDictionaryFile();
             }
         }
         this.updateDictionaryFileLoaderText();
