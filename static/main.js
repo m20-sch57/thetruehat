@@ -613,10 +613,7 @@ class Game {
                 this.app.wordsetTypeDict[this.settings.wordsetType];
         }
         if (this.settings.wordsetType == "hostDictionary") {
-            if (this.settings.words !== undefined) {
-                this.app.dictionaryFile.words = this.settings.words;
-            }
-            this.app.dictionaryFilename = this.settings.dictionaryFilename;
+            this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
         }
         this.app.updateSettings();
     }
@@ -1330,7 +1327,7 @@ class App {
                 this.dictionaryListExtraOptions.length;
         }
         if (settings.wordsetType == "hostDictionary") {
-            settings.dictionaryFilename = this.dictionaryFilename;
+            settings.dictionaryFileInfo = this.dictionaryFileInfo;
             if (this.dictionaryFileWords !== undefined) {
                 settings.words = this.dictionaryFileWords;
             }
@@ -1542,13 +1539,16 @@ class App {
     }
 
     validateSettings() {
-        console.log('kek');
-        console.log(this.game.settings);
-        console.log(this.game.settings.wordsetType);
-        if (this.getWordsetType() == "hostDictionary" && 
-            this.dictionaryFilename === undefined) {
-            showError("Нужно выбрать файл");
-            return false;
+        if (this.getWordsetType() == "hostDictionary") {
+            if (this.dictionaryFileInfo === undefined) {
+                showError("Нужно выбрать файл");
+                return false;
+            }
+            console.log(this.dictionaryFileInfo.wordsNumber);
+            if (this.dictionaryFileInfo.wordNumber === undefined) {
+                showError("Файл загружается");
+                return false;
+            }
         }
         return true;
     }
@@ -1668,11 +1668,11 @@ class App {
     updateDictionaryFileLoaderText() {
         let input = el("gameSettingsPage_loadFileInput");
         let label = el("gameSettingsPage_loadFileLabel");
-        if (this.dictionaryFilename !== undefined) {
-            if (this.dictionaryFileWords !== undefined) {
-                label.innerText = `${this.dictionaryFilename}, ${this.dictionaryFileWords.length} words`;
+        if (this.dictionaryFileInfo !== undefined) {
+            if (this.dictionaryFileInfo.wordNumber !== undefined) {
+                label.innerText = `${this.dictionaryFileInfo.filename}, ${this.dictionaryFileInfo.wordNumber} words`;
             } else {
-                label.innerText = `${this.dictionaryFilename} (loading...)`
+                label.innerText = `${this.dictionaryFileInfo.filename} (loading...)`
             }
         } else {
             label.innerText = "Файл не выбран";
@@ -1687,6 +1687,7 @@ class App {
                 this.dictionaryFileWords.push(line);
             }
         }
+        this.dictionaryFileInfo.wordNumber = this.dictionaryFileWords.length;
         this.updateDictionaryFileLoaderText();
     }
 
@@ -1696,6 +1697,7 @@ class App {
     }
 
     validateDictionaryFile(file) {
+        console.log("validateDictionaryFile");
         if (file.type != "" && file.type != "text/plain") {
             showError("You should send a text file");
             return false;
@@ -1712,15 +1714,18 @@ class App {
     }
 
     removeSelectedDictionaryFile() {
+        console.log("remove");
         el("gameSettingsPage_loadFileInput").value = "";
+        delete this.dictionaryFileInfo;
         delete this.dictionaryFileWords;
-        delete this.dictionaryFilename;
     }
 
     parseDictionaryFile() {
         if (el("gameSettingsPage_loadFileInput").files.length) {
             let file = el("gameSettingsPage_loadFileInput").files[0];
-            this.dictionaryFilename = file.name;
+            this.dictionaryFileInfo = {
+                "filename": file.name
+            };
             if (!this.validateDictionaryFile(file)) {
                 this.removeSelectedDictionaryFile();
             }
