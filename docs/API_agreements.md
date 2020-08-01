@@ -58,6 +58,6 @@
 1. Информация о файле словаря (DictionaryFileInfo)
     - `filename` - название файла
     - `wordNumber` - количество слов в файле
-2. Текст на нескольких языках (LanguageDictionary)
+1. Текст на нескольких языках (LanguageDictionary)
     - `ru (string)` - текст на русском языке
     - `en (string)` - текст на английском языке
