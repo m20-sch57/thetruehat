@@ -613,7 +613,9 @@ class Game {
                 this.app.wordsetTypeDict[this.settings.wordsetType];
         }
         if (this.settings.wordsetType == "hostDictionary") {
-            this.app.dictionaryFileWords = this.settings.words;
+            if (this.settings.words !== undefined) {
+                this.app.dictionaryFile.words = this.settings.words;
+            }
             this.app.dictionaryFilename = this.settings.dictionaryFilename;
         }
         this.app.updateSettings();
@@ -784,8 +786,6 @@ class App {
         } else {
             this.setLocale("ru");
         }
-
-        this.isDictionaryFileLoading = false;
     }
 
     initPages() {
@@ -1688,13 +1688,11 @@ class App {
             }
         }
         this.updateDictionaryFileLoaderText();
-        this.isDictionaryFileLoading = false;
     }
 
     dictionatyLoadError(evt) {
         showError("Can't open file");
         this.removeSelectedDictionaryFile();
-        this.isDictionaryFileLoading = false;
     }
 
     validateDictionaryFile(file) {
@@ -1706,7 +1704,6 @@ class App {
             showError("Max dictionary size is 64 MiB");
             return false;
         }
-        this.isDictionaryFileLoading = true;
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (evt) => this.loadWordsFromFile(evt);
