@@ -1542,21 +1542,25 @@ class Callbacks {
             }
         }
         if ("dictionaryId" in settings) {
-            if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
-                Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Неверный тип поля настроек dictionaryId: " +
-                    typeof(settings["dictionaryId"]) + " вместо " +
-                    typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
-            } else {
-                if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+            if (rooms[key].settings["wordsetType"] === "serverDictionary") {
+                if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверный тип поля настроек dictionaryId: " +
+                        typeof(settings["dictionaryId"]) + " вместо " +
+                        typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
                 } else {
-                    rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
-                    if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
-                        warnWordsDecrease = true;
+                    if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+                    } else {
+                        rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
+                        if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                            rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
+                            warnWordsDecrease = true;
+                        }
                     }
                 }
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryId\"");
             }
         }
 
@@ -1565,6 +1569,7 @@ class Callbacks {
         for (let i = 0; i < settingsKeys.length; ++i) {
             if (settingsKeys[i] === "dictionaryId") continue; // already done
             if (settingsKeys[i] === "termCondition") continue; // already done
+            if (settingsKeys[i] === "wordsetType") continue; // already done
 
             if (settingsKeys[i] in rooms[key].settings) {
                 if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
