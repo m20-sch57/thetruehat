@@ -200,12 +200,18 @@ function getRoom(socket) {
  * Generate word list
  *
  * @param settings settings of the room
+ * @param hostDict dictionary from host
  * @return list of words
  */
-function generateWords(settings) {
+function generateWords(settings, hostDict) {
+    let dict = [];
     let words = [];
     let used = {};
-    let dict = dicts[settings.dictionaryId];
+    if (settings.wordset === "hostDictionary") {
+        dict = hostDict;
+    } else {
+        dict = dicts[settings.dictionaryId];
+    }
     const numberOfAllWords = dict.wordNumber;
     const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
     while (words.length < wordNumber) {
@@ -885,6 +891,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - end_timestamp --- end timestamp
  *     - explStartMainTime --- start timestamp of word explanation
  *     - explStartExtraTime --- start timestamp of extra time
+ *     - hostDictionary --- list of words from host
  */
 class Room {
     constructor() {
@@ -902,7 +909,7 @@ class Room {
 
         if (prepareWords) {
             // generating word list
-            this.freshWords = generateWords(this.settings);
+            this.freshWords = generateWords(this.settings, this.hostDictionary);
         }
 
         // preparing storage for explained words
@@ -1563,6 +1570,29 @@ class Callbacks {
                 Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryId\"");
             }
         }
+        if ("dictionaryFileInfo" in settings) {
+            if (rooms[key].settings["wordsetType"] === "hostDictionary") {
+                // it's for client purpose, don't unpack!!!
+                rooms[key].settings["dictionaryFileInfo"] = settings["dictionaryFileInfo"];
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryFileInfo\"");
+            }
+        }
+        if ("wordset" in settings) {
+            if (rooms[key].settings["wordsetType"] === "hostDictionary") {
+                if (Array.isArray(settings["wordset"])) {
+                    rooms[key].hostDictionary = settings["wordset"];
+                } else {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "\"wordset\" не массиве");
+                }
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"wordset\"");
+            }
+        }
+        if (rooms[key].settings["wordsetType"] === "hostDictionary" && (!Array.isArray(rooms[key].settings["wordset"]))) {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"hostDictionary\", но \"wordset\" не массив, перевожу словарь на серверный");
+            rooms[key].settings["wordsetType"] = "serverDictionary";
+        }
 
         // setting settings
         const settingsKeys = Object.keys(settings);
@@ -1570,6 +1600,8 @@ class Callbacks {
             if (settingsKeys[i] === "dictionaryId") continue; // already done
             if (settingsKeys[i] === "termCondition") continue; // already done
             if (settingsKeys[i] === "wordsetType") continue; // already done
+            if (settingsKeys[i] === "dictionaryFileInfo") continue; // already done
+            if (settingsKeys[i] === "wordset") continue; // already done
 
             if (settingsKeys[i] in rooms[key].settings) {
                 if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
