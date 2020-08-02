@@ -1693,7 +1693,7 @@ class Callbacks {
             }
         }
 
-        if (rooms[key].users.every(user => user.userReady)) {
+        if (allReady) {
             processPreparationResults(key);
             rooms[key].gamePrepare();
             rooms[key].start_timestamp = (new Date()).getTime();
