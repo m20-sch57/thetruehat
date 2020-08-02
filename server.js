@@ -1493,7 +1493,7 @@ class Callbacks {
         let warnWordsDefault = false;
         let ignoreTermCondition = false;
         if ("wordsetType" in settings) {
-            if (typeof(rooms[key].settings["wordsetType"]) !== typeof(settings["wordsetType"])) {
+            if (!(rooms[key].settings["wordsetType"] in {"serverDictionary": null, "hostDictionary": null, "playerWords": null})) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
                     "Неверный тип поля настроек wordsetType: "+
                     typeof(settings["wordsetType"]) + " вместо " +
