@@ -204,7 +204,7 @@ function getRoom(socket) {
  * @return list of words
  */
 function generateWords(settings, hostDict) {
-    const dict = (settings.wordset === "hostDictionary") ? dict = hostDict : dict = dicts[settings.dictionaryId];
+    const dict = (settings.wordset === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
     const words = [];
     const used = {};
     const numberOfAllWords = dict.wordNumber;
@@ -269,14 +269,15 @@ function processPreparationResults(key) {
     let wordList = [];
     let allWords = {};
     for (let i = 0; i < rooms[key].users.length; ++i) {
-        for (let j = 0; j < rooms[key].users[i].userWords.length; ++j) {
-            if (!(rooms[key].users[i].userWords[j] in allWords)) {
-                wordList.push(rooms[key].users[i].userWords[j]);
-                allWords[rooms[key].users[i].userWords[j]] = true;
+        const user = rooms[key].users[i];
+        for (let j = 0; j < user.userWords.length; ++j) {
+            if (!(user.userWords[j] in allWords)) {
+                wordList.push(user.userWords[j]);
+                allWords[user.userWords[j]] = true;
             }
         }
-        delete rooms[key].users[i].userReady;
-        delete rooms[key].users[i].userWords;
+        delete user.userReady;
+        delete user.userWords;
     }
 
     // checking number of words
@@ -535,17 +536,15 @@ class Signals {
                 joinObj.timetable = getTimetable(key);
                 joinObj.speaker = room.users[room.speaker].username;
                 joinObj.listener = room.users[room.listener].username;
-                if (joinObj.settings.wordsetType !== "playerWords") {
-                    switch (room.settings.termCondition) {
-                        case "words":
-                            joinObj.wordsLeft = room.freshWords.length;
-                            break;
-                        case "turns":
-                            joinObj.turnsLeft = room.settings.turnNumber - room.numberOfLap;
-                            break;
-                        default:
-                            console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
-                    }
+                switch (room.settings.termCondition) {
+                    case "words":
+                        joinObj.wordsLeft = room.freshWords.length;
+                        break;
+                    case "turns":
+                        joinObj.turnsLeft = room.settings.turnNumber - room.numberOfLap;
+                        break;
+                    default:
+                        console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
                 }
                 switch (room.substate) {
                     case "wait":
@@ -864,8 +863,8 @@ app.get("/getRoomInfo", function(req, res) {
  *     - users --- list of users (User objects)
  *     - settings --- room settings
  *
- * if state === "prepare" and settings.wordsetType === "playerWords":
- *     - freshWords --- list of words in hat.
+ * if state === "prepare" and settings.wordsetType === "hostDictionary":
+ *     - hostDictionary --- list of words from host
  *
  * if state === "play":
  *     - substate --- substate of the room,
@@ -886,7 +885,6 @@ app.get("/getRoomInfo", function(req, res) {
  *     - end_timestamp --- end timestamp
  *     - explStartMainTime --- start timestamp of word explanation
  *     - explStartExtraTime --- start timestamp of extra time
- *     - hostDictionary --- list of words from host
  */
 class Room {
     constructor() {
@@ -902,9 +900,10 @@ class Room {
         // changing state to 'play'
         this.state = "play";
 
+        // generating word list if nessesery
         if (this.settings["wordsetType"] === "playerWords") {
-            // generating word list
             this.freshWords = generateWords(this.settings, this.hostDictionary);
+            delete this.hostDictionary;
         }
 
         // preparing storage for explained words
@@ -1145,7 +1144,7 @@ class CheckConditions {
             }
         }
         if (cnt < 2) {
-            Signals.sFailure(socket.id,"cStartWordCollection", 302,
+            Signals.sFailure(socket.id,"cStartWordCollection", null,
                 "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
             return false;
         }
@@ -1167,7 +1166,7 @@ class CheckConditions {
 
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "prepare") {
-            Signals.sFailure(socket.id, "cWordsReady", null, "Игра уже начата");
+            Signals.sFailure(socket.id, "cWordsReady", null, "Состояние игры - не 'prepare'");
             return false;
         }
 
