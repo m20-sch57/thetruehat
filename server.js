@@ -131,7 +131,7 @@ function getHostUsername(users) {
 }
 
 /**
- * Rerurns random number from interval [a, b)
+ * Returns random number from interval [a, b)
  *
  * @param a lower bound
  * @param b upper bound
@@ -204,7 +204,7 @@ function getRoom(socket) {
  * @return list of words
  */
 function generateWords(settings, hostDict) {
-    const dict = (settings.wordset === "hostDictionary") ? dict = hostDict : dict = dicts[settings.dictionaryId];
+    const dict = (settings.wordset === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
     const words = [];
     const used = {};
     const numberOfAllWords = dict.wordNumber;
@@ -448,11 +448,8 @@ function sendStat(room) {
     // sending data
     console.log("Send:");
     console.log(sendObject);
-    try {
-        fetch(Object.assign({}, config.statSendConfig, {"data": sendObject}));
-    } catch (err) {
-        console.warn(err);
-    }
+    fetch(Object.assign({}, config.statSendConfig, {"data": sendObject}))
+        .catch((err) => console.warn(err));
 }
 
 // endregion
@@ -1177,7 +1174,7 @@ class CheckConditions {
             return false;
         }
 
-        // cheking words
+        // checking words
         if (!Array.isArray(words)) {
             Signals.sFailure(socket.id, "cWordsReady", null, "Неверный формат слов");
             return false;
@@ -1637,7 +1634,7 @@ class Callbacks {
                 "Количество слов уменьшено до максимально возможного для данного словаря");
         }
         if (warnWordsDefault) {
-            Signals.sFailure(sockwet.id, "cApplySettings", null,
+            Signals.sFailure(socket.id, "cApplySettings", null,
                 "Использовано количество слов по умолчанию.")
         }
         if (warnTurnDefault) {
@@ -1681,7 +1678,7 @@ class Callbacks {
         rooms[key].users[userPos].userReady = true;
         rooms[key].users[userPos].userWords = words;
 
-        // checkig words number
+        // checking words number
         if (rooms[key].users[userPos].usedWords.length >= config.settingsRange.wordNumber.max) {
             Signals.sFailure(socket.id, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
             rooms[key].users[userPos].usedWords.length = config.settingsRange.wordNumber.max - 1
@@ -1696,7 +1693,7 @@ class Callbacks {
             }
         }
 
-        if (allReady) {
+        if (rooms[key].users.every(user => user.userReady)) {
             processPreparationResults(key);
             rooms[key].gamePrepare();
             rooms[key].start_timestamp = (new Date()).getTime();
