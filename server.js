@@ -204,14 +204,9 @@ function getRoom(socket) {
  * @return list of words
  */
 function generateWords(settings, hostDict) {
-    let dict = [];
-    let words = [];
-    let used = {};
-    if (settings.wordset === "hostDictionary") {
-        dict = hostDict;
-    } else {
-        dict = dicts[settings.dictionaryId];
-    }
+    const dict = (settings.wordset === "hostDictionary") ? dict = hostDict : dict = dicts[settings.dictionaryId];
+    const words = [];
+    const used = {};
     const numberOfAllWords = dict.wordNumber;
     const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
     while (words.length < wordNumber) {
