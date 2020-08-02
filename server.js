@@ -903,11 +903,11 @@ class Room {
     /**
      * Preparing room for the game
      */
-    gamePrepare(prepareWords = true) {
+    gamePrepare() {
         // changing state to 'play'
         this.state = "play";
 
-        if (prepareWords) {
+        if (this.settings["wordsetType"] === "playerWords") {
             // generating word list
             this.freshWords = generateWords(this.settings, this.hostDictionary);
         }
@@ -1703,7 +1703,7 @@ class Callbacks {
 
         if (allReady) {
             processPreparationResults(key);
-            rooms[key].gamePrepare(false);
+            rooms[key].gamePrepare();
             rooms[key].start_timestamp = (new Date()).getTime();
             Signals.sGameStarted(key);
         }
