@@ -1329,7 +1329,7 @@ class App {
         if (settings.wordsetType == "hostDictionary") {
             settings.dictionaryFileInfo = this.dictionaryFileInfo;
             if (this.dictionaryFileWords !== undefined) {
-                settings.words = this.dictionaryFileWords;
+                settings.wordset = this.dictionaryFileWords;
             }
         }
         console.log("cApplySettings");
