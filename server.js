@@ -1624,9 +1624,20 @@ class Callbacks {
                 }
                 switch (settingsKeys[i]) {
                     case "wordNumber":
-                        if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                            Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
-                            continue;
+
+                        switch (rooms[key].settings["wordsetType"]) {
+                            case "serverDictionary":
+                                if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                                    continue;
+                                }
+                                break;
+                            case "hostDictionary":
+                                if (settings[settingsKeys[i]] > rooms[key].hostDictionary.length) {
+                                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
+                                    continue;
+                                }
+                                break;
                         }
                         warnWordsDecrease = false;
                         warnWordsDefault = false;
