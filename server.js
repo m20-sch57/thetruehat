@@ -1491,8 +1491,7 @@ class Callbacks {
         let warnWordsDecrease = false;
         let warnTurnDefault = false;
         let warnWordsDefault = false;
-        let ignoreTermCondition = false;
-        let warnTCPW = false; // warn Term Condition Playr Words
+        let warnTCPW = false; // warn Term Condition Player Words
         if ("wordsetType" in settings) {
             if (!(typeof(settings["wordsetType"]) === typeof(rooms[key].settings["wordsetType"]))) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
@@ -1501,7 +1500,7 @@ class Callbacks {
                     typeof(rooms[key].settings["wordsetType"]) + ", пропускаю");
             } else {
                 if (!(settings["wordsetType"] in {"serverDictionary": null, "hostDictionary": null, "playerWords": null})) {
-                    Signals.sFailure(sovket.id, "cApplySettings", null, "Неверное значение wordsetType");
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение wordsetType");
                 } else {
                     rooms[key].settings["wordsetType"] = settings["wordsetType"];
                 }
@@ -1526,7 +1525,7 @@ class Callbacks {
                             }
                             warnWordsDefault = true;
                             if (rooms[key].settings["wordsetType"] === "playerWords") {
-                                warnTCPW;
+                                warnTCPW = true;
                             }
                             break;
                         case "turns":
@@ -1575,7 +1574,7 @@ class Callbacks {
                 if (Array.isArray(settings["wordset"])) {
                     rooms[key].hostDictionary = settings["wordset"];
                 } else {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "\"wordset\" не массиве");
+                    Signals.sFailure(socket.id, "cApplySettings", null, "\"wordset\" не массив");
                 }
             } else {
                 Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"wordset\"");
@@ -1641,11 +1640,11 @@ class Callbacks {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Использовано количество ходов по умолчанию.");
         }
-        if (warnTCPW && false) {
+        if (warnTCPW) {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Выбран режим \"playerWords\", поэтому количество " +
                 "слов будет минимумом из количества введенных слов " +
-                "и максисально возможным количесвом слов в шляпе");
+                "и максимально возможным количеством слов в шляпе");
         }
 
         Signals.sNewSettings(key);
