@@ -197,20 +197,6 @@ function getRoom(socket) {
 }
 
 /**
- * Converts a list of words to the dictionary format
- *
- * @param list of of words
- * @return dictionary, which can be used by generateWords function
- */
-
-function processHostDict(hostDict) {
-    return {
-        "words": hostDict,
-        "wordNumber": hostDict.length
-    };
-}
-
-/**
  * Generate word list
  *
  * @param settings settings of the room
@@ -218,7 +204,11 @@ function processHostDict(hostDict) {
  * @return list of words
  */
 function generateWords(settings, hostDict) {
-    const dict = (settings.wordsetType === "hostDictionary") ? processHostDict(hostDict) : dicts[settings.dictionaryId];
+    const dict = (settings.wordsetType === "hostDictionary") ? {
+                                                                    words: hostDict,
+                                                                    wordNumber: hostDict.length,
+                                                                    name: "Host's dictionary"
+                                                                } : dicts[settings.dictionaryId];
     const words = [];
     const used = {};
     const numberOfAllWords = dict.wordNumber;
@@ -1537,9 +1527,10 @@ class Callbacks {
                             if ("turnNumber" in rooms[key].settings) {
                                 delete rooms[key].settings["turnNumber"];
                             }
-                            warnWordsDefault = true;
                             if (rooms[key].settings["wordsetType"] === "playerWords") {
                                 warnTCPW = true;
+                            } else {
+                                warnWordsDefault = true;
                             }
                             break;
                         case "turns":
@@ -1624,7 +1615,6 @@ class Callbacks {
                 }
                 switch (settingsKeys[i]) {
                     case "wordNumber":
-
                         switch (rooms[key].settings["wordsetType"]) {
                             case "serverDictionary":
                                 if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
