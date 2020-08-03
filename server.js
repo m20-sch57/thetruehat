@@ -2,6 +2,8 @@
 
 "use strict"
 
+// region
+
 const fetch = require("@lounres/flex_node_fetch").fetch;
 
 const config = require("./config.json");
@@ -20,15 +22,14 @@ const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
 const dictsConf = config.dicts;
-let _dicts = [];
+const dicts = [];
 for (let i = 0; i < dictsConf.length; ++i) {
     let dict = {};
     dict["words"] = require(dictsConf[i].path).words;
     dict["name"] = dictsConf[i].name;
     dict["wordNumber"] = dict.words.length;
-    _dicts.push(dict);
+    dicts.push(dict);
 }
-const dicts = _dicts;
 
 const settingsRange = config.settingsRange;
 
@@ -47,8 +48,9 @@ const io = require("socket.io")(server);
 server.listen(PORT);
 console.log("Listening on port " + PORT);
 
+// endregion
 //----------------------------------------------------------
-// Handy functions
+// region Handy functions
 
 /**
  * Checks object with the pattern
@@ -59,10 +61,7 @@ console.log("Listening on port " + PORT);
  */
 function checkObject(object, pattern) {
     // checking object for undefined or null
-    if (object === undefined) {
-        return false;
-    }
-    if (object === null) {
+    if (object === undefined || object === null) {
         return false;
     }
 
@@ -132,7 +131,7 @@ function getHostUsername(users) {
 }
 
 /**
- * Rerurns random number from interval [a, b)
+ * Returns random number from interval [a, b)
  *
  * @param a lower bound
  * @param b upper bound
@@ -201,12 +200,13 @@ function getRoom(socket) {
  * Generate word list
  *
  * @param settings settings of the room
+ * @param hostDict dictionary from host
  * @return list of words
  */
-function generateWords(settings) {
-    let words = [];
-    let used = {};
-    let dict = dicts[settings.dictionaryId];
+function generateWords(settings, hostDict) {
+    const dict = (settings.wordset === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
+    const words = [];
+    const used = {};
     const numberOfAllWords = dict.wordNumber;
     const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
     while (words.length < wordNumber) {
@@ -258,6 +258,37 @@ function getTimetable(key) {
         obj = getNextPair(rooms[key].users.length, obj.speaker, obj.listener);
     }
     return timetable;
+}
+
+/**
+ * Process results of preparation
+ *
+ * @param key --- key of the room
+ */
+function processPreparationResults(key) {
+    let wordList = [];
+    let allWords = {};
+    for (let i = 0; i < rooms[key].users.length; ++i) {
+        const user = rooms[key].users[i];
+        for (let j = 0; j < user.userWords.length; ++j) {
+            if (!(user.userWords[j] in allWords)) {
+                wordList.push(user.userWords[j]);
+                allWords[user.userWords[j]] = true;
+            }
+        }
+        delete user.userReady;
+        delete user.userWords;
+    }
+
+    // checking number of words
+    if (wordList.length >= config.settingsRange.wordNumber.max) {
+        Signals.sFailure(key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
+        wordList.length = config.settingsRange.wordNumber.max - 1;
+    }
+
+    rooms[key].freshWords = wordList;
+
+    rooms[key].state = "play";
 }
 
 /**
@@ -418,14 +449,13 @@ function sendStat(room) {
     // sending data
     console.log("Send:");
     console.log(sendObject);
-    try {
-        fetch(Object.assign({}, config.statSendConfig, {"data": sendObject}));
-    } catch (err) {
-        console.warn(err);
-    }
+    fetch(Object.assign({}, config.statSendConfig, {"data": sendObject}))
+        .catch((err) => console.warn(err));
 }
 
+// endregion
 //----------------------------------------------------------
+// region Signals
 
 class Signals {
     /**
@@ -495,6 +525,9 @@ class Signals {
             case "wait":
                 joinObj.state = "wait";
                 break;
+            case "prepare":
+                joinObj.state = "prepare";
+                break;
             case "play":
                 joinObj.state = "play";
                 joinObj.timetable = getTimetable(key);
@@ -556,13 +589,23 @@ class Signals {
      * Implementation of sFailure signal
      * @see API.md
      *
-     *
      * @param sid Id of socket to emit
      * @param request Request that is failed
+     * @param code Error code
      * @param msg Message to send
      */
     static sFailure(sid, request, code, msg) {
         Signals.emit(sid, "sFailure", {"request": request, "msg": msg, "code": code});
+    }
+
+    /**
+     * Implementation of sWordCollectionStarted signal
+     * @see API.md
+     *
+     * @param key Id of the Room
+     */
+    static sWordCollectionStarted(key) {
+        Signals.emit(key, "sWordCollectionStarted")
     }
 
     /**
@@ -710,8 +753,10 @@ class Signals {
         Signals.emit(key, "sGameEnded", {"results": results, "nextKey": nextKey});
     }
 }
+
+// endregion
 //----------------------------------------------------------
-// HTTP functions
+// region HTTP functions
 
 /**
  * Send response
@@ -803,7 +848,9 @@ app.get("/getRoomInfo", function(req, res) {
     }
 });
 
+// endregion
 //----------------------------------------------------------
+// region Room and User
 
 /**
  * Room class
@@ -812,6 +859,10 @@ app.get("/getRoomInfo", function(req, res) {
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *     - settings --- room settings
+ *
+ * if state === "prepare" and settings.wordsetType === "hostDictionary":
+ *     - hostDictionary --- list of words from host
+ *
  * if state === "play":
  *     - substate --- substate of the room,
  *     - freshWords --- list of words in hat,
@@ -826,7 +877,7 @@ app.get("/getRoomInfo", function(req, res) {
  *     - editWords --- list of words to edit
  *     - numberOfTurn --- number of turn
  *     - numberOfLap --- number of lap
- *     - explanationRecords --- array with explanation records (see https://sombreroapi.docs.apiary.io/#reference/1/gamelog for more info, but `time` is `time` plus `extra_time`)
+ *     - explanationRecords --- array with explanation records (see [here](https://sombreroapi.docs.apiary.io/#reference/1/gamelog) for more info, but `time` is `time` plus `extra_time`)
  *     - start_timestamp --- start timestamp
  *     - end_timestamp --- end timestamp
  *     - explStartMainTime --- start timestamp of word explanation
@@ -846,8 +897,11 @@ class Room {
         // changing state to 'play'
         this.state = "play";
 
-        // generating word list
-        this.freshWords = generateWords(this.settings);
+        // generating word list if nessesery
+        if (this.settings["wordsetType"] === "playerWords") {
+            this.freshWords = generateWords(this.settings, this.hostDictionary);
+            delete this.hostDictionary;
+        }
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -909,6 +963,8 @@ class Room {
  *     - scoreExplained --- no comments,
  *     - scoreGuessed --- no comments,
  *     - time_zone_offset --- no comments,
+ *     - userWords --- if game setting `wordsetType === playerWords`, words from this user
+ *     - userReady --- if game setting `wordsetType === playerWords`, whether this user is ready
  */
 class User {
     constructor(username, sids, time_zone_offset, online=true) {
@@ -927,8 +983,9 @@ class User {
  */
 const rooms = {};
 
+// endregion
 //----------------------------------------------------------
-// Checks for socket signals
+// region Checks for socket signals
 
 function checkInputFormat(socket, data, format, signal) {
     if (!checkObject(data, format)) {
@@ -1039,6 +1096,92 @@ class CheckConditions {
         return true;
     }
 
+    static cStartWordCollection(socket, key) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "wait") {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
+            return false;
+        }
+
+        // if this state should be present
+        if (rooms[key].settings["wordsetType"] !== "playerWords") {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать приготовление к игре");
+            return false;
+        }
+
+        // Fail if only one user is online
+        let cnt = 0
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                cnt++;
+            }
+        }
+        if (cnt < 2) {
+            Signals.sFailure(socket.id,"cStartWordCollection", null,
+                "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
+            return false;
+        }
+        return true;
+    }
+
+    static cWordsReady(socket, key, words) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Игра закончена");
+            return false;
+        }
+
+        // if state isn't 'wait', something went wrong
+        if (rooms[key].state !== "prepare") {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Состояние игры - не 'prepare'");
+            return false;
+        }
+
+        // if user is already ready
+        if (rooms[key].users[findFirstSidPos(rooms[key].users, socket.id)].userReady) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Игрок уже и так готов");
+            return false;
+        }
+
+        // checking words
+        if (!Array.isArray(words)) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Неверный формат слов");
+            return false;
+        }
+
+        return true;
+    }
+
     static cStartGame(socket, key) {
         // Checking if user is not in the room
         if (key === socket.id) {
@@ -1055,6 +1198,12 @@ class CheckConditions {
         // if state isn't 'wait', something went wrong
         if (rooms[key].state !== "wait") {
             Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
+            return false;
+        }
+
+        // if the should be preparation --- this signal can't be sent from client
+        if (rooms[key].settings["wordsetType"] === "playerWords") {
+            Signals.sFailure(socket.id, "cStartGame", null, "Игра предусматривает набор слов, нельзя начать игру");
             return false;
         }
 
@@ -1281,9 +1430,9 @@ class CheckConditions {
 }
 
 class Callbacks {
-    static joinRoomCallback(socket, data, err) {
+    static cJoinRoom(socket, data, err) {
         const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
-        const name = data.username.trim().replace(/\s+/g, ' '); // name of the user
+        const name = data.username.trim().replace(/\s+/g, " "); // name of the user
         const time_zone_offset = data.time_zone_offset;
 
         // If any error happened
@@ -1319,7 +1468,7 @@ class Callbacks {
         Signals.sYouJoined(socket.id, key);
     }
 
-    static leaveRoomCallback(socket, key, err) {
+    static cLeaveRoom(socket, key, err) {
         const usernamePos = findFirstSidPos(rooms[key].users, socket.id);
         if (usernamePos === -1) return;
         const username = rooms[key].users[usernamePos].username;
@@ -1338,10 +1487,25 @@ class Callbacks {
     }
 
     static cApplySettings(socket, key, settings) {
-        // special case: "dictionaryId" (it changes ranges for other settings)
+        // special case: "dictionaryId" (it changes ranges for other settings) (also "termCondition" should be processes out of turn (and "wordsetType"))
         let warnWordsDecrease = false;
         let warnTurnDefault = false;
         let warnWordsDefault = false;
+        let warnTCPW = false; // warn Term Condition Player Words
+        if ("wordsetType" in settings) {
+            if (!(typeof(settings["wordsetType"]) === typeof(rooms[key].settings["wordsetType"]))) {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверный тип поля настроек wordsetType: "+
+                    typeof(settings["wordsetType"]) + " вместо " +
+                    typeof(rooms[key].settings["wordsetType"]) + ", пропускаю");
+            } else {
+                if (!(settings["wordsetType"] in {"serverDictionary": null, "hostDictionary": null, "playerWords": null})) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение wordsetType");
+                } else {
+                    rooms[key].settings["wordsetType"] = settings["wordsetType"];
+                }
+            }
+        }
         if ("termCondition" in settings) {
             if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
@@ -1360,6 +1524,9 @@ class Callbacks {
                                 delete rooms[key].settings["turnNumber"];
                             }
                             warnWordsDefault = true;
+                            if (rooms[key].settings["wordsetType"] === "playerWords") {
+                                warnTCPW = true;
+                            }
                             break;
                         case "turns":
                             rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
@@ -1373,22 +1540,49 @@ class Callbacks {
             }
         }
         if ("dictionaryId" in settings) {
-            if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
-                Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Неверный тип поля настроек dictionaryId: " +
-                    typeof(settings["dictionaryId"]) + " вместо " +
-                    typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
-            } else {
-                if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+            if (rooms[key].settings["wordsetType"] === "serverDictionary") {
+                if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
+                    Signals.sFailure(socket.id, "cApplySettings", null,
+                        "Неверный тип поля настроек dictionaryId: " +
+                        typeof(settings["dictionaryId"]) + " вместо " +
+                        typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
                 } else {
-                    rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
-                    if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                        rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
-                        warnWordsDecrease = true;
+                    if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
+                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+                    } else {
+                        rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
+                        if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
+                            rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
+                            warnWordsDecrease = true;
+                        }
                     }
                 }
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryId\"");
             }
+        }
+        if ("dictionaryFileInfo" in settings) {
+            if (rooms[key].settings["wordsetType"] === "hostDictionary") {
+                // it's for client purpose, don't unpack!!!
+                rooms[key].settings["dictionaryFileInfo"] = settings["dictionaryFileInfo"];
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryFileInfo\"");
+            }
+        }
+        if ("wordset" in settings) {
+            if (rooms[key].settings["wordsetType"] === "hostDictionary") {
+                if (Array.isArray(settings["wordset"])) {
+                    rooms[key].hostDictionary = settings["wordset"];
+                } else {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "\"wordset\" не массив");
+                }
+            } else {
+                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"wordset\"");
+            }
+        }
+        if (rooms[key].settings["wordsetType"] === "hostDictionary" && (!Array.isArray(rooms[key].settings["wordset"]))) {
+            Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"hostDictionary\", но \"wordset\" не массив, перевожу словарь на серверный");
+            rooms[key].settings["wordsetType"] = "serverDictionary";
         }
 
         // setting settings
@@ -1396,6 +1590,9 @@ class Callbacks {
         for (let i = 0; i < settingsKeys.length; ++i) {
             if (settingsKeys[i] === "dictionaryId") continue; // already done
             if (settingsKeys[i] === "termCondition") continue; // already done
+            if (settingsKeys[i] === "wordsetType") continue; // already done
+            if (settingsKeys[i] === "dictionaryFileInfo") continue; // already done
+            if (settingsKeys[i] === "wordset") continue; // already done
 
             if (settingsKeys[i] in rooms[key].settings) {
                 if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
@@ -1443,8 +1640,70 @@ class Callbacks {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Использовано количество ходов по умолчанию.");
         }
+        if (warnTCPW && false) {
+            Signals.sFailure(socket.id, "cApplySettings", null,
+                "Выбран режим \"playerWords\", поэтому количество " +
+                "слов будет минимумом из количества введенных слов " +
+                "и максимально возможным количеством слов в шляпе");
+        }
 
         Signals.sNewSettings(key);
+    }
+
+    static cStartWordCollection() {
+        /**
+         * kicking off offline users
+         */
+        // preparing containers
+        let onlineUsers = [];
+
+        // copying each user in proper container
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (rooms[key].users[i].online) {
+                onlineUsers.push(rooms[key].users[i]);
+            }
+        }
+
+        // removing offline users
+        rooms[key].users = onlineUsers;
+
+        rooms[key].state = "prepare";
+
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            rooms[key].users[i].userWords = [];
+            rooms[key].users[i].userReady = false;
+        }
+
+        Signals.sWordCollectionStarted(key);
+    }
+
+    static cWordsReady(socket, key, words) {
+        // setting ready flag and storing words
+        let userPos = findFirstSidPos(rooms[key].users, socket.id);
+        rooms[key].users[userPos].userReady = true;
+        rooms[key].users[userPos].userWords = words;
+
+        // checking words number
+        if (rooms[key].users[userPos].usedWords.length >= config.settingsRange.wordNumber.max) {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
+            rooms[key].users[userPos].usedWords.length = config.settingsRange.wordNumber.max - 1
+        }
+
+        // if everyone is ready --- let's start!
+        let allReady = true;
+        for (let i = 0; i < rooms[key].users.length; ++i) {
+            if (!(rooms[key].users[i].userReady)) {
+                allReady = false;
+                break;
+            }
+        }
+
+        if (allReady) {
+            processPreparationResults(key);
+            rooms[key].gamePrepare();
+            rooms[key].start_timestamp = (new Date()).getTime();
+            Signals.sGameStarted(key);
+        }
     }
 
     static cStartGame(socket, key) {
@@ -1668,8 +1927,9 @@ class Callbacks {
     }
 }
 
+// endregion
 //----------------------------------------------------------
-// Socket.IO functions
+// region Socket.IO functions
 
 io.on("connection", function(socket) {
     if (WRITE_LOGS) {
@@ -1696,7 +1956,7 @@ io.on("connection", function(socket) {
         }
 
         // Adding the user to the room
-        socket.join(data.key.toLowerCase().replace(/\s+/g, ""), (err) => Callbacks.joinRoomCallback(socket, data, err));
+        socket.join(data.key.toLowerCase().replace(/\s+/g, ""), (err) => Callbacks.cJoinRoom(socket, data, err));
     });
 
     /**
@@ -1716,7 +1976,7 @@ io.on("connection", function(socket) {
         }
 
         // Removing the user from the room
-        socket.leave(key, (err) => Callbacks.leaveRoomCallback(socket, key, err));
+        socket.leave(key, (err) => Callbacks.cLeaveRoom(socket, key, err));
     });
 
     /**
@@ -1741,6 +2001,68 @@ io.on("connection", function(socket) {
         }
 
         Callbacks.cApplySettings(socket, key, data.settings);
+    });
+
+    /**
+     * Implementation of cStartWordCollection function
+     * @see API.md
+     */
+    socket.on("cStartWordCollection", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cStartWordCollection", undefined);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking signal conditions
+        if (!CheckConditions.cStartWordCollection(socket, key)) {
+            return;
+        }
+
+        Callbacks.cStartWordCollection(socket, key);
+    });
+
+    /**
+     * Implementation of cWordsReady function
+     * @see API.md
+     */
+    socket.on("cWordsReady", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cWordsReady", data);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"words": "object"}, "cWordsReady")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cWordsReady(socket, key, data.words)) {
+            return;
+        }
+
+        Callbacks.cWordsReady(socket, key, data.words);
+    });
+
+    /**
+     * Implementation of cStartWordCollection function
+     * @see API.md
+     */
+    socket.on("cStartWordCollection", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cStartWordCollection", undefined);
+        }
+
+        const key = getRoom(socket); // key of the room
+
+        //checking signal conditions
+        if (!CheckConditions.cStartWordCollection(socket, key)) {
+            return;
+        }
+
+        Callbacks.cStartWordCollection(socket, key);
     });
 
     /**
@@ -1885,3 +2207,5 @@ io.on("connection", function(socket) {
         Callbacks.disconnect(socket)
     });
 });
+
+// endregion
