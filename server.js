@@ -204,7 +204,7 @@ function getRoom(socket) {
  * @return list of words
  */
 function generateWords(settings, hostDict) {
-    const dict = (settings.wordset === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
+    const dict = (settings.wordsetType === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
     const words = [];
     const used = {};
     const numberOfAllWords = dict.wordNumber;
@@ -898,7 +898,7 @@ class Room {
         this.state = "play";
 
         // generating word list if nessesery
-        if (this.settings["wordsetType"] !== "playerWords") {
+        if (this.settings["wordsetType"] === "playerWords") {
             this.freshWords = generateWords(this.settings, this.hostDictionary);
             delete this.hostDictionary;
         }
@@ -1580,7 +1580,7 @@ class Callbacks {
                 Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"wordset\"");
             }
         }
-        if (rooms[key].settings["wordsetType"] === "hostDictionary" && (!Array.isArray(rooms[key].hostDictionary))) {
+        if (rooms[key].settings["wordsetType"] === "hostDictionary" && (!Array.isArray(rooms[key].settings["wordset"]))) {
             Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"hostDictionary\", но \"wordset\" не массив, перевожу словарь на серверный");
             rooms[key].settings["wordsetType"] = "serverDictionary";
         }
