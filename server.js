@@ -1640,7 +1640,7 @@ class Callbacks {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Использовано количество ходов по умолчанию.");
         }
-        if (warnTCPW) {
+        if (warnTCPW && false) {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Выбран режим \"playerWords\", поэтому количество " +
                 "слов будет минимумом из количества введенных слов " +
