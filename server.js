@@ -1492,51 +1492,52 @@ class Callbacks {
         let warnTurnDefault = false;
         let warnWordsDefault = false;
         let ignoreTermCondition = false;
+        let warnTCPW = false; // warn Term Condition Playr Words
         if ("wordsetType" in settings) {
-            if (!(rooms[key].settings["wordsetType"] in {"serverDictionary": null, "hostDictionary": null, "playerWords": null})) {
+            if (!(typeof(settings["wordsetType"]) === typeof(rooms[key].settings["wordsetType"]))) {
                 Signals.sFailure(socket.id, "cApplySettings", null,
                     "Неверный тип поля настроек wordsetType: "+
                     typeof(settings["wordsetType"]) + " вместо " +
                     typeof(rooms[key].settings["wordsetType"]) + ", пропускаю");
             } else {
-                rooms[key].settings["wordsetType"] = settings["wordsetType"];
-                if (rooms[key].settings["wordsetType"] === "playerWords") {
-                    ignoreTermCondition = true;
+                if (!(settings["wordsetType"] in {"serverDictionary": null, "hostDictionary": null, "playerWords": null})) {
+                    Signals.sFailure(sovket.id, "cApplySettings", null, "Неверное значение wordsetType");
+                } else {
+                    rooms[key].settings["wordsetType"] = settings["wordsetType"];
                 }
             }
         }
         if ("termCondition" in settings) {
-            if (!ignoreTermCondition) {
-                if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
-                    Signals.sFailure(socket.id, "cApplySettings", null,
-                        "Неверный тип поля настроек termCondition: " +
-                        typeof(settings["termCondition"]) + " вместо " +
-                        typeof(rooms[key].settings["termCondition"]) + ", пропускаю");
+            if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Неверный тип поля настроек termCondition: " +
+                    typeof(settings["termCondition"]) + " вместо " +
+                    typeof(rooms[key].settings["termCondition"]) + ", пропускаю");
+            } else {
+                if (!(settings["termCondition"] in {"words": null, "turns": null})) {
+                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
                 } else {
-                    if (!(settings["termCondition"] in {"words": null, "turns": null})) {
-                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
-                    } else {
-                        rooms[key].settings["termCondition"] = settings["termCondition"];
-                        switch (rooms[key].settings["termCondition"]) {
-                            case "words":
-                                rooms[key].settings["wordNumber"] = config.defaultWordNumber;
-                                if ("turnNumber" in rooms[key].settings) {
-                                    delete rooms[key].settings["turnNumber"];
-                                }
-                                warnWordsDefault = true;
-                                break;
-                            case "turns":
-                                rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
-                                if ("wordNumber" in rooms[key].settings) {
-                                    delete rooms[key].settings["wordNumber"];
-                                }
-                                warnTurnDefault = true;
-                                break;
-                        }
+                    rooms[key].settings["termCondition"] = settings["termCondition"];
+                    switch (rooms[key].settings["termCondition"]) {
+                        case "words":
+                            rooms[key].settings["wordNumber"] = config.defaultWordNumber;
+                            if ("turnNumber" in rooms[key].settings) {
+                                delete rooms[key].settings["turnNumber"];
+                            }
+                            warnWordsDefault = true;
+                            if (rooms[key].settings["wordsetType"] === "playerWords") {
+                                warnTCPW;
+                            }
+                            break;
+                        case "turns":
+                            rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
+                            if ("wordNumber" in rooms[key].settings) {
+                                delete rooms[key].settings["wordNumber"];
+                            }
+                            warnTurnDefault = true;
+                            break;
                     }
                 }
-            } else {
-                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"playerWords\", игнорирую \"termCondition\"");
             }
         }
         if ("dictionaryId" in settings) {
@@ -1639,6 +1640,12 @@ class Callbacks {
         if (warnTurnDefault) {
             Signals.sFailure(socket.id, "cApplySettings", null,
                 "Использовано количество ходов по умолчанию.");
+        }
+        if (warnTCPW && false) {
+            Signals.sFailure(socket.id, "cApplySettings", null,
+                "Выбран режим \"playerWords\", поэтому количество " +
+                "слов будет минимумом из количества введенных слов " +
+                "и максисально возможным количесвом слов в шляпе");
         }
 
         Signals.sNewSettings(key);
