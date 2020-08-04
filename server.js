@@ -1508,11 +1508,11 @@ class Callbacks {
                 case "delayTime":
                     switch (false) {
                         case typeof(value) === "number":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "delayTime": ${typeof(value)} вместо number`)
                             break;
                         case settingsRange["delayTime"].min <= value < settingsRange["delayTime"].max:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"delayTime\"")
                             break;
                         default:
@@ -1522,11 +1522,11 @@ class Callbacks {
                 case "explanationTime":
                     switch (false) {
                         case typeof(value) === "number":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "explanationTime": ${typeof(value)} вместо number`)
                             break;
                         case settingsRange["explanationTime"].min <= value < settingsRange["explanationTime"].max:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"explanationTime\"")
                             break;
                         default:
@@ -1536,11 +1536,11 @@ class Callbacks {
                 case "aftermathTime":
                     switch (false) {
                         case typeof(value) === "number":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо number`)
                             break;
                         case settingsRange["aftermathTime"].min <= value < settingsRange["aftermathTime"].max:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"aftermathTime\"")
                             break;
                         default:
@@ -1551,18 +1551,18 @@ class Callbacks {
                     if (typeof(value) === "boolean") {
                         roomSettings["strictMode"] = value;
                     } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
+                        Signals.sFailure(socket.id, "cApplySettings", null,
                             `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо boolean`)
                     }
                     break;
                 case "termCondition":
                     switch (false) {
                         case typeof(value) === "string":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "termCondition": ${typeof(value)} вместо string`)
                             break;
                         case value in {"words": 0, "turns": 0}:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"termCondition\"")
                             break;
                         default:
@@ -1572,11 +1572,11 @@ class Callbacks {
                 case "wordsetType":
                     switch (false) {
                         case typeof(value) === "string":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "wordsetType": ${typeof(value)} вместо string`)
                             break;
                         case value in {"serverDictionary": 0, "hostDictionary": 0, "playerWords": 0}:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"wordsetType\"")
                             break;
                         default:
@@ -1586,11 +1586,11 @@ class Callbacks {
                 case "dictionaryId":
                     switch (false) {
                         case typeof(value) === "number":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "dictionaryId": ${typeof(value)} вместо number`)
                             break;
                         case 0 <= value < dicts.length:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"dictionaryId\"")
                             break;
                         default:
@@ -1600,11 +1600,11 @@ class Callbacks {
                 case "wordNumber":
                     switch (false) {
                         case typeof(value) === "number":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "wordNumber": ${typeof(value)} вместо number`)
                             break;
                         case settingsRange["wordNumber"].min <= value < settingsRange["wordNumber"].max:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"wordNumber\"")
                             break;
                         default:
@@ -1614,11 +1614,11 @@ class Callbacks {
                 case "turnsNumber":
                     switch (false) {
                         case typeof(value) === "number":
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "turnsNumber": ${typeof(value)} вместо number`)
                             break;
                         case settingsRange["turnsNumber"].min <= value < settingsRange["turnsNumber"].max:
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"turnsNumber\"")
                             break;
                         default:
@@ -1631,11 +1631,11 @@ class Callbacks {
                 case "wordset":
                     switch (false) {
                         case Array.isArray(value):
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "wordset": ${typeof(value)} вместо Array`)
                             break;
                         case value.every(elem => typeof(elem) === "string"):
-                            Signals.sFailure(socket, "cApplySettings", null,
+                            Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"wordset\"")
                             break;
                         default:
@@ -1644,7 +1644,7 @@ class Callbacks {
                     }
                     break;
                 default:
-                    Signals.sFailure(socket, "cApplySettings", null,
+                    Signals.sFailure(socket.id, "cApplySettings", null,
                         `Неверное поле настроек "${arg}"`)
                     break;
             }
@@ -1665,7 +1665,7 @@ class Callbacks {
             if (upperBound !== null &&
                 roomSettings["wordNumber"] > upperBound) {
                 roomSettings["wordNumber"] = upperBound;
-                Signals.sFailure(socket, "cApplySettings", null,
+                Signals.sFailure(socket.id, "cApplySettings", null,
                     "Значение \"wordNumber\" уменьшено до размера словаря")
             }
         }
