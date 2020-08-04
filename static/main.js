@@ -1015,10 +1015,11 @@ class App {
         }
         let data = await (await fetch(`api/getRoomInfo?key=${this.game.key}`)).json();
         if (!data.success) {
+            console.log("wow")
             console.log("Invalid room key");
             return;
         };
-        if (["wait", "play"].indexOf(data.state) != -1) {
+        if (["wait", "play", "prepare"].indexOf(data.state) != -1) {
             this.emit("cJoinRoom",
                 {"username": this.game.myUsername,
                     "key": this.game.key,
@@ -1437,10 +1438,14 @@ class App {
             this.game.update(data);
             this.game.inGame = true;
             this.game.state = data.state == "wait" ? "preparation" :
-                data.state == "play" ? data.substate : data.state;
+                data.state == "play" ? data.substate : data.state =="prepare" ?
+                "wordCollection" : data.state;
             switch (data.state) {
             case "wait":
                 this.pages.$preparation.push();
+                break;
+            case "prepare":
+                this.pages.$wordCollection.push();
                 break;
             case "play":
                 this.pages.$game.push();
@@ -1473,6 +1478,7 @@ class App {
             this.game.update(data);
         })
         this.socket.on("sWordCollectionStarted", () => {
+            this.game.state = "wordCollection";
             this.pages.$wordCollection.push();
         })
         this.socket.on("sGameStarted", data => {
