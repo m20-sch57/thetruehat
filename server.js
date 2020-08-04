@@ -1506,30 +1506,45 @@ class Callbacks {
             const value = newSettings[arg];
             switch (arg) {
                 case "delayTime":
-                    if (typeof(value) === "number" &&
-                        settingsRange["delayTime"].min <= value < settingsRange["delayTime"].max) {
-                        roomSettings["delayTime"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"delayTime\"")
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "delayTime": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["delayTime"].min <= value < settingsRange["delayTime"].max:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"delayTime\"")
+                            break;
+                        default:
+                            roomSettings["delayTime"] = value;
                     }
                     break;
                 case "explanationTime":
-                    if (typeof(value) === "number" &&
-                        settingsRange["explanationTime"].min <= value < settingsRange["explanationTime"].max) {
-                        roomSettings["explanationTime"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"explanationTime\"")
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "explanationTime": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["explanationTime"].min <= value < settingsRange["explanationTime"].max:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"explanationTime\"")
+                            break;
+                        default:
+                            roomSettings["explanationTime"] = value;
                     }
                     break;
                 case "aftermathTime":
-                    if (typeof(value) === "number" &&
-                        settingsRange["aftermathTime"].min <= value < settingsRange["aftermathTime"].max) {
-                        roomSettings["aftermathTime"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"aftermathTime\"")
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["aftermathTime"].min <= value < settingsRange["aftermathTime"].max:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"aftermathTime\"")
+                            break;
+                        default:
+                            roomSettings["aftermathTime"] = value;
                     }
                     break;
                 case "strictMode":
@@ -1537,89 +1552,122 @@ class Callbacks {
                         roomSettings["strictMode"] = value;
                     } else {
                         Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"strictMode\"")
+                            `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо boolean`)
                     }
                     break;
                 case "termCondition":
-                    if (value in {"words": 0, "turns": 0}) {
-                        roomSettings["termCondition"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"termCondition\"")
+                    switch (false) {
+                        case typeof(value) === "string":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "termCondition": ${typeof(value)} вместо string`)
+                            break;
+                        case value in {"words": 0, "turns": 0}:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"termCondition\"")
+                            break;
+                        default:
+                            roomSettings["termCondition"] = value;
                     }
                     break;
                 case "wordsetType":
-                    if (value in {"serverDictionary": 0, "hostDictionary": 0, "playerWords": 0}) {
-                        roomSettings["wordsetType"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"wordsetType\"")
+                    switch (false) {
+                        case typeof(value) === "string":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "wordsetType": ${typeof(value)} вместо string`)
+                            break;
+                        case value in {"serverDictionary": 0, "hostDictionary": 0, "playerWords": 0}:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"wordsetType\"")
+                            break;
+                        default:
+                            roomSettings["wordsetType"] = value;
                     }
                     break;
                 case "dictionaryId":
-                    if (typeof(value) === "number" &&
-                        0 <= value < dicts.length) {
-                        roomSettings["dictionaryId"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"dictionaryId\"")
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "dictionaryId": ${typeof(value)} вместо number`)
+                            break;
+                        case 0 <= value < dicts.length:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"dictionaryId\"")
+                            break;
+                        default:
+                            roomSettings["dictionaryId"] = value;
                     }
                     break;
                 case "wordNumber":
-                    if (typeof(value) === "number" &&
-                        settingsRange["wordNumber"].min <= value < settingsRange["wordNumber"].max) {
-                        roomSettings["wordNumber"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"wordNumber\"")
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "wordNumber": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["wordNumber"].min <= value < settingsRange["wordNumber"].max:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"wordNumber\"")
+                            break;
+                        default:
+                            roomSettings["wordNumber"] = value;
                     }
                     break;
                 case "turnsNumber":
-                    if (typeof(value) === "number" &&
-                        settingsRange["turnsNumber"].min <= value < settingsRange["turnsNumber"].max) {
-                        roomSettings["turnsNumber"] = value;
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"turnsNumber\"")
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "turnsNumber": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["turnsNumber"].min <= value < settingsRange["turnsNumber"].max:
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"turnsNumber\"")
+                            break;
+                        default:
+                            roomSettings["turnsNumber"] = value;
                     }
                     break;
                 case "dictionaryFileInfo":
                     roomSettings["dictionaryFileInfo"] = value;
                     break;
                 case "wordset":
-                    if (Array.isArray(value) &&
-                        value.every(elem => typeof(elem) === "string")) {
-                        room.hostDictionary.words = value;
-                        room.hostDictionary.wordNumber = value.length
-                    } else {
-                        Signals.sFailure(socket, "cApplySettings", null,
-                            "Неверное значение поля настроек \"wordset\"")
+                    switch (false) {
+                        case Array.isArray(value):
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "wordset": ${typeof(value)} вместо Array`)
+                            break;
+                        case value.every(elem => typeof(elem) === "string"):
+                            Signals.sFailure(socket, "cApplySettings", null,
+                                "Неверное значение поля настроек \"wordset\"")
+                            break;
+                        default:
+                            room.hostDictionary.words = value;
+                            room.hostDictionary.wordNumber = value.length
                     }
                     break;
                 default:
                     Signals.sFailure(socket, "cApplySettings", null,
-                        "Неверное поле настроек \"" + arg + "\"")
+                        `Неверное поле настроек "${arg}"`)
                     break;
             }
         }
 
         if (roomSettings["termCondition"] === "words") {
-            let dict;
+            let upperBound;
             switch (roomSettings["wordsetType"]) {
                 case "serverDictionary":
-                    dict = dicts[roomSettings["dictionaryId"]];
-                    if (roomSettings["words"] > dict.wordNumber) {
-                        roomSettings["words"] = dict.wordNumber;
-                    }
+                    upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
                     break;
                 case "hostDictionary":
-                    dict = room.hostDictionary;
-                    if (roomSettings["words"] > dict.wordNumber) {
-                        roomSettings["words"] = dict.wordNumber;
-                    }
+                    upperBound = room.hostDictionary.wordNumber;
                     break;
+                default:
+                    upperBound = null;
             }
-
+            if (upperBound !== null &&
+                roomSettings["wordNumber"] > upperBound) {
+                roomSettings["wordNumber"] = upperBound;
+                Signals.sFailure(socket, "cApplySettings", null,
+                    "Значение \"wordNumber\" уменьшено до размера словаря")
+            }
         }
     }
 
