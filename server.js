@@ -829,6 +829,7 @@ app.get("/getRoomInfo", function(req, res) {
     switch (room.state) {
         case "wait":
         case "play":
+        case "prepare":
             sendResponse(req, res, {"success": true,
                       "state": room.state,
                       "playerList": getPlayerList(room.users),
