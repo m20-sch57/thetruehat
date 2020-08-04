@@ -19,6 +19,10 @@ button, input, textarea, select {
     outline: 0;
 }
 
+input[type=file] {
+    display: none;
+}
+
 input[type=checkbox] {
     display: none;
 }
@@ -49,7 +53,7 @@ input[type=checkbox]:checked + label:hover {
     background-color: rgb(42, 149, 175);
 }
 
-input[type=checkbox] + label span {
+input[type=checkbox] + label div {
     display: none;
     height: 17px;
     width: 15px;
@@ -58,12 +62,25 @@ input[type=checkbox] + label span {
     margin: auto;
 }
 
-input[type=checkbox]:checked + label span {
-    display: inline-block;
+input[type=checkbox]:checked + label div {
+    display: block;
 }
 
 input[type=checkbox] + label + label {
     font-size: 20px;
+    line-height: 25px;
+}
+
+select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    background-image: url(/svg/arrow_down.svg);
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 3px);
+    background-position-y: calc(50% - 1px);
+    outline: none;
 }
 
 svg {
@@ -120,13 +137,13 @@ svg {
     line-height: 20px;
 }
 
-.small-button:hover:enabled, .medium-button:hover:enabled {
+.small-button:hover:not([disabled]), .medium-button:hover:not([disabled]) {
     background-color: rgb(44, 98, 185);
     color: whitesmoke;
     box-shadow: 1px 1px 5px grey;
 }
 
-.small-button:active:enabled, .medium-button:active:enabled {
+.small-button:active:not([disabled]), .medium-button:active:not([disabled]) {
     background-color: rgb(36, 52, 77);
 }
 
@@ -144,12 +161,12 @@ svg {
     font-size: 15px;
 }
 
-.small-white-button:hover:enabled {
+.small-white-button:hover:not([disabled]) {
     background-color: rgb(233, 233, 233);
     box-shadow: 0 0 1px grey;
 }
 
-.small-white-button:active:enabled {
+.small-white-button:active:not([disabled]) {
     background-color: lightgrey;
 }
 
@@ -168,7 +185,7 @@ svg {
     font-size: inherit;
 }
 
-.flat-button:hover:enabled {
+.flat-button:hover:not([disabled]) {
     --color: rgb(33, 164, 216);
     color: var(--color);
     fill: var(--color);
@@ -222,7 +239,7 @@ svg {
 
 .medium-select {
     height: 40px;
-    padding: 0 10px 0 10px;
+    padding: 0 30px 0 10px;
     border: 1px solid grey;
     border-radius: 20px;
     font-size: 18px;
@@ -274,12 +291,12 @@ svg {
     box-shadow: 0 0 3px grey;
 }
 
-.white-bubble:hover:enabled {
+.white-bubble:hover:not([disabled]) {
     background-color: rgb(240, 240, 240);
     box-shadow: 0 0 5px grey;
 }
 
-.white-bubble:active:enabled {
+.white-bubble:active:not([disabled]) {
     background-color: rgb(225, 225, 225);
 }
 
@@ -648,6 +665,7 @@ svg {
 }
 
 #gameSettingsPage_layers .layer {
+    position: relative;
     display: flex;
     flex-flow: row;
     margin-top: 10px;
@@ -655,6 +673,9 @@ svg {
 }
 
 #gameSettingsPage_layers .label {
+    position: relative;
+    display: flex;
+    flex-flow: row;
     padding-right: 10px;
     margin: auto auto auto 0;
     font-size: 20px;
@@ -664,10 +685,15 @@ svg {
     --color: grey;
     fill: var(--color);
     stroke: var(--color);
-    line-height: 20px;
-    vertical-align: middle;
     position: relative;
+    display: flex;
     cursor: pointer;
+}
+
+#gameSettingsPage_layers .info div {
+    margin: auto 5px;
+    height: 20px;
+    width: 20px;
 }
 
 #gameSettingsPage_layers .info.active {
@@ -676,15 +702,12 @@ svg {
     stroke: var(--color);
 }
 
-#gameSettingsPage_layers .info span {
-    height: 20px;
-}
-
-#gameSettingsPage_layers .info.active .arrow {
+#gameSettingsPage_layers .info.active::after {
+    content: "";
     position: absolute;
-    top: 100%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -15px);
+    transform: translateX(-50%);
     border: 10px solid transparent;
     border-bottom-color: white;
     z-index: 2;
@@ -697,10 +720,10 @@ svg {
 #gameSettingsPage_layers .info.active + .popup-hint {
     display: block;
     position: absolute;
-    width: 360px;
-    max-width: calc(100% - 55px);
+    width: 460px;
+    max-width: calc(100vw - 45px);
     padding: 10px 15px 10px 15px;
-    margin-top: 5px;
+    top: calc(50% + 16px);
     margin-left: -15px;
     background-color: white;
     border-radius: 20px;
@@ -716,13 +739,39 @@ svg {
     text-align: center;
 }
 
-#gameSettingsPage_dictionarySelection {
+#gameSettingsPage_termCondition, #gameSettingsPage_dictionarySelection {
     flex-wrap: wrap !important;
-    margin-top: 30px !important;
 }
 
-#gameSettingsPage_dictionarySelectionLabel {
+#gameSettingsPage_termConditionLabel, #gameSettingsPage_dictionarySelectionLabel {
     padding: 5px 0 5px 0;
+}
+
+#gameSettingsPage_termConditionList, #gameSettingsPage_dictionaryList {
+    min-width: 300px;
+}
+
+#gameSettingsPage_loadDictionary {
+    margin-bottom: 20px !important;
+}
+
+#gameSettingsPage_loadFileButton {
+    flex-shrink: 0;
+}
+
+#gameSettingsPage_loadFileLabel {
+    flex-grow: 1;
+    margin: auto 10px;
+    width: 100px;
+    font-size: 16px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#gameSettingsPage_loadFileInfo {
+    margin: auto 0;
+    font-size: 20px;
 }
 
 #gameSettingsPage_strictMode {
