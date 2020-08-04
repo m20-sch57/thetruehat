@@ -1715,7 +1715,7 @@ class App {
     parseWords() {
         let wordSeparator = "\n";
         let wordsText = el("wordCollectionPage_textarea").value;
-        let words = wordsText.split(wordSeparator).map(x => x.trim());
+        let words = wordsText.split(wordSeparator).map(x => x.trim()).filter(x => x != "");
         return words;
     }
 
