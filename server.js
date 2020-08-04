@@ -204,11 +204,7 @@ function getRoom(socket) {
  * @return list of words
  */
 function generateWords(settings, hostDict) {
-    const dict = (settings.wordsetType === "hostDictionary") ? {
-                                                                    words: hostDict,
-                                                                    wordNumber: hostDict.length,
-                                                                    name: "Host's dictionary"
-                                                                } : dicts[settings.dictionaryId];
+    const dict = (settings.wordsetType === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
     const words = [];
     const used = {};
     const numberOfAllWords = dict.wordNumber;
@@ -864,8 +860,11 @@ app.get("/getRoomInfo", function(req, res) {
  *     - users --- list of users (User objects)
  *     - settings --- room settings
  *
- * if state === "prepare" and settings.wordsetType === "hostDictionary":
- *     - hostDictionary --- list of words from host
+ * if state === "prepare" or state === "wait":
+ *     - hostDictionary --- "dictionary" with words from host:
+ *         - words --- list of words
+ *         - wordNumber --- count of words
+ *         - name --- "Host's dictionary"
  *
  * if state === "play":
  *     - substate --- substate of the room,
@@ -892,6 +891,14 @@ class Room {
         this.state = "wait";
         this.users = [];
         this.settings = Object.assign({}, config.defaultSettings);
+        this.hostDictionary = {
+            words: [],
+            wordNumber: 0,
+            name: {
+                "ru": "Словарь хоста",
+                "en": "Host's dictionary"
+            }
+        }
     }
 
     /**
@@ -1581,7 +1588,8 @@ class Callbacks {
                 case "wordset":
                     if (Array.isArray(value) &&
                         value.every(elem => typeof(elem) === "string")) {
-                        room.hostDictionary = value;
+                        room.hostDictionary.words = value;
+                        room.hostDictionary.wordNumber = value.length
                     } else {
                         Signals.sFailure(socket, "cApplySettings", null,
                             "Неверное значение поля настроек \"wordset\"")
