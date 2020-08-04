@@ -778,6 +778,7 @@ class App {
             pages: {
                 main: "mainPage",
                 join: "joinPage",
+                wordSelection: "wordSelectionPage",
                 game: {
                     els: ["gamePage"],
                     onEnter: () => {
