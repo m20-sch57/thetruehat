@@ -829,6 +829,7 @@ app.get("/getRoomInfo", function(req, res) {
     switch (room.state) {
         case "wait":
         case "play":
+        case "prepare":
             sendResponse(req, res, {"success": true,
                       "state": room.state,
                       "playerList": getPlayerList(room.users),
@@ -1656,9 +1657,9 @@ class Callbacks {
         rooms[key].users[userPos].userWords = words;
 
         // checking words number
-        if (rooms[key].users[userPos].usedWords.length >= config.settingsRange.wordNumber.max) {
+        if (rooms[key].users[userPos].userWords.length >= config.settingsRange.wordNumber.max) {
             Signals.sFailure(socket.id, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
-            rooms[key].users[userPos].usedWords.length = config.settingsRange.wordNumber.max - 1
+            rooms[key].users[userPos].userWords.length = config.settingsRange.wordNumber.max - 1
         }
 
         // if everyone is ready --- let's start!
