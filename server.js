@@ -1578,6 +1578,11 @@ class Callbacks {
             if (rooms[key].settings["wordsetType"] === "hostDictionary") {
                 if (Array.isArray(settings["wordset"])) {
                     rooms[key].hostDictionary = settings["wordset"];
+                    if (rooms[key].settings["wordNumber"] > rooms[key].hostDictionary.length) {
+                        rooms[key].settings["wordNumber"] = rooms[key].hostDictionary.length;
+                        warnWordsDecrease = true;
+                        warnWordsDefault = false;
+                    }
                 } else {
                     Signals.sFailure(socket.id, "cApplySettings", null, "\"wordset\" не массив");
                 }
