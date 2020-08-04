@@ -25,14 +25,13 @@
         "delayTime": 3000,
         "explanationTime": 40000,
         "aftermathTime": 3000,
+        "strictMode": false,
         "termCondition": "words",
         "wordsetType": "serverDictionary",
         "dictionaryId": 0,
         "wordNumber": 100,
-        "strictMode": false
+        "turnsNumber": 10
     },
-    "defaultWordNumber": 100,
-    "defaultTurnNumber": 10,
     "settingsRange": {
         "delayTime": {
             "min": 0,

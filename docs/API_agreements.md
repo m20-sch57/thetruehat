@@ -42,6 +42,7 @@
     - `delayTime (int)` - длительность обратного отсчёта
     - `explanationTime (int)` - длительность промежутка времени, когда может говорить как объясняющий, так и отгадывающий
     - `aftermathTime (int)` - длительность промежутка времени в конце раунда, когда отгадывающий может назвать свою догадку
+    - `strictMode (bool)` - используется ли строгий режим (при строгом режиме раунд сразу заканчивается после истечению времени)
     - `termCondition (string)` - условие окончания игры
       - `words` - по кол-ву слов
       - `turns` - по кол-ву кругов
@@ -52,7 +53,6 @@
     - `dictionaryId (int)` - если `wordsetType = serverDictionary`. идентификатор словаря, откуда берутся слова в игре
     - `wordNumber (int)` - если `termCondition = words` и `wordsetType = *Dictionary`. Начальное количество слов в шляпе
     - `turnsNumber (int)` - если `termCondition = turns`. Количество кругов
-    - `strictMode (bool)` - используется ли строгий режим (при строгом режиме раунд сразу заканчивается после истечению времени)
     - `dictionaryFileInfo (DictionaryFileInfo)` - если `wordsetType = hostDictionary`. Информация о файле словаря, который загружен
     - `wordset (array<string>)` - если `wordsetType = hostDictionary` и хост хочет обновить словарь на сервере. Список слов в словаре, загружаемом хостом
 1. Информация о файле словаря (DictionaryFileInfo)
