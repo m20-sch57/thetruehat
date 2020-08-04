@@ -861,8 +861,11 @@ app.get("/getRoomInfo", function(req, res) {
  *     - users --- list of users (User objects)
  *     - settings --- room settings
  *
- * if state === "prepare" and settings.wordsetType === "hostDictionary":
- *     - hostDictionary --- list of words from host
+ * if state === "prepare" or state === "wait":
+ *     - hostDictionary --- "dictionary" with words from host:
+ *         - words --- list of words
+ *         - wordNumber --- count of words
+ *         - name --- "Host's dictionary"
  *
  * if state === "play":
  *     - substate --- substate of the room,
@@ -889,6 +892,14 @@ class Room {
         this.state = "wait";
         this.users = [];
         this.settings = Object.assign({}, config.defaultSettings);
+        this.hostDictionary = {
+            words: [],
+            wordNumber: 0,
+            name: {
+                "ru": "Словарь хоста",
+                "en": "Host's dictionary"
+            }
+        }
     }
 
     /**
@@ -1487,168 +1498,177 @@ class Callbacks {
         Signals.sPlayerLeft(key, rooms[key], username);
     }
 
-    static cApplySettings(socket, key, settings) {
-        // special case: "dictionaryId" (it changes ranges for other settings) (also "termCondition" should be processes out of turn (and "wordsetType"))
-        let warnWordsDecrease = false;
-        let warnTurnDefault = false;
-        let warnWordsDefault = false;
-        let warnTCPW = false; // warn Term Condition Player Words
-        if ("wordsetType" in settings) {
-            if (!(typeof(settings["wordsetType"]) === typeof(rooms[key].settings["wordsetType"]))) {
-                Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Неверный тип поля настроек wordsetType: "+
-                    typeof(settings["wordsetType"]) + " вместо " +
-                    typeof(rooms[key].settings["wordsetType"]) + ", пропускаю");
-            } else {
-                if (!(settings["wordsetType"] in {"serverDictionary": null, "hostDictionary": null, "playerWords": null})) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение wordsetType");
-                } else {
-                    rooms[key].settings["wordsetType"] = settings["wordsetType"];
-                }
-            }
-        }
-        if ("termCondition" in settings) {
-            if (typeof(rooms[key].settings["termCondition"]) !== typeof(settings["termCondition"])) {
-                Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Неверный тип поля настроек termCondition: " +
-                    typeof(settings["termCondition"]) + " вместо " +
-                    typeof(rooms[key].settings["termCondition"]) + ", пропускаю");
-            } else {
-                if (!(settings["termCondition"] in {"words": null, "turns": null})) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение termCondition");
-                } else {
-                    rooms[key].settings["termCondition"] = settings["termCondition"];
-                    switch (rooms[key].settings["termCondition"]) {
-                        case "words":
-                            rooms[key].settings["wordNumber"] = config.defaultWordNumber;
-                            if ("turnNumber" in rooms[key].settings) {
-                                delete rooms[key].settings["turnNumber"];
-                            }
-                            warnWordsDefault = true;
-                            if (rooms[key].settings["wordsetType"] === "playerWords") {
-                                warnTCPW = true;
-                            }
+    static cApplySettings(socket, key, newSettings) {
+        const room = rooms[key];
+        const roomSettings = room.settings;
+
+        for (let arg in newSettings) {
+            const value = newSettings[arg];
+            switch (arg) {
+                case "delayTime":
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "delayTime": ${typeof(value)} вместо number`)
                             break;
-                        case "turns":
-                            rooms[key].settings["turnNumber"] = config.defaultTurnNumber;
-                            if ("wordNumber" in rooms[key].settings) {
-                                delete rooms[key].settings["wordNumber"];
-                            }
-                            warnTurnDefault = true;
+                        case settingsRange["delayTime"].min <= value < settingsRange["delayTime"].max:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"delayTime\"")
                             break;
+                        default:
+                            roomSettings["delayTime"] = value;
                     }
-                }
-            }
-        }
-        if ("dictionaryId" in settings) {
-            if (rooms[key].settings["wordsetType"] === "serverDictionary") {
-                if (typeof(rooms[key].settings["dictionaryId"]) !== typeof(settings["dictionaryId"])) {
-                    Signals.sFailure(socket.id, "cApplySettings", null,
-                        "Неверный тип поля настроек dictionaryId: " +
-                        typeof(settings["dictionaryId"]) + " вместо " +
-                        typeof(rooms[key].settings["dictionaryId"]) + ", пропускаю");
-                } else {
-                    if (settings["dictionaryId"] < 0 || settings["dictionaryId"] >= dicts.length) {
-                        Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение dictionaryId");
+                    break;
+                case "explanationTime":
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "explanationTime": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["explanationTime"].min <= value < settingsRange["explanationTime"].max:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"explanationTime\"")
+                            break;
+                        default:
+                            roomSettings["explanationTime"] = value;
+                    }
+                    break;
+                case "aftermathTime":
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["aftermathTime"].min <= value < settingsRange["aftermathTime"].max:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"aftermathTime\"")
+                            break;
+                        default:
+                            roomSettings["aftermathTime"] = value;
+                    }
+                    break;
+                case "strictMode":
+                    if (typeof(value) === "boolean") {
+                        roomSettings["strictMode"] = value;
                     } else {
-                        rooms[key].settings["dictionaryId"] = settings["dictionaryId"];
-                        if (rooms[key].settings["wordNumber"] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                            rooms[key].settings["wordNumber"] = dicts[rooms[key].settings["dictionaryId"]].wordNumber;
-                            warnWordsDecrease = true;
-                        }
+                        Signals.sFailure(socket.id, "cApplySettings", null,
+                            `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо boolean`)
                     }
-                }
-            } else {
-                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryId\"");
-            }
-        }
-        if ("dictionaryFileInfo" in settings) {
-            if (rooms[key].settings["wordsetType"] === "hostDictionary") {
-                // it's for client purpose, don't unpack!!!
-                rooms[key].settings["dictionaryFileInfo"] = settings["dictionaryFileInfo"];
-            } else {
-                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"dictionaryFileInfo\"");
-            }
-        }
-        if ("wordset" in settings) {
-            if (rooms[key].settings["wordsetType"] === "hostDictionary") {
-                if (Array.isArray(settings["wordset"])) {
-                    rooms[key].hostDictionary = settings["wordset"];
-                } else {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "\"wordset\" не массив");
-                }
-            } else {
-                Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"" + rooms[key].settings["wordsetType"] + "\", игнорирую \"wordset\"");
-            }
-        }
-        if (rooms[key].settings["wordsetType"] === "hostDictionary" && (!Array.isArray(rooms[key].hostDictionary))) {
-            Signals.sFailure(socket.id, "cApplySettings", null, "Указан словарь \"hostDictionary\", но \"wordset\" не массив, перевожу словарь на серверный");
-            rooms[key].settings["wordsetType"] = "serverDictionary";
-        }
-
-        // setting settings
-        const settingsKeys = Object.keys(settings);
-        for (let i = 0; i < settingsKeys.length; ++i) {
-            if (settingsKeys[i] === "dictionaryId") continue; // already done
-            if (settingsKeys[i] === "termCondition") continue; // already done
-            if (settingsKeys[i] === "wordsetType") continue; // already done
-            if (settingsKeys[i] === "dictionaryFileInfo") continue; // already done
-            if (settingsKeys[i] === "wordset") continue; // already done
-
-            if (settingsKeys[i] in rooms[key].settings) {
-                if (typeof(rooms[key].settings[settingsKeys[i]]) !== typeof(settings[settingsKeys[i]])) {
+                    break;
+                case "termCondition":
+                    switch (false) {
+                        case typeof(value) === "string":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "termCondition": ${typeof(value)} вместо string`)
+                            break;
+                        case value in {"words": 0, "turns": 0}:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"termCondition\"")
+                            break;
+                        default:
+                            roomSettings["termCondition"] = value;
+                    }
+                    break;
+                case "wordsetType":
+                    switch (false) {
+                        case typeof(value) === "string":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "wordsetType": ${typeof(value)} вместо string`)
+                            break;
+                        case value in {"serverDictionary": 0, "hostDictionary": 0, "playerWords": 0}:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"wordsetType\"")
+                            break;
+                        default:
+                            roomSettings["wordsetType"] = value;
+                    }
+                    break;
+                case "dictionaryId":
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "dictionaryId": ${typeof(value)} вместо number`)
+                            break;
+                        case 0 <= value < dicts.length:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"dictionaryId\"")
+                            break;
+                        default:
+                            roomSettings["dictionaryId"] = value;
+                    }
+                    break;
+                case "wordNumber":
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "wordNumber": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["wordNumber"].min <= value < settingsRange["wordNumber"].max:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"wordNumber\"")
+                            break;
+                        default:
+                            roomSettings["wordNumber"] = value;
+                    }
+                    break;
+                case "turnsNumber":
+                    switch (false) {
+                        case typeof(value) === "number":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "turnsNumber": ${typeof(value)} вместо number`)
+                            break;
+                        case settingsRange["turnsNumber"].min <= value < settingsRange["turnsNumber"].max:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"turnsNumber\"")
+                            break;
+                        default:
+                            roomSettings["turnsNumber"] = value;
+                    }
+                    break;
+                case "dictionaryFileInfo":
+                    roomSettings["dictionaryFileInfo"] = value;
+                    break;
+                case "wordset":
+                    switch (false) {
+                        case Array.isArray(value):
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "wordset": ${typeof(value)} вместо Array`)
+                            break;
+                        case value.every(elem => typeof(elem) === "string"):
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"wordset\"")
+                            break;
+                        default:
+                            room.hostDictionary.words = value;
+                            room.hostDictionary.wordNumber = value.length
+                    }
+                    break;
+                default:
                     Signals.sFailure(socket.id, "cApplySettings", null,
-                        "Неверный тип поля настроек " + settingsKeys[i] + ": " +
-                        typeof(settings[settingsKeys[i]]) + " вместо " +
-                        typeof(rooms[key].settings[settingsKeys[i]]) + ", пропускаю");
-                    continue;
-                }
-                if (typeof(settings[settingsKeys[i]]) === typeof(0) &&
-                    (settings[settingsKeys[i]] < settingsRange[settingsKeys[i]].min ||
-                    settings[settingsKeys[i]] >= settingsRange[settingsKeys[i]].max)) {
-                    Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
-                    continue;
-                }
-                switch (settingsKeys[i]) {
-                    case "wordNumber":
-                        if (settings[settingsKeys[i]] > dicts[rooms[key].settings["dictionaryId"]].wordNumber) {
-                            Signals.sFailure(socket.id, "cApplySettings", null, "Неверное значение " + settingsKeys[i]);
-                            continue;
-                        }
-                        warnWordsDecrease = false;
-                        warnWordsDefault = false;
-                        break;
-                    case "turnNumber":
-                        warnTurnDefault = false;
-                        break;
-                }
-                rooms[key].settings[settingsKeys[i]] = settings[settingsKeys[i]];
-            } else {
-                Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Неверное поле настроек: " + settingsKeys[i] + ", пропускаю");
+                        `Неверное поле настроек "${arg}"`)
+                    break;
             }
         }
 
-        if (warnWordsDecrease) {
-            Signals.sFailure(socket.id, "cApplySettings", null,
-                "Количество слов уменьшено до максимально возможного для данного словаря");
+        if (roomSettings["termCondition"] === "words") {
+            let upperBound;
+            switch (roomSettings["wordsetType"]) {
+                case "serverDictionary":
+                    upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
+                    break;
+                case "hostDictionary":
+                    upperBound = room.hostDictionary.wordNumber;
+                    break;
+                default:
+                    upperBound = null;
+            }
+            if (upperBound !== null &&
+                roomSettings["wordNumber"] > upperBound) {
+                roomSettings["wordNumber"] = upperBound;
+                Signals.sFailure(socket.id, "cApplySettings", null,
+                    "Значение \"wordNumber\" уменьшено до размера словаря")
+            }
         }
-        if (warnWordsDefault) {
-            Signals.sFailure(socket.id, "cApplySettings", null,
-                "Использовано количество слов по умолчанию.")
-        }
-        if (warnTurnDefault) {
-            Signals.sFailure(socket.id, "cApplySettings", null,
-                "Использовано количество ходов по умолчанию.");
-        }
-        if (warnTCPW && false) {
-            Signals.sFailure(socket.id, "cApplySettings", null,
-                "Выбран режим \"playerWords\", поэтому количество " +
-                "слов будет минимумом из количества введенных слов " +
-                "и максимально возможным количеством слов в шляпе");
-        }
-
-        Signals.sNewSettings(key);
     }
 
     static cStartWordCollection(socket, key) {
