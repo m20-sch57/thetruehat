@@ -1665,7 +1665,7 @@ class Callbacks {
         Signals.sNewSettings(key);
     }
 
-    static cStartWordCollection() {
+    static cStartWordCollection(socket, key) {
         /**
          * kicking off offline users
          */
@@ -2062,25 +2062,6 @@ io.on("connection", function(socket) {
     });
 
     /**
-     * Implementation of cStartWordCollection function
-     * @see API.md
-     */
-    socket.on("cStartWordCollection", function() {
-        if (WRITE_LOGS) {
-            console.log(socket.id, "cStartWordCollection", undefined);
-        }
-
-        const key = getRoom(socket); // key of the room
-
-        //checking signal conditions
-        if (!CheckConditions.cStartWordCollection(socket, key)) {
-            return;
-        }
-
-        Callbacks.cStartWordCollection(socket, key);
-    });
-
-    /**
      * Implementation of cStartGame function
      * @see API.md
      */
@@ -2097,30 +2078,6 @@ io.on("connection", function(socket) {
         }
 
         Callbacks.cStartGame(socket, key);
-    });
-
-    /**
-     * Implementation of cSpeakerReady function
-     * @see API.md
-     */
-    socket.on("cSpeakerReady", function() {
-        if (WRITE_LOGS) {
-            console.log(socket.id, "cSpeakerReady", undefined);
-        }
-
-        const key = getRoom(socket); // key of room
-
-        if (!CheckConditions.cSpeakerReady(socket, key)) {
-            return;
-        }
-
-        // setting flag for speaker
-        rooms[key].speakerReady = true;
-
-        // if listener is ready --- let's start!
-        if (rooms[key].listenerReady) {
-            startExplanation(key);
-        }
     });
 
     /**
@@ -2143,6 +2100,30 @@ io.on("connection", function(socket) {
 
         // if speaker is ready --- let's start!
         if (rooms[key].speakerReady) {
+            startExplanation(key);
+        }
+    });
+
+    /**
+     * Implementation of cSpeakerReady function
+     * @see API.md
+     */
+    socket.on("cSpeakerReady", function() {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cSpeakerReady", undefined);
+        }
+
+        const key = getRoom(socket); // key of room
+
+        if (!CheckConditions.cSpeakerReady(socket, key)) {
+            return;
+        }
+
+        // setting flag for speaker
+        rooms[key].speakerReady = true;
+
+        // if listener is ready --- let's start!
+        if (rooms[key].listenerReady) {
             startExplanation(key);
         }
     });
