@@ -1596,7 +1596,7 @@ class App {
         }
 
         el("wordCollectionPage_readyButton").onclick = () => {
-            this.emit("ccWordsReady", {
+            this.emit("cWordsReady", {
                 words: this.parseWords()
             })
         }
@@ -1714,7 +1714,7 @@ class App {
 
     parseWords() {
         let wordSeparator = "\n";
-        let wordsText = el("wordCollectionPage_textarea").innerText;
+        let wordsText = el("wordCollectionPage_textarea").value;
         let words = wordsText.split(wordSeparator).map(x => x.trim());
         return words;
     }
