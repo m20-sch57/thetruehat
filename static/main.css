@@ -794,30 +794,30 @@ svg {
 
 /* Word selection page */
 
-#wordSelectionPage_header {
+#wordCollectionPage_header {
     width: 100%;
     text-align: center;
     padding: 0 30px 0px 30px;
 }
 
-#wordSelectionPage_title {
+#wordCollectionPage_title {
     font-size: 30px;
     font-weight: lighter;
 }
 
-#wordSelectionPage_body {
+#wordCollectionPage_body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     padding: 0 30px 0px 30px;
 }
 
-#wordSelectionPage_hint {
+#wordCollectionPage_hint {
     font-size: 17px;
     text-align: justify;
 }
 
-#wordSelectionPage_textarea {
+#wordCollectionPage_textarea {
     width: 100%;
     flex-grow: 1;
     text-align: center;
@@ -825,13 +825,13 @@ svg {
     font-size: 20px;
 }
 
-#wordSelectionPage_readyButton {
+#wordCollectionPage_readyButton {
     width: 100%;
     margin-top: 20px;
 }
 
 @media (min-width: 500px) {
-    #wordSelectionPage_textarea {
+    #wordCollectionPage_textarea {
         max-height: 400px;
     }
 }
