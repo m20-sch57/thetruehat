@@ -162,9 +162,15 @@ function _(msgid, n) {
     }
 }
 
-function validateNumber(elem) {
-    el(elem).oninput = function(event) {
-        el(elem).value = el(elem).value.replace(/\D+/g,"");
+function validateNumber(elemId) {
+    let elem = el(elemId);
+    let numRegex = /\D+/g;
+    elem.oninput = function(event) {
+        let caretPosition = elem.selectionStart;
+        let newCaretPosition = elem.value.slice(0, caretPosition).replace(numRegex, "").length;
+        elem.value = elem.value.replace(numRegex,"");
+        elem.selectionStart = newCaretPosition;
+        elem.selectionEnd = newCaretPosition;
     }
 }
 
