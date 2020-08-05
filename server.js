@@ -857,11 +857,9 @@ class Room {
         // changing state to 'play'
         this.state = "play";
 
-        // generating word list if necessary
-        if (this.settings["wordsetType"] !== "playerWords") {
-            this.generateWords();
-            delete this.hostDictionary;
-        }
+        // generating word list
+        this.generateWords();
+        delete this.hostDictionary;
 
         // preparing storage for explained words
         this.usedWords = {};
@@ -913,47 +911,53 @@ class Room {
     }
 
     /**
-     * Process results of preparation
-     *
-     */
-    processPreparationResults() {
-        let wordList = [];
-        let allWords = {};
-        for (let i = 0; i < this.users.length; ++i) {
-            const user = this.users[i];
-            for (let j = 0; j < user.userWords.length; ++j) {
-                if (!(user.userWords[j] in allWords)) {
-                    wordList.push(user.userWords[j]);
-                    allWords[user.userWords[j]] = true;
-                }
-            }
-            delete user.userReady;
-            delete user.userWords;
-        }
-
-        // checking number of words
-        if (wordList.length >= config.settingsRange.wordNumber.max) {
-            Signals.sFailure(this.key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
-            wordList.length = config.settingsRange.wordNumber.max - 1;
-        }
-
-        this.freshWords = wordList;
-
-        this.state = "play";
-    }
-
-    /**
      * Generate word list
      *
      * @return list of words
      */
     generateWords() {
         const settings = this.settings
-        const dict = (settings.wordsetType === "hostDictionary") ? this.hostDictionary : dicts[settings.dictionaryId];
+        let dict
+        switch (settings.wordsetType) {
+            case "serverDictionary":
+                dict = dicts[settings.dictionaryId];
+                break;
+            case "hostDictionary":
+                dict = this.hostDictionary;
+                break;
+            case "playerWords":
+                let wordList = [];
+                let allWords = {};
+                for (let i = 0; i < this.users.length; ++i) {
+                    const user = this.users[i];
+                    for (let j = 0; j < user.userWords.length; ++j) {
+                        if (!(user.userWords[j] in allWords)) {
+                            wordList.push(user.userWords[j]);
+                            allWords[user.userWords[j]] = true;
+                        }
+                    }
+                    delete user.userReady;
+                    delete user.userWords;
+                }
+
+                dict = {
+                    words: wordList,
+                    wordNumber: wordList.length,
+                    name: "Players' dictionary"
+                }
+
+                settings.wordNumber = Math.min(dict.wordNumber, config.settingsRange.wordNumber.max - 1);
+
+                // checking number of words
+                if (wordList.length > settings.wordNumber) {
+                    Signals.sFailure(this.key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
+                }
+                break;
+        }
         const words = [];
         const used = {};
         const numberOfAllWords = dict.wordNumber;
-        const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
+        const wordNumber = settings["wordNumber"];
         while (words.length < wordNumber) {
             const pos = randrange(numberOfAllWords);
             if (!(pos in used)) {
@@ -1722,7 +1726,6 @@ class Callbacks {
         }
 
         if (allReady) {
-            rooms[key].processPreparationResults();
             rooms[key].gamePrepare();
             rooms[key].start_timestamp = (new Date()).getTime();
             Signals.sGameStarted(key);
