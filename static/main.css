@@ -627,7 +627,7 @@ svg {
     background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 
-#preparationPage_start {
+#preparationPage_startGame, #preparationPage_startWordCollection {
     width: 100%;
 }
 

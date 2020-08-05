@@ -655,18 +655,24 @@ class Game {
     }
 
     renderStartAction() {
+        hide("preparationPage_startGame");
+        hide("preparationPage_startWordCollection");
+        hide("preparationPage_startHint");
+        hide("preparationPage_startLabel");
         if (!this.isHost) {
-            hide("preparationPage_start")
-            hide("preparationPage_startHint");
             show("preparationPage_startLabel");
         } else {
-            show("preparationPage_start");
-            hide("preparationPage_startLabel");
-            if (this.players.length > 1) {
-                enable("preparationPage_start");
-                hide("preparationPage_startHint");
+            if (this.settings.wordsetType == "playerWords") {
+                show("preparationPage_startWordCollection");
             } else {
-                disable("preparationPage_start");
+                show("preparationPage_startGame");
+            }
+            if (this.players.length > 1) {
+                enable("preparationPage_startGame");
+                enable("preparationPage_startWordCollection");
+            } else {
+                disable("preparationPage_startGame");
+                disable("preparationPage_startWordCollection");
                 show("preparationPage_startHint");
             }
         }
@@ -1557,12 +1563,11 @@ class App {
         }
 
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
-        el("preparationPage_start").onclick = () => {
-            if (this.game.settings.wordsetType == "playerWords") {
-                this.emit("cStartWordCollection")
-            } else {
-                this.emit("cStartGame");
-            }
+        el("preparationPage_startGame").onclick = () => {
+            this.emit("cStartGame");
+        }
+        el("preparationPage_startWordCollection").onclick = () => {
+            this.emit("cStartWordCollection")
         }
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
