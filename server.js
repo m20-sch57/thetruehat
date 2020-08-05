@@ -238,37 +238,6 @@ function getTimetable(key) {
 }
 
 /**
- * Process results of preparation
- *
- * @param key --- key of the room
- */
-function processPreparationResults(key) {
-    let wordList = [];
-    let allWords = {};
-    for (let i = 0; i < rooms[key].users.length; ++i) {
-        const user = rooms[key].users[i];
-        for (let j = 0; j < user.userWords.length; ++j) {
-            if (!(user.userWords[j] in allWords)) {
-                wordList.push(user.userWords[j]);
-                allWords[user.userWords[j]] = true;
-            }
-        }
-        delete user.userReady;
-        delete user.userWords;
-    }
-
-    // checking number of words
-    if (wordList.length >= config.settingsRange.wordNumber.max) {
-        Signals.sFailure(key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
-        wordList.length = config.settingsRange.wordNumber.max - 1;
-    }
-
-    rooms[key].freshWords = wordList;
-
-    rooms[key].state = "play";
-}
-
-/**
  * Start an explanation
  *
  * @param key --- key of the room
@@ -374,7 +343,7 @@ function endGame(key) {
     const nextKey = genFreeKey();
 
     // copying users and settings to next room
-    rooms[nextKey] = new Room();
+    rooms[nextKey] = new Room(nextKey);
     rooms[nextKey].settings = Object.assign({}, rooms[key].settings);
     rooms[nextKey].users = rooms[key].users;
     for (let i = 0; i < rooms[nextKey].users.length; ++i) {
@@ -834,6 +803,7 @@ app.get("/getRoomInfo", function(req, res) {
  * Room class
  *
  * Room's info is an object that has fields:
+ *     - key --- key of the room
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *     - settings --- room settings
@@ -865,7 +835,8 @@ app.get("/getRoomInfo", function(req, res) {
  *     - explStartExtraTime --- start timestamp of extra time
  */
 class Room {
-    constructor() {
+    constructor(key) {
+        this.key = key;
         this.state = "wait";
         this.users = [];
         this.settings = Object.assign({}, config.defaultSettings);
@@ -886,7 +857,7 @@ class Room {
         // changing state to 'play'
         this.state = "play";
 
-        // generating word list if nessesery
+        // generating word list if necessary
         if (this.settings["wordsetType"] !== "playerWords") {
             this.generateWords();
             delete this.hostDictionary;
@@ -939,6 +910,36 @@ class Room {
         if (this.speaker === 0 && this.listener === 1) {
             this.numberOfLap++;
         }
+    }
+
+    /**
+     * Process results of preparation
+     *
+     */
+    processPreparationResults() {
+        let wordList = [];
+        let allWords = {};
+        for (let i = 0; i < this.users.length; ++i) {
+            const user = this.users[i];
+            for (let j = 0; j < user.userWords.length; ++j) {
+                if (!(user.userWords[j] in allWords)) {
+                    wordList.push(user.userWords[j]);
+                    allWords[user.userWords[j]] = true;
+                }
+            }
+            delete user.userReady;
+            delete user.userWords;
+        }
+
+        // checking number of words
+        if (wordList.length >= config.settingsRange.wordNumber.max) {
+            Signals.sFailure(this.key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
+            wordList.length = config.settingsRange.wordNumber.max - 1;
+        }
+
+        this.freshWords = wordList;
+
+        this.state = "play";
     }
 
     /**
@@ -1460,7 +1461,7 @@ class Callbacks {
 
         // If room isn't saved in main dictionary, let's save it and create info about it
         if (!(key in rooms)) {
-            rooms[key] = new Room()
+            rooms[key] = new Room(key)
         }
 
         // Adding the user to the room info
@@ -1721,7 +1722,7 @@ class Callbacks {
         }
 
         if (allReady) {
-            processPreparationResults(key);
+            rooms[key].processPreparationResults();
             rooms[key].gamePrepare();
             rooms[key].start_timestamp = (new Date()).getTime();
             Signals.sGameStarted(key);
