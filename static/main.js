@@ -792,7 +792,12 @@ class App {
             pages: {
                 main: "mainPage",
                 join: "joinPage",
-                wordCollection: "wordCollectionPage",
+                wordCollection: {
+                    els: ["wordCollectionPage"],
+                    onEnter: () => {
+                        show("wordCollectionPage_readyButton");
+                    }
+                },
                 game: {
                     els: ["gamePage"],
                     onEnter: () => {
@@ -1236,6 +1241,15 @@ class App {
         show("gamePage_speakerReady");
     }
 
+    wordsReady() {
+        this.emit("cWordsReady", {
+            words: this.parseWords()
+        });
+        hide("wordCollectionPage_readyButton");
+        show("wordCollectionPage_readyHint");
+        disable("wordCollectionPage_textarea");
+    }
+
     failedToJoin(msg) {
         el("joinPage_goHint").innerText = msg;
         show("joinPage_goHint");
@@ -1607,9 +1621,7 @@ class App {
         }
 
         el("wordCollectionPage_readyButton").onclick = () => {
-            this.emit("cWordsReady", {
-                words: this.parseWords()
-            })
+            this.wordsReady();
         }
 
         el("preparationPage_openSettings").onclick =

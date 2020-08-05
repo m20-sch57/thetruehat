@@ -825,7 +825,7 @@ svg {
     font-size: 20px;
 }
 
-#wordCollectionPage_readyButton {
+#wordCollectionPage_readyButton, #wordCollectionPage_readyHint {
     width: 100%;
     margin-top: 20px;
 }
