@@ -1669,6 +1669,8 @@ class Callbacks {
                     "Значение \"wordNumber\" уменьшено до размера словаря")
             }
         }
+
+        Signals.sNewSettings(key);
     }
 
     static cStartWordCollection(socket, key) {
