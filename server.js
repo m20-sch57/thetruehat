@@ -197,29 +197,6 @@ function getRoom(socket) {
 }
 
 /**
- * Generate word list
- *
- * @param settings settings of the room
- * @param hostDict dictionary from host
- * @return list of words
- */
-function generateWords(settings, hostDict) {
-    const dict = (settings.wordsetType === "hostDictionary") ? hostDict : dicts[settings.dictionaryId];
-    const words = [];
-    const used = {};
-    const numberOfAllWords = dict.wordNumber;
-    const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
-    while (words.length < wordNumber) {
-        const pos = randrange(numberOfAllWords);
-        if (!(pos in used)) {
-            used[pos] = true;
-            words.push(dict.words[pos]);
-        }
-    }
-    return words;
-}
-
-/**
  * Get next speaker and listener
  *
  * @param numberOfPlayers Number of players
@@ -911,7 +888,7 @@ class Room {
 
         // generating word list if nessesery
         if (this.settings["wordsetType"] !== "playerWords") {
-            this.freshWords = generateWords(this.settings, this.hostDictionary);
+            this.generateWords();
             delete this.hostDictionary;
         }
 
@@ -962,6 +939,28 @@ class Room {
         if (this.speaker === 0 && this.listener === 1) {
             this.numberOfLap++;
         }
+    }
+
+    /**
+     * Generate word list
+     *
+     * @return list of words
+     */
+    generateWords() {
+        const settings = this.settings
+        const dict = (settings.wordsetType === "hostDictionary") ? this.hostDictionary : dicts[settings.dictionaryId];
+        const words = [];
+        const used = {};
+        const numberOfAllWords = dict.wordNumber;
+        const wordNumber = ("wordNumber" in settings) ? settings["wordNumber"] : numberOfAllWords;
+        while (words.length < wordNumber) {
+            const pos = randrange(numberOfAllWords);
+            if (!(pos in used)) {
+                used[pos] = true;
+                words.push(dict.words[pos]);
+            }
+        }
+        this.freshWords =  words;
     }
 }
 
