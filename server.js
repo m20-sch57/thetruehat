@@ -407,8 +407,6 @@ function endGame(key) {
     if (rooms[key].settings["wordsetType"] == "hostDictionary") {
         rooms[nextKey].hostDictionary = rooms[key].hostDictionary;
     }
-    console.log("rooms[nextKey].hostDictionary");
-    console.log(rooms[nextKey].hostDictionary);
     for (let i = 0; i < rooms[nextKey].users.length; ++i) {
         rooms[nextKey].users[i].sids = [];
         rooms[nextKey].users[i].online = false;
