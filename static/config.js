@@ -14,3 +14,4 @@ const DEFAULT_SETTINGS = {
 	wordNumber: 100,
 	turnNumber: 10
 }
+const GAME_BUTTON_COOLDOWN_TIME = 200;

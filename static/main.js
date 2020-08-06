@@ -163,9 +163,15 @@ function _(msgid, n) {
     }
 }
 
-function validateNumber(elem) {
-    el(elem).oninput = function(event) {
-        el(elem).value = el(elem).value.replace(/\D+/g,"");
+function validateNumber(elemId) {
+    let elem = el(elemId);
+    let numRegex = /\D+/g;
+    elem.oninput = function(event) {
+        let caretPosition = elem.selectionStart;
+        let newCaretPosition = elem.value.slice(0, caretPosition).replace(numRegex, "").length;
+        elem.value = elem.value.replace(numRegex,"");
+        elem.selectionStart = newCaretPosition;
+        elem.selectionEnd = newCaretPosition;
     }
 }
 
@@ -189,6 +195,17 @@ function colorGradientRGB(colors) {
         let colorRight = colors[partIndex + 1];
         let weight = x * parts - partIndex;
         return weightColor(colorRight, colorLeft, weight);
+    }
+}
+
+function throttle(fun, cooldownTime) {
+    let callTime = performance.now() - cooldownTime;
+    return function() {
+        let now = performance.now();
+        if (now - callTime >= cooldownTime) {
+            callTime = now;
+            return fun(...arguments)
+        }
     }
 }
 
@@ -1556,12 +1573,12 @@ class App {
             this.listenerReady();
         el("gamePage_speakerReadyButton").onclick = () =>
             this.speakerReady();
-        el("gamePage_explanationSuccess").onclick = () => this.emit(
-            "cEndWordExplanation", {"cause": "explained"});
-        el("gamePage_explanationFailed").onclick = () => this.emit(
-            "cEndWordExplanation", {"cause": "notExplained"});
-        el("gamePage_explanationMistake").onclick = () => this.emit(
-            "cEndWordExplanation", {"cause": "mistake"});
+        el("gamePage_explanationSuccess").onclick = throttle(() => {this.emit(
+            "cEndWordExplanation", {"cause": "explained"})}, GAME_BUTTON_COOLDOWN_TIME);
+        el("gamePage_explanationFailed").onclick = throttle(() => this.emit(
+            "cEndWordExplanation", {"cause": "notExplained"}), GAME_BUTTON_COOLDOWN_TIME);
+        el("gamePage_explanationMistake").onclick = throttle(() => this.emit(
+            "cEndWordExplanation", {"cause": "mistake"}), GAME_BUTTON_COOLDOWN_TIME);
         el("gamePage_goBack").onclick = () => this.leaveRoom();
         el("gamePage_leave").onclick = () => this.leaveRoom();
         el("gamePage_volume").onclick = () => this.toggleVolume();

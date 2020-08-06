@@ -17,6 +17,27 @@
                 "en": "English words"
             },
             "path": "./words/english-nouns.json"
+        },
+        {
+            "name": {
+                "ru": "Русские слова (простые)",
+                "en": "Russian words (easy)"
+            },
+            "path": "./words/easy.json"
+        },
+        {
+            "name": {
+                "ru": "Русские слова (средние)",
+                "en": "Russian words (medium)"
+            },
+            "path": "./words/med.json"
+        },
+        {
+            "name": {
+                "ru": "Русские слова (сложные)",
+                "en": "Russian words (hard)"
+            },
+            "path": "./words/hard.json"
         }
     ],
     "feedbackPath": "./feedback.log",
