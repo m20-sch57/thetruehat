@@ -404,6 +404,7 @@ function endGame(key) {
     rooms[nextKey] = new Room();
     rooms[nextKey].settings = Object.assign({}, rooms[key].settings);
     rooms[nextKey].users = rooms[key].users;
+    rooms[nextKey].hostDictionary = rooms[key].hostDictionary;
     for (let i = 0; i < rooms[nextKey].users.length; ++i) {
         rooms[nextKey].users[i].sids = [];
         rooms[nextKey].users[i].online = false;
@@ -904,7 +905,6 @@ class Room {
         // generating word list if nessesery
         if (this.settings["wordsetType"] !== "playerWords") {
             this.freshWords = generateWords(this.settings, this.hostDictionary);
-            delete this.hostDictionary;
         }
 
         // preparing storage for explained words
