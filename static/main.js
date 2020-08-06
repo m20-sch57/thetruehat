@@ -621,10 +621,10 @@ class Game {
         el("gameSettingsPage_turnNumberField").value = this.settings.turnNumber || DEFAULT_SETTINGS.turnNumber;
         el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
         if (this.settings.wordsetType == "serverDictionary") {
-            el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId 
+            el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId
                 + this.app.dictionaryListExtraOptions.length;
         } else {
-            el("gameSettingsPage_dictionaryList").selectedIndex = 
+            el("gameSettingsPage_dictionaryList").selectedIndex =
                 this.app.wordsetTypeDict[this.settings.wordsetType];
         }
         this.app.updateSettings();
@@ -672,18 +672,24 @@ class Game {
     }
 
     renderStartAction() {
+        hide("preparationPage_startGame");
+        hide("preparationPage_startWordCollection");
+        hide("preparationPage_startHint");
+        hide("preparationPage_startLabel");
         if (!this.isHost) {
-            hide("preparationPage_start")
-            hide("preparationPage_startHint");
             show("preparationPage_startLabel");
         } else {
-            show("preparationPage_start");
-            hide("preparationPage_startLabel");
-            if (this.players.length > 1) {
-                enable("preparationPage_start");
-                hide("preparationPage_startHint");
+            if (this.settings.wordsetType == "playerWords") {
+                show("preparationPage_startWordCollection");
             } else {
-                disable("preparationPage_start");
+                show("preparationPage_startGame");
+            }
+            if (this.players.length > 1) {
+                enable("preparationPage_startGame");
+                enable("preparationPage_startWordCollection");
+            } else {
+                disable("preparationPage_startGame");
+                disable("preparationPage_startWordCollection");
                 show("preparationPage_startHint");
             }
         }
@@ -803,7 +809,12 @@ class App {
             pages: {
                 main: "mainPage",
                 join: "joinPage",
-                wordSelection: "wordSelectionPage",
+                wordCollection: {
+                    els: ["wordCollectionPage"],
+                    onEnter: () => {
+                        show("wordCollectionPage_readyButton");
+                    }
+                },
                 game: {
                     els: ["gamePage"],
                     onEnter: () => {
@@ -1032,10 +1043,11 @@ class App {
         }
         let data = await (await fetch(`api/getRoomInfo?key=${this.game.key}`)).json();
         if (!data.success) {
+            console.log("wow")
             console.log("Invalid room key");
             return;
         };
-        if (["wait", "play"].indexOf(data.state) != -1) {
+        if (["wait", "play", "prepare"].indexOf(data.state) != -1) {
             this.emit("cJoinRoom",
                 {"username": this.game.myUsername,
                     "key": this.game.key,
@@ -1246,6 +1258,15 @@ class App {
         show("gamePage_speakerReady");
     }
 
+    wordsReady() {
+        this.emit("cWordsReady", {
+            words: this.parseWords()
+        });
+        hide("wordCollectionPage_readyButton");
+        show("wordCollectionPage_readyHint");
+        disable("wordCollectionPage_textarea");
+    }
+
     failedToJoin(msg) {
         el("joinPage_goHint").innerText = msg;
         show("joinPage_goHint");
@@ -1327,7 +1348,7 @@ class App {
         settings.aftermathTime = +el("gameSettingsPage_aftermathTimeField").value*1000;
         settings.termCondition = el("gameSettingsPage_termConditionList").value;
         settings.wordsetType = this.getWordsetType();
-        if (settings.termCondition == "words" && 
+        if (settings.termCondition == "words" &&
             (settings.wordsetType == "serverDictionary" || settings.wordsetType == "hostDictionary")) {
             settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
         }
@@ -1401,7 +1422,7 @@ class App {
         hide("gameSettingsPage_wordNumber");
         hide("gameSettingsPage_turnNumber");
         hide("gameSettingsPage_loadDictionary");
-        if (elem.value == "words" && 
+        if (elem.value == "words" &&
             (wordsetType == "serverDictionary" || wordsetType == "hostDictionary")) {
             show("gameSettingsPage_wordNumber");
         }
@@ -1454,10 +1475,14 @@ class App {
             this.game.update(data);
             this.game.inGame = true;
             this.game.state = data.state == "wait" ? "preparation" :
-                data.state == "play" ? data.substate : data.state;
+                data.state == "play" ? data.substate : data.state =="prepare" ?
+                "wordCollection" : data.state;
             switch (data.state) {
             case "wait":
                 this.pages.$preparation.push();
+                break;
+            case "prepare":
+                this.pages.$wordCollection.push();
                 break;
             case "play":
                 this.pages.$game.push();
@@ -1488,6 +1513,10 @@ class App {
         })
         this.socket.on("sNewSettings", data => {
             this.game.update(data);
+        })
+        this.socket.on("sWordCollectionStarted", () => {
+            this.game.state = "wordCollection";
+            this.pages.$wordCollection.push();
         })
         this.socket.on("sGameStarted", data => {
             this.game.state = "wait";
@@ -1565,7 +1594,12 @@ class App {
         }
 
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
-        el("preparationPage_start").onclick = () => this.emit("cStartGame");
+        el("preparationPage_startGame").onclick = () => {
+            this.emit("cStartGame");
+        }
+        el("preparationPage_startWordCollection").onclick = () => {
+            this.emit("cStartWordCollection")
+        }
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
 
@@ -1601,6 +1635,10 @@ class App {
         }
         el("gameSettingsPage_dictionaryList").onchange = () => {
             this.updateSettings();
+        }
+
+        el("wordCollectionPage_readyButton").onclick = () => {
+            this.wordsReady();
         }
 
         el("preparationPage_openSettings").onclick =
@@ -1712,6 +1750,13 @@ class App {
             }
         }
         this.updateDictionaryFileLoaderText();
+    }
+
+    parseWords() {
+        let wordSeparator = "\n";
+        let wordsText = el("wordCollectionPage_textarea").value;
+        let words = wordsText.split(wordSeparator).map(x => x.trim()).filter(x => x != "");
+        return words;
     }
 
     async loadFile(name, callback) {
