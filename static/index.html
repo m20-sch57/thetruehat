@@ -89,8 +89,11 @@
                     <div id="preparationPage_users"></div>
                     <div class="spacer"></div>
                 </div>
-                <button class="medium-button bg-green" id="preparationPage_start" style="display: none;" gt gt-text>
+                <button class="medium-button bg-green" id="preparationPage_startGame" style="display: none;" gt gt-text>
                     Начать игру
+                </button>
+                <button class="medium-button bg-green" id="preparationPage_startWordCollection" style="display: none;" gt gt-text>
+                    Начать ввод слов
                 </button>
                 <p class="hint" id="preparationPage_startHint" style="display: none;" gt gt-text>
                     Меньше 2 игроков
@@ -243,6 +246,33 @@
                         Отмена
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="wordCollectionPage" style="display: none">
+        <button class="white-bubble go-back" id="gameSettingsPage_goBack">
+            <span src="svg/arrow_left.svg" name="svg"></span>
+        </button><button class="white-bubble view-help" name="helpButton">
+        </button><button class="white-bubble feedback" name="feedbackButton">
+            <span src="svg/feedback.svg" name="svg"></span>
+        </button>
+        <div class="content-small">
+            <div id="wordCollectionPage_header">
+                <h1 id="wordCollectionPage_title">Набор слов</h1>
+            </div>
+            <div id="wordCollectionPage_body">
+                <p id="wordCollectionPage_hint">
+                    Вводите слова в поле ниже. Одно слово - одна строчка.
+                    Если одно и тоже слово введут несколько человек, в шляпе оно
+                    встретится ровно один раз.
+                </p>
+                <textarea id ="wordCollectionPage_textarea" class="default-textarea"></textarea>
+                <button id="wordCollectionPage_readyButton" class="medium-button bg-green" style="display: none">
+                    Готово
+                </button>
+                <button id="wordCollectionPage_readyHint" class="medium-button bg-green" style="display: none" disabled>
+                    Ждём остальных
+                </button>
             </div>
         </div>
     </div>

@@ -627,7 +627,7 @@ svg {
     background-image: linear-gradient(90deg, transparent, #ddd, transparent);
 }
 
-#preparationPage_start {
+#preparationPage_startGame, #preparationPage_startWordCollection {
     width: 100%;
 }
 
@@ -790,6 +790,50 @@ svg {
 
 #gameSettingsPage_revertButton {
 	flex-basis: 50%;
+}
+
+/* Word selection page */
+
+#wordCollectionPage_header {
+    width: 100%;
+    text-align: center;
+    padding: 0 30px 0px 30px;
+}
+
+#wordCollectionPage_title {
+    font-size: 30px;
+    font-weight: lighter;
+}
+
+#wordCollectionPage_body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0 30px 0px 30px;
+}
+
+#wordCollectionPage_hint {
+    font-size: 17px;
+    text-align: justify;
+}
+
+#wordCollectionPage_textarea {
+    width: 100%;
+    flex-grow: 1;
+    text-align: center;
+    line-height: 1.5;
+    font-size: 20px;
+}
+
+#wordCollectionPage_readyButton, #wordCollectionPage_readyHint {
+    width: 100%;
+    margin-top: 20px;
+}
+
+@media (min-width: 500px) {
+    #wordCollectionPage_textarea {
+        max-height: 400px;
+    }
 }
 
 /* Game page */

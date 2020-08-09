@@ -42,17 +42,19 @@
     - `delayTime (int)` - длительность обратного отсчёта
     - `explanationTime (int)` - длительность промежутка времени, когда может говорить как объясняющий, так и отгадывающий
     - `aftermathTime (int)` - длительность промежутка времени в конце раунда, когда отгадывающий может назвать свою догадку
+    - `strictMode (bool)` - используется ли строгий режим (при строгом режиме раунд сразу заканчивается по истечению времени)
     - `termCondition (string)` - условие окончания игры
       - `words` - по кол-ву слов
-      - `turns` - по кол-ву кругов
+      - `turns` - по кол-ву кругов; в случае досрочного окончания слов в словаре игра сиюминутно заканчивается
     - `wordsetType (string)` - способ, по которому формируются слова для игры
       - `serverDictionary` - из словаря на сервере берётся `wordNumber` слов
       - `hostDictionary` - из словаря, загружаемого хостом берётся `wordNumber` слов
       - `playerWords` - список слов для игры формируется из списков слов, которые присылают игроки на этапе `wordCollection`.
     - `dictionaryId (int)` - если `wordsetType = serverDictionary`. идентификатор словаря, откуда берутся слова в игре
-    - `wordNumber (int)` - если `termCondition = words` и `wordsetType = *Dictionary`. Начальное количество слов в шляпе
+    - `wordNumber (int)` - если `termCondition = words` и `wordsetType = *Dictionary`.
+    Начальное количество слов в шляпе. В случае `wordsetType = playerWords` равно минимуму из количества слов в итоговом
+    словаре и максимального допустимого значения.
     - `turnsNumber (int)` - если `termCondition = turns`. Количество кругов
-    - `strictMode (bool)` - используется ли строгий режим (при строгом режиме раунд сразу заканчивается после истечению времени)
     - `dictionaryFileInfo (DictionaryFileInfo)` - если `wordsetType = hostDictionary`. Информация о файле словаря, который загружен
     - `wordset (array<string>)` - если `wordsetType = hostDictionary` и хост хочет обновить словарь на сервере. Список слов в словаре, загружаемом хостом
 1. Информация о файле словаря (DictionaryFileInfo)
