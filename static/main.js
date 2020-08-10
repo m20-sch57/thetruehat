@@ -563,6 +563,9 @@ class Game {
 
         if ("settings" in data) {
             this.settings = data.settings;
+            if (this.settings.wordsetType == "hostDictionary") {
+                this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
+            }
         }
 
         if ("results" in data) {
@@ -626,9 +629,6 @@ class Game {
         } else {
             el("gameSettingsPage_dictionaryList").selectedIndex =
                 this.app.wordsetTypeDict[this.settings.wordsetType];
-        }
-        if (this.settings.wordsetType == "hostDictionary") {
-            this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
         }
         this.app.updateSettings();
     }
