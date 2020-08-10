@@ -563,9 +563,7 @@ class Game {
 
         if ("settings" in data) {
             this.settings = data.settings;
-            if (this.settings.wordsetType == "hostDictionary") {
-                this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
-            }
+            this.loadClientSettings();
         }
 
         if ("results" in data) {
@@ -615,6 +613,12 @@ class Game {
         this.renderAdditionalStatus();
     }
 
+    loadClientSettings() {
+        if (this.settings.wordsetType == "hostDictionary") {
+            this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
+        }
+    }
+
     renderSettings() {
         el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
         el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
@@ -631,6 +635,11 @@ class Game {
                 WORDSET_TYPE_DICT[this.settings.wordsetType];
         }
         this.app.updateSettings();
+    }
+
+    updateSettingsState() {
+        this.loadClientSettings();
+        this.renderSettings();
     }
 
     renderResults() {
@@ -1645,7 +1654,7 @@ class App {
 
         el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
         el("gameSettingsPage_revertButton").onclick = () => {
-            this.game.renderSettings();
+            this.game.updateSettingsState();
             this.pages.goBack();
         }
         el("gameSettingsPage_applyButton").onclick = () => {
