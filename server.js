@@ -873,13 +873,26 @@ class Room {
         this.listener = numberOfPlayers - 2;
         this.explanationRecords = [];
 
-        this.roundPrepare()
+        if (!this.roundPrepare()) {
+            return;
+        }
+
+        // recording time
+        this.start_timestamp = (new Date()).getTime();
+
+        Signals.sGameStarted(this.key);
     }
 
     /**
      * Preparing room for new round
      */
     roundPrepare() {
+        // if no words left it's time to finish the game
+        if (this.freshWords.length === 0) {
+            endGame(this.key);
+            return false;
+        }
+
         // setting substate to 'wait'
         this.substate = "wait";
 
@@ -908,6 +921,13 @@ class Room {
         if (this.speaker === 0 && this.listener === 1) {
             this.numberOfLap++;
         }
+
+        if (this.numberOfLap === this.settings["turnNumber"]) {
+            endGame(key);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -1727,8 +1747,6 @@ class Callbacks {
 
         if (allReady) {
             rooms[key].gamePrepare();
-            rooms[key].start_timestamp = (new Date()).getTime();
-            Signals.sGameStarted(key);
         }
     }
 
@@ -1751,11 +1769,6 @@ class Callbacks {
 
         // game preparation
         rooms[key].gamePrepare();
-
-        // recording time
-        rooms[key].start_timestamp = (new Date()).getTime();
-
-        Signals.sGameStarted(key);
     }
 
     static cEndWordExplanation(socket, key, cause) {
@@ -1896,16 +1909,7 @@ class Callbacks {
             }
         }
 
-        // if no words left it's time to finish the game
-        if (rooms[key].freshWords.length === 0) {
-            endGame(key);
-            return;
-        }
-
-        rooms[key].roundPrepare();
-
-        if ("turnNumber" in rooms[key].settings && rooms[key].numberOfLap === rooms[key].settings["turnNumber"]) {
-            endGame(key);
+        if (!rooms[key].roundPrepare()) {
             return;
         }
 
