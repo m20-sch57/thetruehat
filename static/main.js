@@ -1741,7 +1741,7 @@ class App {
         this.updateDictionaryFileLoaderText();
     }
 
-    dictionatyLoadError(evt) {
+    dictionaryLoadError(evt) {
         showError("Can't open file");
         this.removeSelectedDictionaryFile();
     }
@@ -1758,7 +1758,7 @@ class App {
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = (evt) => this.loadWordsFromFile(evt);
-        reader.onerror = (evt) => this.dictinaryLoadError(evt);
+        reader.onerror = (evt) => this.dictionaryLoadError(evt);
         return true;
     }
 
