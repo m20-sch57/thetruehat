@@ -346,6 +346,7 @@ function endGame(key) {
     rooms[nextKey] = new Room(nextKey);
     rooms[nextKey].settings = Object.assign({}, rooms[key].settings);
     rooms[nextKey].users = rooms[key].users;
+    rooms[nextKey].hostDictionary = rooms[key].hostDictionary;
     for (let i = 0; i < rooms[nextKey].users.length; ++i) {
         rooms[nextKey].users[i].sids = [];
         rooms[nextKey].users[i].online = false;
@@ -393,7 +394,7 @@ function sendStat(room) {
             sendObject.attempts.push(room.explanationRecords[i][j]);
         }
     }
-    
+
     // sending data
     console.log("Send:");
     console.log(sendObject);
@@ -809,8 +810,6 @@ app.get("/getRoomInfo", function(req, res) {
  *     - state --- state of the room,
  *     - users --- list of users (User objects)
  *     - settings --- room settings
- *
- * if state === "prepare" or state === "wait":
  *     - hostDictionary --- "dictionary" with words from host:
  *         - words --- list of words
  *         - wordNumber --- count of words
@@ -861,7 +860,6 @@ class Room {
 
         // generating word list
         this.generateWords();
-        delete this.hostDictionary;
 
         // preparing storage for explained words
         this.usedWords = {};

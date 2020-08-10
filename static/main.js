@@ -563,6 +563,7 @@ class Game {
 
         if ("settings" in data) {
             this.settings = data.settings;
+            this.loadClientSettings();
         }
 
         if ("results" in data) {
@@ -612,6 +613,12 @@ class Game {
         this.renderAdditionalStatus();
     }
 
+    loadClientSettings() {
+        if (this.settings.wordsetType == "hostDictionary") {
+            this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
+        }
+    }
+
     renderSettings() {
         el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
         el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
@@ -622,12 +629,17 @@ class Game {
         el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
         if (this.settings.wordsetType == "serverDictionary") {
             el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId
-                + this.app.dictionaryListExtraOptions.length;
+                + DICTIONARY_LIST_EXTRA_OPTIONS.length;
         } else {
             el("gameSettingsPage_dictionaryList").selectedIndex =
-                this.app.wordsetTypeDict[this.settings.wordsetType];
+                WORDSET_TYPE_DICT[this.settings.wordsetType];
         }
         this.app.updateSettings();
+    }
+
+    updateSettingsState() {
+        this.loadClientSettings();
+        this.renderSettings();
     }
 
     renderResults() {
@@ -773,7 +785,6 @@ class App {
         this.game = new Game(this);
 
         this.initPages();
-        this.initDictionaryListExtraOptions();
         this.setKey(readLocationHash());
         this.checkClipboard();
         this.setDOMEventListeners();
@@ -1358,7 +1369,13 @@ class App {
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
         if (settings.wordsetType == "serverDictionary") {
             settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex -
-                this.dictionaryListExtraOptions.length;
+                DICTIONARY_LIST_EXTRA_OPTIONS.length;
+        }
+        if (settings.wordsetType == "hostDictionary") {
+            settings.dictionaryFileInfo = this.dictionaryFileInfo;
+            if (this.dictionaryFileWords !== undefined) {
+                settings.wordset = this.dictionaryFileWords;
+            }
         }
         this.emit("cApplySettings", {settings});
     }
@@ -1409,10 +1426,10 @@ class App {
 
     getWordsetType() {
         let dictionaryListId = el("gameSettingsPage_dictionaryList").selectedIndex;
-        if (dictionaryListId >= this.dictionaryListExtraOptions.length) {
+        if (dictionaryListId >= DICTIONARY_LIST_EXTRA_OPTIONS.length) {
             return "serverDictionary";
         } else {
-            return this.dictionaryListExtraOptions[dictionaryListId].wordsetType;
+            return DICTIONARY_LIST_EXTRA_OPTIONS[dictionaryListId].wordsetType;
         }
     }
 
@@ -1572,6 +1589,20 @@ class App {
         })
     }
 
+    validateSettings() {
+        if (this.getWordsetType() == "hostDictionary") {
+            if (this.dictionaryFileInfo === undefined) {
+                showError("Нужно выбрать файл");
+                return false;
+            }
+            if (this.dictionaryFileInfo.wordNumber === undefined) {
+                showError("Файл загружается");
+                return false;
+            }
+        }
+        return true;
+    }
+
     setDOMEventListeners() {
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
@@ -1623,12 +1654,14 @@ class App {
 
         el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
         el("gameSettingsPage_revertButton").onclick = () => {
-            this.game.renderSettings();
+            this.game.updateSettingsState();
             this.pages.goBack();
         }
         el("gameSettingsPage_applyButton").onclick = () => {
-            this.applySettings();
-            this.pages.goBack();
+            if (this.validateSettings()) {
+                this.applySettings();
+                this.pages.goBack();
+            }
         }
         el("gameSettingsPage_termConditionList").onchange = () => {
             this.updateSettings();
@@ -1694,29 +1727,25 @@ class App {
     updateDictionaryFileLoaderText() {
         let input = el("gameSettingsPage_loadFileInput");
         let label = el("gameSettingsPage_loadFileLabel");
-        if (input.files.length) {
-            if (this.dictionaryFileWordNumber !== undefined) {
-                label.innerText = `${input.files[0].name}, ${this.dictionaryFileWordNumber} words`;
+        if (this.dictionaryFileInfo !== undefined) {
+            if (this.dictionaryFileInfo.wordNumber !== undefined) {
+                label.innerText = `${this.dictionaryFileInfo.filename}, ${this.dictionaryFileInfo.wordNumber} words`;
             } else {
-                label.innerText = `${input.files[0].name} (loading...)`
+                label.innerText = `${this.dictionaryFileInfo.filename} (loading...)`
             }
         } else {
             label.innerText = "Файл не выбран";
         }
     }
 
-    calcWordHostDictionaryNumber(evt) {
-        let lines = evt.target.result.split('\n');
-        this.dictionaryFileWordNumber = 0;
-        for (let line of lines) {
-            if (line != "") {
-                this.dictionaryFileWordNumber++;
-            }
-        }
+    loadWordsFromFile(evt) {
+        let lines = evt.target.result.split('\n').map(x => x.trim());
+        this.dictionaryFileWords = lines.filter(x => x != "");
+        this.dictionaryFileInfo.wordNumber = this.dictionaryFileWords.length;
         this.updateDictionaryFileLoaderText();
     }
 
-    dictionatyLoadError(evt) {
+    dictionaryLoadError(evt) {
         showError("Can't open file");
         this.removeSelectedDictionaryFile();
     }
@@ -1732,19 +1761,23 @@ class App {
         }
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
-        reader.onload = (evt) => this.calcWordHostDictionaryNumber(evt);
-        reader.onerror = (evt) => this.dictinaryLoadError(evt);
+        reader.onload = (evt) => this.loadWordsFromFile(evt);
+        reader.onerror = (evt) => this.dictionaryLoadError(evt);
         return true;
     }
 
     removeSelectedDictionaryFile() {
         el("gameSettingsPage_loadFileInput").value = "";
-        this.dictionaryFileWordNumber = undefined;
+        delete this.dictionaryFileInfo;
+        delete this.dictionaryFileWords;
     }
 
     parseDictionaryFile() {
         if (el("gameSettingsPage_loadFileInput").files.length) {
             let file = el("gameSettingsPage_loadFileInput").files[0];
+            this.dictionaryFileInfo = {
+                "filename": file.name
+            };
             if (!this.validateDictionaryFile(file)) {
                 this.removeSelectedDictionaryFile();
             }
@@ -1822,27 +1855,10 @@ class App {
         await Promise.all(loaders);
     }
 
-    initDictionaryListExtraOptions() {
-        this.dictionaryListExtraOptions = [
-            {
-                "name": "От каждого игрока",
-                "wordsetType": "playerWords",
-            },
-            {
-                "name": "Загрузить",
-                "wordsetType": "hostDictionary"
-            }
-        ]
-        this.wordsetTypeDict = {}
-        for (let i = 0; i < this.dictionaryListExtraOptions.length; ++i) {
-            this.wordsetTypeDict[this.dictionaryListExtraOptions[i]["wordsetType"]] = i;
-        }
-    }
-
     async loadDictionaries() {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
-        for (let opt of this.dictionaryListExtraOptions) {
+        for (let opt of DICTIONARY_LIST_EXTRA_OPTIONS) {
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${opt.name}</option>`
         }
         for (let dict of dictionaries.dictionaries) {
