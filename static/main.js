@@ -613,8 +613,6 @@ class Game {
     }
 
     renderSettings() {
-        console.log('render');
-        console.log(this.settings);
         el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
         el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
         el("gameSettingsPage_aftermathTimeField").value = this.settings.aftermathTime/1000;
@@ -1371,8 +1369,6 @@ class App {
                 settings.wordset = this.dictionaryFileWords;
             }
         }
-        console.log("cApplySettings");
-        console.log(settings);
         this.emit("cApplySettings", {settings});
     }
 
@@ -1591,7 +1587,6 @@ class App {
                 showError("Нужно выбрать файл");
                 return false;
             }
-            console.log(this.dictionaryFileInfo.wordsNumber);
             if (this.dictionaryFileInfo.wordNumber === undefined) {
                 showError("Файл загружается");
                 return false;
@@ -1753,7 +1748,6 @@ class App {
     }
 
     validateDictionaryFile(file) {
-        console.log("validateDictionaryFile");
         if (file.type != "" && file.type != "text/plain") {
             showError("You should send a text file");
             return false;
@@ -1770,7 +1764,6 @@ class App {
     }
 
     removeSelectedDictionaryFile() {
-        console.log("remove");
         el("gameSettingsPage_loadFileInput").value = "";
         delete this.dictionaryFileInfo;
         delete this.dictionaryFileWords;
