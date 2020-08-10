@@ -824,6 +824,9 @@ class App {
                     els: ["wordCollectionPage"],
                     onEnter: () => {
                         show("wordCollectionPage_readyButton");
+                        hide("wordCollectionPage_readyHint");
+                        enable("wordCollectionPage_textarea");
+                        el("wordCollectionPage_textarea").value = "";
                     }
                 },
                 game: {
