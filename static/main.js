@@ -1730,13 +1730,8 @@ class App {
     }
 
     loadWordsFromFile(evt) {
-        let lines = evt.target.result.split('\n');
-        this.dictionaryFileWords = [];
-        for (let line of lines) {
-            if (line != "") {
-                this.dictionaryFileWords.push(line);
-            }
-        }
+        let lines = evt.target.result.split('\n').map(x => x.trim());
+        this.dictionaryFileWords = lines.filter(x => x != "");
         this.dictionaryFileInfo.wordNumber = this.dictionaryFileWords.length;
         this.updateDictionaryFileLoaderText();
     }
