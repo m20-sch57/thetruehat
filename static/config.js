@@ -15,3 +15,19 @@ const DEFAULT_SETTINGS = {
 	turnNumber: 10
 }
 const GAME_BUTTON_COOLDOWN_TIME = 200;
+
+const DICTIONARY_LIST_EXTRA_OPTIONS = [
+        {
+            "name": "От каждого игрока",
+            "wordsetType": "playerWords",
+        },
+        {
+            "name": "Загрузить",
+            "wordsetType": "hostDictionary"
+        }
+];
+
+const WORDSET_TYPE_DICT = {
+    "playerWords": 0,
+    "hostDictionary": 1
+};

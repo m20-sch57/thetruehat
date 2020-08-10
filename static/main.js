@@ -625,10 +625,10 @@ class Game {
         el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
         if (this.settings.wordsetType == "serverDictionary") {
             el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId
-                + this.app.dictionaryListExtraOptions.length;
+                + DICTIONARY_LIST_EXTRA_OPTIONS.length;
         } else {
             el("gameSettingsPage_dictionaryList").selectedIndex =
-                this.app.wordsetTypeDict[this.settings.wordsetType];
+                WORDSET_TYPE_DICT[this.settings.wordsetType];
         }
         this.app.updateSettings();
     }
@@ -776,7 +776,6 @@ class App {
         this.game = new Game(this);
 
         this.initPages();
-        this.initDictionaryListExtraOptions();
         this.setKey(readLocationHash());
         this.checkClipboard();
         this.setDOMEventListeners();
@@ -1361,7 +1360,7 @@ class App {
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
         if (settings.wordsetType == "serverDictionary") {
             settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex -
-                this.dictionaryListExtraOptions.length;
+                DICTIONARY_LIST_EXTRA_OPTIONS.length;
         }
         if (settings.wordsetType == "hostDictionary") {
             settings.dictionaryFileInfo = this.dictionaryFileInfo;
@@ -1418,10 +1417,10 @@ class App {
 
     getWordsetType() {
         let dictionaryListId = el("gameSettingsPage_dictionaryList").selectedIndex;
-        if (dictionaryListId >= this.dictionaryListExtraOptions.length) {
+        if (dictionaryListId >= DICTIONARY_LIST_EXTRA_OPTIONS.length) {
             return "serverDictionary";
         } else {
-            return this.dictionaryListExtraOptions[dictionaryListId].wordsetType;
+            return DICTIONARY_LIST_EXTRA_OPTIONS[dictionaryListId].wordsetType;
         }
     }
 
@@ -1852,27 +1851,10 @@ class App {
         await Promise.all(loaders);
     }
 
-    initDictionaryListExtraOptions() {
-        this.dictionaryListExtraOptions = [
-            {
-                "name": "От каждого игрока",
-                "wordsetType": "playerWords",
-            },
-            {
-                "name": "Загрузить",
-                "wordsetType": "hostDictionary"
-            }
-        ]
-        this.wordsetTypeDict = {}
-        for (let i = 0; i < this.dictionaryListExtraOptions.length; ++i) {
-            this.wordsetTypeDict[this.dictionaryListExtraOptions[i]["wordsetType"]] = i;
-        }
-    }
-
     async loadDictionaries() {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
-        for (let opt of this.dictionaryListExtraOptions) {
+        for (let opt of DICTIONARY_LIST_EXTRA_OPTIONS) {
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${opt.name}</option>`
         }
         for (let dict of dictionaries.dictionaries) {
