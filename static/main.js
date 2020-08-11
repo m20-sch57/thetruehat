@@ -694,7 +694,7 @@ class Game {
                 Template.user({"username": username}));
             if (username == this.myUsername) {
                 el(`user_${username}`).classList.add("you");
-                el(`user_${username}`).setAttribute("you-content",` (${_("ты")})`)
+                el(`user_${username}`).setAttribute("you-content",` (${_("ты")})`);
             }
         });
     }
@@ -1680,7 +1680,7 @@ class App {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
         for (let dict of dictionaries.dictionaries) {
-            let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} слов`;
+            let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} ${_("слово", dict.wordNumber)}`;
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
         }
     }
