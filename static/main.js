@@ -1015,12 +1015,10 @@ class App {
 
     async enterRoom() {
         if (this.game.key == "") {
-            this.failedToJoin("Пустой ключ комнаты - низзя");
-            return;
+            this.failure({code: 101});
         }
         if (this.game.myUsername.trim() == "") {
-            this.failedToJoin("Нужно представиться");
-            return;
+            this.failure({code: 102});
         }
         let data = await (await fetch(`api/getRoomInfo?key=${this.game.key}`)).json();
         if (!data.success) {
@@ -1238,9 +1236,13 @@ class App {
         show("gamePage_speakerReady");
     }
 
-    failedToJoin(msg) {
-        el("joinPage_goHint").innerText = msg;
-        show("joinPage_goHint");
+    failure({msg, code}) {
+        if (code in ERROR_MSGS) {
+            showError(_(ERROR_MSGS[code]));
+        } else {
+            showError(_(msg));
+        }
+        setTimeout(hideError, ERROR_TIMEOUT);
     }
 
     addBrowserData(result) {
@@ -1403,7 +1405,7 @@ class App {
             this.connected = false;
             setTimeout(() => {
                 if (!this.connected) {
-                    showError("Нет соединения, перезагрузите страницу");
+                    showError(_("Нет соединения, перезагрузите страницу"));
                 }
             }, DISCONNECT_TIMEOUT);
         });
@@ -1497,19 +1499,8 @@ class App {
             this.game.leave();
             this.pages.$results.push();
         })
-        this.socket.on("sFailure", data =>  {
-            switch(data.code) {
-            case 103:
-                this.failedToJoin("Ой. Это имя занято :(");
-                break;
-            case 104:
-                this.failedToJoin("Вы точно с таким именем играли?");
-                break;
-            default:
-                showError(data.msg, "code:", data.code);
-                setTimeout(hideError, ERROR_TIMEOUT);
-                break;
-            }
+        this.socket.on("sFailure", data => {
+            this.failure(data);
         })
     }
 
