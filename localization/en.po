@@ -207,3 +207,6 @@ msgstr " The game will finish at the end of the round."
 
 msgid "Только хост может закончить игру"
 msgstr "The host only can finish the game"
+
+msgid "ты"
+msgstr "you"

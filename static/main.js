@@ -694,6 +694,7 @@ class Game {
                 Template.user({"username": username}));
             if (username == this.myUsername) {
                 el(`user_${username}`).classList.add("you");
+                el(`user_${username}`).setAttribute("you-content",` (${_("ты")})`)
             }
         });
     }
