@@ -74,5 +74,6 @@
     " Игра закончится, и вы сможете посмотреть результаты.": " You will see the results.",
     " Игра закончится в конце текущего раунда.": " The game will finish at the end of the round.",
     "Только хост может закончить игру": "The host only can finish the game",
-    "ты": "you"
+    "ты": "you",
+    "Шляпа": "TheTrueHat"
 }

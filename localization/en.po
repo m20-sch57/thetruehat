@@ -210,3 +210,6 @@ msgstr "The host only can finish the game"
 
 msgid "ты"
 msgstr "you"
+
+msgid "Шляпа"
+msgstr "TheTrueHat"
