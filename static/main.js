@@ -753,11 +753,11 @@ class Game {
     }
 
     editedWordsObject() {
-        return {"editWords": Object.keys(this.wordStates)
+        return {"editWords": this.editWords
             .map(x => {
                 return {
-                    "word": x,
-                    "wordState": this.wordStates[x],
+                    "word": x.word,
+                    "wordState": this.wordStates[x.word],
                 }
             })}
     }
