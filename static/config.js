@@ -12,7 +12,7 @@ const DISCONNECT_TIMEOUT = 5000;
 const ERROR_TIMEOUT = 4000;
 const DEFAULT_SETTINGS = {
     wordNumber: 100,
-    turnNumber: 10
+    turnsNumber: 10
 }
 const GAME_BUTTON_COOLDOWN_TIME = 200;
 
