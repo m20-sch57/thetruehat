@@ -1,4 +1,4 @@
-function setValue(n, lang) {
+function setHatTitle(n, lang, word) {
     if (n > 999 || n < 0) {
         console.error("Invalid number");
         return;
@@ -29,7 +29,10 @@ function setValue(n, lang) {
         document.querySelector("use#digitE").setAttribute("xlink:href", `#${n % 10}e`);
     }
     let fl = "2";
-    let lng = "w";
+    let lng = {
+        words: "w",
+        rounds: "r"
+    }[word]
     switch (lang) {
         case "ru":
             if (n % 10 == 1 && n % 100 != 11) {
