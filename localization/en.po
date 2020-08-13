@@ -213,3 +213,111 @@ msgstr "you"
 
 msgid "Шляпа"
 msgstr "TheTrueHat"
+
+msgid "Играть"
+msgstr "Play"
+
+msgid "Слова"
+msgstr "Words"
+
+msgid "Загрузить"
+msgstr "Load"
+
+msgid "Количество слов"
+msgstr "Total number of words"
+
+msgid "ход"
+msgstr[0] "turn"
+msgstr[1] "turns"
+
+msgid "пока не кончатся слова"
+msgstr
+
+msgid "заданное число кругов"
+msgstr
+
+msgid "От каждого игрока"
+msgstr
+
+msgid "Выбрать файл"
+msgstr
+
+msgid "Файл не выбран"
+msgstr
+
+msgid "Количество кругов"
+msgstr
+
+msgid "Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке."
+msgstr
+
+msgid "Исходное количество слов в шляпе, выбранных из словаря."
+msgstr
+
+msgid "Количество кругов"
+msgstr
+
+msgid "*Подсказка к количеству кругов*"
+msgstr
+
+msgid "Ты объясняешь на следующем ходу"
+msgstr
+
+msgid "Ты угадываешь на следующем ходу"
+msgstr
+
+msgid "Ты будешь объяснять через"
+msgstr
+
+msgid "Ты будешь угадывать через"
+msgstr
+
+msgid "Нет соединения, перезагрузите страницу"
+msgstr
+
+msgid "Нужно выбрать файл"
+msgstr "You should send a text file"
+
+msgid "загрузка"
+msgstr "loading"
+
+msgid "Файл не выбран"
+msgstr
+
+msgid "Файл загружается"
+msgstr
+
+msgid "Невозможно открыть файл"
+msgstr "Can't open file"
+
+msgid "Необходимо загрузить текстовый файл"
+msgstr "You should send a text file"
+
+msgid "Максимальный размер словара 64 Mб"
+msgstr "Max dictionary size is 64 MiB"
+
+msgid "Нужно ввести ключ комнаты"
+msgstr
+
+msgid "Нужно ввести имя"
+msgstr
+
+msgid "Такое имя уже занято"
+msgstr
+
+msgid "Чтобы войти в игру нужно ввести имя, с которым вы играли."
+msgstr
+
+msgid "Набор слов"
+msgstr
+
+msgid "Вводите слова в поле ниже. Одно слово - одна строчка.
+                    Если одно и тоже слово введут несколько человек, в шляпе оно
+                    встретится ровно один раз."
+msgstr
+
+msgid "Готово"
+msgstr "Ready"
+
+msgid "Ждём остальных"
+msgstr

@@ -126,8 +126,8 @@
                             </div>
                         </div>
                         <select class="medium-select" id="gameSettingsPage_termConditionList">
-                            <option value="words">пока не кончатся слова</option>
-                            <option value="turns">заданное число кругов</option>
+                            <option value="words" gt gt-text>пока не кончатся слова</option>
+                            <option value="turns" gt gt-text>заданное число кругов</option>
                         </select>
                     </div>
                     <div class="layer" id="gameSettingsPage_dictionarySelection">
@@ -176,7 +176,7 @@
                                 <div src="svg/info.svg" name="svg"></div>
                             </div>
                             <div class="popup-hint" id="gameSettingsPage_turnNumberHint" gt gt-text>
-                                Игра заканчивается через такое количество кругов. *описание того, что такое круг*.
+                                *Подсказка к количеству кругов*
                             </div>
                         </div>
                         <input class="small-underlined-input input" id="gameSettingsPage_turnNumberField" name="type.number">
@@ -258,19 +258,19 @@
         </button>
         <div class="content-small">
             <div id="wordCollectionPage_header">
-                <h1 id="wordCollectionPage_title">Набор слов</h1>
+                <h1 id="wordCollectionPage_title" gt gt-text>Набор слов</h1>
             </div>
             <div id="wordCollectionPage_body">
-                <p id="wordCollectionPage_hint">
+                <p id="wordCollectionPage_hint" gt gt-text>
                     Вводите слова в поле ниже. Одно слово - одна строчка.
                     Если одно и тоже слово введут несколько человек, в шляпе оно
                     встретится ровно один раз.
                 </p>
                 <textarea id ="wordCollectionPage_textarea" class="default-textarea"></textarea>
-                <button id="wordCollectionPage_readyButton" class="medium-button bg-green" style="display: none">
+                <button id="wordCollectionPage_readyButton" class="medium-button bg-green" style="display: none" gt gt-text>
                     Готово
                 </button>
-                <button id="wordCollectionPage_readyHint" class="medium-button bg-green" style="display: none" disabled>
+                <button id="wordCollectionPage_readyHint" class="medium-button bg-green" style="display: none" disabled gt gt-text>
                     Ждём остальных
                 </button>
             </div>

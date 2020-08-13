@@ -1404,9 +1404,8 @@ class App {
             return;
         }
 
-        if (confirm(_("Вы уверены, что хотите завершить игру?")+ (this.game.state == "wait" ?
-            _(" Игра закончится, и вы сможете посмотреть результаты.") :
-            _(" Игра закончится в конце текущего раунда.")))) {
+        if (confirm(_("Вы уверены, что хотите завершить игру?") +
+            _(" Игра закончится, и вы сможете посмотреть результаты."))) {
             this.emit("cEndGame");
         }
     }
@@ -1587,11 +1586,11 @@ class App {
     validateSettings() {
         if (this.getWordsetType() == "hostDictionary") {
             if (this.dictionaryFileInfo === undefined) {
-                showError("Нужно выбрать файл");
+                showError(_("Нужно выбрать файл"));
                 return false;
             }
             if (this.dictionaryFileInfo.wordNumber === undefined) {
-                showError("Файл загружается");
+                showError(_("Файл загружается"));
                 return false;
             }
         }
@@ -1723,13 +1722,15 @@ class App {
         let input = el("gameSettingsPage_loadFileInput");
         let label = el("gameSettingsPage_loadFileLabel");
         if (this.dictionaryFileInfo !== undefined) {
+            let wordNumber = this.dictionaryFileInfo.wordNumber;
+            let filename = this.dictionaryFileInfo.filename;
             if (this.dictionaryFileInfo.wordNumber !== undefined) {
-                label.innerText = `${this.dictionaryFileInfo.filename}, ${this.dictionaryFileInfo.wordNumber} words`;
+                label.innerText = `${filename}, ${wordNumber} ${_("слово", wordNumber)}`;
             } else {
-                label.innerText = `${this.dictionaryFileInfo.filename} (loading...)`
+                label.innerText = `${filename} (${_("загрузка")}...)`
             }
         } else {
-            label.innerText = "Файл не выбран";
+            label.innerText = _("Файл не выбран");
         }
     }
 
@@ -1741,17 +1742,17 @@ class App {
     }
 
     dictionaryLoadError(evt) {
-        showError("Can't open file");
+        showError(_("Невозможно открыть файл"));
         this.removeSelectedDictionaryFile();
     }
 
     validateDictionaryFile(file) {
         if (file.type != "" && file.type != "text/plain") {
-            showError("You should send a text file");
+            showError(_("Необходимо загрузить текстовый файл"));
             return false;
         }
         if (file.size > DICTIONARY_MAX_SIZE) {
-            showError("Max dictionary size is 64 MiB");
+            showError(_("Максимальный размер словара 64 Mб"));
             return false;
         }
         var reader = new FileReader();
