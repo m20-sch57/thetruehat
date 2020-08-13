@@ -700,10 +700,10 @@ class Game {
 
     renderHatCounter() {
         if (this.settings.termCondition == "turns") {
-            setValue(this.turnsLeft, this.app.lang);
+            setHatTitle(this.turnsLeft, this.app.lang, "rounds");
         }
         if (this.settings.termCondition == "words") {
-            setValue(this.wordsLeft, this.app.lang);
+            setHatTitle(this.wordsLeft, this.app.lang, "words");
         }
     }
 
