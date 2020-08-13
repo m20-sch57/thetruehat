@@ -570,7 +570,6 @@ class Signals {
                 leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
             case "turns":
-                console.log(rooms[key].numberOfLap);
                 leftObj.turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
                 break;
             default:
