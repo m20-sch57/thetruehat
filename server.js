@@ -927,7 +927,7 @@ class Room {
         }
 
         if (this.numberOfLap === this.settings["turnsNumber"]) {
-            endGame(key);
+            endGame(this.key);
             return false;
         }
 
