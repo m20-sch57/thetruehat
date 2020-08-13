@@ -136,7 +136,7 @@ msgid "Настройки игры"
 msgstr "Game settings"
 
 msgid "Количество слов в шляпе"
-msgstr "Total number of words"
+msgstr "The number of words in the hat"
 
 msgid "Когда слова закончатся, закончится и игра."
 msgstr "When words run out, the game ends."
@@ -151,7 +151,7 @@ msgid "Время на объяснение"
 msgstr "Explanation time"
 
 msgid "По окончании этого времени любое объяснение слов должно быть закончено."
-msgstr "Words explanations should be over when this time expires."
+msgstr "Word explanation should be over when this time expires."
 
 msgid "Время на последнюю попытку"
 msgstr "Time for the final try"
@@ -246,7 +246,7 @@ msgid "Файл не выбран"
 msgstr "No file chosen"
 
 msgid "Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке."
-msgstr "Upload a text file with words, each word should be written on a separate line."
+msgstr "Upload a text file with each word on a separate line."
 
 msgid "Исходное количество слов в шляпе, выбранных из словаря."
 msgstr "Initial number of words in the hat that are taken from the dictionary."
@@ -255,25 +255,25 @@ msgid "Количество кругов"
 msgstr "The number of rounds"
 
 msgid "За один круг каждый игрок будет в паре с каждым из остальных игроков ровно по два раза: как объясняющий и как отгадывающий."
-msgstr "In each round each player will be paired with each of others exactly twice: as a speaker and as a listener."
+msgstr "Within a round each player will be paired with each of others exactly twice: as a speaker and as a listener."
 
 msgid "Ты объясняешь на следующем ходу"
-msgstr "You explain on the next turn"
+msgstr "You are to explain on the next turn"
 
 msgid "Ты угадываешь на следующем ходу"
-msgstr "You guess on the next turn"
+msgstr "You are to guess on the next turn"
 
 msgid "Ты будешь объяснять через"
-msgstr "You explain in"
+msgstr "You are to explain in"
 
 msgid "Ты будешь угадывать через"
-msgstr "You guess in"
+msgstr "You are to guess in"
 
 msgid "Нет соединения, перезагрузите страницу"
-msgstr "No connection, reload the page"
+msgstr "No connection, please reload the page"
 
 msgid "Нужно выбрать файл"
-msgstr "You should choose a file"
+msgstr "Please choose a file"
 
 msgid "загрузка"
 msgstr "loading"
@@ -285,25 +285,25 @@ msgid "Невозможно открыть файл"
 msgstr "Cannot open the file"
 
 msgid "Необходимо загрузить текстовый файл"
-msgstr "You should upload a text file"
+msgstr "Please upload a text file"
 
 msgid "Максимальный размер словара 64 Mб"
 msgstr "Max dictionary size is 64 MB"
 
 msgid "Нужно ввести ключ комнаты"
-msgstr "You should enter the room key"
+msgstr "Please enter a room key"
 
 msgid "Нужно ввести имя"
-msgstr "You should enter the name"
+msgstr "Please enter a name"
 
 msgid "Такое имя уже занято"
 msgstr "This name is already occupied"
 
 msgid "Чтобы войти в игру, нужно ввести имя, с которым вы играли."
-msgstr "You should enter the name that was used to join the room."
+msgstr "Please enter the name that you used to join the room."
 
 msgid "Набор слов"
-msgstr "Typing in the words"
+msgstr "Entering the words"
 
 msgid "Введите слова в поле ниже. Одно слово - одна строчка. Если одно и тоже слово введут несколько человек, в шляпе оно встретится ровно один раз."
 msgstr "Type your words in the box below. Each word should be written on a separate line. If two people write the same word, it will appear exactly once."
@@ -315,4 +315,4 @@ msgid "Ждём остальных"
 msgstr "Waiting for others"
 
 msgid "Начать ввод слов"
-msgstr "Start entering words"
+msgstr "Start entering the words"
