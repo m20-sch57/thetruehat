@@ -1535,7 +1535,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "delayTime": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["delayTime"].min <= value < settingsRange["delayTime"].max:
+                        case settingsRange["delayTime"].min <= value && value < settingsRange["delayTime"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"delayTime\"")
                             break;
@@ -1549,7 +1549,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "explanationTime": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["explanationTime"].min <= value < settingsRange["explanationTime"].max:
+                        case settingsRange["explanationTime"].min <= value && value < settingsRange["explanationTime"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"explanationTime\"")
                             break;
@@ -1563,7 +1563,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["aftermathTime"].min <= value < settingsRange["aftermathTime"].max:
+                        case settingsRange["aftermathTime"].min <= value && value < settingsRange["aftermathTime"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"aftermathTime\"")
                             break;
@@ -1613,7 +1613,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "dictionaryId": ${typeof(value)} вместо number`)
                             break;
-                        case 0 <= value < dicts.length:
+                        case 0 <= value && value < dicts.length:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"dictionaryId\"")
                             break;
@@ -1627,7 +1627,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "wordNumber": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["wordNumber"].min <= value < settingsRange["wordNumber"].max:
+                        case settingsRange["wordNumber"].min <= value && value < settingsRange["wordNumber"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"wordNumber\"")
                             break;
@@ -1641,7 +1641,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "turnsNumber": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["turnsNumber"].min <= value < settingsRange["turnsNumber"].max:
+                        case settingsRange["turnsNumber"].min <= value && value < settingsRange["turnsNumber"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"turnsNumber\"")
                             break;
