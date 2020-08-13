@@ -24,6 +24,7 @@ window.onload = function() {
 
 const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
 const WORD_MAX_SIZE = 50;
+const DICTIONARY_MAX_SIZE = 64 * 1024 * 1024
 
 Array.prototype.last = function() {
     console.assert(this.length >= 1,
@@ -562,6 +563,7 @@ class Game {
 
         if ("settings" in data) {
             this.settings = data.settings;
+            this.loadClientSettings();
         }
 
         if ("results" in data) {
@@ -611,16 +613,33 @@ class Game {
         this.renderAdditionalStatus();
     }
 
+    loadClientSettings() {
+        if (this.settings.wordsetType == "hostDictionary") {
+            this.app.dictionaryFileInfo = this.settings.dictionaryFileInfo;
+        }
+    }
+
     renderSettings() {
         el("gameSettingsPage_delayTimeField").value = this.settings.delayTime/1000;
         el("gameSettingsPage_explanationTimeField").value = this.settings.explanationTime/1000;
         el("gameSettingsPage_aftermathTimeField").value = this.settings.aftermathTime/1000;
         el("gameSettingsPage_termConditionList").value = this.settings.termCondition;
         el("gameSettingsPage_wordNumberField").value = this.settings.wordNumber || DEFAULT_SETTINGS.wordNumber;
-        el("gameSettingsPage_turnNumberField").value = this.settings.turnNumber || DEFAULT_SETTINGS.turnNumber;
+        el("gameSettingsPage_turnNumberField").value = this.settings.turnsNumber || DEFAULT_SETTINGS.turnsNumber;
         el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
-        el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId;
+        if (this.settings.wordsetType == "serverDictionary") {
+            el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId
+                + DICTIONARY_LIST_EXTRA_OPTIONS.length;
+        } else {
+            el("gameSettingsPage_dictionaryList").selectedIndex =
+                WORDSET_TYPE_DICT[this.settings.wordsetType];
+        }
         this.app.updateSettings();
+    }
+
+    updateSettingsState() {
+        this.loadClientSettings();
+        this.renderSettings();
     }
 
     renderResults() {
@@ -665,18 +684,24 @@ class Game {
     }
 
     renderStartAction() {
+        hide("preparationPage_startGame");
+        hide("preparationPage_startWordCollection");
+        hide("preparationPage_startHint");
+        hide("preparationPage_startLabel");
         if (!this.isHost) {
-            hide("preparationPage_start")
-            hide("preparationPage_startHint");
             show("preparationPage_startLabel");
         } else {
-            show("preparationPage_start");
-            hide("preparationPage_startLabel");
-            if (this.players.length > 1) {
-                enable("preparationPage_start");
-                hide("preparationPage_startHint");
+            if (this.settings.wordsetType == "playerWords") {
+                show("preparationPage_startWordCollection");
             } else {
-                disable("preparationPage_start");
+                show("preparationPage_startGame");
+            }
+            if (this.players.length > 1) {
+                enable("preparationPage_startGame");
+                enable("preparationPage_startWordCollection");
+            } else {
+                disable("preparationPage_startGame");
+                disable("preparationPage_startWordCollection");
                 show("preparationPage_startHint");
             }
         }
@@ -701,10 +726,10 @@ class Game {
 
     renderHatCounter() {
         if (this.settings.termCondition == "turns") {
-            setValue(this.turnsLeft, this.app.lang);
+            setHatTitle(this.turnsLeft, this.app.lang, "rounds");
         }
         if (this.settings.termCondition == "words") {
-            setValue(this.wordsLeft, this.app.lang);
+            setHatTitle(this.wordsLeft, this.app.lang, "words");
         }
     }
 
@@ -729,11 +754,11 @@ class Game {
     }
 
     editedWordsObject() {
-        return {"editWords": Object.keys(this.wordStates)
+        return {"editWords": this.editWords
             .map(x => {
                 return {
-                    "word": x,
-                    "wordState": this.wordStates[x],
+                    "word": x.word,
+                    "wordState": this.wordStates[x.word],
                 }
             })}
     }
@@ -760,7 +785,7 @@ class App {
         this.sound = new Sound();
         this.game = new Game(this);
 
-        this.initPages()
+        this.initPages();
         this.setKey(readLocationHash());
         this.checkClipboard();
         this.setDOMEventListeners();
@@ -796,6 +821,15 @@ class App {
             pages: {
                 main: "mainPage",
                 join: "joinPage",
+                wordCollection: {
+                    els: ["wordCollectionPage"],
+                    onEnter: () => {
+                        show("wordCollectionPage_readyButton");
+                        hide("wordCollectionPage_readyHint");
+                        enable("wordCollectionPage_textarea");
+                        el("wordCollectionPage_textarea").value = "";
+                    }
+                },
                 game: {
                     els: ["gamePage"],
                     onEnter: () => {
@@ -1022,10 +1056,11 @@ class App {
         }
         let data = await (await fetch(`api/getRoomInfo?key=${this.game.key}`)).json();
         if (!data.success) {
+            console.log("wow")
             console.log("Invalid room key");
             return;
         };
-        if (["wait", "play"].indexOf(data.state) != -1) {
+        if (["wait", "play", "prepare"].indexOf(data.state) != -1) {
             this.emit("cJoinRoom",
                 {"username": this.game.myUsername,
                     "key": this.game.key,
@@ -1245,6 +1280,15 @@ class App {
         setTimeout(hideError, ERROR_TIMEOUT);
     }
 
+    wordsReady() {
+        this.emit("cWordsReady", {
+            words: this.parseWords()
+        });
+        hide("wordCollectionPage_readyButton");
+        show("wordCollectionPage_readyHint");
+        disable("wordCollectionPage_textarea");
+    }
+
     addBrowserData(result) {
         result.appName = navigator.appName;
         result.appVersion = navigator.appVersion;
@@ -1320,14 +1364,25 @@ class App {
         settings.explanationTime = +el("gameSettingsPage_explanationTimeField").value*1000;
         settings.aftermathTime = +el("gameSettingsPage_aftermathTimeField").value*1000;
         settings.termCondition = el("gameSettingsPage_termConditionList").value;
-        if (settings.termCondition == "words") {
+        settings.wordsetType = this.getWordsetType();
+        if (settings.termCondition == "words" &&
+            (settings.wordsetType == "serverDictionary" || settings.wordsetType == "hostDictionary")) {
             settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
         }
         if (settings.termCondition == "turns") {
-            settings.turnNumber = +el("gameSettingsPage_turnNumberField").value;
+            settings.turnsNumber = +el("gameSettingsPage_turnNumberField").value;
         }
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
-        settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex;
+        if (settings.wordsetType == "serverDictionary") {
+            settings.dictionaryId = el("gameSettingsPage_dictionaryList").selectedIndex -
+                DICTIONARY_LIST_EXTRA_OPTIONS.length;
+        }
+        if (settings.wordsetType == "hostDictionary") {
+            settings.dictionaryFileInfo = this.dictionaryFileInfo;
+            if (this.dictionaryFileWords !== undefined) {
+                settings.wordset = this.dictionaryFileWords;
+            }
+        }
         this.emit("cApplySettings", {settings});
     }
 
@@ -1349,7 +1404,6 @@ class App {
             return;
         }
 
-        // In English?
         if (confirm(_("Вы уверены, что хотите завершить игру?")+ (this.game.state == "wait" ?
             _(" Игра закончится, и вы сможете посмотреть результаты.") :
             _(" Игра закончится в конце текущего раунда.")))) {
@@ -1376,16 +1430,34 @@ class App {
         }
     }
 
+    getWordsetType() {
+        let dictionaryListId = el("gameSettingsPage_dictionaryList").selectedIndex;
+        if (dictionaryListId >= DICTIONARY_LIST_EXTRA_OPTIONS.length) {
+            return "serverDictionary";
+        } else {
+            return DICTIONARY_LIST_EXTRA_OPTIONS[dictionaryListId].wordsetType;
+        }
+    }
+
     updateSettings() {
         let elem = el("gameSettingsPage_termConditionList");
+        let wordsetType = this.getWordsetType();
         hide("gameSettingsPage_wordNumber");
         hide("gameSettingsPage_turnNumber");
-        if (elem.value == "words") {
+        hide("gameSettingsPage_loadDictionary");
+        if (elem.value == "words" &&
+            (wordsetType == "serverDictionary" || wordsetType == "hostDictionary")) {
             show("gameSettingsPage_wordNumber");
         }
         if (elem.value == "turns") {
             show("gameSettingsPage_turnNumber");
         }
+        if (wordsetType == "hostDictionary") {
+            show("gameSettingsPage_loadDictionary");
+        } else {
+            this.removeSelectedDictionaryFile();
+        }
+        this.updateDictionaryFileLoaderText();
     }
 
     setSocketioEventListeners() {
@@ -1426,10 +1498,14 @@ class App {
             this.game.update(data);
             this.game.inGame = true;
             this.game.state = data.state == "wait" ? "preparation" :
-                data.state == "play" ? data.substate : data.state;
+                data.state == "play" ? data.substate : data.state =="prepare" ?
+                "wordCollection" : data.state;
             switch (data.state) {
             case "wait":
                 this.pages.$preparation.push();
+                break;
+            case "prepare":
+                this.pages.$wordCollection.push();
                 break;
             case "play":
                 this.pages.$game.push();
@@ -1460,6 +1536,10 @@ class App {
         })
         this.socket.on("sNewSettings", data => {
             this.game.update(data);
+        })
+        this.socket.on("sWordCollectionStarted", () => {
+            this.game.state = "wordCollection";
+            this.pages.$wordCollection.push();
         })
         this.socket.on("sGameStarted", data => {
             this.game.state = "wait";
@@ -1504,6 +1584,20 @@ class App {
         })
     }
 
+    validateSettings() {
+        if (this.getWordsetType() == "hostDictionary") {
+            if (this.dictionaryFileInfo === undefined) {
+                showError("Нужно выбрать файл");
+                return false;
+            }
+            if (this.dictionaryFileInfo.wordNumber === undefined) {
+                showError("Файл загружается");
+                return false;
+            }
+        }
+        return true;
+    }
+
     setDOMEventListeners() {
         el("mainPage_createRoom").onclick = () => {
             this.generateKey();
@@ -1526,7 +1620,12 @@ class App {
         }
 
         el("preparationPage_goBack").onclick = () => this.leaveRoom();
-        el("preparationPage_start").onclick = () => this.emit("cStartGame");
+        el("preparationPage_startGame").onclick = () => {
+            this.emit("cStartGame");
+        }
+        el("preparationPage_startWordCollection").onclick = () => {
+            this.emit("cStartWordCollection")
+        }
         el("preparationPage_copyKey").onclick = () => this.copyKey();
         el("preparationPage_copyLink").onclick = () => this.copyLink();
 
@@ -1550,15 +1649,24 @@ class App {
 
         el("gameSettingsPage_goBack").onclick = () => this.pages.goBack();
         el("gameSettingsPage_revertButton").onclick = () => {
-            this.game.renderSettings();
+            this.game.updateSettingsState();
             this.pages.goBack();
         }
         el("gameSettingsPage_applyButton").onclick = () => {
-            this.applySettings();
-            this.pages.goBack();
+            if (this.validateSettings()) {
+                this.applySettings();
+                this.pages.goBack();
+            }
         }
         el("gameSettingsPage_termConditionList").onchange = () => {
             this.updateSettings();
+        }
+        el("gameSettingsPage_dictionaryList").onchange = () => {
+            this.updateSettings();
+        }
+
+        el("wordCollectionPage_readyButton").onclick = () => {
+            this.wordsReady();
         }
 
         el("preparationPage_openSettings").onclick =
@@ -1593,15 +1701,90 @@ class App {
         els("version").forEach((it) => it.innerText = VERSION);
 
         // Adding settings hint
-        let prefixes = ["gameSettingsPage_wordNumber", "gameSettingsPage_delayTime",
-            "gameSettingsPage_explanationTime", "gameSettingsPage_aftermathTime",
-            "gameSettingsPage_dictionarySelection", "gameSettingsPage_strictMode",
-            "gameSettingsPage_termCondition", "gameSettingsPage_turnNumber"]
+        let prefixes = [
+            "gameSettingsPage_wordNumber",
+            "gameSettingsPage_delayTime",
+            "gameSettingsPage_explanationTime",
+            "gameSettingsPage_aftermathTime",
+            "gameSettingsPage_strictMode",
+            "gameSettingsPage_turnNumber",
+            "gameSettingsPage_loadFile"
+        ];
         for (let idPrefix of prefixes) {
             this.addHint(idPrefix+"Info");
         }
 
         els("type.number").forEach(it => validateNumber(it.id));
+
+        el("gameSettingsPage_loadFileInput").addEventListener('change', () => this.parseDictionaryFile());
+    }
+
+    updateDictionaryFileLoaderText() {
+        let input = el("gameSettingsPage_loadFileInput");
+        let label = el("gameSettingsPage_loadFileLabel");
+        if (this.dictionaryFileInfo !== undefined) {
+            if (this.dictionaryFileInfo.wordNumber !== undefined) {
+                label.innerText = `${this.dictionaryFileInfo.filename}, ${this.dictionaryFileInfo.wordNumber} words`;
+            } else {
+                label.innerText = `${this.dictionaryFileInfo.filename} (loading...)`
+            }
+        } else {
+            label.innerText = "Файл не выбран";
+        }
+    }
+
+    loadWordsFromFile(evt) {
+        let lines = evt.target.result.split('\n').map(x => x.trim());
+        this.dictionaryFileWords = [...new Set(lines.filter(x => x != ""))];
+        this.dictionaryFileInfo.wordNumber = this.dictionaryFileWords.length;
+        this.updateDictionaryFileLoaderText();
+    }
+
+    dictionaryLoadError(evt) {
+        showError("Can't open file");
+        this.removeSelectedDictionaryFile();
+    }
+
+    validateDictionaryFile(file) {
+        if (file.type != "" && file.type != "text/plain") {
+            showError("You should send a text file");
+            return false;
+        }
+        if (file.size > DICTIONARY_MAX_SIZE) {
+            showError("Max dictionary size is 64 MiB");
+            return false;
+        }
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = (evt) => this.loadWordsFromFile(evt);
+        reader.onerror = (evt) => this.dictionaryLoadError(evt);
+        return true;
+    }
+
+    removeSelectedDictionaryFile() {
+        el("gameSettingsPage_loadFileInput").value = "";
+        delete this.dictionaryFileInfo;
+        delete this.dictionaryFileWords;
+    }
+
+    parseDictionaryFile() {
+        if (el("gameSettingsPage_loadFileInput").files.length) {
+            let file = el("gameSettingsPage_loadFileInput").files[0];
+            this.dictionaryFileInfo = {
+                "filename": file.name
+            };
+            if (!this.validateDictionaryFile(file)) {
+                this.removeSelectedDictionaryFile();
+            }
+        }
+        this.updateDictionaryFileLoaderText();
+    }
+
+    parseWords() {
+        let wordSeparator = "\n";
+        let wordsText = el("wordCollectionPage_textarea").value;
+        let words = wordsText.split(wordSeparator).map(x => x.trim()).filter(x => x != "");
+        return words;
     }
 
     async loadFile(name, callback) {
@@ -1670,6 +1853,9 @@ class App {
     async loadDictionaries() {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
+        for (let opt of DICTIONARY_LIST_EXTRA_OPTIONS) {
+            el("gameSettingsPage_dictionaryList").innerHTML += `<option>${opt.name}</option>`
+        }
         for (let dict of dictionaries.dictionaries) {
             let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} ${_("слово", dict.wordNumber)}`;
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
