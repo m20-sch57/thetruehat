@@ -225,7 +225,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 function getTimetable(key) {
     const timetable = [];
     const timetableDepth = 2 * rooms[key].users.length - 1
-    let turnsLeft = rooms[key].turnsLeft;
+    let turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
     let obj = {
         speaker: rooms[key].speaker,
         listener: rooms[key].listener
