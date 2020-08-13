@@ -947,18 +947,13 @@ class Room {
                 break;
             case "playerWords":
                 let wordList = [];
-                let allWords = {};
                 for (let i = 0; i < this.users.length; ++i) {
                     const user = this.users[i];
-                    for (let j = 0; j < user.userWords.length; ++j) {
-                        if (!(user.userWords[j] in allWords)) {
-                            wordList.push(user.userWords[j]);
-                            allWords[user.userWords[j]] = true;
-                        }
-                    }
+                    wordList = wordList.concat(user.userWords);
                     delete user.userReady;
                     delete user.userWords;
                 }
+                wordList = [...new Set(wordList)];
 
                 dict = {
                     words: wordList,
@@ -1663,8 +1658,13 @@ class Callbacks {
                                 "Неверное значение поля настроек \"wordset\"")
                             break;
                         default:
-                            room.hostDictionary.words = value;
-                            room.hostDictionary.wordNumber = value.length
+                            const words = [...new Set(value)]
+                            if (words.length !== value.length) {
+                                Signals.sFailure(socket.id, "cApplySettings", null,
+                                    "Дублирующиеся слова из словаря хоста удалены.")
+                            }
+                            room.hostDictionary.words = words;
+                            room.hostDictionary.wordNumber = words.length
                     }
                     break;
                 default:
