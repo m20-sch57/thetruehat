@@ -70,7 +70,7 @@
             "min": 1,
             "max": 1000
         },
-        "turnNumber": {
+        "turnsNumber": {
             "min": 1,
             "max": 1000
         }

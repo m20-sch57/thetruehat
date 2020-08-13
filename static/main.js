@@ -625,7 +625,7 @@ class Game {
         el("gameSettingsPage_aftermathTimeField").value = this.settings.aftermathTime/1000;
         el("gameSettingsPage_termConditionList").value = this.settings.termCondition;
         el("gameSettingsPage_wordNumberField").value = this.settings.wordNumber || DEFAULT_SETTINGS.wordNumber;
-        el("gameSettingsPage_turnNumberField").value = this.settings.turnNumber || DEFAULT_SETTINGS.turnNumber;
+        el("gameSettingsPage_turnNumberField").value = this.settings.turnsNumber || DEFAULT_SETTINGS.turnsNumber;
         el("gameSettingsPage_strictModeCheckbox").checked = this.settings.strictMode;
         if (this.settings.wordsetType == "serverDictionary") {
             el("gameSettingsPage_dictionaryList").selectedIndex = this.settings.dictionaryId
@@ -1367,7 +1367,7 @@ class App {
             settings.wordNumber = +el("gameSettingsPage_wordNumberField").value;
         }
         if (settings.termCondition == "turns") {
-            settings.turnNumber = +el("gameSettingsPage_turnNumberField").value;
+            settings.turnsNumber = +el("gameSettingsPage_turnNumberField").value;
         }
         settings.strictMode = el("gameSettingsPage_strictModeCheckbox").checked;
         if (settings.wordsetType == "serverDictionary") {

@@ -487,7 +487,7 @@ class Signals {
                         joinObj.wordsLeft = room.freshWords.length;
                         break;
                     case "turns":
-                        joinObj.turnsLeft = room.settings.turnNumber - room.numberOfLap;
+                        joinObj.turnsLeft = room.settings.turnsNumber - room.numberOfLap;
                         break;
                     default:
                         console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
@@ -571,7 +571,7 @@ class Signals {
                 break;
             case "turns":
                 console.log(rooms[key].numberOfLap);
-                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfLap;
+                leftObj.turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -598,7 +598,7 @@ class Signals {
                 leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
             case "turns":
-                leftObj.turnsLeft = rooms[key].settings.turnNumber - rooms[key].numberOfLap;
+                leftObj.turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -922,7 +922,7 @@ class Room {
             this.numberOfLap++;
         }
 
-        if (this.numberOfLap === this.settings["turnNumber"]) {
+        if (this.numberOfLap === this.settings["turnsNumber"]) {
             endGame(key);
             return false;
         }
