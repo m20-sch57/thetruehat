@@ -1855,7 +1855,7 @@ class App {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
         for (let opt of DICTIONARY_LIST_EXTRA_OPTIONS) {
-            el("gameSettingsPage_dictionaryList").innerHTML += `<option>${opt.name}</option>`
+            el("gameSettingsPage_dictionaryList").innerHTML += `<option>${_(opt.name)}</option>`
         }
         for (let dict of dictionaries.dictionaries) {
             let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} ${_("слово", dict.wordNumber)}`;
