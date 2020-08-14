@@ -13,31 +13,31 @@
         },
         {
             "name": {
-                "ru": "Английские слова",
-                "en": "English words"
-            },
-            "path": "./words/english-nouns.json"
-        },
-        {
-            "name": {
-                "ru": "Русские слова (простые)",
-                "en": "Russian words (easy)"
+                "ru": "Простые русские",
+                "en": "Easy russian"
             },
             "path": "./words/easy.json"
         },
         {
             "name": {
-                "ru": "Русские слова (средние)",
-                "en": "Russian words (medium)"
+                "ru": "Средние русские",
+                "en": "Medium russian"
             },
             "path": "./words/med.json"
         },
         {
             "name": {
-                "ru": "Русские слова (сложные)",
-                "en": "Russian words (hard)"
+                "ru": "Сложные русские",
+                "en": "Hard russian"
             },
             "path": "./words/hard.json"
+        },
+        {
+            "name": {
+                "ru": "Английские слова",
+                "en": "English words"
+            },
+            "path": "./words/english-nouns.json"
         }
     ],
     "feedbackPath": "./feedback.log",
