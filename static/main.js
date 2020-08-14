@@ -995,7 +995,7 @@ class App {
                     },
                     onLeave: () => {
                         el("gamePage_editConfirm").classList.remove("shadow");
-                        el("gamePage_status").classList.remove("shadow");
+                        el("gamePage_header").classList.remove("shadow");
                     }
                 }
             }
@@ -1172,9 +1172,9 @@ class App {
     editPageUpdateShadows() {
         let elem = el("gamePage_editListScrollable");
         if (elem.scrollTop == 0) {
-            el("gamePage_status").classList.remove("shadow");
+            el("gamePage_header").classList.remove("shadow");
         } else {
-            el("gamePage_status").classList.add("shadow");
+            el("gamePage_header").classList.add("shadow");
         }
         if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight + 1) {
             el("gamePage_editConfirm").classList.remove("shadow");
