@@ -231,49 +231,49 @@ msgstr[0] "turn"
 msgstr[1] "turns"
 
 msgid "пока не кончатся слова"
-msgstr
+msgstr "until the words are over"
 
 msgid "заданное число кругов"
-msgstr
+msgstr "fixed number of rounds"
 
 msgid "От каждого игрока"
-msgstr
+msgstr "From each player"
 
 msgid "Выбрать файл"
-msgstr
+msgstr "Choose file"
 
 msgid "Файл не выбран"
-msgstr
+msgstr "No file chosen"
 
 msgid "Количество кругов"
-msgstr
+msgstr "The number of rounds"
 
 msgid "Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке."
-msgstr
+msgstr "Upload the text file with words, each word must be written on a separate line."
 
 msgid "Исходное количество слов в шляпе, выбранных из словаря."
-msgstr
+msgstr "The initial number of words from dictionary in hat."
 
 msgid "Количество кругов"
-msgstr
+msgstr "The number of rounds"
 
 msgid "За один круг каждый игрок будет в паре с каждым из остальных игроков ровно по два раза: как объясняющий и как отгадывающий."
-msgstr
+msgstr "In one round each player will be in pair with each of the rest exactly twice: as speaker and as listener."
 
 msgid "Ты объясняешь на следующем ходу"
-msgstr
+msgstr "You explain the next turn"
 
 msgid "Ты угадываешь на следующем ходу"
-msgstr
+msgstr "You guess the next turn"
 
 msgid "Ты будешь объяснять через"
-msgstr
+msgstr "You explain in"
 
 msgid "Ты будешь угадывать через"
-msgstr
+msgstr "You guess in"
 
 msgid "Нет соединения, перезагрузите страницу"
-msgstr
+msgstr "No connection, reload the page"
 
 msgid "Нужно выбрать файл"
 msgstr "You should send a text file"
@@ -281,11 +281,8 @@ msgstr "You should send a text file"
 msgid "загрузка"
 msgstr "loading"
 
-msgid "Файл не выбран"
-msgstr
-
 msgid "Файл загружается"
-msgstr
+msgstr "File is uploading"
 
 msgid "Невозможно открыть файл"
 msgstr "Can't open file"
@@ -297,27 +294,28 @@ msgid "Максимальный размер словара 64 Mб"
 msgstr "Max dictionary size is 64 MiB"
 
 msgid "Нужно ввести ключ комнаты"
-msgstr
+msgstr "You should enter the room’s key"
 
 msgid "Нужно ввести имя"
-msgstr
+msgstr "You should enter the name"
 
 msgid "Такое имя уже занято"
-msgstr
+msgstr "This name is engaged"
 
 msgid "Чтобы войти в игру нужно ввести имя, с которым вы играли."
-msgstr
+msgstr "You should enter name with which you played to enter the room."
 
 msgid "Набор слов"
-msgstr
+msgstr ""
 
-msgid "Вводите слова в поле ниже. Одно слово - одна строчка.
-                    Если одно и тоже слово введут несколько человек, в шляпе оно
-                    встретится ровно один раз."
-msgstr
+msgid "Вводите слова в поле ниже. Одно слово - одна строчка. Если одно и тоже слово введут несколько человек, в шляпе оно встретится ровно один раз."
+msgstr "Write words in box below. Each word must be written on a separate line. If several people write the same word, it will be appeared only once."
 
 msgid "Готово"
 msgstr "Ready"
 
 msgid "Ждём остальных"
-msgstr
+msgstr "Waiting for other people"
+
+msgid "Начать ввод слов"
+msgstr ""
