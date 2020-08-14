@@ -108,7 +108,9 @@
     "Нужно ввести имя": "You should enter the name",
     "Такое имя уже занято": "This name is engaged",
     "Чтобы войти в игру нужно ввести имя, с которым вы играли.": "You should enter name with which you played to enter the room.",
+    "Набор слов": "Entering words",
     "Вводите слова в поле ниже. Одно слово - одна строчка. Если одно и тоже слово введут несколько человек, в шляпе оно встретится ровно один раз.": "Write words in box below. Each word must be written on a separate line. If several people write the same word, it will be appeared only once.",
     "Готово": "Ready",
-    "Ждём остальных": "Waiting for other people"
+    "Ждём остальных": "Waiting for other people",
+    "Начать ввод слов": "Begin entering words"
 }
