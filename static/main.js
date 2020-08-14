@@ -577,20 +577,17 @@ class Game {
         if ("timetable" in data) {
             this.timetable = data.timetable;
             this.timetableDepth = this.timetable.length;
-            this.turnsCount = this.timetableDepth - 2;
-            this.turnsCountCorrect = false;
+            this.turnsCount = -1;
             for (let i=0; i < this.timetable.length; i++) {
                 let pair = this.timetable[i];
                 if (pair.speaker == this.myUsername) {
                     this.turnsCount = i-1;
                     this.myNextRole = "speaker";
-                    this.turnsCountCorrect = true;
                     break;
                 }
                 if (pair.listener == this.myUsername) {
                     this.turnsCount = i-1;
                     this.myNextRole = "listener";
-                    this.turnsCountCorrect = true;
                     break;
                 }
             }
@@ -740,9 +737,8 @@ class Game {
 
     renderAdditionalStatus() {
         let count = this.turnsCount;
-        let mark = this.turnsCountCorrect;
         el("gamePage_additionalStatus_turnsCounter_counter").innerText =
-            `${mark ? "" : ">"}${count} ${_("ход", count)}`
+            count == -1 ? "" : `${count} ${_("ход", count)}`;
     }
 
     changeWordState(word, state) {

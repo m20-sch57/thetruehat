@@ -76,7 +76,6 @@
         }
     },
     "transferTime": 1000,
-    "timetableDepth": 12,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [

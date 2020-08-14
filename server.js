@@ -223,16 +223,21 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
  * @return array of speaker and listeners' names
  */
 function getTimetable(key) {
-    let timetable = [];
-    let obj = {};
-    obj.speaker = rooms[key].speaker;
-    obj.listener = rooms[key].listener;
-    for (let i = 0; i < config.timetableDepth; ++i) {
+    const timetable = [];
+    const timetableDepth = 2 * rooms[key].users.length - 1
+    let turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
+    let obj = {
+        speaker: rooms[key].speaker,
+        listener: rooms[key].listener
+    };
+    for (let i = 0; i < timetableDepth; ++i) {
+        if (turnsLeft === 0) break;
         timetable.push({
             "speaker": rooms[key].users[obj.speaker].username,
             "listener": rooms[key].users[obj.listener].username
         });
         obj = getNextPair(rooms[key].users.length, obj.speaker, obj.listener);
+        if (obj.speaker === 0 && obj.listener === 1) --turnsLeft;
     }
     return timetable;
 }
@@ -922,7 +927,7 @@ class Room {
         }
 
         if (this.numberOfLap === this.settings["turnsNumber"]) {
-            endGame(key);
+            endGame(this.key);
             return false;
         }
 
