@@ -76,7 +76,7 @@ select {
     -moz-appearance: none;
     -webkit-appearance: none;
     background: transparent;
-    background-image: url(/svg/arrow_down.svg);
+    background-image: url(svg/arrow_down.svg);
     background-repeat: no-repeat;
     background-position-x: calc(100% - 3px);
     background-position-y: calc(50% - 1px);
@@ -332,7 +332,7 @@ svg {
     width: 150px;
     font-size: 20px;
     padding-top: 50px;
-    background-image: url(\hat2.png);
+    background-image: url(hat2.png);
     background-size: 40%;
     background-position: center 85px;
     background-repeat: no-repeat;
@@ -466,7 +466,7 @@ svg {
     box-shadow: 0 0 3px grey;
     z-index: 20;
     background-color: rgb(240, 234, 154);
-    background-image: url(\hat2.png);
+    background-image: url(hat2.png);
     background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
@@ -612,7 +612,7 @@ svg {
     height: 20px;
     width: 20px;
     margin-right: -20px;
-    background-image: url(\hat2.png);
+    background-image: url(hat2.png);
     background-size: 100%;
     background-position: center;
     background-repeat: no-repeat;
