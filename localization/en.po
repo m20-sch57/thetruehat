@@ -306,7 +306,7 @@ msgid "Чтобы войти в игру нужно ввести имя, с ко
 msgstr "You should enter name with which you played to enter the room."
 
 msgid "Набор слов"
-msgstr ""
+msgstr "Entering words"
 
 msgid "Вводите слова в поле ниже. Одно слово - одна строчка. Если одно и тоже слово введут несколько человек, в шляпе оно встретится ровно один раз."
 msgstr "Write words in box below. Each word must be written on a separate line. If several people write the same word, it will be appeared only once."
@@ -318,4 +318,4 @@ msgid "Ждём остальных"
 msgstr "Waiting for other people"
 
 msgid "Начать ввод слов"
-msgstr ""
+msgstr "Begin entering words"
