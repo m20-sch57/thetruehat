@@ -246,7 +246,7 @@ msgid "Файл не выбран"
 msgstr "No file chosen"
 
 msgid "Количество кругов"
-msgstr "The number of rounds"
+msgstr "Total number of rounds"
 
 msgid "Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке."
 msgstr "Upload the text file with words, each word must be written on a separate line."
