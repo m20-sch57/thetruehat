@@ -312,7 +312,7 @@ msgid "Вводите слова в поле ниже. Одно слово - о�
 msgstr "Write words in box below. Each word must be written on a separate line. If several people write the same word, it will be appeared only once."
 
 msgid "Готово"
-msgstr "Ready"
+msgstr "All ready"
 
 msgid "Ждём остальных"
 msgstr "Waiting for others"
