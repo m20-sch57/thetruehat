@@ -136,7 +136,7 @@ msgid "Настройки игры"
 msgstr "Game settings"
 
 msgid "Количество слов в шляпе"
-msgstr "The number of words in the hat"
+msgstr "Total number of words in the hat"
 
 msgid "Когда слова закончатся, закончится и игра."
 msgstr "When words run out, the game ends."
@@ -234,7 +234,7 @@ msgid "пока не кончатся слова"
 msgstr "until the words run out"
 
 msgid "заданное число кругов"
-msgstr "fixed number of rounds"
+msgstr "given number of rounds"
 
 msgid "От каждого игрока"
 msgstr "From each player"
@@ -243,16 +243,16 @@ msgid "Выбрать файл"
 msgstr "Choose file"
 
 msgid "Файл не выбран"
-msgstr "No file chosen"
+msgstr "No file is chosen"
+
+msgid "Количество кругов"
+msgstr "Total number of rounds"
 
 msgid "Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке."
 msgstr "Upload a text file with each word on a separate line."
 
 msgid "Исходное количество слов в шляпе, выбранных из словаря."
 msgstr "Initial number of words in the hat that are taken from the dictionary."
-
-msgid "Количество кругов"
-msgstr "The number of rounds"
 
 msgid "За один круг каждый игрок будет в паре с каждым из остальных игроков ровно по два раза: как объясняющий и как отгадывающий."
 msgstr "Within a round each player will be paired with each of others exactly twice: as a speaker and as a listener."
@@ -297,7 +297,7 @@ msgid "Нужно ввести имя"
 msgstr "Please enter a name"
 
 msgid "Такое имя уже занято"
-msgstr "This name is already occupied"
+msgstr "Such name is already occupied"
 
 msgid "Чтобы войти в игру, нужно ввести имя, с которым вы играли."
 msgstr "Please enter the name that you used to join the room."
