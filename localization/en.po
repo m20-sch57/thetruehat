@@ -315,7 +315,7 @@ msgid "Готово"
 msgstr "Ready"
 
 msgid "Ждём остальных"
-msgstr "Waiting for other people"
+msgstr "Waiting for others"
 
 msgid "Начать ввод слов"
 msgstr "Begin entering words"
