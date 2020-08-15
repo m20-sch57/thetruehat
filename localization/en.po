@@ -303,7 +303,7 @@ msgid "Такое имя уже занято"
 msgstr "This name is engaged"
 
 msgid "Чтобы войти в игру нужно ввести имя, с которым вы играли."
-msgstr "You should enter name with which you played to enter the room."
+msgstr "You should enter name with which you were playing to join the game."
 
 msgid "Набор слов"
 msgstr "Entering words"
