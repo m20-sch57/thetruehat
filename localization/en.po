@@ -261,7 +261,7 @@ msgid "За один круг каждый игрок будет в паре с 
 msgstr "In any round each player will be paired with each of others exactly twice: as a speaker and as a listener."
 
 msgid "Ты объясняешь на следующем ходу"
-msgstr "You explain the next turn"
+msgstr "You explain on the next turn"
 
 msgid "Ты угадываешь на следующем ходу"
 msgstr "You guess the next turn"
