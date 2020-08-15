@@ -243,7 +243,7 @@ msgid "Выбрать файл"
 msgstr "Choose file"
 
 msgid "Файл не выбран"
-msgstr "No file chosen"
+msgstr "No file is chosen"
 
 msgid "Количество кругов"
 msgstr "Total number of rounds"
