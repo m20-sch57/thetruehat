@@ -291,7 +291,7 @@ msgid "Необходимо загрузить текстовый файл"
 msgstr "You should send a text file"
 
 msgid "Максимальный размер словара 64 Mб"
-msgstr "Max dictionary size is 64 MiB"
+msgstr "Max dictionary size is 64 MB"
 
 msgid "Нужно ввести ключ комнаты"
 msgstr "You should enter the room’s key"
