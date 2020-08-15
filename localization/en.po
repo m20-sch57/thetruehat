@@ -309,7 +309,7 @@ msgid "Набор слов"
 msgstr "Entering words"
 
 msgid "Вводите слова в поле ниже. Одно слово - одна строчка. Если одно и тоже слово введут несколько человек, в шляпе оно встретится ровно один раз."
-msgstr "Write words in box below. Each word must be written on a separate line. If several people write the same word, it will be appeared only once."
+msgstr "Enter words in box below. Each word must be written on a separate line. If several people write the same word, it will appear exactly once."
 
 msgid "Готово"
 msgstr "All ready"
