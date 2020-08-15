@@ -258,7 +258,7 @@ msgid "Количество кругов"
 msgstr "The number of rounds"
 
 msgid "За один круг каждый игрок будет в паре с каждым из остальных игроков ровно по два раза: как объясняющий и как отгадывающий."
-msgstr "In one round each player will be in pair with each of the rest exactly twice: as speaker and as listener."
+msgstr "In any round each player will be paired with each of others exactly twice: as a speaker and as a listener."
 
 msgid "Ты объясняешь на следующем ходу"
 msgstr "You explain the next turn"
