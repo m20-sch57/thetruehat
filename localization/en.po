@@ -273,10 +273,10 @@ msgid "Ты будешь угадывать через"
 msgstr "You are to guess in"
 
 msgid "Нет соединения, перезагрузите страницу"
-msgstr "No connection, please reload the page"
+msgstr "No connection, reload the page"
 
 msgid "Нужно выбрать файл"
-msgstr "Please choose a file"
+msgstr "You need to choose a file"
 
 msgid "загрузка"
 msgstr "loading"
@@ -288,22 +288,22 @@ msgid "Невозможно открыть файл"
 msgstr "Cannot open the file"
 
 msgid "Необходимо загрузить текстовый файл"
-msgstr "Please upload a text file"
+msgstr "You need to upload a text file"
 
 msgid "Максимальный размер словара 64 Mб"
 msgstr "Max dictionary size is 64 MB"
 
 msgid "Нужно ввести ключ комнаты"
-msgstr "Please enter a room key"
+msgstr "You need to enter a room key"
 
 msgid "Нужно ввести имя"
-msgstr "Please enter a name"
+msgstr "You need to enter a name"
 
 msgid "Такое имя уже занято"
 msgstr "This name is already taken"
 
 msgid "Чтобы войти в игру, нужно ввести имя, с которым вы играли."
-msgstr "Please enter the name that you used to join the room."
+msgstr "You should enter the name that you used to join the room."
 
 msgid "Набор слов"
 msgstr "Entering the words"
