@@ -105,11 +105,14 @@ msgstr "Guessed"
 msgid "Сумма"
 msgstr "Sum"
 
-msgid "Новая игра"
-msgstr "New game"
+msgid "Играть ещё раз"
+msgstr "Play again"
 
 msgid "Оставить отзыв"
 msgstr "Leave feedback"
+
+msgid "Жми сюда, чтобы ещё раз сыграть с друзьями."
+msgstr "Click here to play with your friends once more."
 
 msgid "Правила"
 msgstr "Rules"
@@ -224,7 +227,7 @@ msgid "Загрузить"
 msgstr "Load"
 
 msgid "Количество слов"
-msgstr "Total number of words"
+msgstr "The number of words"
 
 msgid "ход"
 msgstr[0] "turn"
@@ -234,7 +237,7 @@ msgid "пока не кончатся слова"
 msgstr "until the words run out"
 
 msgid "заданное число кругов"
-msgstr "given number of rounds"
+msgstr "fixed number of rounds"
 
 msgid "От каждого игрока"
 msgstr "From each player"
@@ -243,10 +246,10 @@ msgid "Выбрать файл"
 msgstr "Choose file"
 
 msgid "Файл не выбран"
-msgstr "No file is chosen"
+msgstr "No file chosen"
 
 msgid "Количество кругов"
-msgstr "Total number of rounds"
+msgstr "The number of rounds"
 
 msgid "Загрузите текстовый файл со словами, каждое слово должно быть на отдельной строке."
 msgstr "Upload a text file with each word on a separate line."
@@ -297,7 +300,7 @@ msgid "Нужно ввести имя"
 msgstr "Please enter a name"
 
 msgid "Такое имя уже занято"
-msgstr "Such name is already occupied"
+msgstr "This name is already taken"
 
 msgid "Чтобы войти в игру, нужно ввести имя, с которым вы играли."
 msgstr "Please enter the name that you used to join the room."
