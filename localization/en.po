@@ -290,7 +290,7 @@ msgstr "Cannot open the file"
 msgid "Необходимо загрузить текстовый файл"
 msgstr "You need to upload a text file"
 
-msgid "Максимальный размер словара 64 Mб"
+msgid "Максимальный размер словаря 64 Mб"
 msgstr "Max dictionary size is 64 MB"
 
 msgid "Нужно ввести ключ комнаты"

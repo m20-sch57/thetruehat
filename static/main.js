@@ -24,7 +24,6 @@ window.onload = function() {
 
 const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
 const WORD_MAX_SIZE = 50;
-const DICTIONARY_MAX_SIZE = 64 * 1024 * 1024
 
 Array.prototype.last = function() {
     console.assert(this.length >= 1,
@@ -1752,7 +1751,7 @@ class App {
             return false;
         }
         if (file.size > DICTIONARY_MAX_SIZE) {
-            showError(_("Максимальный размер словара 64 Mб"));
+            showError(_("Максимальный размер словаря 64 Mб"));
             return false;
         }
         var reader = new FileReader();
