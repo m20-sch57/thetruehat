@@ -915,6 +915,7 @@ class App {
                     render: (p) => {
                         if (this.game.myRole == "speaker") {
                             p.show("gamePage_speakerTitle");
+                            p.show("gamePage_additionalStatus_youExplain");
                         } else if (this.game.myRole == "listener") {
                             p.show("gamePage_listenerTitle");
                         } else {
