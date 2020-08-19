@@ -1672,6 +1672,7 @@ class App {
         el("wordCollectionPage_readyButton").onclick = () => {
             this.wordsReady();
         }
+        el("wordCollectionPage_goBack").onclick = () => this.leaveRoom();
 
         el("preparationPage_openSettings").onclick =
             () => this.pages.$settings.push();
