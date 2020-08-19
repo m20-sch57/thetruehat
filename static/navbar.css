@@ -1,0 +1,125 @@
+#navBrand {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    margin: 0 10px;
+    width: 250px;
+}
+
+#navBrand img {
+    margin-right: 15px;
+    width: 50px;
+}
+
+#navBrandStack h3 {
+    margin: 0;
+}
+
+#navBrandStack h4 {
+    margin: 0;
+    color: grey;
+    font-weight: lighter;
+}
+
+#navLinks {
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    flex-grow: 1;
+}
+
+#navExpand {
+    display: none;
+    margin-left: auto;
+}
+
+#navCollapsible {
+    display: flex;
+    flex-flow: row;
+    flex-grow: 1;
+}
+
+#navLinksCenter {
+    display: flex;
+    flex-flow: row;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+#navLinksRight {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 250px;
+}
+
+.nav-link {
+    padding: 5px 0;
+    margin: 0 15px;
+}
+
+.nav-link.active {
+    --color: rgb(106, 194, 223);
+    color: var(--color);
+    border-bottom: 2px solid var(--color);
+    border-top: 2px solid transparent;
+}
+
+@media (max-width: 1000px) {
+    #navBrand {
+        width: auto;
+    }
+
+    #navLinksRight {
+        width: auto;
+    }
+
+    #navFeedback span:last-child {
+        display: none;
+    }
+}
+
+@media (max-width: 800px) {
+    #navBrandStack h4 {
+        display: none;
+    }
+
+    #navExpand {
+        display: inline-block;
+    }
+
+    #navCollapsible {
+        position: absolute;
+        top: calc(100% + 15px);
+        right: 0;
+        width: 250px;
+        flex-flow: column;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px lightgrey;
+    }
+
+    #navCollapsible::before {
+        content: "";
+        position: absolute;
+        top: -7px;
+        right: 22px;
+        height: 15px;
+        width: 15px;
+        transform: rotate(45deg);
+        background-color: inherit;
+    }
+
+    #navLinksCenter {
+        flex-flow: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    #navLinksRight {
+        padding: 10px;
+        border-top: 1px solid whitesmoke;
+    }
+}

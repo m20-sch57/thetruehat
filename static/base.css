@@ -1,0 +1,94 @@
+*, *::after, *::before {
+    box-shadow: border-box;
+}
+
+html {
+    min-height: 100%;
+    display: flex;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+    flex: 1;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+}
+
+button {
+    outline: none;
+}
+
+.page {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.nav {
+    display: flex;
+    flex-flow: row;
+    padding: 15px;
+    background-color: rgb(253, 253, 253);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.5em 1em;
+    color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 1.25em;
+    line-height: 1.5em;
+    text-decoration: none;
+}
+
+.btn:hover:not([disabled]) {
+    box-shadow: 0 2px 15px lightgrey;
+}
+
+.btn-small {
+    font-size: 20px;
+}
+
+.btn-medium {
+    font-size: 25px;
+}
+
+.btn-blue {
+    background-color: lightblue;
+}
+
+.btn-blue:active:not([disabled]) {
+    background-color: rgb(149, 204, 223);
+}
+
+.btn-green {
+    background-color: lightgreen;
+}
+
+.btn-green:active:not([disabled]) {
+    background-color: rgb(123, 226, 123);
+}
+
+.btn-flat {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.btn-flat:hover {
+    color: dimgrey;
+}
+
+.link {
+    display: inline-block;
+    font-size: inherit;
+    text-decoration: none;
+}
+
+.link-grey {
+    color: grey;
+}
