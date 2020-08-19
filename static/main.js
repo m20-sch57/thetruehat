@@ -24,7 +24,6 @@ window.onload = function() {
 
 const DELAY_COLORS = [[76, 175, 80], [76, 175, 80], [255, 193, 7], [255, 193, 7], [255, 0, 0], [255, 0, 0]];
 const WORD_MAX_SIZE = 50;
-const DICTIONARY_MAX_SIZE = 64 * 1024 * 1024
 
 Array.prototype.last = function() {
     console.assert(this.length >= 1,
@@ -716,6 +715,7 @@ class Game {
                 Template.user({"username": username}));
             if (username == this.myUsername) {
                 el(`user_${username}`).classList.add("you");
+                el(`user_${username}`).setAttribute("you-content",` (${_("ты")})`);
             }
         });
     }
@@ -1045,12 +1045,10 @@ class App {
 
     async enterRoom() {
         if (this.game.key == "") {
-            this.failedToJoin("Пустой ключ комнаты - низзя");
-            return;
+            this.failure({code: 101});
         }
         if (this.game.myUsername.trim() == "") {
-            this.failedToJoin("Нужно представиться");
-            return;
+            this.failure({code: 102});
         }
         let data = await (await fetch(`api/getRoomInfo?key=${this.game.key}`)).json();
         if (!data.success) {
@@ -1269,6 +1267,15 @@ class App {
         show("gamePage_speakerReady");
     }
 
+    failure({msg, code}) {
+        if (code in ERROR_MSGS) {
+            showError(_(ERROR_MSGS[code]));
+        } else {
+            showError(_(msg));
+        }
+        setTimeout(hideError, ERROR_TIMEOUT);
+    }
+
     wordsReady() {
         this.emit("cWordsReady", {
             words: this.parseWords()
@@ -1276,11 +1283,6 @@ class App {
         hide("wordCollectionPage_readyButton");
         show("wordCollectionPage_readyHint");
         disable("wordCollectionPage_textarea");
-    }
-
-    failedToJoin(msg) {
-        el("joinPage_goHint").innerText = msg;
-        show("joinPage_goHint");
     }
 
     addBrowserData(result) {
@@ -1398,9 +1400,8 @@ class App {
             return;
         }
 
-        if (confirm(_("Вы уверены, что хотите завершить игру?")+ (this.game.state == "wait" ?
-            _(" Игра закончится, и вы сможете посмотреть результаты.") :
-            _(" Игра закончится в конце текущего раунда.")))) {
+        if (confirm(_("Вы уверены, что хотите завершить игру?") +
+            _(" Игра закончится, и вы сможете посмотреть результаты."))) {
             this.emit("cEndGame");
         }
     }
@@ -1471,7 +1472,7 @@ class App {
             this.connected = false;
             setTimeout(() => {
                 if (!this.connected) {
-                    showError("Нет соединения, перезагрузите страницу");
+                    showError(_("Нет соединения, перезагрузите страницу"));
                 }
             }, DISCONNECT_TIMEOUT);
         });
@@ -1573,30 +1574,19 @@ class App {
             this.game.leave();
             this.pages.$results.push();
         })
-        this.socket.on("sFailure", data =>  {
-            switch(data.code) {
-            case 103:
-                this.failedToJoin("Ой. Это имя занято :(");
-                break;
-            case 104:
-                this.failedToJoin("Вы точно с таким именем играли?");
-                break;
-            default:
-                showError(data.msg, "code:", data.code);
-                setTimeout(hideError, ERROR_TIMEOUT);
-                break;
-            }
+        this.socket.on("sFailure", data => {
+            this.failure(data);
         })
     }
 
     validateSettings() {
         if (this.getWordsetType() == "hostDictionary") {
             if (this.dictionaryFileInfo === undefined) {
-                showError("Нужно выбрать файл");
+                showError(_("Нужно выбрать файл"));
                 return false;
             }
             if (this.dictionaryFileInfo.wordNumber === undefined) {
-                showError("Файл загружается");
+                showError(_("Файл загружается"));
                 return false;
             }
         }
@@ -1729,13 +1719,15 @@ class App {
         let input = el("gameSettingsPage_loadFileInput");
         let label = el("gameSettingsPage_loadFileLabel");
         if (this.dictionaryFileInfo !== undefined) {
+            let wordNumber = this.dictionaryFileInfo.wordNumber;
+            let filename = this.dictionaryFileInfo.filename;
             if (this.dictionaryFileInfo.wordNumber !== undefined) {
-                label.innerText = `${this.dictionaryFileInfo.filename}, ${this.dictionaryFileInfo.wordNumber} words`;
+                label.innerText = `${filename}, ${wordNumber} ${_("слово", wordNumber)}`;
             } else {
-                label.innerText = `${this.dictionaryFileInfo.filename} (loading...)`
+                label.innerText = `${filename} (${_("загрузка")}...)`
             }
         } else {
-            label.innerText = "Файл не выбран";
+            label.innerText = _("Файл не выбран");
         }
     }
 
@@ -1747,17 +1739,17 @@ class App {
     }
 
     dictionaryLoadError(evt) {
-        showError("Can't open file");
+        showError(_("Невозможно открыть файл"));
         this.removeSelectedDictionaryFile();
     }
 
     validateDictionaryFile(file) {
         if (file.type != "" && file.type != "text/plain") {
-            showError("You should send a text file");
+            showError(_("Необходимо загрузить текстовый файл"));
             return false;
         }
         if (file.size > DICTIONARY_MAX_SIZE) {
-            showError("Max dictionary size is 64 MiB");
+            showError(_("Максимальный размер словаря 64 Mб"));
             return false;
         }
         var reader = new FileReader();
@@ -1860,10 +1852,10 @@ class App {
         let dictionaries = await (await fetch("api/getDictionaryList")).json();
         el("gameSettingsPage_dictionaryList").innerHTML = "";
         for (let opt of DICTIONARY_LIST_EXTRA_OPTIONS) {
-            el("gameSettingsPage_dictionaryList").innerHTML += `<option>${opt.name}</option>`
+            el("gameSettingsPage_dictionaryList").innerHTML += `<option>${_(opt.name)}</option>`
         }
         for (let dict of dictionaries.dictionaries) {
-            let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} слов`;
+            let dictname = `${dict.name[this.lang]}, ${dict.wordNumber} ${_("слово", dict.wordNumber)}`;
             el("gameSettingsPage_dictionaryList").innerHTML += `<option>${dictname}</option>`;
         }
     }
