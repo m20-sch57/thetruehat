@@ -57,7 +57,7 @@
 
 .nav-link {
     padding: 5px 0;
-    margin: 0 15px;
+    margin: 5px 15px;
 }
 
 .nav-link.active {
@@ -94,7 +94,7 @@
         position: absolute;
         top: calc(100% + 15px);
         right: 0;
-        width: 250px;
+        width: 220px;
         flex-flow: column;
         background-color: white;
         border-radius: 10px;
