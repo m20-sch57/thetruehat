@@ -6,9 +6,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="navbar.css">
-
-    <link href="index.css" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="feedback.css">
 
     <title>The True Hat</title>
 </head>
@@ -49,17 +49,32 @@
             </div>
         </div>
     </nav>
-    <div class="page">
-        <div id="content">
-            <picture id="hatPicture">
-                <img src="hat2.png">
-            </picture>
-            <main id="actions">
-                <button class="btn btn-medium btn-green" id="createGame">
+    <div class="page" id="mainPage" style="display: none;">
+        <div id="mainContent">
+            <header>
+                <picture id="mainHatPicture">
+                    <img src="hat2.png">
+                </picture>
+            </header>
+            <main>
+                <button class="btn btn-medium btn-green" id="mainCreateGame">
                     Создать игру
                 </button>
-                <button class="btn btn-medium btn-blue" id="joinGame">
+                <button class="btn btn-medium btn-blue" id="mainJoinGame">
                     Присоединиться к игре
+                </button>
+            </main>
+        </div>        
+    </div>
+    <div class="page" id="feedbackPage">
+        <div id="feedbackContent">
+            <header>
+                <h1>Обратная связь</h1>
+            </header>
+            <main>
+                <textarea class="textarea" id="feedbackTextArea" placeholder="Напишите свой отзыв здесь"></textarea>
+                <button class="btn btn-medium btn-green" id="feedbackSubmit">
+                    Отправить отзыв
                 </button>
             </main>
         </div>

@@ -1,0 +1,36 @@
+#feedbackContent {
+    display: flex;
+    flex-flow: column;
+    padding: 30px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+}
+
+#feedbackContent header {
+    margin: 0 10px;
+}
+
+#feedbackContent header h1 {
+    font-weight: lighter;
+}
+
+#feedbackContent main {
+    display: flex;
+    flex-flow: column;
+}
+
+#feedbackTextArea {
+    flex-grow: 1;
+    min-height: 300px;
+}
+
+#feedbackSubmit {
+    margin-top: 25px;
+}
+
+@media (max-width: 600px) {
+    #feedbackContent main {
+        flex-grow: 1;
+    }
+}

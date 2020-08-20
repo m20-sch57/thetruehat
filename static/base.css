@@ -17,6 +17,13 @@ body {
 
 button {
     outline: none;
+    font-family: inherit;
+}
+
+input, textarea {
+    resize: none;
+    outline: none;
+    font-family: inherit;
 }
 
 .page {
@@ -38,14 +45,14 @@ button {
     display: inline-block;
     padding: 0.5em 1em;
     color: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 1.25em;
     line-height: 1.5em;
     text-decoration: none;
 }
 
 .btn:hover:not([disabled]) {
-    box-shadow: 0 2px 15px lightgrey;
+    box-shadow: 0 1px 0.25em rgb(156, 156, 156);
 }
 
 .btn-small {
@@ -91,4 +98,30 @@ button {
 
 .link-grey {
     color: dimgrey;
+}
+
+.input {
+    padding: 0.25em 0.75em;
+    border: 1px solid grey;
+    border-radius: 1em;
+    line-height: 1.5em;
+}
+
+.input:focus {
+    border-color: lightblue;
+}
+
+.input-medium {
+    font-size: 25px;
+}
+
+.textarea {
+    padding: 0.6em 0.7em;
+    border: 1px solid grey;
+    border-radius: 1em;
+    font-size: 20px;
+}
+
+.textarea:focus {
+    border-color: lightblue;
 }
