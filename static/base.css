@@ -1,5 +1,5 @@
 *, *::after, *::before {
-    box-shadow: border-box;
+    box-sizing: border-box;
 }
 
 html {
@@ -20,6 +20,19 @@ button {
     font-family: inherit;
 }
 
+select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    background-image: url(img/arrow-down.svg);
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 5px);
+    background-position-y: calc(50% - 1px);
+    font-family: inherit;
+    outline: none;
+}
+
 input, textarea {
     resize: none;
     outline: none;
@@ -35,75 +48,121 @@ input, textarea {
 .nav {
     display: flex;
     flex-flow: row;
-    padding: 15px;
     background-color: rgb(253, 253, 253);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     font-size: 20px;
+}
+
+.link {
+    display: inline-block;
+    padding: 0;
+    border-width: 0;
+    color: rgba(0, 0, 0, 0.5);
+    background-color: transparent;
+    font-size: inherit;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .btn {
     display: inline-block;
     padding: 0.5em 1em;
     color: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 1.25em;
+    font-size: inherit;
     line-height: 1.5em;
     text-decoration: none;
 }
 
-.btn:hover:not([disabled]) {
-    box-shadow: 0 1px 0.25em rgb(156, 156, 156);
+.btn.btn-shadow:hover:not([disabled]) {
+    box-shadow: 0 2px 0.3em lightgrey;
 }
 
-.btn-small {
-    font-size: 20px;
+.btn:disabled {
+    color: lightgrey;
+    background-color: whitesmoke;
 }
 
-.btn-medium {
-    font-size: 25px;
+.btn-icon {
+    display: flex;
+    flex-shrink: 0;
+    color: rgba(0, 0, 0, 0.8);
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 50%;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-icon span {
+    margin: auto;
 }
 
 .btn-blue {
     background-color: lightblue;
 }
 
+.btn-blue:hover:not([disabled]) {
+    background-color: rgb(149, 208, 228);
+}
+
 .btn-blue:active:not([disabled]) {
-    background-color: rgb(149, 204, 223);
+    background-color: rgb(125, 188, 209);
 }
 
 .btn-green {
     background-color: lightgreen;
 }
 
+.btn-green:hover:not([disabled]) {
+    background-color: rgb(124, 228, 124);
+}
+
 .btn-green:active:not([disabled]) {
-    background-color: rgb(123, 226, 123);
+    background-color: rgb(104, 214, 104);
 }
 
-.btn-flat {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    cursor: pointer;
+.btn-white {
+    background-color: white;
 }
 
-.btn-flat:hover {
-    color: dimgrey;
+.btn-white:hover:not([disabled]) {
+    background-color: #fafafa;
 }
 
-.link {
+.btn-white:active:not([disabled]) {
+    background-color: whitesmoke;
+}
+
+.btn-transparent {
+    background-color: transparent;
+}
+
+.btn-transparent:hover:not([disabled]) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn-transparent:active:not([disabled]) {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.select {
     display: inline-block;
+    padding: 0.4em 1.5em 0.4em 0.6em;
+    color: rgba(0, 0, 0, 0.8);
+    background-color: transparent;
+    border: none;
+    border-radius: 1.25em;
     font-size: inherit;
-    text-decoration: none;
-}
-
-.link-grey {
-    color: dimgrey;
+    line-height: 1.5em;
 }
 
 .input {
     padding: 0.25em 0.75em;
-    border: 1px solid grey;
+    border: 1px solid rgb(187, 187, 187);
     border-radius: 1em;
+    font-size: inherit;
     line-height: 1.5em;
 }
 
@@ -111,15 +170,11 @@ input, textarea {
     border-color: lightblue;
 }
 
-.input-medium {
-    font-size: 25px;
-}
-
 .textarea {
     padding: 0.6em 0.7em;
-    border: 1px solid grey;
+    border: 1px solid rgb(187, 187, 187);
     border-radius: 1em;
-    font-size: 20px;
+    font-size: inherit;
 }
 
 .textarea:focus {

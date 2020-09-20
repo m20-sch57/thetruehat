@@ -1,36 +1,38 @@
-#feedbackContent {
+#feedback article {
     display: flex;
     flex-flow: column;
     padding: 30px;
     margin: 0 auto;
     width: 100%;
     max-width: 600px;
+    font-size: 20px;
 }
 
-#feedbackContent header {
+#feedback header {
     margin: 0 10px;
 }
 
-#feedbackContent header h1 {
-    font-weight: lighter;
+#feedback header h1 {
+    font-weight: normal;
 }
 
-#feedbackContent main {
+#feedback main {
     display: flex;
     flex-flow: column;
 }
 
-#feedbackTextArea {
+#feedback main textarea {
     flex-grow: 1;
     min-height: 300px;
 }
 
-#feedbackSubmit {
+#feedback main button {
     margin-top: 25px;
+    font-size: 22px;
 }
 
 @media (max-width: 600px) {
-    #feedbackContent main {
+    #feedback main {
         flex-grow: 1;
     }
 }

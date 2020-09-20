@@ -1,28 +1,29 @@
-#mainContent {
-    padding: 40px;
+#main article {
+    padding: 30px;
     margin: auto;
     width: 100%;
-    max-width: 400px;
+    max-width: 460px;
 }
 
-#mainContent header {
+#main header {
     display: flex;
     flex-flow: row;
     justify-content: center;
     margin: 50px 0;
 }
 
-#mainHatPicture img {
+#main header img {
     margin: 0 auto;
     width: 100%;
     max-width: 250px;
 }
 
-#mainContent main {
+#main main {
     display: flex;
     flex-flow: column;
 }
 
-#mainCreateGame, #mainJoinGame {
+#main main button {
     margin-top: 20px;
+    font-size: 25px;
 }
