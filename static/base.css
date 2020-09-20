@@ -180,3 +180,64 @@ input, textarea {
 .textarea:focus {
     border-color: lightblue;
 }
+
+.checkbox {
+    display: flex;
+    flex-flow: row;
+    font-size: 20px;
+}
+
+.checkbox input {
+    display: none;
+}
+
+.checkbox input + label {
+    display: flex;
+    flex-shrink: 0;
+    height: 1.25em;
+    width: 1.25em;
+    margin: auto 5px auto 0;
+    background-color: white;
+    border: 1px solid rgb(187, 187, 187);
+    border-radius: 50%;
+}
+
+.checkbox input + label:hover {
+    background-color: whitesmoke;
+}
+
+.checkbox input + label:active {
+    background-color: #e5e5e5;
+}
+
+.checkbox input + label span {
+    visibility: hidden;
+    font-size: 0.66em;
+    color: white;
+    margin: auto;
+}
+
+.checkbox input:checked + label {
+    color: white;
+    background-color: rgb(65, 193, 225);
+    border-color: transparent;
+    box-shadow: 0 0 10px lightgrey;
+}
+
+.checkbox input:checked + label:hover {
+    background-color: rgb(70, 180, 207);
+}
+
+.checkbox input:checked + label:active {
+    background-color: rgb(53, 160, 187);
+}
+
+.checkbox input:checked + label span {
+    visibility: visible;
+}
+
+.checkbox input + label + label {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}

@@ -18,7 +18,7 @@
             <img src="hat2.png">
             <div class="nav-brand-stack">
                 <h3>The True Hat</h3>
-                <h4>v2.0.1 (beta)</h4>
+                <h4>v2.0.0 (beta)</h4>
             </div>
         </button>
         <div class="nav-links">
@@ -44,7 +44,7 @@
             </div>
         </div>
     </nav>
-    <div class="page" id="main" style="display: none;">
+    <div class="page" id="main">
         <article>
             <header>
                 <picture>
@@ -52,19 +52,26 @@
                 </picture>
             </header>
             <main>
-                <button class="btn btn-shadow btn-white">Правила</button>
                 <button class="btn btn-shadow btn-green">Играть</button>
+                <button class="btn btn-shadow btn-white">Правила</button>
             </main>
         </article>        
     </div>
-    <div class="page" id="feedback">
+    <div class="page" id="feedback" style="display: none;">
         <article>
             <header>
                 <h1>Обратная связь</h1>
             </header>
             <main>
                 <textarea class="textarea" placeholder="Напишите свой отзыв здесь"></textarea>
-                <button class="btn btn-shadow btn-green">Отправить отзыв</button>
+                <div class="checkbox">
+                    <input type="checkbox" id="feedbackCheckbox">
+                    <label for="feedbackCheckbox">
+                        <span class="fa fa-check"></span>
+                    </label>
+                    <label for="feedbackCheckbox">Отправить полную информацию</label>
+                </div>
+                <button class="btn btn-shadow btn-green">Отправить</button>
             </main>
         </article>
     </div>

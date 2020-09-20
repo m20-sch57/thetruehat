@@ -26,13 +26,24 @@
     min-height: 300px;
 }
 
+#feedback main .checkbox {
+    margin-top: 10px;
+}
+
 #feedback main button {
+    padding-left: 40px;
+    padding-right: 40px;
     margin-top: 25px;
+    margin-right: auto;
     font-size: 22px;
 }
 
 @media (max-width: 600px) {
     #feedback main {
         flex-grow: 1;
+    }
+
+    #feedback main button {
+        margin-right: initial;
     }
 }
