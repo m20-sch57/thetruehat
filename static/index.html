@@ -5,17 +5,19 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="feedback.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/join.css">
+    <link rel="stylesheet" href="css/feedback.css">
 
     <title>The True Hat</title>
 </head>
 <body>
     <nav class="nav" id="navbar">
         <button class="link nav-brand">
-            <img src="hat2.png">
+            <img src="img/hat.png">
             <div class="nav-brand-stack">
                 <h3>The True Hat</h3>
                 <h4>v2.0.0 (beta)</h4>
@@ -44,18 +46,82 @@
             </div>
         </div>
     </nav>
-    <div class="page" id="main">
+    <div class="page" id="main" style="display: none;">
         <article>
             <header>
                 <picture>
-                    <img src="hat2.png">
+                    <img src="img/hat.png">
                 </picture>
             </header>
             <main>
-                <button class="btn btn-shadow btn-green">Играть</button>
-                <button class="btn btn-shadow btn-white">Правила</button>
+                <button class="btn btn-bordered btn-shadow btn-green">Играть</button>
+                <button class="btn btn-bordered btn-shadow btn-white">Правила</button>
             </main>
         </article>        
+    </div>
+    <div class="page" id="join">
+        <article>
+            <header>
+                <h1>Вход в игру</h1>
+            </header>
+            <main>
+                <section class="game-key">
+                    <div class="game-key-input">
+                        <input class="input" placeholder="Ключ игры">
+                        <div class="game-key-actions">
+                            <button class="btn-icon btn-transparent">
+                                <span class="fa fa-clipboard"></span>
+                            </button>
+                            <button class="btn-icon btn-transparent">
+                                <span class="fa fa-redo"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="game-key-status">
+                        <div class="room-info no-key">
+                            <h5>Введите ключ длины не более 8</h5>
+                        </div>
+                        <div class="room-info checking" style="display: none;">
+                            <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                            <h5>Проверка</h5>
+                        </div>
+                        <div class="room-info created" style="display: none;">
+                            <h5><span class="fa fa-check"></span> Игра не началась</h5>
+                            <button class="select btn-transparent">5 игроков</button>
+                        </div>
+                        <div class="room-info invalid" style="display: none;">
+                            <h5><span class="fa fa-times"></span> Некорректный ключ</h5>
+                        </div>
+                    </div>
+                </section>
+                <section class="your-name">
+                    <div class="your-name-input">
+                        <input class="input" placeholder="Ваше имя">
+                    </div>
+                    <div class="your-name-status">
+                        <div class="name-info no-name">
+                            <h5>Введите имя длины не более 16</h5>
+                        </div>
+                        <div class="name-info checking" style="display: none;">
+                            <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                            <h5>Проверка</h5>
+                        </div>
+                        <div class="name-info accepted" style="display: none;">
+                            <h5><span class="fa fa-check"></span> Нормально</h5>
+                        </div>
+                        <div class="name-info not-in-list" style="display: none;">
+                            <h5><span class="fa fa-times"></span> Не найдено в списке игроков</h5>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <footer>
+                <button class="btn btn-bordered btn-shadow btn-green">Поехали!</button>
+            </footer>
+        </article>
+    </div>
+    <div class="page" id="game" style="display: none;">
+        
     </div>
     <div class="page" id="feedback" style="display: none;">
         <article>
@@ -71,8 +137,10 @@
                     </label>
                     <label for="feedbackCheckbox">Отправить полную информацию</label>
                 </div>
-                <button class="btn btn-shadow btn-green">Отправить</button>
             </main>
+            <footer>
+                <button class="btn btn-bordered btn-shadow btn-green">Отправить</button>
+            </footer>
         </article>
     </div>
 </body>

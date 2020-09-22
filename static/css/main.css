@@ -3,6 +3,7 @@
     margin: auto;
     width: 100%;
     max-width: 460px;
+    font-size: 25px;
 }
 
 #main header {
@@ -25,5 +26,4 @@
 
 #main main button {
     margin-top: 20px;
-    font-size: 25px;
 }

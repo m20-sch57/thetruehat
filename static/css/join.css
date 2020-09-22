@@ -1,0 +1,141 @@
+#join article {
+    display: flex;
+    flex-flow: column;
+    padding: 30px;
+    margin: auto;
+    width: 100%;
+    max-width: 600px;
+    font-size: 25px;
+}
+
+#join header h1 {
+    font-weight: normal;
+}
+
+#join main {
+    display: flex;
+    flex-flow: column;
+    margin-top: 20px;
+}
+
+#join main .game-key-input {
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    font-size: 1.1em;
+}
+
+#join main .game-key-input input {
+    text-transform: uppercase;
+}
+
+#join main .game-key-actions {
+    position: absolute;
+    right: 0;
+    display: flex;
+    flex-flow: row;
+    font-size: 0.75em;
+}
+
+#join main .game-key-actions button {
+    height: 2em;
+    width: 2em;
+}
+
+#join main .game-key-status {
+    margin: 3px 0;
+    min-height: 2.3em;
+}
+
+#join main .room-info {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#join main .room-info h5 {
+    margin: 0;
+    font-weight: normal;
+}
+
+#join main .room-info.checking h5 {
+    margin-left: 3px;
+    color: dimgrey;
+}
+
+#join main .room-info.created h5 {
+    margin-right: auto;
+    color: forestgreen;
+}
+
+#join main .room-info.created button {
+    font-size: 0.75em;
+    line-height: 0.75em;
+}
+
+#join main .room-info.invalid h5 {
+    color: red;
+}
+
+#join main .your-name-input {
+    font-size: 1.1em;
+}
+
+#join main .your-name-status {
+    margin-top: 3px;
+    min-height: 2.3em;
+}
+
+#join main .name-info {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
+
+#join main .name-info h5 {
+    margin: 0;
+    font-weight: normal;
+}
+
+#join main .name-info.checking h5 {
+    margin-left: 3px;
+    color: dimgrey;
+}
+
+#join main .name-info.accepted h5 {
+    color: forestgreen;
+}
+
+#join main .name-info.not-in-list h5 {
+    color: red;
+}
+
+#join footer {
+    margin-top: 30px;
+}
+
+#join footer button {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+@media (max-width: 600px) {
+    #join article {
+        margin: 0;
+    }
+
+    #join header {
+        text-align: center;
+    }
+
+    #join main {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    #join footer button {
+        width: 100%;
+    }
+}

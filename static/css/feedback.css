@@ -30,12 +30,14 @@
     margin-top: 10px;
 }
 
-#feedback main button {
+#feedback footer {
+    margin-top: 30px;
+}
+
+#feedback footer button {
     padding-left: 40px;
     padding-right: 40px;
-    margin-top: 25px;
-    margin-right: auto;
-    font-size: 22px;
+    font-size: 1.1em;
 }
 
 @media (max-width: 600px) {
@@ -43,7 +45,7 @@
         flex-grow: 1;
     }
 
-    #feedback main button {
-        margin-right: initial;
+    #feedback footer button {
+        width: 100%;
     }
 }

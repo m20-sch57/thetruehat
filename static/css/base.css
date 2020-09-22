@@ -24,11 +24,6 @@ select {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
-    background: transparent;
-    background-image: url(img/arrow-down.svg);
-    background-repeat: no-repeat;
-    background-position-x: calc(100% - 5px);
-    background-position-y: calc(50% - 1px);
     font-family: inherit;
     outline: none;
 }
@@ -68,11 +63,15 @@ input, textarea {
     display: inline-block;
     padding: 0.5em 1em;
     color: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: none;
     border-radius: 1.25em;
     font-size: inherit;
     line-height: 1.5em;
     text-decoration: none;
+}
+
+.btn.btn-bordered {
+    border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .btn.btn-shadow:hover:not([disabled]) {
@@ -91,6 +90,7 @@ input, textarea {
     background-color: transparent;
     border-width: 0;
     border-radius: 50%;
+    font-size: inherit;
     text-decoration: none;
     cursor: pointer;
 }
@@ -152,6 +152,10 @@ input, textarea {
     padding: 0.4em 1.5em 0.4em 0.6em;
     color: rgba(0, 0, 0, 0.8);
     background-color: transparent;
+    background-image: url(../img/arrow-down.svg);
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 5px);
+    background-position-y: calc(50% - 1px);
     border: none;
     border-radius: 1.25em;
     font-size: inherit;
@@ -159,9 +163,10 @@ input, textarea {
 }
 
 .input {
-    padding: 0.25em 0.75em;
-    border: 1px solid rgb(187, 187, 187);
-    border-radius: 1em;
+    padding: 0.1em 0;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid grey;
     font-size: inherit;
     line-height: 1.5em;
 }
