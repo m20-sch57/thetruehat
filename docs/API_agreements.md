@@ -57,6 +57,10 @@
     - `turnsNumber (int)` - если `termCondition = turns`. Количество кругов
     - `dictionaryFileInfo (DictionaryFileInfo)` - если `wordsetType = hostDictionary`. Информация о файле словаря, который загружен
     - `wordset (array<string>)` - если `wordsetType = hostDictionary` и хост хочет обновить словарь на сервере. Список слов в словаре, загружаемом хостом
+    - `fixedPairs (bool)` - определяет, будут ли фиксированны пары игроков на протяжении игры. Если значение `true`, то пары фиксированны. Если значение `false`, то каждый будет играть в паре с каждым по очереди.
+    - `pairMatching (string)` - если `fixedPairs = true`. Способ, которым игроки будут распределены на пары.
+      - `random` - игроки будут распределены на пары случайным образом.
+      - `host` - распределение игроков на пары котролирует хост игры. Для этого в его распоряжении сигналы `cConstructPair` и `cDestroyPair`.
 1. Информация о файле словаря (DictionaryFileInfo)
     - `filename` - название файла
     - `wordNumber` - количество слов в файле
