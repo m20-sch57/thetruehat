@@ -1,21 +1,31 @@
 #join article {
     display: flex;
     flex-flow: column;
-    padding: 30px;
     margin: auto;
     width: 100%;
-    max-width: 600px;
-    font-size: 25px;
+    max-width: 650px;
+    background-color: white;
+    border-radius: 30px;
+    font-size: 24px;
+    box-shadow: 0 0 10px lightgrey;
+}
+
+#join header {
+    padding: 30px;
+    background-color: lightgreen;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
 }
 
 #join header h1 {
+    margin: 0;
     font-weight: normal;
 }
 
 #join main {
     display: flex;
     flex-flow: column;
-    margin-top: 20px;
+    padding: 30px 30px 15px 30px;
 }
 
 #join main .game-key-input {
@@ -44,7 +54,7 @@
 }
 
 #join main .game-key-status {
-    margin: 3px 0;
+    margin-top: 3px;
     min-height: 2.3em;
 }
 
@@ -113,20 +123,26 @@
 }
 
 #join footer {
-    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid #eee;
 }
 
 #join footer button {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
     #join article {
-        margin: 0;
+        margin: initial;
+        border-radius: initial;
+        box-shadow: initial;
     }
 
     #join header {
+        padding: 20px;
+        border-radius: initial;
+        font-size: 80%;
         text-align: center;
     }
 

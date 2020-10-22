@@ -59,8 +59,8 @@
     width: 250px;
 }
 
-#navbar .nav-feedback {
-    margin-right: 10px;
+#navbar .nav-feedback, #navbar .nav-rules {
+    margin: 0 10px;
 }
 
 #navbar .nav-link {
@@ -73,7 +73,7 @@
     font-size: 20px;
     text-decoration: none;
     cursor: pointer;
-    transition: all 80ms linear;
+    transition: all 100ms linear;
 }
 
 #navbar .nav-link::after {
@@ -84,16 +84,11 @@
     height: 2px;
     width: 0;
     transform: translateX(-50%);
-    transition: all 80ms linear;
+    transition: all 100ms linear;
 }
 
 #navbar .nav-link:hover {
     background-color: rgba(0, 0, 0, 0.01);
-}
-
-#navbar .nav-link:hover::after {
-    width: 100%;
-    background-color: lightgrey;
 }
 
 #navbar .nav-link.active {

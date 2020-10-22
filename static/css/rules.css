@@ -1,0 +1,67 @@
+#rules article {
+    display: flex;
+    flex-flow: column;
+    margin: auto;
+    width: 100%;
+    max-width: 900px;
+    max-height: calc(100vh - 150px);
+    background-color: white;
+    border-radius: 30px;
+    font-size: 20px;
+    box-shadow: -3px 3px 10px dimgrey;
+}
+
+#rules header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    padding: 30px;
+    background-color: rgb(253, 253, 131);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#rules header h1 {
+    margin: 0;
+    font-weight: normal;
+}
+
+#rules header button {
+    height: 40px;
+    width: 40px;
+    margin-left: auto;
+}
+
+#rules main {
+    padding: 15px 30px 30px 30px;
+    overflow: auto;
+}
+
+#rules main h2 {
+    font-weight: normal;
+}
+
+#rules main p {
+    text-align: justify;
+}
+
+#rules footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    #rules article {
+        max-height: initial;
+        margin: initial;
+        border-radius: initial;
+        box-shadow: initial;
+    }
+
+    #rules header {
+        padding: 20px;
+        border-radius: initial;
+        font-size: 80%;
+    }
+}
