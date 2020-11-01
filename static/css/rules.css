@@ -2,9 +2,10 @@
     display: flex;
     flex-flow: column;
     margin: auto;
+    height: 100%;
+    max-height: 600px;
     width: 100%;
     max-width: 900px;
-    max-height: calc(100vh - 150px);
     background-color: white;
     border-radius: 30px;
     font-size: 20px;
@@ -33,6 +34,7 @@
 }
 
 #rules main {
+    flex-grow: 1;
     padding: 15px 30px 30px 30px;
     overflow: auto;
 }
@@ -46,15 +48,15 @@
 }
 
 #rules footer {
-    padding: 20px;
+    padding: 15px;
     border-top: 1px solid #eee;
     text-align: center;
 }
 
-@media (max-width: 900px) {
+@media (max-height: 600px), (max-width: 900px) {
     #rules article {
         max-height: initial;
-        margin: initial;
+        max-width: initial;
         border-radius: initial;
         box-shadow: initial;
     }

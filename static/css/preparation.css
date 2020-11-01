@@ -1,0 +1,90 @@
+#preparation {
+    flex-flow: row;
+    padding: 10px;
+}
+
+#preparation article {
+    display: flex;
+    flex-flow: column;
+    flex-basis: 50%;
+    flex-grow: 1;
+    margin: 10px;
+    background-color: white;
+    border-radius: 20px;
+    font-size: 20px;
+    box-shadow: 0 0 7px lightgrey;
+    transition: flex 80ms linear;
+}
+
+#preparation header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    padding: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#preparation .left header {
+    background-color: lightgreen;
+}
+
+#preparation .right header {
+    background-color: lightblue;
+}
+
+#preparation header h1 {
+    margin: 0;
+    font-weight: normal;
+}
+
+#preparation header button {
+    height: 40px;
+    width: 40px;
+    margin-left: 5px;
+}
+
+#preparation header .expand {
+    display: none;
+    margin-left: auto;
+}
+
+#preparation main {
+    flex-grow: 1;
+}
+
+#preparation footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+#preparation footer button {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+@media (max-width: 700px) {
+    #preparation {
+        flex-flow: column;
+    }
+
+    #preparation footer button {
+        width: 100%;
+    }
+
+    #preparation .collapsed {
+        flex: 0;
+    }
+
+    #preparation .collapsed header .expand {
+        display: inline-block;
+    }
+
+    #preparation .collapsed main, #preparation .collapsed footer {
+        display: none;
+    }
+
+    #preparation .collapsed header {
+        border-radius: 20px;
+    }
+}
