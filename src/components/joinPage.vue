@@ -47,12 +47,9 @@
 						<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 						<h5>Проверка</h5>
 					</div>
-					<div class="room-info created" v-show="validationStatus.key == 'created'">
+					<div class="room-info created" v-show="validationStatus.key == 'accepted'">
 						<h5><span class="fas fa-check"></span> Игра началась</h5>
 						<button class="select btn-transparent">{{ playersCount }} игроков</button>
-					</div>
-					<div class="room-info created" v-show="validationStatus.key == 'accepted'">
-						<h5><span class="fas fa-check"></span> Нормально</h5>
 					</div>
 					<div class="room-info invalid" v-show="validationStatus.key == 'invalid'">
 						<h5><span class="fas fa-times"></span> Некорректный ключ</h5>
@@ -89,6 +86,11 @@
 						v-show="validationStatus.username == 'not-in-list'">
 						<h5><span class="fas fa-times"></span> Не найдено в списке игроков</h5>
 					</div>
+					<div
+						class="name-info not-in-list"
+						v-show="validationStatus.username == 'name-occupied'">
+						<h5><span class="fas fa-times"></span> Имя уже занято другим игроком</h5>
+					</div>
 				</div>
 			</section>
 		</main>
@@ -112,6 +114,7 @@ import feedback from "_/feedback.vue"
 
 import * as api from "__/api.js"
 import app from "__/app.js"
+import { playersInfo } from "__/tools"
 
 export default {
 	data: function() {
@@ -164,14 +167,13 @@ export default {
 					this.validationStatus.key = "invalid";
 					return;
 				}
-				if (roomInfo.state != "wait") {
-					this.validationStatus.key = "created";
-					if (this.username in roomInfo.playerList) {
-						this.validationStatus.username = "accepted";
-					} else {
-						this.validationStatus.username = "not-in-list";
-					}
-					return;
+				if (!(roomInfo.state == "wait" ||
+					this.username in playersInfo(roomInfo.playerList))) {
+					this.validationStatus.username = "not-in-list";
+				}
+				if (this.username in playersInfo(roomInfo.playerList) &&
+					playersInfo(roomInfo.playerList)[this.username].online) {
+					this.validationStatus.username = "name-occupied";
 				}
 				this.playersCount = roomInfo.playerList.length;
 				this.validationStatus.key = "accepted";
@@ -186,8 +188,13 @@ export default {
 			} else {
 				this.validationStatus.username = "checking";
 				let roomInfo = await api.getRoomInfo(this.key);
-				if (!(roomInfo.state == "wait" || this.username in roomInfo.playerList)) {
+				if (!(roomInfo.state == "wait" ||
+					val in playersInfo(roomInfo.playerList))) {
 					this.validationStatus.username = "not-in-list";
+				} else
+				if (val in playersInfo(roomInfo.playerList) &&
+					playersInfo(roomInfo.playerList)[val].online) {
+					this.validationStatus.username = "name-occupied";
 				} else {
 					this.validationStatus.username = "accepted";
 				}

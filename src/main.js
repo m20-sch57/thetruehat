@@ -5,7 +5,8 @@ import view from "./view.vue"
 import router from "./router.js"
 import store from "./store.js"
 import app from "./app.js"
-import {VERSION, HASH} from "./version.js"
+import { VERSION, HASH } from "./version.js"
+import { timeSync } from "./tools"
 
 Vue.component("version", {
 	functional: true,
@@ -19,6 +20,8 @@ let vue = new Vue({
 	render: h => h(view)
 })
 
+timeSync.maintainDelta(config.TIME_SYNC_DELTA);
+timeSync.debug = config.DEBUG;
 app.debug = config.DEBUG;
 
 if (config.DEBUG) {

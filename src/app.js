@@ -1,4 +1,9 @@
 import store from "./store";
+import router from "./router.js"
+import { timeSync } from "./tools";
+import { ERROR_TIMEOUT } from "./config.js"
+
+const getTime = () => timeSync.getTime()
 
 class App {
 	constructor() {
