@@ -435,3 +435,7 @@ localRunCaddy
 # versioning
 static/version.js
 version.json
+
+# build
+static/index.html
+dist
