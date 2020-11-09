@@ -114,7 +114,8 @@ import feedback from "_/feedback.vue"
 
 import * as api from "__/api.js"
 import app from "__/app.js"
-import { playersInfo } from "__/tools"
+import { playersInfo, debounce } from "__/tools"
+import { VALIDATION_TIMEOUT } from "__/config.js"
 
 export default {
 	data: function() {
@@ -156,12 +157,11 @@ export default {
 			}
 		}
 	},
-	watch: {
-		key: async function(val) {
+	created: function() {
+		this.validateKey = debounce(async val => {
 			if (val == "") {
 				this.validationStatus.key = "empty";
 			} else {
-				this.validationStatus.key = "checking";
 				let roomInfo = await api.getRoomInfo(val);
 				if (!roomInfo.success) {
 					this.validationStatus.key = "invalid";
@@ -178,16 +178,19 @@ export default {
 				this.playersCount = roomInfo.playerList.length;
 				this.validationStatus.key = "accepted";
 			}
-		},
-		username: async function(val) {
+		}, VALIDATION_TIMEOUT);
+		this.validateUsername = debounce(async val => {
+			window.console.log(val);
 			if (val == "" || this.validationStatus.key == "invalid") {
 				this.validationStatus.username = "empty";
 			} else
 			if (this.validationStatus.key == "empty") {
 				this.validationStatus.username = "accepted";
 			} else {
-				this.validationStatus.username = "checking";
 				let roomInfo = await api.getRoomInfo(this.key);
+				if (!roomInfo.success) {
+					this.validationStatus.username = "accepted";
+				} else
 				if (!(roomInfo.state == "wait" ||
 					val in playersInfo(roomInfo.playerList))) {
 					this.validationStatus.username = "not-in-list";
@@ -199,6 +202,16 @@ export default {
 					this.validationStatus.username = "accepted";
 				}
 			}
+		}, VALIDATION_TIMEOUT);
+	},
+	watch: {
+		key: function(val) {
+			this.validationStatus.key = "checking";
+			this.validateKey(val);
+		},
+		username: function(val) {
+			this.validationStatus.username = "checking";
+			this.validateUsername(val);
 		}
 	},
 	components: {navbar, rules, feedback}
