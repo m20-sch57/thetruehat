@@ -3,6 +3,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+	watchOptions: {
+		poll: 1000
+	},
 	entry: './src/main.js',
 	mode: "development",
 	output: {
