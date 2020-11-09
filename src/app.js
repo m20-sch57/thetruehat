@@ -18,7 +18,7 @@ class App {
 			...data,
             time: getTime(),
             humanTime: (new Date(getTime()).toISOString())
-		})
+		});
 		if (this.debug) {
 			console[level]("%c[App]", "color: green", ...consoleData);
 		}

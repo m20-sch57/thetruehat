@@ -20,56 +20,85 @@
 		<main>
 			<section class="game-key">
 				<div class="game-key-input">
-					<input class="input" placeholder="Ключ игры">
+					<input
+						:value="key"
+						@input="key = formatKey($event.target.value)"
+						class="input"
+						placeholder="Ключ игры"
+					>
 					<div class="game-key-actions">
-						<button class="btn-icon btn-transparent">
+						<button
+							@click="pasteKey()"
+							class="btn-icon btn-transparent">
 							<span class="fas fa-clipboard"></span>
 						</button>
-						<button class="btn-icon btn-transparent">
+						<button
+							@click="generateKey()"
+							class="btn-icon btn-transparent">
 							<span class="fas fa-redo"></span>
 						</button>
 					</div>
 				</div>
 				<div class="game-key-status">
-					<div class="room-info no-key">
+					<div class="room-info no-key" v-show="validationStatus.key == 'empty'">
 						<h5>Введите ключ длины не более 8</h5>
 					</div>
-					<div class="room-info checking" style="display: none;">
+					<div class="room-info checking" v-show="validationStatus.key == 'checking'">
 						<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 						<h5>Проверка</h5>
 					</div>
-					<div class="room-info created" style="display: none;">
-						<h5><span class="fas fa-check"></span> Игра не началась</h5>
-						<button class="select btn-transparent">5 игроков</button>
+					<div class="room-info created" v-show="validationStatus.key == 'created'">
+						<h5><span class="fas fa-check"></span> Игра началась</h5>
+						<button class="select btn-transparent">{{ playersCount }} игроков</button>
 					</div>
-					<div class="room-info invalid" style="display: none;">
+					<div class="room-info created" v-show="validationStatus.key == 'accepted'">
+						<h5><span class="fas fa-check"></span> Нормально</h5>
+					</div>
+					<div class="room-info invalid" v-show="validationStatus.key == 'invalid'">
 						<h5><span class="fas fa-times"></span> Некорректный ключ</h5>
 					</div>
 				</div>
 			</section>
 			<section class="your-name">
 				<div class="your-name-input">
-					<input class="input" placeholder="Ваше имя">
+					<input
+						v-model.trim="username"
+						class="input"
+						placeholder="Ваше имя"
+					>
 				</div>
 				<div class="your-name-status">
-					<div class="name-info no-name">
+					<div
+						class="name-info no-name"
+						v-show="validationStatus.username == 'empty'">
 						<h5>Введите имя длины не более 16</h5>
 					</div>
-					<div class="name-info checking" style="display: none;">
+					<div
+						class="name-info checking"
+						v-show="validationStatus.username == 'checking'">
 						<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 						<h5>Проверка</h5>
 					</div>
-					<div class="name-info accepted" style="display: none;">
+					<div
+						class="name-info accepted"
+						v-show="validationStatus.username == 'accepted'">
 						<h5><span class="fas fa-check"></span> Нормально</h5>
 					</div>
-					<div class="name-info not-in-list" style="display: none;">
+					<div
+						class="name-info not-in-list"
+						v-show="validationStatus.username == 'not-in-list'">
 						<h5><span class="fas fa-times"></span> Не найдено в списке игроков</h5>
 					</div>
 				</div>
 			</section>
 		</main>
 		<footer>
-			<button class="btn btn-shadow btn-green">Поехали!</button>
+			<button
+				class="btn btn-shadow btn-green"
+				@click="joinRoom()"
+				:disabled="!validated">
+				Поехали!
+			</button>
 		</footer>
 	</article>
 </div>
@@ -81,11 +110,88 @@ import navbar from "_/navbar.vue"
 import rules from "_/rules.vue"
 import feedback from "_/feedback.vue"
 
+import * as api from "__/api.js"
+import app from "__/app.js"
+
 export default {
 	data: function() {
 		return {
+			username: "",
+			key: "",
+			playersCount: 0,
 			showRules: false,
-			showFeedback: false
+			showFeedback: false,
+			validationStatus: {
+				username: "empty",
+				key: "empty"
+			}
+		}
+	},
+	computed: {
+		validated: function() {
+			return (
+			this.validationStatus.username == "accepted" &&
+			this.validationStatus.key == "accepted");
+		}
+	},
+	methods: {
+		formatKey: function(key) {
+			return key.toUpperCase().trim();
+		},
+		generateKey: async function() {
+			this.key = this.formatKey(await api.getFreeKey());
+		},
+		pasteKey: async function() {
+			this.key = this.formatKey(await navigator.clipboard.readText());
+		},
+		joinRoom: async function() {
+			if (this.validated) {
+				app.joinRoom({
+					username: this.username,
+					key: this.key
+				})
+			}
+		}
+	},
+	watch: {
+		key: async function(val) {
+			if (val == "") {
+				this.validationStatus.key = "empty";
+			} else {
+				this.validationStatus.key = "checking";
+				let roomInfo = await api.getRoomInfo(val);
+				if (!roomInfo.success) {
+					this.validationStatus.key = "invalid";
+					return;
+				}
+				if (roomInfo.state != "wait") {
+					this.validationStatus.key = "created";
+					if (this.username in roomInfo.playerList) {
+						this.validationStatus.username = "accepted";
+					} else {
+						this.validationStatus.username = "not-in-list";
+					}
+					return;
+				}
+				this.playersCount = roomInfo.playerList.length;
+				this.validationStatus.key = "accepted";
+			}
+		},
+		username: async function(val) {
+			if (val == "" || this.validationStatus.key == "invalid") {
+				this.validationStatus.username = "empty";
+			} else
+			if (this.validationStatus.key == "empty") {
+				this.validationStatus.username = "accepted";
+			} else {
+				this.validationStatus.username = "checking";
+				let roomInfo = await api.getRoomInfo(this.key);
+				if (!(roomInfo.state == "wait" || this.username in roomInfo.playerList)) {
+					this.validationStatus.username = "not-in-list";
+				} else {
+					this.validationStatus.username = "accepted";
+				}
+			}
 		}
 	},
 	components: {navbar, rules, feedback}
