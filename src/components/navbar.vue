@@ -6,7 +6,7 @@
 		<img src="img/hat.png">
 		<div class="nav-brand-stack">
 			<h3>The True Hat</h3>
-			<h4>v2.0.0 (beta)</h4>
+			<h4><version/></h4>
 		</div>
 	</button>
 	<div class="nav-links">

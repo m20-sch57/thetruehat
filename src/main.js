@@ -5,6 +5,11 @@ import view from "./view.vue"
 import router from "./router.js"
 import {VERSION, HASH} from "./version.js"
 
+Vue.component("version", {
+	functional: true,
+	render: h => h("span", VERSION)
+})
+
 let vue = new Vue({
 	router,
 	el: "#app",
