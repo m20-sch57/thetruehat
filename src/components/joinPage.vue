@@ -47,9 +47,13 @@
 						<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 						<h5>Проверка</h5>
 					</div>
-					<div class="room-info created" v-show="validationStatus.key == 'accepted'">
+					<div class="room-info created" v-show="validationStatus.key == 'not-created'">
+						<h5><span class="fas fa-check"></span> Игра не началась</h5>
+						<button class="select btn-transparent">{{ playersList.length }} игроков</button>
+					</div>
+					<div class="room-info created" v-show="validationStatus.key == 'created'">
 						<h5><span class="fas fa-check"></span> Игра началась</h5>
-						<button class="select btn-transparent">{{ playersCount }} игроков</button>
+						<button class="select btn-transparent">{{ playersList.length }} игроков</button>
 					</div>
 					<div class="room-info invalid" v-show="validationStatus.key == 'invalid'">
 						<h5><span class="fas fa-times"></span> Некорректный ключ</h5>
@@ -114,17 +118,18 @@ import feedback from "_/feedback.vue"
 
 import * as api from "__/api.js"
 import app from "__/app.js"
-import { playersInfo, debounce } from "__/tools"
 import { VALIDATION_TIMEOUT } from "__/config.js"
+import { debounce } from "__/tools"
 
 export default {
 	data: function() {
 		return {
-			username: "",
-			key: "",
-			playersCount: 0,
 			showRules: false,
 			showFeedback: false,
+			username: "",
+			key: "",
+			playersInfo: {},
+			playersList: [],
 			validationStatus: {
 				username: "empty",
 				key: "empty"
@@ -135,7 +140,8 @@ export default {
 		validated: function() {
 			return (
 			this.validationStatus.username == "accepted" &&
-			this.validationStatus.key == "accepted");
+			(this.validationStatus.key == "not-created" ||
+			this.validationStatus.key == "created"));
 		}
 	},
 	methods: {
@@ -158,60 +164,59 @@ export default {
 		}
 	},
 	created: function() {
-		this.validateKey = debounce(async val => {
-			if (val == "") {
+		this.validateKey = key => {
+			if (key == "") {
 				this.validationStatus.key = "empty";
+			} else
+			if (!this.roomInfo.success) {
+				this.validationStatus.key = "invalid";
+			} else
+			if (this.roomInfo.state == "wait") {
+				this.validationStatus.key = "not-created";
 			} else {
-				let roomInfo = await api.getRoomInfo(val);
-				if (!roomInfo.success) {
-					this.validationStatus.key = "invalid";
-					return;
-				}
-				if (!(roomInfo.state == "wait" ||
-					this.username in playersInfo(roomInfo.playerList))) {
-					this.validationStatus.username = "not-in-list";
-				}
-				if (this.username in playersInfo(roomInfo.playerList) &&
-					playersInfo(roomInfo.playerList)[this.username].online) {
-					this.validationStatus.username = "name-occupied";
-				}
-				this.playersCount = roomInfo.playerList.length;
-				this.validationStatus.key = "accepted";
+				this.validationStatus.key = "created";
 			}
-		}, VALIDATION_TIMEOUT);
-		this.validateUsername = debounce(async val => {
-			window.console.log(val);
-			if (val == "" || this.validationStatus.key == "invalid") {
+			this.validateUsername(this.username);
+		};
+		this.validateUsername = username => {
+			if (username == "") {
 				this.validationStatus.username = "empty";
 			} else
-			if (this.validationStatus.key == "empty") {
+			if (!this.roomInfo.success) {
 				this.validationStatus.username = "accepted";
+			} else
+			if (!(this.roomInfo.state == "wait" ||
+				username in this.roomInfo.playersInfo)) {
+				this.validationStatus.username = "not-in-list";
+			} else
+			if (username in this.roomInfo.playersInfo &&
+				this.roomInfo.playersInfo[username]) {
+				this.validationStatus.username = "name-occupied";
 			} else {
-				let roomInfo = await api.getRoomInfo(this.key);
-				if (!roomInfo.success) {
-					this.validationStatus.username = "accepted";
-				} else
-				if (!(roomInfo.state == "wait" ||
-					val in playersInfo(roomInfo.playerList))) {
-					this.validationStatus.username = "not-in-list";
-				} else
-				if (val in playersInfo(roomInfo.playerList) &&
-					playersInfo(roomInfo.playerList)[val].online) {
-					this.validationStatus.username = "name-occupied";
-				} else {
-					this.validationStatus.username = "accepted";
-				}
+				this.validationStatus.username = "accepted";
+			}
+		};
+		this.watchKey = debounce(async key => {
+			this.roomInfo = await api.getRoomInfo(key);
+			this.validateKey(key);
+			if (this.roomInfo.success) {
+				this.playersInfo = this.roomInfo.playersInfo;
+				this.playersList = this.roomInfo.playersList;
 			}
 		}, VALIDATION_TIMEOUT);
+		this.watchUsername = debounce(async username => {
+			this.roomInfo = await api.getRoomInfo(username);
+			this.validateUsername(username);
+		}, VALIDATION_TIMEOUT)
 	},
 	watch: {
 		key: function(val) {
 			this.validationStatus.key = "checking";
-			this.validateKey(val);
+			this.watchKey(val);
 		},
 		username: function(val) {
 			this.validationStatus.username = "checking";
-			this.validateUsername(val);
+			this.watchUsername(val);
 		}
 	},
 	components: {navbar, rules, feedback}

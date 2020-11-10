@@ -1,7 +1,3 @@
-export function playersInfo(playersList) {
-	return Object.fromEntries(playersList.map(u => [u.username, u]));
-}
-
 export function debounce(func, delay) {
 	let lastCallTime, lastCall;
 	return function() {
