@@ -37,9 +37,9 @@
 </template>
 
 <script>
-import navbar from "_/navbar.vue"
-import rules from "_/rules.vue"
-import feedback from "_/feedback.vue"
+import navbar from "cmp/navbar.vue"
+import rules from "cmp/rules.vue"
+import feedback from "cmp/feedback.vue"
 
 export default {
 	data: function() {

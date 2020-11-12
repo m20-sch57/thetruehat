@@ -112,14 +112,14 @@
 </template>
 
 <script>
-import navbar from "_/navbar.vue"
-import rules from "_/rules.vue"
-import feedback from "_/feedback.vue"
+import navbar from "cmp/navbar.vue"
+import rules from "cmp/rules.vue"
+import feedback from "cmp/feedback.vue"
 
-import * as api from "__/api.js"
-import app from "__/app.js"
-import { VALIDATION_TIMEOUT } from "__/config.js"
-import { debounce } from "__/tools"
+import * as api from "src/api.js"
+import app from "src/app.js"
+import { VALIDATION_TIMEOUT } from "src/config.js"
+import { debounce } from "src/tools"
 
 export default {
 	components: {navbar, rules, feedback},

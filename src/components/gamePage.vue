@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import preparationPage from "_/preparationPage.vue"
+import preparationPage from "cmp/preparationPage.vue"
 
 export default {
 	components: {preparationPage},
