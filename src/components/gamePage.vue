@@ -1,11 +1,12 @@
 <template>
-	<body>
-
-	</body>
+	<preparationPage/>
 </template>
 
 <script>
+import preparationPage from "_/preparationPage.vue"
+
 export default {
+	components: {preparationPage},
 	beforeRouteEnter: function(to, from, next) {
 		next(vm => {
 			if (vm.$store.state.room.connection != "online") {
