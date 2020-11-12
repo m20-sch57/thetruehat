@@ -122,6 +122,7 @@ import { VALIDATION_TIMEOUT } from "__/config.js"
 import { debounce } from "__/tools"
 
 export default {
+	components: {navbar, rules, feedback},
 	data: function() {
 		return {
 			showRules: false,
@@ -213,12 +214,26 @@ export default {
 		key: function(val) {
 			this.validationStatus.key = "checking";
 			this.watchKey(val);
+			if (Object.keys(this.$route.query)[0] != this.key) {
+				let query = []; query[this.key] = null;
+				this.$router.replace({path: "/join", query});
+			}
 		},
 		username: function(val) {
 			this.validationStatus.username = "checking";
 			this.watchUsername(val);
 		}
 	},
-	components: {navbar, rules, feedback}
+	beforeRouteEnter: function(to, from, next) {
+		next(vm => {
+			if (Object.keys(vm.$route.query).length &&
+				vm.key != Object.keys(vm.$route.query)[0])
+			{
+				vm.key = vm.formatKey(Object.keys(vm.$route.query)[0]);
+				let query = []; query[vm.key] = null;
+				vm.$router.replace({path: "/join", query});
+			}
+		})
+	}
 }
 </script>
