@@ -2,9 +2,9 @@
     display: flex;
     flex-flow: column;
     margin: auto;
-    height: 100%;
+    height: calc(100% - 20px);
     max-height: 550px;
-    width: 100%;
+    width: calc(100% - 20px);
     max-width: 700px;
     background-color: white;
     border-radius: 30px;
@@ -63,13 +63,11 @@
     #feedback article {
         max-height: initial;
         max-width: initial;
-        border-radius: initial;
-        box-shadow: initial;
+        margin: 10px;
     }
 
     #feedback header {
         padding: 20px;
-        border-radius: initial;
         font-size: 80%;
     }
 

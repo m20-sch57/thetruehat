@@ -2,9 +2,9 @@
     display: flex;
     flex-flow: column;
     margin: auto;
-    height: 100%;
+    height: calc(100% - 20px);
     max-height: 600px;
-    width: 100%;
+    width: calc(100% - 20px);
     max-width: 900px;
     background-color: white;
     border-radius: 30px;
@@ -48,22 +48,19 @@
 }
 
 #rules footer {
-    padding: 20px;
+    min-height: 30px;
     border-top: 1px solid #eee;
-    text-align: center;
 }
 
 @media (max-height: 600px), (max-width: 900px) {
     #rules article {
         max-height: initial;
         max-width: initial;
-        border-radius: initial;
-        box-shadow: initial;
+        margin: 10px;
     }
 
     #rules header {
         padding: 20px;
-        border-radius: initial;
         font-size: 80%;
     }
 }

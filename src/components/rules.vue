@@ -55,9 +55,12 @@
 			<p>
 			Когда слова закончатся, закончится и игра. Результат игрока &ndash; это <b>сумма</b> количеств объяснённых и угаданных слов.
 			</p>
+
+			<p>
+			Подробнее читайте тут: <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
+			</p>
 		</main>
 		<footer>
-			Вы можете найти более подробные правила на сайте <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
 		</footer>
 	</article>
 </div>

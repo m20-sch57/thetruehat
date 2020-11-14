@@ -63,9 +63,14 @@
     padding-right: 50px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
     #preparation {
         flex-flow: column;
+        padding: 5px;
+    }
+
+    #preparation article {
+        margin: 5px;
     }
 
     #preparation footer button {
