@@ -11,6 +11,8 @@ Vue.use(VueRouter);
 export default new VueRouter({
 	routes: [
 		{path: "/", component: mainPage},
+		{path: "/feedback", component: mainPage},
+		{path: "/rules", component: mainPage},
 		{path: "/join", component: joinPage},
 		{path: "/game", component: gamePage}
 	]
