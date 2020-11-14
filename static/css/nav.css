@@ -121,7 +121,6 @@
     }
 
     #navbar .nav-collapsible {
-        display: none;
         position: absolute;
         top: calc(100% + 5px);
         right: 0;
@@ -131,6 +130,10 @@
         border-radius: 10px;
         box-shadow: 0 0 10px lightgrey;
         z-index: 100;
+    }
+
+    #navbar .nav-collapsible.collapsed {
+        display: none;
     }
 
     #navbar .nav-collapsible::before {
