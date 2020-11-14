@@ -206,7 +206,7 @@ export default {
 			}
 		}, VALIDATION_TIMEOUT);
 		this.watchUsername = debounce(async username => {
-			this.roomInfo = await api.getRoomInfo(username);
+			this.roomInfo = await api.getRoomInfo(this.key);
 			this.validateUsername(username);
 		}, VALIDATION_TIMEOUT)
 	},

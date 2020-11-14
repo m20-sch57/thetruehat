@@ -12,7 +12,7 @@
 	<div class="nav-links">
 		<button
 			class="btn-icon btn-transparent nav-expand"
-			@click="showMenu = !collapseMenu">
+			@click="collapseMenu = !collapseMenu">
 			<span class="fas fa-ellipsis-h"></span>
 		</button>
 		<div class="nav-collapsible" :class="{'collapsed': !collapseMenu}">
