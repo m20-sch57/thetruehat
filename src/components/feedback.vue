@@ -10,12 +10,14 @@
 			</button>
 		</header>
 		<main>
-			<textarea
-				class="textarea"
-				placeholder="Напишите свой отзыв здесь"
-				v-model="feedbackMessage">
-			</textarea>
-			<div class="checkbox">
+      <label>
+<textarea
+  class="textarea"
+  placeholder="Напишите свой отзыв здесь"
+  v-model="feedbackMessage">
+</textarea>
+      </label>
+      <div class="checkbox">
 				<input
 					type="checkbox"
 					id="feedbackCheckbox"

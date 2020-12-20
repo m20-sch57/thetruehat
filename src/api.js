@@ -19,7 +19,7 @@ class RoomInfo {
 }
 
 export async function getRoomInfo(key) {
-	if (key == "") return new RoomInfo();
+	if (key === "") return new RoomInfo();
 	return new RoomInfo(await (await fetch("api/getRoomInfo?key=" + key)).json());
 }
 

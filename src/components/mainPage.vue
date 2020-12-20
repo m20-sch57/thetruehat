@@ -51,10 +51,10 @@ export default {
 	},
 	beforeRouteEnter: function(to, from, next) {
 		next(vm => {
-			if (vm.$route.path == "/feedback") {
+			if (vm.$route.path === "/feedback") {
 				vm.showFeedback = true;
 			}
-			if (vm.$route.path == "/rules") {
+			if (vm.$route.path === "/rules") {
 				vm.showRules = true;
 			}
 		})

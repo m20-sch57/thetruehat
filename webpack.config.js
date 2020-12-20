@@ -25,7 +25,7 @@ module.exports = {
 	resolve: {
 		alias: {
 			cmp: path.resolve(__dirname, "src/components"),
-			src:path.resolve(__dirname, "src")
+			src: path.resolve(__dirname, "src")
 		}
 	},
 	plugins: [
