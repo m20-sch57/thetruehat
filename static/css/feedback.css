@@ -40,7 +40,7 @@
     padding: 30px;
 }
 
-#feedback main textarea {
+#feedback main > label {
     flex-grow: 1;
 }
 

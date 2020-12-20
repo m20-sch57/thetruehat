@@ -35,9 +35,6 @@
 
 #join main .game-key-input {
     position: relative;
-    display: flex;
-    flex-flow: row;
-    align-items: center;
     font-size: 1.1em;
 }
 
@@ -48,6 +45,8 @@
 #join main .game-key-actions {
     position: absolute;
     right: 0;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-flow: row;
     font-size: 0.75em;

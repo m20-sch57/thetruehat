@@ -9,8 +9,10 @@
 			</button>
 		</header>
 		<main>
-			<textarea class="textarea" placeholder="Напишите свой отзыв здесь"></textarea>
-			<div class="checkbox">
+      <label>
+        <textarea class="textarea" placeholder="Напишите свой отзыв здесь"></textarea>
+      </label>
+      <div class="checkbox">
 				<input type="checkbox" id="feedbackCheckbox">
 				<label for="feedbackCheckbox">
 					<span class="fas fa-check"></span>

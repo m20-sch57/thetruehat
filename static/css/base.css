@@ -202,6 +202,8 @@ input, textarea {
 
 .textarea {
     padding: 0.6em 0.7em;
+    height: 100%;
+    width: 100%;
     border: 1px solid rgb(187, 187, 187);
     border-radius: 1em;
     font-size: inherit;

@@ -3,7 +3,7 @@
 	<button
 		@click="$router.push('/')"
 		class="link nav-brand">
-		<img src="img/hat.png">
+		<img src="img/hat.png" alt="hat">
 		<div class="nav-brand-stack">
 			<h3>The True Hat</h3>
 			<h4><version/></h4>
@@ -27,11 +27,13 @@
 				<button class="link nav-feedback" @click="$emit('show-feedback')">
 					<span class="fas fa-comments"></span>
 				</button>
-				<select class="select btn-transparent">
-					<option value="ru">RU</option>
-					<option value="en">EN</option>
-				</select>
-			</div>
+        <label>
+          <select class="select btn-transparent">
+            <option value="ru">RU</option>
+            <option value="en">EN</option>
+          </select>
+        </label>
+      </div>
 		</div>
 	</div>
 </nav>

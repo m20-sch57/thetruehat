@@ -51,18 +51,18 @@ const roomModule = {
 			state.connection = "online";
 			set(["phase", "players", "host", "settings"])(state, payload);
 
-			if (payload.phase != "preparation" && payload.phase != "end") {
+			if (payload.phase !== "preparation" && payload.phase !== "end") {
 				set(["speaker", "listener", "wordsCount"])(state, payload);
 			}
 
-			if (payload.phase == "wait") {
+			if (payload.phase === "wait") {
 			}
 
-			if (payload.phase == "explanation") {
+			if (payload.phase === "explanation") {
 				set(["word", "startTime"])(state, payload);
 			}
 
-			if (payload.phase == "edit") {
+			if (payload.phase === "edit") {
 				set(["editWords"])(state, payload)
 			}
 		},
@@ -110,12 +110,12 @@ const roomModule = {
 			}
 		},
 		isHost(state) {
-			return state.host == state.username
+			return state.host === state.username
 		},
 		myRole(state) {
 			if (state.speaker && state.listener) {
-				if (state.speaker == state.username) return "speaker"
-				if (state.listener == state.username) return "listener"
+				if (state.speaker === state.username) return "speaker"
+				if (state.listener === state.username) return "listener"
 				return "observer"
 			}
 		}

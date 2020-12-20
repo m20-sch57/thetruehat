@@ -20,13 +20,15 @@
 		<main>
 			<section class="game-key">
 				<div class="game-key-input">
-					<input
-						:value="key"
-						@input="key = formatKey($event.target.value)"
-						class="input"
-						placeholder="Ключ игры"
-					>
-					<div class="game-key-actions">
+          <label>
+            <input
+              :value="key"
+              @input="key = formatKey($event.target.value)"
+              class="input"
+              placeholder="Ключ игры"
+            >
+          </label>
+          <div class="game-key-actions">
 						<button
 							@click="pasteKey()"
 							class="btn-icon btn-transparent">
@@ -40,55 +42,57 @@
 					</div>
 				</div>
 				<div class="game-key-status">
-					<div class="room-info no-key" v-show="validationStatus.key == 'empty'">
+					<div class="room-info no-key" v-show="validationStatus.key === 'empty'">
 						<h5>Введите ключ длины не более 8</h5>
 					</div>
-					<div class="room-info checking" v-show="validationStatus.key == 'checking'">
+					<div class="room-info checking" v-show="validationStatus.key === 'checking'">
 						<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 						<h5>Проверка</h5>
 					</div>
-					<div class="room-info created" v-show="validationStatus.key == 'accepted'">
+					<div class="room-info created" v-show="validationStatus.key === 'accepted'">
 						<h5><span class="fas fa-check"></span> Игра началась</h5>
 						<button class="select btn-transparent">{{ playersCount }} игроков</button>
 					</div>
-					<div class="room-info invalid" v-show="validationStatus.key == 'invalid'">
+					<div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
 						<h5><span class="fas fa-times"></span> Некорректный ключ</h5>
 					</div>
 				</div>
 			</section>
 			<section class="your-name">
 				<div class="your-name-input">
-					<input
-						v-model.trim="username"
-						class="input"
-						placeholder="Ваше имя"
-					>
-				</div>
+          <label>
+            <input
+              v-model.trim="username"
+              class="input"
+              placeholder="Ваше имя"
+            >
+          </label>
+        </div>
 				<div class="your-name-status">
 					<div
 						class="name-info no-name"
-						v-show="validationStatus.username == 'empty'">
+						v-show="validationStatus.username === 'empty'">
 						<h5>Введите имя длины не более 16</h5>
 					</div>
 					<div
 						class="name-info checking"
-						v-show="validationStatus.username == 'checking'">
+						v-show="validationStatus.username === 'checking'">
 						<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 						<h5>Проверка</h5>
 					</div>
 					<div
 						class="name-info accepted"
-						v-show="validationStatus.username == 'accepted'">
+						v-show="validationStatus.username === 'accepted'">
 						<h5><span class="fas fa-check"></span> Нормально</h5>
 					</div>
 					<div
 						class="name-info not-in-list"
-						v-show="validationStatus.username == 'not-in-list'">
+						v-show="validationStatus.username === 'not-in-list'">
 						<h5><span class="fas fa-times"></span> Не найдено в списке игроков</h5>
 					</div>
 					<div
 						class="name-info not-in-list"
-						v-show="validationStatus.username == 'name-occupied'">
+						v-show="validationStatus.username === 'name-occupied'">
 						<h5><span class="fas fa-times"></span> Имя уже занято другим игроком</h5>
 					</div>
 				</div>
@@ -134,8 +138,8 @@ export default {
 	computed: {
 		validated: function() {
 			return (
-			this.validationStatus.username == "accepted" &&
-			this.validationStatus.key == "accepted");
+			this.validationStatus.username === "accepted" &&
+			this.validationStatus.key === "accepted");
 		}
 	},
 	methods: {
@@ -159,7 +163,7 @@ export default {
 	},
 	created: function() {
 		this.validateKey = debounce(async val => {
-			if (val == "") {
+			if (val === "") {
 				this.validationStatus.key = "empty";
 			} else {
 				let roomInfo = await api.getRoomInfo(val);
@@ -167,7 +171,7 @@ export default {
 					this.validationStatus.key = "invalid";
 					return;
 				}
-				if (!(roomInfo.state == "wait" ||
+				if (!(roomInfo.state === "wait" ||
 					this.username in playersInfo(roomInfo.playerList))) {
 					this.validationStatus.username = "not-in-list";
 				}
@@ -181,17 +185,17 @@ export default {
 		}, VALIDATION_TIMEOUT);
 		this.validateUsername = debounce(async val => {
 			window.console.log(val);
-			if (val == "" || this.validationStatus.key == "invalid") {
+			if (val === "" || this.validationStatus.key === "invalid") {
 				this.validationStatus.username = "empty";
 			} else
-			if (this.validationStatus.key == "empty") {
+			if (this.validationStatus.key === "empty") {
 				this.validationStatus.username = "accepted";
 			} else {
 				let roomInfo = await api.getRoomInfo(this.key);
 				if (!roomInfo.success) {
 					this.validationStatus.username = "accepted";
 				} else
-				if (!(roomInfo.state == "wait" ||
+				if (!(roomInfo.state === "wait" ||
 					val in playersInfo(roomInfo.playerList))) {
 					this.validationStatus.username = "not-in-list";
 				} else

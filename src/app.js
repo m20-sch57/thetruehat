@@ -1,3 +1,4 @@
+import Vue from "vue";
 import store from "./store";
 import router from "./router.js"
 import { timeSync } from "./tools";
@@ -30,9 +31,9 @@ class App {
 	}
 
 	logSignal(event, data) {
-		let level = event == "sFailure" ? "warn" : "info";
+		let level = event === "sFailure" ? "warn" : "info";
 		let msg = "";
-		if (event == "sFailure") {
+		if (event === "sFailure") {
 			msg = `on request ${data.request}. ${data.msg} (code: ${data.code})`;
 		}
 		this.log({
@@ -68,10 +69,10 @@ class App {
 	}
 
 	getReady() {
-		if (store.getters.myRole == "speaker") {
+		if (store.getters.myRole === "speaker") {
 			this.emit("cSpeakerReady");
 		}
-		if (store.getters.myRole == "listener") {
+		if (store.getters.myRole === "listener") {
 			this.emit("cListenerReady");
 		}
 	}
@@ -100,9 +101,9 @@ class App {
 		const handlers = {
 			sYouJoined: data => {
 				store.commit("joinRoom", {
-					phase: data.state == "wait"
+					phase: data.state === "wait"
 						? "preparation"
-						: data.state == "play"
+						: data.state === "play"
 						? data.substate
 						: "end",
 					players: data.playerList,
@@ -156,7 +157,7 @@ class App {
 			},
 
 			sExplanationEnded: data => {
-				if (store.getters.myRole != "speaker") {
+				if (store.getters.myRole !== "speaker") {
 					store.commit("explanationEnded", data);
 				}
 			},

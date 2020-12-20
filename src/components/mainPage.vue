@@ -16,7 +16,7 @@
 	<article>
 		<header>
 			<picture>
-				<img src="img/hat.png">
+				<img src="img/hat.png" alt="hat">
 			</picture>
 		</header>
 		<main>

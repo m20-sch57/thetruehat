@@ -65,7 +65,7 @@
     "po2json": "^0.4.5",
     "vue-loader": "^15.4.2",
     "vue-template-compiler": "^2.5.17",
-    "webpack": "^4.20.0",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
   }
 }
