@@ -8,6 +8,7 @@ module.exports = {
 	},
 	entry: './src/main.js',
 	mode: "development",
+	devtool: "eval-source-map",
 	output: {
 		path: path.resolve(__dirname, './static/dist'),
 		publicPath: '/dist/',
@@ -23,8 +24,8 @@ module.exports = {
 	},
 	resolve: {
 		alias: {
-			_: path.resolve(__dirname, "src/components"),
-			__:path.resolve(__dirname, "src")
+			cmp: path.resolve(__dirname, "src/components"),
+			src:path.resolve(__dirname, "src")
 		}
 	},
 	plugins: [

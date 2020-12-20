@@ -10,10 +10,12 @@
 		</div>
 	</button>
 	<div class="nav-links">
-		<button class="btn-icon btn-transparent nav-expand">
+		<button
+			class="btn-icon btn-transparent nav-expand"
+			@click="collapseMenu = !collapseMenu">
 			<span class="fas fa-ellipsis-h"></span>
 		</button>
-		<div class="nav-collapsible">
+		<div class="nav-collapsible" :class="{'collapsed': !collapseMenu}">
 			<div class="nav-links-center">
 				<button class="nav-link active">Игра</button>
 				<button class="nav-link">Новости</button>
@@ -38,3 +40,13 @@
 	</div>
 </nav>
 </template>
+
+<script>
+export default {
+	data: function() {
+		return {
+			collapseMenu: false
+		}
+	}
+}
+</script>

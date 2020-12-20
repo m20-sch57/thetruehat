@@ -37,17 +37,27 @@
 </template>
 
 <script>
-import navbar from "_/navbar.vue"
-import rules from "_/rules.vue"
-import feedback from "_/feedback.vue"
+import navbar from "cmp/navbar.vue"
+import rules from "cmp/rules.vue"
+import feedback from "cmp/feedback.vue"
 
 export default {
+	components: {navbar, rules, feedback},
 	data: function() {
 		return {
 			showRules: false,
 			showFeedback: false
 		}
 	},
-	components: {navbar, rules, feedback}
+	beforeRouteEnter: function(to, from, next) {
+		next(vm => {
+			if (vm.$route.path == "/feedback") {
+				vm.showFeedback = true;
+			}
+			if (vm.$route.path == "/rules") {
+				vm.showRules = true;
+			}
+		})
+	},
 }
 </script>

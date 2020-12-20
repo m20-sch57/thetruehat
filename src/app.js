@@ -177,10 +177,10 @@ class App {
 			},
 
 			sFailure: data => {
-				Vue.notify({
-					msg: data.msg,
-					duration: ERROR_TIMEOUT
-				});
+				// Vue.notify({
+				// 	msg: data.msg,
+				// 	duration: ERROR_TIMEOUT
+				// });
 			}
 		}
 
