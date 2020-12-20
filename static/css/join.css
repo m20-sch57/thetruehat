@@ -13,6 +13,7 @@
 }
 
 #join header {
+    flex-shrink: 0;
     padding: 30px;
     background-color: lightgreen;
     border-top-left-radius: 30px;

@@ -67,6 +67,7 @@
     position: relative;
     display: inline-block;
     padding: 10px 30px;
+    margin: 0;
     color: rgba(0, 0, 0, 0.5);
     background-color: transparent;
     border: none;

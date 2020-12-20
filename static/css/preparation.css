@@ -19,6 +19,7 @@
 #preparation header {
     display: flex;
     flex-flow: row;
+    flex-shrink: 0;
     align-items: center;
     padding: 20px;
     border-top-left-radius: 20px;
