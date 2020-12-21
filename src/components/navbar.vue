@@ -20,27 +20,27 @@
       <div class="nav-collapsible" :class="{'collapsed': !collapseMenu}">
         <div class="nav-links-center">
           <button
-            class="nav-link"
-            :class="{active: currentPage == 'game'}"
-            @click="$router.push('/game')">
+              class="nav-link"
+              :class="{active: currentPage === 'game'}"
+              @click="$router.push('/game')">
             Игра
           </button>
           <button
-            class="nav-link"
-            :class="{active: currentPage == 'news'}"
-            @click="$router.push('/news')">
+              class="nav-link"
+              :class="{active: currentPage === 'news'}"
+              @click="$router.push('/news')">
             Новости
           </button>
           <button
-            class="nav-link"
-            :class="{active: currentPage == 'faq'}"
-            @click="$router.push('/faq')">
+              class="nav-link"
+              :class="{active: currentPage === 'faq'}"
+              @click="$router.push('/faq')">
             FAQ
           </button>
           <button
-            class="nav-link"
-            :class="{active: currentPage == 'about'}"
-            @click="$router.push('/about')">
+              class="nav-link"
+              :class="{active: currentPage === 'about'}"
+              @click="$router.push('/about')">
             О нас
           </button>
         </div>
