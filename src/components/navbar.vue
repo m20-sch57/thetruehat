@@ -11,7 +11,7 @@
         </h4>
       </div>
     </button>
-    <div class="nav-links">
+    <div class="nav-links" @click.stop>
       <button
           class="btn-icon btn-transparent nav-expand"
           @click="collapseMenu = !collapseMenu">
@@ -72,6 +72,11 @@ export default {
     return {
       collapseMenu: false
     }
+  },
+  created() {
+    document.addEventListener("click", () => {
+      this.collapseMenu = false;
+    });
   }
 }
 </script>
