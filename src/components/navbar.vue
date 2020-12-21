@@ -19,16 +19,28 @@
       </button>
       <div class="nav-collapsible" :class="{'collapsed': !collapseMenu}">
         <div class="nav-links-center">
-          <button class="nav-link active" @click="$router.push('/join')">
+          <button
+            class="nav-link"
+            :class="{active: currentPage == 'join'}"
+            @click="$router.push('/join')">
             Игра
           </button>
-          <button class="nav-link" @click="$router.push('/news')">
+          <button
+            class="nav-link"
+            :class="{active: currentPage == 'news'}"
+            @click="$router.push('/news')">
             Новости
           </button>
-          <button class="nav-link" @click="$router.push('/faq')">
+          <button
+            class="nav-link"
+            :class="{active: currentPage == 'faq'}"
+            @click="$router.push('/faq')">
             FAQ
           </button>
-          <button class="nav-link" @click="$router.push('/about')">
+          <button
+            class="nav-link"
+            :class="{active: currentPage == 'about'}"
+            @click="$router.push('/about')">
             О нас
           </button>
         </div>
@@ -53,6 +65,9 @@
 
 <script>
 export default {
+  props: {
+    currentPage: String
+  },
   data: function () {
     return {
       collapseMenu: false

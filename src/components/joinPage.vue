@@ -1,6 +1,7 @@
 <template>
   <body>
   <navbar
+      currentPage="join"
       @show-rules="showRules = true"
       @show-feedback="showFeedback = true"
   />
