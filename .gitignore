@@ -425,6 +425,7 @@ out
 gen
 
 # Caddy server
+caddy
 Caddyfile
 runCaddy
 run
@@ -438,4 +439,3 @@ version.json
 
 # build
 static/index.html
-dist

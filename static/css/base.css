@@ -9,7 +9,7 @@ html {
 
 body {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     flex: 1;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
@@ -55,7 +55,7 @@ input, textarea {
 .nav {
     position: relative;
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     background-color: white;
     font-size: 20px;
     box-shadow: 0 0 10px lightgrey;
@@ -201,7 +201,9 @@ input, textarea {
 }
 
 .textarea {
+    flex-grow: 1;
     padding: 0.6em 0.7em;
+    width: 100%;
     border: 1px solid rgb(187, 187, 187);
     border-radius: 1em;
     font-size: inherit;
@@ -213,7 +215,7 @@ input, textarea {
 
 .checkbox {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     font-size: 20px;
 }
 

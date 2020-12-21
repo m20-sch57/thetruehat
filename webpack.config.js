@@ -1,8 +1,11 @@
-var path = require('path')
+const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+	watchOptions: {
+		poll: 1000
+	},
 	entry: './src/main.js',
 	mode: "development",
 	devtool: "eval-source-map",
@@ -22,7 +25,7 @@ module.exports = {
 	resolve: {
 		alias: {
 			cmp: path.resolve(__dirname, "src/components"),
-			src:path.resolve(__dirname, "src")
+			src: path.resolve(__dirname, "src")
 		}
 	},
 	plugins: [

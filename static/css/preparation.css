@@ -1,11 +1,11 @@
 #preparation {
-    flex-flow: row;
+    flex-direction: row;
     padding: 10px;
 }
 
 #preparation article {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     flex-basis: 50%;
     flex-grow: 1;
     margin: 10px;
@@ -18,7 +18,8 @@
 
 #preparation header {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
+    flex-shrink: 0;
     align-items: center;
     padding: 20px;
     border-top-left-radius: 20px;
@@ -63,9 +64,14 @@
     padding-right: 50px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
     #preparation {
-        flex-flow: column;
+        flex-direction: column;
+        padding: 5px;
+    }
+
+    #preparation article {
+        margin: 5px;
     }
 
     #preparation footer button {

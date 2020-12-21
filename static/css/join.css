@@ -1,10 +1,10 @@
 #join article {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     margin: auto;
-    height: 100%;
+    height: calc(100% - 20px);
     max-height: 500px;
-    width: 100%;
+    width: calc(100% - 20px);
     max-width: 650px;
     background-color: white;
     border-radius: 30px;
@@ -13,6 +13,7 @@
 }
 
 #join header {
+    flex-shrink: 0;
     padding: 30px;
     background-color: lightgreen;
     border-top-left-radius: 30px;
@@ -26,7 +27,7 @@
 
 #join main {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     margin-top: auto;
     margin-bottom: auto;
     padding: 30px 30px 15px 30px;
@@ -35,9 +36,6 @@
 
 #join main .game-key-input {
     position: relative;
-    display: flex;
-    flex-flow: row;
-    align-items: center;
     font-size: 1.1em;
 }
 
@@ -48,8 +46,10 @@
 #join main .game-key-actions {
     position: absolute;
     right: 0;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     font-size: 0.75em;
 }
 
@@ -65,7 +65,7 @@
 
 #join main .room-info {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
 }
@@ -105,7 +105,7 @@
 
 #join main .name-info {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     align-items: center;
 }
 
@@ -141,13 +141,11 @@
     #join article {
         max-height: initial;
         max-width: initial;
-        border-radius: initial;
-        box-shadow: initial;
+        margin: 10px;
     }
 
     #join header {
         padding: 20px;
-        border-radius: initial;
         font-size: 80%;
         text-align: center;
     }
@@ -159,16 +157,5 @@
     #join footer button {
         width: 100%;
         max-width: 400px;
-    }
-}
-
-@media (max-height: 500px) {
-    #join main {
-        flex-flow: row;
-        justify-content: space-around;
-    }
-
-    #join main section {
-        max-width: 320px;
     }
 }

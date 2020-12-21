@@ -1,6 +1,6 @@
 #navbar .nav-brand {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     align-items: center;
     width: 250px;
     text-align: left;
@@ -24,7 +24,7 @@
 #navbar .nav-links {
     position: relative;
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     flex-grow: 1;
 }
 
@@ -39,20 +39,20 @@
 
 #navbar .nav-collapsible {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     flex-grow: 1;
 }
 
 #navbar .nav-links-center {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     flex-grow: 1;
     justify-content: center;
 }
 
 #navbar .nav-links-right {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     align-items: center;
     justify-content: flex-end;
     padding: 0 15px;
@@ -67,6 +67,7 @@
     position: relative;
     display: inline-block;
     padding: 10px 30px;
+    margin: 0;
     color: rgba(0, 0, 0, 0.5);
     background-color: transparent;
     border: none;
@@ -125,7 +126,7 @@
         top: calc(100% + 5px);
         right: 0;
         width: 220px;
-        flex-flow: column;
+        flex-direction: column;
         background-color: white;
         border-radius: 10px;
         box-shadow: 0 0 10px lightgrey;
@@ -148,7 +149,7 @@
     }
 
     #navbar .nav-links-center {
-        flex-flow: column;
+        flex-direction: column;
         align-items: flex-start;
         padding: 10px;
     }
