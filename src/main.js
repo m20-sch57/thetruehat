@@ -25,6 +25,7 @@ timeSync.debug = config.DEBUG;
 app.debug = config.DEBUG;
 
 if (config.DEBUG) {
+    window.vue = vue
     window.app = app;
     window.VERSION = VERSION;
     window.HASH = HASH;

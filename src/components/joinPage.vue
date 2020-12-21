@@ -1,7 +1,7 @@
 <template>
   <body>
   <navbar
-      currentPage="join"
+      currentPage="game"
       @show-rules="showRules = true"
       @show-feedback="showFeedback = true"
   />
@@ -180,6 +180,12 @@ export default {
     }
   },
   created: function () {
+    if (Object.keys(this.$route.query).length &&
+        this.key !== Object.keys(this.$route.query)[0])
+    {
+      this.key = this.formatKey(Object.keys(this.$route.query)[0]);
+    }
+
     this.validateKey = key => {
       if (key === "") {
         this.validationStatus.key = "empty";
@@ -227,24 +233,13 @@ export default {
       if (Object.keys(this.$route.query)[0] !== this.key) {
         let query = [];
         query[this.key] = null;
-        this.$router.replace({path: "/join", query});
+        this.$router.replace({query});
       }
     },
     username: function (val) {
       this.validationStatus.username = "checking";
       this.watchUsername(val);
     }
-  },
-  beforeRouteEnter: function (to, from, next) {
-    next(vm => {
-      if (Object.keys(vm.$route.query).length &&
-          vm.key !== Object.keys(vm.$route.query)[0]) {
-        vm.key = vm.formatKey(Object.keys(vm.$route.query)[0]);
-        let query = [];
-        query[vm.key] = null;
-        vm.$router.replace({path: "/join", query});
-      }
-    })
   }
 }
 </script>

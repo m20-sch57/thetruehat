@@ -21,8 +21,8 @@
         <div class="nav-links-center">
           <button
             class="nav-link"
-            :class="{active: currentPage == 'join'}"
-            @click="$router.push('/join')">
+            :class="{active: currentPage == 'game'}"
+            @click="$router.push('/game')">
             Игра
           </button>
           <button

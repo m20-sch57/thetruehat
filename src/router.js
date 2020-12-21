@@ -20,7 +20,6 @@ export default new VueRouter({
         {path: "/about", component: aboutPage},
         {path: "/rules", component: rulesPopup},
         {path: "/feedback", component: feedbackPopup},
-        {path: "/join", component: joinPage},
         {path: "/game", component: gamePage}
     ]
 })
