@@ -1,6 +1,6 @@
 #feedback article {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     margin: auto;
     height: calc(100% - 20px);
     max-height: 550px;
@@ -14,7 +14,7 @@
 
 #feedback header {
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     flex-shrink: 0;
     align-items: center;
     padding: 30px;
@@ -36,14 +36,14 @@
 
 #feedback main {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     flex-grow: 1;
     padding: 30px;
 }
 
 #feedback main > label {
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
     flex-grow: 1;
 }
 
