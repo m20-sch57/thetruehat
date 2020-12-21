@@ -23,7 +23,7 @@
       <main>
         <button
             class="btn btn-bordered btn-shadow btn-green"
-            @click="$router.push('/join')">
+            @click="$router.push('/game')">
           Играть
         </button>
         <button
