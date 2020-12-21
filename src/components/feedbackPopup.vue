@@ -11,11 +11,11 @@
       </header>
       <main>
         <label>
-<textarea
-    class="textarea"
-    placeholder="Напишите свой отзыв здесь"
-    v-model="feedbackMessage">
-</textarea>
+          <textarea
+              class="textarea"
+              placeholder="Напишите свой отзыв здесь"
+              v-model="feedbackMessage">
+          </textarea>
         </label>
         <div class="checkbox">
           <input

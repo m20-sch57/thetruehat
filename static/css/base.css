@@ -83,11 +83,11 @@ input, textarea {
     text-decoration: none;
 }
 
-.btn.btn-bordered {
-    border: 1px solid rgba(0, 0, 0, 0.15);
+.btn-bordered {
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
 }
 
-.btn.btn-shadow:hover:not([disabled]) {
+.btn-shadow:hover:not([disabled]) {
     box-shadow: 0 2px 0.3em lightgrey;
 }
 

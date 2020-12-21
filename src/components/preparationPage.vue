@@ -49,7 +49,12 @@
         </button>
       </header>
       <main>
-
+        <label>
+          <select class="select btn-bordered btn-transparent">
+            <option>Пока не кончатся слова</option>
+            <option>Заданное число кругов</option>
+          </select>
+        </label>
       </main>
     </article>
   </div>
