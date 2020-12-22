@@ -13,7 +13,7 @@ class TimeSync {
     }
 
     async getDelta() {
-        let response = await fetch("getTime", {"headers": {"X-Client-Timestamp": performance.now()}});
+        let response = await fetch("getTime", {"headers": {"X-Client-Timestamp": performance.now().toString()}});
         let now = performance.now();
         this.delta = response.headers.get("X-Server-Timestamp") / 1.0 + (now - response.headers.get("X-Client-Timestamp")) / 2 - now;
     }
