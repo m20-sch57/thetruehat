@@ -7,19 +7,34 @@ module.exports = {
     watchOptions: {
         poll: 1000
     },
-    entry: "./src/main.js",
+    entry: {
+        css: "./src/css/entry.js",
+        js: "./src/main.js"
+    },
     mode: "development",
     devtool: "eval-source-map",
     output: {
         path: path.resolve(__dirname, "./static/dist"),
         publicPath: "/dist/",
-        filename: "build.js"
+        filename: "[name]bundle.js"
     },
     module: {
         rules: [
             {
                 test: /\.vue$/,
                 loader: "vue-loader"
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    "style-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            url: false
+                        }
+                    }
+                ]
             }
         ]
     },

@@ -1,8 +1,9 @@
 <template>
   <nav class="nav" id="navbar">
     <button
+        class="link nav-brand"
         @click="goToMainPage()"
-        class="link nav-brand">
+        :disabled="currentPage === 'main'">
       <img src="img/hat.png" alt="hat">
       <div class="nav-brand-stack">
         <h3>The True Hat</h3>

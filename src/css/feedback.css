@@ -1,0 +1,80 @@
+#feedback article {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    height: calc(100% - 20px);
+    max-height: 550px;
+    width: calc(100% - 20px);
+    max-width: 700px;
+    background-color: white;
+    border-radius: 30px;
+    font-size: 20px;
+    box-shadow: -3px 3px 10px dimgrey;
+}
+
+#feedback header {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: center;
+    padding: 30px;
+    background-color: lightblue;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+#feedback header h1 {
+    margin: 0;
+    font-weight: normal;
+}
+
+#feedback header button {
+    height: 40px;
+    width: 40px;
+    margin-left: auto;
+}
+
+#feedback main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 30px;
+}
+
+#feedback main > label {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#feedback main .checkbox {
+    margin-top: 10px;
+}
+
+#feedback footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+#feedback footer button {
+    padding-left: 40px;
+    padding-right: 40px;
+    font-size: 1.1em;
+}
+
+@media (max-height: 550px), (max-width: 700px) {
+    #feedback article {
+        max-height: initial;
+        max-width: initial;
+        margin: 10px;
+    }
+
+    #feedback header {
+        padding: 20px;
+        font-size: 80%;
+    }
+
+    #feedback footer button {
+        width: 100%;
+    }
+}
