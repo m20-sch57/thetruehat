@@ -14,7 +14,7 @@
       @close="showFeedback = false"
   />
   <div class="page" id="preparation">
-    <article class="left" :class="{collapsed: isShownMeeting}">
+    <article class="left" :class="{collapsed: !isShownMeeting}">
       <header>
         <h1>{{ $store.state.room.key }}</h1>
         <button
@@ -54,7 +54,7 @@
         </button>
       </footer>
     </article>
-    <article class="right" :class="{collapsed: isShownOptions}">
+    <article class="right" :class="{collapsed: !isShownOptions}">
       <header>
         <h1>Параметры игры</h1>
         <button
