@@ -8,7 +8,7 @@ module.exports = {
         poll: 1000
     },
     entry: {
-        css: "./src/css/entry.js",
+        css: "./src/css.js",
         js: "./src/main.js"
     },
     mode: "development",
