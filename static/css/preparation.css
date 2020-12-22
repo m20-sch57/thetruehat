@@ -39,12 +39,6 @@
     font-weight: normal;
 }
 
-#preparation header button {
-    height: 40px;
-    width: 40px;
-    margin-left: 5px;
-}
-
 #preparation header .expand {
     display: none;
     margin-left: auto;
@@ -52,6 +46,21 @@
 
 #preparation main {
     flex-grow: 1;
+}
+
+#preparation main .room-actions {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    border-bottom: 1px solid whitesmoke;
+}
+
+#preparation main .room-actions button {
+    margin: 0;
+}
+
+#preparation main .room-actions .leave-room {
+    margin-left: auto;
 }
 
 #preparation footer {

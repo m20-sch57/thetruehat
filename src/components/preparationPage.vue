@@ -18,18 +18,32 @@
       <header>
         <h1>{{ $store.state.room.key }}</h1>
         <button
-            class="btn-icon btn-transparent"
-            @click="copyLink()">
-          <span class="fas fa-clipboard"></span>
-        </button>
-        <button
             class="btn-icon expand"
             @click="toggleShownWindow()">
           <span class="fas fa-angle-down"></span>
         </button>
       </header>
       <main>
-
+        <div class="room-actions">
+          <button
+              class="btn btn-transparent"
+              @click="copyLink()">
+            <span class="fas fa-clipboard"></span>
+            Ключ
+          </button>
+          <button
+              class="btn btn-transparent"
+              @click="">
+            <span class="fas fa-link"></span>
+            Ссылка
+          </button>
+          <button
+              class="btn btn-transparent leave-room"
+              @click="">
+            <span class="fas fa-sign-out-alt"></span>
+            Выйти
+          </button>
+        </div>
       </main>
       <footer>
         <button
