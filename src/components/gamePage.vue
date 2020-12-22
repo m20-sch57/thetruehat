@@ -9,14 +9,12 @@ import joinPage from "cmp/joinPage.vue"
 export default {
   components: {preparationPage, joinPage},
   computed: {
-    currentPageComponent: function() {
+    currentPageComponent: function () {
       if (this.$store.state.room.connection === "offline") {
         return "joinPage";
-      } else
-      if (this.$store.state.room.connection === "online") {
+      } else if (this.$store.state.room.connection === "online") {
         return "preparationPage";
-      } else {
-      if (this.$store.state.room.connection === "connection")
+      } else if (this.$store.state.room.connection === "connection") {
         return "joinPage";
       }
     }

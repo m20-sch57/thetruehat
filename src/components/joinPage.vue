@@ -181,8 +181,7 @@ export default {
   },
   created: function () {
     if (Object.keys(this.$route.query).length &&
-        this.key !== Object.keys(this.$route.query)[0])
-    {
+        this.key !== Object.keys(this.$route.query)[0]) {
       this.key = this.formatKey(Object.keys(this.$route.query)[0]);
     }
 
