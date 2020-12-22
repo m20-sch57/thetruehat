@@ -41,7 +41,7 @@
               <button
                   @click="generateKey()"
                   class="btn btn-transparent">
-                <span class="fas fa-plus"></span>
+                <span class="fas fa-dice"></span>
                 Сгенерировать
               </button>
             </div>
