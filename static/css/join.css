@@ -49,21 +49,6 @@
     text-transform: uppercase;
 }
 
-#join main .game-key-actions {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: row;
-    font-size: 0.75em;
-}
-
-#join main .game-key-actions button {
-    height: 2em;
-    width: 2em;
-}
-
 #join main .game-key-status {
     margin-top: 3px;
     min-height: 2.3em;
@@ -76,6 +61,13 @@
     align-items: center;
 }
 
+#join main .room-info.no-key button {
+    padding: 0.25em 0.5em;
+    margin: 0;
+    font-size: 0.75em;
+    line-height: 0.75em;
+}
+
 #join main .room-info h5 {
     margin: 0;
     font-weight: normal;
@@ -86,12 +78,24 @@
     color: dimgrey;
 }
 
+#join main .room-info.not-created h5 {
+    margin-right: auto;
+    color: grey;
+}
+
+#join main .room-info.not-created button {
+    margin: 0;
+    font-size: 0.75em;
+    line-height: 0.75em;
+}
+
 #join main .room-info.created h5 {
     margin-right: auto;
-    color: forestgreen;
+    color: goldenrod;
 }
 
 #join main .room-info.created button {
+    margin: 0;
     font-size: 0.75em;
     line-height: 0.75em;
 }

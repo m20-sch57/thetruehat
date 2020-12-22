@@ -29,22 +29,21 @@
                   placeholder="Ключ игры"
               >
             </label>
-            <div class="game-key-actions">
-              <button
-                  @click="pasteKey()"
-                  class="btn-icon btn-transparent">
-                <span class="fas fa-clipboard"></span>
-              </button>
-              <button
-                  @click="generateKey()"
-                  class="btn-icon btn-transparent">
-                <span class="fas fa-redo"></span>
-              </button>
-            </div>
           </div>
           <div class="game-key-status">
             <div class="room-info no-key" v-show="validationStatus.key === 'empty'">
-              <h5>Введите ключ длины не более 8</h5>
+              <button
+                  @click="pasteKey()"
+                  class="btn btn-transparent">
+                <span class="fas fa-clipboard"></span>
+                Вставить
+              </button>
+              <button
+                  @click="generateKey()"
+                  class="btn btn-transparent">
+                <span class="fas fa-plus"></span>
+                Сгенерировать
+              </button>
             </div>
             <div class="room-info checking" v-show="validationStatus.key === 'checking'">
               <div class="lds-ellipsis">
@@ -55,12 +54,12 @@
               </div>
               <h5>Проверка</h5>
             </div>
-            <div class="room-info created" v-show="validationStatus.key === 'not-created'">
-              <h5><span class="fas fa-check"></span> Игра не началась</h5>
+            <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
+              <h5>Игра не началась</h5>
               <button class="select btn-transparent">{{ playersList.length }} игроков</button>
             </div>
             <div class="room-info created" v-show="validationStatus.key === 'created'">
-              <h5><span class="fas fa-check"></span> Игра началась</h5>
+              <h5>Игра уже идёт</h5>
               <button class="select btn-transparent">{{ playersList.length }} игроков</button>
             </div>
             <div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
@@ -82,7 +81,7 @@
             <div
                 class="name-info no-name"
                 v-show="validationStatus.username === 'empty'">
-              <h5>Введите имя длины не более 16</h5>
+              <h5>Имя нужно, чтобы игроки могли вас опознать</h5>
             </div>
             <div
                 class="name-info checking"
