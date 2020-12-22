@@ -110,8 +110,7 @@ class App {
                             : "end",
                     players: data.playerList,
                     ...data
-                })
-                router.push("/game");
+                });
             },
 
             sPlayerJoined: data => {
