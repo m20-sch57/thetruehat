@@ -7,7 +7,7 @@ export async function getFreeKey() {
 
 class RoomInfo {
     constructor(data) {
-        if (!data) {
+        if (!data || !data.success) {
             this.success = false;
             return;
         }
