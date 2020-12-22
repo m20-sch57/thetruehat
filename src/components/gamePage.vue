@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import preparationPage from "cmp/preparationPage.vue"
-import joinPage from "cmp/joinPage.vue"
+import preparationPage from "cmp/preparationPage.vue";
+import joinPage from "cmp/joinPage.vue";
 
 export default {
   components: {preparationPage, joinPage},
@@ -16,12 +16,15 @@ export default {
         return "preparationPage";
       } else if (this.$store.state.room.connection === "connection") {
         return "joinPage";
+      } else {
+        return "";
       }
     }
   },
   beforeRouteEnter: function (to, from, next) {
     next(vm => {
-      if (vm.$store.state.room.connection !== "online") {
+      if (vm.$store.state.room.connection !== "online" &&
+          Object.keys(vm.$route.query).length) {
         vm.$router.replace({query: vm.$route.query});
       } else {
         if (Object.keys(vm.$route.query)[0] !== vm.$store.state.room.key) {
@@ -32,5 +35,5 @@ export default {
       }
     });
   }
-}
+};
 </script>

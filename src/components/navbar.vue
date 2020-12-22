@@ -22,25 +22,29 @@
           <button
               class="nav-link"
               :class="{active: currentPage === 'game'}"
-              @click="$router.push('/game')">
+              @click="$router.push('/game')"
+              :disabled="currentPage === 'game'">
             Игра
           </button>
           <button
               class="nav-link"
               :class="{active: currentPage === 'news'}"
-              @click="$router.push('/news')">
+              @click="$router.push('/news')"
+              :disabled="currentPage === 'news'">
             Новости
           </button>
           <button
               class="nav-link"
               :class="{active: currentPage === 'faq'}"
-              @click="$router.push('/faq')">
+              @click="$router.push('/faq')"
+              :disabled="currentPage === 'faq'">
             FAQ
           </button>
           <button
               class="nav-link"
               :class="{active: currentPage === 'about'}"
-              @click="$router.push('/about')">
+              @click="$router.push('/about')"
+              :disabled="currentPage === 'about'">
             О нас
           </button>
         </div>
@@ -71,12 +75,12 @@ export default {
   data: function () {
     return {
       collapseMenu: false
-    }
+    };
   },
   created() {
     document.addEventListener("click", () => {
       this.collapseMenu = false;
     });
   }
-}
+};
 </script>
