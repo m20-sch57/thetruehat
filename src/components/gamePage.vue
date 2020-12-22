@@ -23,7 +23,8 @@ export default {
   },
   beforeRouteEnter: function (to, from, next) {
     next(vm => {
-      if (vm.$store.state.room.connection !== "online") {
+      if (vm.$store.state.room.connection !== "online" &&
+          Object.keys(vm.$route.query).length) {
         vm.$router.replace({query: vm.$route.query});
       } else {
         if (Object.keys(vm.$route.query)[0] !== vm.$store.state.room.key) {

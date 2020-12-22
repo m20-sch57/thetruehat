@@ -4,7 +4,7 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 function set(props) {
-    if (typeof props == "string") props = [props];
+    if (typeof props === "string") props = [props];
     return function (state, payload) {
         for (let prop of props) {
             state[prop] = payload[prop];
