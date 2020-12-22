@@ -1,7 +1,7 @@
 <template>
   <nav class="nav" id="navbar">
     <button
-        @click="$router.push('/')"
+        @click="goToMainPage()"
         class="link nav-brand">
       <img src="img/hat.png" alt="hat">
       <div class="nav-brand-stack">
@@ -68,6 +68,8 @@
 </template>
 
 <script>
+import app from "src/app.js";
+
 export default {
   props: {
     currentPage: String
@@ -76,6 +78,14 @@ export default {
     return {
       collapseMenu: false
     };
+  },
+  methods: {
+    goToMainPage: function () {
+      if (this.$store.state.room.connection === "online") {
+        app.leaveRoom();
+      }
+      this.$router.push("/");
+    }
   },
   created() {
     document.addEventListener("click", () => {
