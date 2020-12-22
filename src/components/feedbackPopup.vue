@@ -41,19 +41,19 @@
 
 <script>
 
-import * as api from "src/api.js"
+import * as api from "src/api.js";
 
 export default {
   data: function () {
     return {
       collectBrowserData: false,
       feedbackMessage: ""
-    }
+    };
   },
   methods: {
     sendFeedback: function () {
-      let result = api.sendFeedback(this.feedbackMessage, this.collectBrowserData);
+      api.sendFeedback(this.feedbackMessage, this.collectBrowserData);
     }
   }
-}
+};
 </script>

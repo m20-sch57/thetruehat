@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import preparationPage from "cmp/preparationPage.vue"
-import joinPage from "cmp/joinPage.vue"
+import preparationPage from "cmp/preparationPage.vue";
+import joinPage from "cmp/joinPage.vue";
 
 export default {
   components: {preparationPage, joinPage},
@@ -16,6 +16,8 @@ export default {
         return "preparationPage";
       } else if (this.$store.state.room.connection === "connection") {
         return "joinPage";
+      } else {
+        return "";
       }
     }
   },
@@ -32,5 +34,5 @@ export default {
       }
     });
   }
-}
+};
 </script>

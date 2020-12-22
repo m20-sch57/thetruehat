@@ -71,12 +71,12 @@ export default {
   data: function () {
     return {
       collapseMenu: false
-    }
+    };
   },
   created() {
     document.addEventListener("click", () => {
       this.collapseMenu = false;
     });
   }
-}
+};
 </script>

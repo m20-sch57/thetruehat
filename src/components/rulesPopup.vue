@@ -3,8 +3,9 @@
     <article>
       <header>
         <h1>Правила</h1>
-        <button class="btn-icon btn-transparent"
-                @click="$emit('close')">
+        <button
+            class="btn-icon btn-transparent"
+            @click="$emit('close')">
           <span class="fas fa-times"></span>
         </button>
       </header>
@@ -82,5 +83,5 @@
 </template>
 
 <script>
-export default {}
+export default {};
 </script>

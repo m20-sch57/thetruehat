@@ -63,11 +63,11 @@
 </template>
 
 <script>
-import navbar from "cmp/navbar.vue"
-import rules from "cmp/rulesPopup.vue"
-import feedback from "cmp/feedbackPopup.vue"
+import navbar from "cmp/navbar.vue";
+import rules from "cmp/rulesPopup.vue";
+import feedback from "cmp/feedbackPopup.vue";
 
-import app from "src/app.js"
+import app from "src/app.js";
 
 export default {
   components: {navbar, rules, feedback},
@@ -77,11 +77,11 @@ export default {
       showFeedback: false,
       isShownOptions: false,
       isShownMeeting: true
-    }
+    };
   },
   computed: {
     canStart: function () {
-      return this.$store.getters.onlinePlayers.length >= 2
+      return this.$store.getters.onlinePlayers.length >= 2;
     },
   },
   methods: {
@@ -99,5 +99,5 @@ export default {
       app.startGame();
     }
   }
-}
+};
 </script>

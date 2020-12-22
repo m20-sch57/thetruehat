@@ -20,7 +20,7 @@
 <script>
 import navbar from "cmp/navbar.vue";
 import rules from "cmp/rulesPopup.vue";
-import feedback from "cmp/feedbackPopup.vue"
+import feedback from "cmp/feedbackPopup.vue";
 
 export default {
   components: {navbar, rules, feedback},
@@ -28,7 +28,7 @@ export default {
     return {
       showRules: false,
       showFeedback: false
-    }
+    };
   }
-}
+};
 </script>

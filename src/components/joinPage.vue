@@ -127,14 +127,14 @@
 </template>
 
 <script>
-import navbar from "cmp/navbar.vue"
-import rules from "cmp/rulesPopup.vue"
-import feedback from "cmp/feedbackPopup.vue"
+import navbar from "cmp/navbar.vue";
+import rules from "cmp/rulesPopup.vue";
+import feedback from "cmp/feedbackPopup.vue";
 
-import * as api from "src/api.js"
-import app from "src/app.js"
-import {VALIDATION_TIMEOUT} from "src/config.js"
-import {debounce} from "src/tools"
+import * as api from "src/api.js";
+import app from "src/app.js";
+import {VALIDATION_TIMEOUT} from "src/config.js";
+import {debounce} from "src/tools";
 
 export default {
   components: {navbar, rules, feedback},
@@ -150,14 +150,14 @@ export default {
         username: "empty",
         key: "empty"
       }
-    }
+    };
   },
   computed: {
     validated: function () {
       return (
-          this.validationStatus.username === "accepted" &&
-          (this.validationStatus.key === "not-created" ||
-              this.validationStatus.key === "created"));
+        this.validationStatus.username === "accepted" &&
+        (this.validationStatus.key === "not-created" ||
+            this.validationStatus.key === "created"));
     }
   },
   methods: {
@@ -175,7 +175,7 @@ export default {
         app.joinRoom({
           username: this.username,
           key: this.key
-        })
+        });
       }
     }
   },
@@ -223,7 +223,7 @@ export default {
     this.watchUsername = debounce(async username => {
       this.roomInfo = await api.getRoomInfo(this.key);
       this.validateUsername(username);
-    }, VALIDATION_TIMEOUT)
+    }, VALIDATION_TIMEOUT);
   },
   watch: {
     key: function (val) {
@@ -240,5 +240,5 @@ export default {
       this.watchUsername(val);
     }
   }
-}
+};
 </script>

@@ -1,16 +1,17 @@
-import Vue from "vue";
 import store from "./store";
-import router from "./router.js"
+import router from "./router.js";
 import {timeSync} from "./tools";
-import {ERROR_TIMEOUT} from "./config.js"
+// import Vue from "vue";
+// import {ERROR_TIMEOUT} from "./config.js";
 
-const getTime = () => timeSync.getTime()
+const getTime = () => timeSync.getTime();
 
 class App {
     constructor() {
         this.debug = false;
         this.applog = [];
 
+        // eslint-disable-next-line no-undef
         this.socket = io.connect(window.location.origin,
             {"path": window.location.pathname + "socket.io"});
 
@@ -177,13 +178,13 @@ class App {
                 router.push("/results");
             },
 
-            sFailure: data => {
-                // Vue.notify({
-                // 	msg: data.msg,
-                // 	duration: ERROR_TIMEOUT
-                // });
-            }
-        }
+            // sFailure: data => {
+            //     Vue.notify({
+            //     	msg: data.msg,
+            //     	duration: ERROR_TIMEOUT
+            //     });
+            // }
+        };
 
         for (let event of Object.keys(handlers)) {
             this.socket.on(event, data => {
@@ -194,4 +195,4 @@ class App {
     }
 }
 
-export default new App()
+export default new App();
