@@ -229,7 +229,7 @@ export default {
       this.validationStatus.key = "checking";
       this.watchKey(val);
       if (Object.keys(this.$route.query)[0] !== this.key) {
-        let query = [];
+        let query = {};
         query[this.key] = null;
         this.$router.replace({query});
       }
