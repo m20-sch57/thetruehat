@@ -27,19 +27,19 @@
         <div class="room-actions">
           <button
               class="btn btn-transparent"
-              @click="copyLink()">
+              @click="copyKey()">
             <span class="fas fa-clipboard"></span>
             Ключ
           </button>
           <button
               class="btn btn-transparent"
-              @click="">
+              @click="copyLink()">
             <span class="fas fa-link"></span>
             Ссылка
           </button>
           <button
               class="btn btn-transparent leave-room"
-              @click="">
+              @click="leaveRoom()">
             <span class="fas fa-sign-out-alt"></span>
             Выйти
           </button>
@@ -111,6 +111,9 @@ export default {
     },
     startGame: function () {
       app.startGame();
+    },
+    leaveRoom: function () {
+      app.leaveRoom();
     }
   }
 };
