@@ -1,5 +1,5 @@
 <template>
-  <article class="left">
+  <article id="room">
     <header>
       <h1>{{ $store.state.room.key }}</h1>
       <button
