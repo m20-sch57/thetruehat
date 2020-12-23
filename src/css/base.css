@@ -52,6 +52,14 @@ input, textarea {
     z-index: 1000;
 }
 
+.scrollable {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .nav {
     position: relative;
     display: flex;
@@ -177,7 +185,7 @@ input, textarea {
     padding: 0.4em 1.5em 0.4em 0.6em;
     color: rgba(0, 0, 0, 0.8);
     background-color: transparent;
-    background-image: url(../img/arrow-down.svg);
+    background-image: url(img/arrow-down.svg);
     background-repeat: no-repeat;
     background-position-x: calc(100% - 5px);
     background-position-y: calc(50% - 1px);

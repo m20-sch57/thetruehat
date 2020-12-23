@@ -25,7 +25,9 @@
           <label for="feedbackCheckbox">
             <span class="fas fa-check"></span>
           </label>
-          <label for="feedbackCheckbox">Отправить полную информацию</label>
+          <label for="feedbackCheckbox">
+            Отправить полную информацию
+          </label>
         </div>
       </main>
       <footer>
