@@ -56,7 +56,7 @@ input, textarea {
     position: absolute;
     height: 100%;
     width: 100%;
-    overflow: scroll;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
 }
 
