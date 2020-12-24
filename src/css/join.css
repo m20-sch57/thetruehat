@@ -46,6 +46,7 @@
 }
 
 #join main .game-key-input input {
+    width: 100%;
     text-transform: uppercase;
 }
 
@@ -106,6 +107,10 @@
 
 #join main .your-name-input {
     font-size: 1.1em;
+}
+
+#join main .your-name-input input {
+    width: 100%;
 }
 
 #join main .your-name-status {
