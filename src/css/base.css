@@ -223,7 +223,6 @@ input, textarea {
 .checkbox {
     display: flex;
     flex-direction: row;
-    font-size: 20px;
 }
 
 .checkbox input {
@@ -276,6 +275,29 @@ input, textarea {
 }
 
 .checkbox input + label + label {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+.file {
+    display: flex;
+    flex-direction: row;
+    font-size: 95%;
+}
+
+.file input {
+    display: none;
+}
+
+.file input + label {
+    margin-right: 10px;
+}
+
+.file input + label + label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;

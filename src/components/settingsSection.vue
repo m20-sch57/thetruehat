@@ -39,6 +39,15 @@
         </div>
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h3 class="label w-250">Загрузить словарь</h3>
+          <div class="file field w-300">
+            <input type="file" id="selectDictionary">
+            <label for="selectDictionary" class="btn btn-blue">
+              Выбрать
+            </label>
+            <label for="selectDictionary">
+              Файл не выбран
+            </label>
+          </div>
         </div>
         <div
             class="layer"
