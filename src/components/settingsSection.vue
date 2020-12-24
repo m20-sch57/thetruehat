@@ -37,13 +37,13 @@
             </select>
           </label>
         </div>
-        <div class="layer" v-show="settings.termCondition == 'words'">
+        <div class="layer" v-show="settings.termCondition === 'words'">
           <h3 class="label w-300">Число слов в шляпе</h3>
           <label class="field w-300">
             <input class="input" v-model.number="settings.wordNumber">
           </label>
         </div>
-        <div class="layer" v-show="settings.termCondition == 'turns'">
+        <div class="layer" v-show="settings.termCondition === 'turns'">
           <h3 class="label w-300">Количество кругов</h3>
           <label class="field w-300">
             <input class="input" v-model.number="settings.turnNumber">
@@ -109,8 +109,7 @@ export default {
   computed: {
     serverSettings: function () {
       return store.state.room.settings;
-    },
-    lol: function () { return store.state.room.players; }
+    }
   },
   methods: {
     applySettings() {
