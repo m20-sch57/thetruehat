@@ -13,6 +13,27 @@
         },
         {
             "name": {
+                "ru": "Простые русские",
+                "en": "Easy russian"
+            },
+            "path": "./words/easy.json"
+        },
+        {
+            "name": {
+                "ru": "Средние русские",
+                "en": "Medium russian"
+            },
+            "path": "./words/med.json"
+        },
+        {
+            "name": {
+                "ru": "Сложные русские",
+                "en": "Hard russian"
+            },
+            "path": "./words/hard.json"
+        },
+        {
+            "name": {
                 "ru": "Английские слова",
                 "en": "English words"
             },
@@ -25,13 +46,13 @@
         "delayTime": 3000,
         "explanationTime": 40000,
         "aftermathTime": 3000,
-        "dictionaryId": 0,
         "strictMode": false,
         "termCondition": "words",
-        "wordNumber": 100
+        "wordsetType": "serverDictionary",
+        "dictionaryId": 0,
+        "wordNumber": 100,
+        "turnsNumber": 10
     },
-    "defaultWordNumber": 100,
-    "defaultTurnNumber": 10,
     "settingsRange": {
         "delayTime": {
             "min": 0,
@@ -49,13 +70,12 @@
             "min": 1,
             "max": 1000
         },
-        "turnNumber": {
+        "turnsNumber": {
             "min": 1,
             "max": 1000
         }
     },
     "transferTime": 1000,
-    "timetableDepth": 12,
     "minKeyLength": 6,
     "maxKeyLength": 11,
     "keyConsonant": [
