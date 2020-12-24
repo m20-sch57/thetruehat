@@ -11,7 +11,7 @@
     <main>
       <div class="scrollable">
         <div class="layer">
-          <h3 class="label w-100">Играть</h3>
+          <h4 class="label w-100">Играть</h4>
           <label class="field w-300">
             <select
                 class="select btn-bordered btn-transparent"
@@ -22,7 +22,7 @@
           </label>
         </div>
         <div class="layer">
-          <h3 class="label w-100">Слова</h3>
+          <h4 class="label w-100">Слова</h4>
           <label class="field w-300">
             <select
                 class="select btn-bordered btn-transparent"
@@ -38,13 +38,13 @@
           </label>
         </div>
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
-          <h3 class="label w-250">Загрузить словарь</h3>
+          <h4 class="label w-250">Загрузить словарь</h4>
           <div class="file field w-300">
-            <input type="file" id="selectDictionary">
-            <label for="selectDictionary" class="btn btn-blue">
+            <input type="file" id="uploadDictionary">
+            <label for="uploadDictionary" class="btn btn-blue">
               Выбрать
             </label>
-            <label for="selectDictionary">
+            <label for="uploadDictionary">
               Файл не выбран
             </label>
           </div>
@@ -53,19 +53,19 @@
             class="layer"
             v-show="settings.termCondition === 'words' &&
               settings.wordsetSource[0] !== 'playerWords'">
-          <h3 class="label w-250">Число слов в шляпе</h3>
+          <h4 class="label w-250">Число слов в шляпе</h4>
           <label class="field w-300 w-70-mobile">
             <input class="input" v-model.number="settings.wordNumber">
           </label>
         </div>
         <div class="layer" v-show="settings.termCondition === 'turns'">
-          <h3 class="label w-250">Количество кругов</h3>
+          <h4 class="label w-250">Количество кругов</h4>
           <label class="field w-300 w-70-mobile">
             <input class="input" v-model.number="settings.turnsNumber">
           </label>
         </div>
         <div class="layer">
-          <h3 class="label w-300">Формат времени (сек)</h3>
+          <h4 class="label w-300">Формат времени (сек)</h4>
           <label class="field w-300">
             <input
                 class="input w-70"
