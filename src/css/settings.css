@@ -37,6 +37,11 @@
     min-width: 100px;
 }
 
+#settings main .layer .w-250 {
+    width: 250px;
+    min-width: 250px;
+}
+
 #settings main .layer .w-300 {
     width: 300px;
     min-width: 300px;
@@ -65,11 +70,12 @@
 }
 
 @media (max-width: 650px) {
-    #settings main .layer .label, #settings main .layer .field {
-        flex-grow: 1;
+    #settings main .layer .w-70-mobile {
+        width: 70px;
+        min-width: 70px;
     }
 
-    #settings main .layer .input:not(.always-center) {
-        text-align: left;
+    #settings main .layer .label, #settings main .layer .field {
+        flex-grow: 1;
     }
 }

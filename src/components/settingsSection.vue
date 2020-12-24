@@ -38,14 +38,14 @@
           </label>
         </div>
         <div class="layer" v-show="settings.termCondition === 'words'">
-          <h3 class="label w-300">Число слов в шляпе</h3>
-          <label class="field w-300">
+          <h3 class="label w-250">Число слов в шляпе</h3>
+          <label class="field w-300 w-70-mobile">
             <input class="input" v-model.number="settings.wordNumber">
           </label>
         </div>
         <div class="layer" v-show="settings.termCondition === 'turns'">
-          <h3 class="label w-300">Количество кругов</h3>
-          <label class="field w-300">
+          <h3 class="label w-250">Количество кругов</h3>
+          <label class="field w-300 w-70-mobile">
             <input class="input" v-model.number="settings.turnsNumber">
           </label>
         </div>
@@ -53,15 +53,15 @@
           <h3 class="label w-300">Формат времени (сек)</h3>
           <label class="field w-300">
             <input
-                class="input always-center w-70"
+                class="input w-70"
                 v-model.number="settings.delayTime">
             <span>+</span>
             <input
-                class="input always-center w-70"
+                class="input w-70"
                 v-model.number="settings.explanationTime">
             <span>+</span>
             <input
-                class="input always-center w-70"
+                class="input w-70"
                 v-model.number="settings.aftermathTime">
           </label>
         </div>
@@ -123,10 +123,12 @@ export default {
   },
   watch: {
     serverSettings: function () {
-      this.settings = {...store.state.room.settings,
+      this.settings = {
+        ...store.state.room.settings,
         delayTime: store.state.room.settings.delayTime / 1000,
         explanationTime: store.state.room.settings.explanationTime / 1000,
-        aftermathTime: store.state.room.settings.aftermathTime / 1000};
+        aftermathTime: store.state.room.settings.aftermathTime / 1000
+      };
     }
   }
 };
