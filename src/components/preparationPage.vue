@@ -45,7 +45,6 @@ export default {
   },
   methods: {
     toggleShownWindow: function () {
-      console.log("lol");
       this.isShownSettingsSection = !this.isShownSettingsSection;
       this.isShownRoomSection = !this.isShownRoomSection;
     }

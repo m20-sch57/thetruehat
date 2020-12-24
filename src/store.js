@@ -26,7 +26,8 @@ const roomModule = {
         word: null,
         editWords: null,
         roundId: 0,
-        results: null
+        results: null,
+        settings: null
     },
     mutations: {
         leaveRoom(state) {
