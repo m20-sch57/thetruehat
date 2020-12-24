@@ -434,7 +434,7 @@ localCaddyfile
 localRunCaddy
 
 # versioning
-static/version.js
+src/version.js
 version.json
 
 # build
