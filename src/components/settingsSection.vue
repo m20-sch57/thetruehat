@@ -46,7 +46,7 @@
         <div class="layer" v-show="settings.termCondition === 'turns'">
           <h3 class="label w-300">Количество кругов</h3>
           <label class="field w-300">
-            <input class="input" v-model.number="settings.turnNumber">
+            <input class="input" v-model.number="settings.turnsNumber">
           </label>
         </div>
         <div class="layer">
