@@ -123,10 +123,12 @@ export default {
   },
   watch: {
     serverSettings: function () {
-      this.settings = {...store.state.room.settings,
+      this.settings = {
+        ...store.state.room.settings,
         delayTime: store.state.room.settings.delayTime / 1000,
         explanationTime: store.state.room.settings.explanationTime / 1000,
-        aftermathTime: store.state.room.settings.aftermathTime / 1000};
+        aftermathTime: store.state.room.settings.aftermathTime / 1000
+      };
     }
   }
 };
