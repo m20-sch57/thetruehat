@@ -11,7 +11,7 @@
     <main>
       <div class="scrollable">
         <div class="layer">
-          <h4 class="label w-100">Играть</h4>
+          <h4 class="label w-80">Играть</h4>
           <label class="field w-300">
             <select
                 class="select btn-bordered btn-transparent"
@@ -22,7 +22,7 @@
           </label>
         </div>
         <div class="layer">
-          <h4 class="label w-100">Слова</h4>
+          <h4 class="label w-80">Слова</h4>
           <label class="field w-300">
             <select
                 class="select btn-bordered btn-transparent"
@@ -65,7 +65,7 @@
           </label>
         </div>
         <div class="layer">
-          <h4 class="label w-300">Формат времени (сек)</h4>
+          <h4 class="label w-250">Формат времени (сек)</h4>
           <label class="field w-300">
             <input
                 class="input w-70"
