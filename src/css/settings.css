@@ -1,0 +1,75 @@
+#settings header {
+    background-color: lightblue;
+}
+
+#settings main {
+    position: relative;
+    flex-grow: 1;
+}
+
+#settings main .scrollable {
+    padding: 10px;
+}
+
+#settings main .layer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+#settings main .layer-detached {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 25px 10px;
+}
+
+#settings main .layer .w-70 {
+    width: 70px;
+    min-width: 70px;
+}
+
+#settings main .layer .w-100 {
+    width: 100px;
+    min-width: 100px;
+}
+
+#settings main .layer .w-300 {
+    width: 300px;
+    min-width: 300px;
+}
+
+#settings main .layer .label {
+    margin: 10px auto 10px 10px;
+    font-weight: normal;
+}
+
+#settings main .layer .field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#settings main .layer .select {
+    margin: 0;
+    width: 100%;
+}
+
+#settings main .layer .input {
+    flex-grow: 1;
+    margin: 0 10px;
+    text-align: center;
+}
+
+@media (max-width: 650px) {
+    #settings main .layer .label, #settings main .layer .field {
+        flex-grow: 1;
+    }
+
+    #settings main .layer .input:not(.always-center) {
+        text-align: left;
+    }
+}

@@ -26,14 +26,6 @@
     border-top-right-radius: 20px;
 }
 
-#preparation .left header {
-    background-color: lightgreen;
-}
-
-#preparation .right header {
-    background-color: lightblue;
-}
-
 #preparation header h1 {
     margin: 0;
     font-weight: normal;
@@ -42,88 +34,6 @@
 #preparation header .expand {
     display: none;
     margin-left: auto;
-}
-
-#preparation .left main {
-    position: relative;
-    flex-grow: 1;
-}
-
-#preparation .left main .room-actions {
-    display: flex;
-    flex-direction: row;
-    padding: 10px;
-    border-bottom: 1px solid whitesmoke;
-}
-
-#preparation .left main .room-actions button {
-    margin: 0;
-}
-
-#preparation .left main .room-actions .leave-room {
-    margin-left: auto;
-}
-
-#preparation .right main {
-    position: relative;
-    flex-grow: 1;
-}
-
-#preparation .right main .scrollable {
-    padding: 10px;
-}
-
-#preparation .right main .layer {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-#preparation .right main .layer-detached {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    margin: 25px 10px;
-}
-
-#preparation .right main .layer .w-70 {
-    width: 70px;
-    min-width: 70px;
-}
-
-#preparation .right main .layer .w-100 {
-    width: 100px;
-    min-width: 100px;
-}
-
-#preparation .right main .layer .w-300 {
-    width: 300px;
-    min-width: 300px;
-}
-
-#preparation .right main .layer .label {
-    margin: 10px auto 10px 10px;
-    font-weight: normal;
-}
-
-#preparation .right main .layer .field {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-#preparation .right main .layer .select {
-    margin: 0;
-    width: 100%;
-}
-
-#preparation .right main .layer .input {
-    flex-grow: 1;
-    margin: 0 5px;
-    text-align: center;
 }
 
 #preparation footer {
@@ -144,6 +54,15 @@
 
     #preparation article {
         margin: 5px;
+    }
+
+    #preparation header {
+        padding: 15px;
+        font-size: 80%;
+    }
+
+    #preparation footer {
+        padding: 10px;
     }
 
     #preparation footer button {

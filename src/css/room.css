@@ -1,0 +1,29 @@
+#room header {
+    background-color: lightgreen;
+}
+
+#room main {
+    position: relative;
+    flex-grow: 1;
+}
+
+#room main .room-actions {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    border-bottom: 1px solid whitesmoke;
+}
+
+#room main .room-actions button {
+    margin: 0;
+}
+
+#room main .room-actions .leave-room {
+    margin-left: auto;
+}
+
+@media (max-width: 800px) {
+    #room main .room-actions {
+        padding: 5px;
+    }
+}
