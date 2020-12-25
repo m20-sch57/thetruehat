@@ -71,7 +71,7 @@
           <h4 class="label w-250">Количество кругов</h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
-                lass="input"
+                class="input"
                 :disabled="!editModeOn"
                 v-model.number="settings.turnsNumber">
           </label>
