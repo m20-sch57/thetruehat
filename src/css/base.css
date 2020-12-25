@@ -298,10 +298,6 @@ input, textarea {
     -moz-user-select: none;
 }
 
-.checkbox input:disabled + label + label {
-    color: grey;
-}
-
 .file {
     display: flex;
     flex-direction: row;
