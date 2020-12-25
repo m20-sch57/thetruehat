@@ -46,6 +46,11 @@
     padding-right: 50px;
 }
 
+#preparation footer h4 {
+    margin: 0;
+    font-weight: normal;
+}
+
 @media (max-width: 800px) {
     #preparation {
         flex-direction: column;
@@ -67,6 +72,10 @@
 
     #preparation footer button {
         width: 100%;
+    }
+
+    #preparation footer h4 {
+        text-align: center;
     }
 
     #preparation .collapsed {

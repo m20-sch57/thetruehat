@@ -119,9 +119,9 @@
           class="btn btn-blue">
         Сохранить
       </button>
-      <span v-show="!editModeOn">
+      <h4 v-show="!editModeOn">
         Хост может изменять настройки
-      </span>
+      </h4>
     </footer>
   </article>
 </template>
