@@ -194,6 +194,11 @@ input, textarea {
     line-height: 1.5em;
 }
 
+.select:disabled {
+    color: grey;
+    background-color: whitesmoke;
+}
+
 .input {
     padding: 0.1em 0;
     min-width: 0;
@@ -290,15 +295,20 @@ input, textarea {
     display: none;
 }
 
-.file input + label {
-    margin-right: 10px;
+.file input:disabled + label {
+    display: none;
 }
 
 .file input + label + label {
+    margin-left: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+}
+
+.file input:disabled + label + label {
+    color: grey;
 }
