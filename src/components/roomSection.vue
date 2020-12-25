@@ -31,29 +31,21 @@
           </button>
         </div>
         <div class="users">
-          <div class="user-layer">
+          <div
+              class="user-layer"
+              v-for="username in $store.getters.onlinePlayers"
+              :key="username">
             <picture>
-              <img src="img/hat.png" alt="user-icon">
+              <img
+                  v-if="username === $store.state.room.host"
+                  src="img/hat.png"
+                  alt="user-icon">
+              <img
+                  v-else
+                  src="img/user.png"
+                  alt="user-icon">
             </picture>
-            <h4>Вася Пупкин</h4>
-          </div>
-          <div class="user-layer">
-            <picture>
-              <img src="img/user.png" alt="user-icon">
-            </picture>
-            <h4>Петя Лупкин</h4>
-          </div>
-          <div class="user-layer">
-            <picture>
-              <img src="img/user.png" alt="user-icon">
-            </picture>
-            <h4>Ваня Машина</h4>
-          </div>
-          <div class="user-layer">
-            <picture>
-              <img src="img/user.png" alt="user-icon">
-            </picture>
-            <h4>Федро Сливер</h4>
+            <h4> {{ username }} </h4>
           </div>
         </div>
       </div>
@@ -76,7 +68,6 @@
 <script>
 import app from "src/app.js";
 import store from "src/store.js";
-
 export default {
   computed: {
     canStart: function () {
