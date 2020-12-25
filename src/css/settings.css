@@ -24,7 +24,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    margin: 25px 10px;
+    margin: 20px 10px;
 }
 
 #settings main .layer .w-70 {
@@ -32,9 +32,9 @@
     min-width: 70px;
 }
 
-#settings main .layer .w-100 {
-    width: 100px;
-    min-width: 100px;
+#settings main .layer .w-80 {
+    width: 80px;
+    min-width: 80px;
 }
 
 #settings main .layer .w-250 {
