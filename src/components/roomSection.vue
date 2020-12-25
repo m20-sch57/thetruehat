@@ -34,23 +34,31 @@
     </main>
     <footer>
       <button
+          v-show="isHost"
           class="btn btn-green"
           @click="startGame()"
           :disabled="!canStart">
         Начать игру
       </button>
+      <h4 v-show="!isHost">
+        Хост может начать игру
+      </h4>
     </footer>
   </article>
 </template>
 
 <script>
 import app from "src/app.js";
+import store from "src/store.js";
 
 export default {
   computed: {
     canStart: function () {
       return this.$store.getters.onlinePlayers.length >= 2;
     },
+    isHost: function () {
+      return store.getters.isHost;
+    }
   },
   methods: {
     copyKey: function () {
