@@ -144,7 +144,7 @@ export default {
       if (this.settings.dictionaryFileInfo === undefined) {
         return "Файл не загружен";
       } else {
-        return `[${this.settings.dictionaryFileInfo.wordNumber}] ${
+        return `${this.settings.dictionaryFileInfo.wordNumber} слов, ${
           this.settings.dictionaryFileInfo.filename}`;
       }
     },
