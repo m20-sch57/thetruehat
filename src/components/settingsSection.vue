@@ -127,8 +127,8 @@ export default {
       if (this.settings.dictionaryFileInfo === undefined) {
         return "Файл не загружен";
       } else {
-        return `${this.settings.dictionaryFileInfo.filename} (${
-          this.settings.dictionaryFileInfo.wordNumber})`;
+        return `[${this.settings.dictionaryFileInfo.wordNumber}] ${
+          this.settings.dictionaryFileInfo.filename}`;
       }
     }
   },
