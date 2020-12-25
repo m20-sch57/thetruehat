@@ -40,12 +40,12 @@
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">Загрузить словарь</h4>
           <div class="file field w-300">
-            <input type="file" id="uploadDictionary">
+            <input type="file" id="uploadDictionary" @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
               Выбрать
             </label>
             <label for="uploadDictionary">
-              Файл не выбран
+              {{ dictionaryFilePreview }}
             </label>
           </div>
         </div>
@@ -109,6 +109,7 @@
 <script>
 import app from "src/app.js";
 import store from "src/store.js";
+import {DICTIONARY_MAX_SIZE} from "src/config.js";
 
 const room = store.state.room;
 
@@ -121,6 +122,14 @@ export default {
   computed: {
     serverSettings: function () {
       return room.settings;
+    },
+    dictionaryFilePreview: function () {
+      if (this.settings.dictionaryFileInfo === undefined) {
+        return "Файл не загружен";
+      } else {
+        return `${this.settings.dictionaryFileInfo.filename} (${
+          this.settings.dictionaryFileInfo.wordNumber})`;
+      }
     }
   },
   methods: {
@@ -128,9 +137,45 @@ export default {
       app.applySettings(this.storeFromLocalSettings());
     },
 
+    updateHostDictionary(el) {
+      if (el.files.length) {
+        let file = el.files[0];
+
+        if (file.type !== "" && file.type !== "text/plain") {
+          // TODO: Показать ошибку
+          return false;
+        }
+        if (file.size > DICTIONARY_MAX_SIZE) {
+          // TODO: Показать ошибку
+          return false;
+        }
+
+        let reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+
+        reader.onload = (evt) => {
+          let lines = evt.target.result.split("\n").map(x => x.trim());
+          this.settings.wordset = [...new Set(lines.filter(x => x !== ""))];
+
+          // Необходимо пересдать объект настроек для реактивности.
+          this.settings = {
+            ...this.settings,
+            dictionaryFileInfo: {
+              filename: file.name,
+              wordNumber:  this.settings.wordset.length
+            }
+          };
+        };
+
+        reader.onerror = () => {
+          // TODO: Показать ошибку
+        };
+      }
+    },
+
     // Есть два представления для настроек.
-    // store - то, как настройки хранятмся
-    // в данный момеент на сервере.
+    // store - то, как настройки хранятся
+    // в данный момент на сервере.
     // local - то, как настройки хранятся
     // в формах, в которые их ввёл пользователь.
     // Следующие две функции преобразуют настройки
@@ -195,6 +240,7 @@ export default {
       }
       if (res.wordsetType === "hostDictionary") {
         res.dictionaryFileInfo = this.settings.dictionaryFileInfo;
+        res.wordset = this.settings.wordset;
       }
       return res;
     }
