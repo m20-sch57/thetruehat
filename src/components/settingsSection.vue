@@ -14,6 +14,7 @@
           <h4 class="label w-80">Играть</h4>
           <label class="field w-300 w-350-desktop">
             <select
+                :disabled="!editModeOn"
                 class="select btn-bordered btn-transparent"
                 v-model="settings.termCondition">
               <option :value="'words'">Пока не кончатся слова</option>
@@ -25,6 +26,7 @@
           <h4 class="label w-80">Слова</h4>
           <label class="field w-300 w-350-desktop">
             <select
+                :disabled="!editModeOn"
                 class="select btn-bordered btn-transparent"
                 v-model="settings.wordsetSource">
               <option :value="['serverDictionary', 0]">Русские, 14141 слово</option>
@@ -40,7 +42,11 @@
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">Загрузить словарь</h4>
           <div class="file field w-300 w-350-desktop">
-            <input type="file" id="uploadDictionary" @change="event => updateHostDictionary(event.target)">
+            <input
+                type="file"
+                id="uploadDictionary"
+                :disabled="!editModeOn"
+                @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
               Выбрать
             </label>
@@ -55,13 +61,19 @@
               settings.wordsetSource[0] !== 'playerWords'">
           <h4 class="label w-250">Число слов в шляпе</h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
-            <input class="input" v-model.number="settings.wordNumber">
+            <input
+                class="input"
+                :disabled="!editModeOn"
+                v-model.number="settings.wordNumber">
           </label>
         </div>
         <div class="layer" v-show="settings.termCondition === 'turns'">
           <h4 class="label w-250">Количество кругов</h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
-            <input class="input" v-model.number="settings.turnsNumber">
+            <input
+                lass="input"
+                :disabled="!editModeOn"
+                v-model.number="settings.turnsNumber">
           </label>
         </div>
         <div class="layer">
@@ -69,20 +81,24 @@
           <label class="field w-300 w-350-desktop">
             <input
                 class="input w-70"
+                :disabled="!editModeOn"
                 v-model.number="settings.delayTime">
             <span>+</span>
             <input
                 class="input w-70"
+                :disabled="!editModeOn"
                 v-model.number="settings.explanationTime">
             <span>+</span>
             <input
                 class="input w-70"
+                :disabled="!editModeOn"
                 v-model.number="settings.aftermathTime">
           </label>
         </div>
         <div class="layer-detached">
           <div class="checkbox">
             <input
+                :disabled="!editModeOn"
                 v-model="settings.strictMode"
                 type="checkbox"
                 id="strictModeCheckbox">
@@ -119,6 +135,7 @@ export default {
       settings: {}
     };
   },
+
   computed: {
     serverSettings: function () {
       return room.settings;
@@ -130,8 +147,12 @@ export default {
         return `[${this.settings.dictionaryFileInfo.wordNumber}] ${
           this.settings.dictionaryFileInfo.filename}`;
       }
+    },
+    editModeOn: function () {
+      return store.getters.isHost;
     }
   },
+
   methods: {
     applySettings() {
       app.applySettings(this.storeFromLocalSettings());
@@ -245,9 +266,11 @@ export default {
       return res;
     }
   },
+
   created: function() {
     this.settings = this.localFromStoreSettings();
   },
+
   watch: {
     serverSettings: function () {
       this.settings = this.localFromStoreSettings();
