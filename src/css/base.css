@@ -194,6 +194,11 @@ input, textarea {
     line-height: 1.5em;
 }
 
+.select:disabled {
+    color: grey;
+    background-color: whitesmoke;
+}
+
 .input {
     padding: 0.1em 0;
     min-width: 0;
@@ -235,17 +240,25 @@ input, textarea {
     height: 1.25em;
     width: 1.25em;
     margin: auto 5px auto 0;
-    background-color: white;
     border: 1px solid rgb(187, 187, 187);
     border-radius: 50%;
 }
 
-.checkbox input + label:hover {
+.checkbox input:not([disabled]) + label {
+    background-color: white;
+}
+
+.checkbox input:not([disabled]) + label:hover {
     background-color: whitesmoke;
 }
 
-.checkbox input + label:active {
+.checkbox input:not([disabled]) + label:active {
     background-color: #e5e5e5;
+}
+
+.checkbox input:disabled + label {
+    background-color: whitesmoke;
+    border-color: lightgrey;
 }
 
 .checkbox input + label span {
@@ -255,19 +268,24 @@ input, textarea {
     margin: auto;
 }
 
-.checkbox input:checked + label {
+.checkbox input:checked:not([disabled]) + label {
     color: white;
     background-color: rgb(65, 193, 225);
     border-color: transparent;
     box-shadow: 0 0 10px lightgrey;
 }
 
-.checkbox input:checked + label:hover {
+.checkbox input:checked:not([disabled]) + label:hover {
     background-color: rgb(70, 180, 207);
 }
 
-.checkbox input:checked + label:active {
+.checkbox input:checked:not([disabled]) + label:active {
     background-color: rgb(53, 160, 187);
+}
+
+.checkbox input:checked:disabled + label {
+    background-color: lightgrey;
+    border-color: transparent;
 }
 
 .checkbox input:checked + label span {
@@ -290,15 +308,20 @@ input, textarea {
     display: none;
 }
 
-.file input + label {
-    margin-right: 10px;
+.file input:disabled + label {
+    display: none;
 }
 
 .file input + label + label {
+    margin-left: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+}
+
+.file input:disabled + label + label {
+    color: grey;
 }
