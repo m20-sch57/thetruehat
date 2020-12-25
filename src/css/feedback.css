@@ -74,6 +74,10 @@
         font-size: 80%;
     }
 
+    #feedback footer {
+        padding: 15px;
+    }
+
     #feedback footer button {
         width: 100%;
     }

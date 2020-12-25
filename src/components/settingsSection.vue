@@ -12,7 +12,7 @@
       <div class="scrollable">
         <div class="layer">
           <h4 class="label w-80">Играть</h4>
-          <label class="field w-300">
+          <label class="field w-300 w-350-desktop">
             <select
                 class="select btn-bordered btn-transparent"
                 v-model="settings.termCondition">
@@ -23,7 +23,7 @@
         </div>
         <div class="layer">
           <h4 class="label w-80">Слова</h4>
-          <label class="field w-300">
+          <label class="field w-300 w-350-desktop">
             <select
                 class="select btn-bordered btn-transparent"
                 v-model="settings.wordsetSource">
@@ -39,7 +39,7 @@
         </div>
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">Загрузить словарь</h4>
-          <div class="file field w-300">
+          <div class="file field w-300 w-350-desktop">
             <input type="file" id="uploadDictionary" @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
               Выбрать
@@ -54,19 +54,19 @@
             v-show="settings.termCondition === 'words' &&
               settings.wordsetSource[0] !== 'playerWords'">
           <h4 class="label w-250">Число слов в шляпе</h4>
-          <label class="field w-300 w-70-mobile">
+          <label class="field w-300 w-350-desktop w-70-mobile">
             <input class="input" v-model.number="settings.wordNumber">
           </label>
         </div>
         <div class="layer" v-show="settings.termCondition === 'turns'">
           <h4 class="label w-250">Количество кругов</h4>
-          <label class="field w-300 w-70-mobile">
+          <label class="field w-300 w-350-desktop w-70-mobile">
             <input class="input" v-model.number="settings.turnsNumber">
           </label>
         </div>
         <div class="layer">
           <h4 class="label w-250">Формат времени (сек)</h4>
-          <label class="field w-300">
+          <label class="field w-300 w-350-desktop">
             <input
                 class="input w-70"
                 v-model.number="settings.delayTime">

@@ -79,3 +79,10 @@
         flex-grow: 1;
     }
 }
+
+@media (min-width: 1000px) {
+    #settings main .layer .w-350-desktop {
+        width: 350px;
+        min-width: 350px;
+    }
+}
