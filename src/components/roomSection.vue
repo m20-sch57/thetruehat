@@ -45,7 +45,7 @@
                   src="img/user.png"
                   alt="user-icon">
             </picture>
-            <h4> {{ username }} </h4>
+            <h3> {{ username }} </h3>
           </div>
         </div>
       </div>

@@ -23,32 +23,28 @@
 }
 
 #room main .users {
-    margin: 15px 0;
+    margin: 20px;
 }
 
 #room main .user-layer {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 5px 15px;
-}
-
-#room main .user-layer:hover {
-    background-color: whitesmoke;
+    margin: 7px 0;
 }
 
 #room main .user-layer picture {
     display: flex;
     align-items: center;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 #room main .user-layer img {
     height: auto;
-    width: 20px;
+    width: 25px;
 }
 
-#room main .user-layer h4 {
+#room main .user-layer h3 {
     margin: 0;
     font-weight: normal;
 }
@@ -56,5 +52,10 @@
 @media (max-width: 800px) {
     #room main .room-actions {
         padding: 5px;
+    }
+
+    #room main .user-layer h3 {
+        margin-left: auto;
+        margin-right: auto;
     }
 }
