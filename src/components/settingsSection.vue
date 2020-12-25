@@ -114,10 +114,14 @@
     </main>
     <footer>
       <button
+          v-show="editModeOn"
           @click="applySettings()"
           class="btn btn-blue">
         Сохранить
       </button>
+      <span v-show="!editModeOn">
+        Хост может изменять настройки
+      </span>
     </footer>
   </article>
 </template>
