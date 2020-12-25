@@ -23,14 +23,18 @@
 }
 
 #room main .users {
-    padding: 15px;
+    margin: 15px 0;
 }
 
 #room main .user-layer {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 5px;
+    padding: 5px 15px;
+}
+
+#room main .user-layer:hover {
+    background-color: whitesmoke;
 }
 
 #room main .user-layer picture {
