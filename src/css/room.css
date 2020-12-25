@@ -22,6 +22,33 @@
     margin-left: auto;
 }
 
+#room main .users {
+    padding: 15px;
+}
+
+#room main .user-layer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+}
+
+#room main .user-layer picture {
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+}
+
+#room main .user-layer img {
+    height: auto;
+    width: 20px;
+}
+
+#room main .user-layer h4 {
+    margin: 0;
+    font-weight: normal;
+}
+
 @media (max-width: 800px) {
     #room main .room-actions {
         padding: 5px;

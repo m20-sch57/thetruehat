@@ -30,6 +30,32 @@
             Выйти
           </button>
         </div>
+        <div class="users">
+          <div class="user-layer">
+            <picture>
+              <img src="img/hat.png" alt="user-icon">
+            </picture>
+            <h4>Вася Пупкин</h4>
+          </div>
+          <div class="user-layer">
+            <picture>
+              <img src="img/user.png" alt="user-icon">
+            </picture>
+            <h4>Петя Лупкин</h4>
+          </div>
+          <div class="user-layer">
+            <picture>
+              <img src="img/user.png" alt="user-icon">
+            </picture>
+            <h4>Ваня Машина</h4>
+          </div>
+          <div class="user-layer">
+            <picture>
+              <img src="img/user.png" alt="user-icon">
+            </picture>
+            <h4>Федро Сливер</h4>
+          </div>
+        </div>
       </div>
     </main>
     <footer>
