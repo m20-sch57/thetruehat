@@ -44,7 +44,6 @@
                   v-else
                   src="img/user.png"
                   alt="user-icon">
-              <div>Я</div>
             </picture>
             <h3> {{ username }} </h3>
           </div>

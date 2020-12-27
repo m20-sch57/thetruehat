@@ -45,16 +45,6 @@
     width: 22px;
 }
 
-#room main .user-layer picture div {
-    position: absolute;
-    bottom: 0;
-    left: 100%;
-    transform: translate(-1px, 50%);
-    color: limegreen;
-    font-size: 12px;
-    font-weight: bold;
-}
-
 #room main .user-layer h3 {
     margin: 0;
     font-weight: normal;
