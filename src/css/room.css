@@ -34,6 +34,7 @@
 }
 
 #room main .user-layer picture {
+    position: relative;
     display: flex;
     align-items: center;
     margin-right: 10px;
@@ -41,7 +42,17 @@
 
 #room main .user-layer img {
     height: auto;
-    width: 25px;
+    width: 22px;
+}
+
+#room main .user-layer picture div {
+    position: absolute;
+    bottom: 0;
+    left: 100%;
+    transform: translate(-1px, 50%);
+    color: limegreen;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 #room main .user-layer h3 {
