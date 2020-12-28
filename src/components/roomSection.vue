@@ -3,9 +3,9 @@
     <header>
       <h1>{{ $store.state.room.key }}</h1>
       <button
-          class="btn-icon expand"
-          @click="$emit('toggle-shown-window')">
-        <span class="fas fa-angle-down"></span>
+          class="btn-icon right"
+          @click="$emit('swipe-to-settings')">
+        <span class="fas fa-cog"></span>
       </button>
     </header>
     <main>

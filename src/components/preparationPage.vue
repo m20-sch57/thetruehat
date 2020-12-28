@@ -13,16 +13,14 @@
       v-show="showFeedback"
       @close="showFeedback = false"
   />
-  <div
-      class="page"
-      id="preparation">
-    <roomSection
-        @toggle-shown-window="toggleShownWindow()"
-        :class="{collapsed: !isShownRoomSection}"/>
-    <settingsSection
-        @toggle-shown-window="toggleShownWindow()"
-        :class="{collapsed: !isShownSettingsSection}"/>
-  </div>
+  <swiper class="page" id="preparation" :options="swiperOptions">
+    <swiper-slide>
+      <roomSection @swipe-to-settings="swiper().slideTo(1)"/>
+    </swiper-slide>
+    <swiper-slide>
+      <settingsSection @swipe-to-room="swiper().slideTo(0)"/>
+    </swiper-slide>
+  </swiper>
   </body>
 </template>
 
@@ -33,20 +31,29 @@ import feedback from "cmp/feedbackPopup.vue";
 import roomSection from "cmp/roomSection.vue";
 import settingsSection from "cmp/settingsSection.vue";
 
+import { Swiper, SwiperSlide } from "vue-awesome-swiper";
+import "swiper/swiper-bundle.css";
+
 export default {
-  components: {navbar, rules, feedback, roomSection, settingsSection},
+  components: {navbar, rules, feedback, roomSection, settingsSection, Swiper, SwiperSlide},
   data: function () {
     return {
       showRules: false,
       showFeedback: false,
-      isShownSettingsSection: false,
-      isShownRoomSection: true
+      swiperOptions: {
+        slidesPerView: 1,
+        breakpoints: {
+          800: {
+            followFinger: false,
+            slidesPerView: 2,
+          }
+        }
+      }
     };
   },
   methods: {
-    toggleShownWindow: function () {
-      this.isShownSettingsSection = !this.isShownSettingsSection;
-      this.isShownRoomSection = !this.isShownRoomSection;
+    swiper: function () {
+      return document.getElementById("preparation").swiper;
     }
   }
 };

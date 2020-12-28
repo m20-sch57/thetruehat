@@ -12,6 +12,7 @@ body {
     flex-direction: column;
     flex: 1;
     margin: 0;
+    width: 100vw;
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -52,6 +53,14 @@ input, textarea {
     z-index: 1000;
 }
 
+.swiper-wrapper {
+    height: initial !important;
+}
+
+.swiper-slide {
+    display: flex;
+}
+
 .scrollable {
     position: absolute;
     height: 100%;
@@ -66,6 +75,7 @@ input, textarea {
     background-color: white;
     font-size: 20px;
     box-shadow: 0 0 10px lightgrey;
+    z-index: 10;
 }
 
 .link {

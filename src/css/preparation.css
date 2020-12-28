@@ -1,12 +1,10 @@
 #preparation {
-    flex-direction: row;
     padding: 10px;
 }
 
 #preparation article {
     display: flex;
     flex-direction: column;
-    flex-basis: 50%;
     flex-grow: 1;
     margin: 10px;
     background-color: white;
@@ -27,13 +25,13 @@
 }
 
 #preparation header h1 {
+    flex-grow: 1;
     margin: 0;
     font-weight: normal;
 }
 
-#preparation header .expand {
+#preparation header .right {
     display: none;
-    margin-left: auto;
 }
 
 #preparation footer {
@@ -54,7 +52,6 @@
 
 @media (max-width: 800px) {
     #preparation {
-        flex-direction: column;
         padding: 5px;
     }
 
@@ -79,19 +76,7 @@
         text-align: center;
     }
 
-    #preparation .collapsed {
-        flex: 0;
-    }
-
-    #preparation .collapsed header .expand {
+    #preparation header .right {
         display: inline-block;
-    }
-
-    #preparation .collapsed main, #preparation .collapsed footer {
-        display: none;
-    }
-
-    #preparation .collapsed header {
-        border-radius: 20px;
     }
 }

@@ -3,9 +3,9 @@
     <header>
       <h1>Параметры игры</h1>
       <button
-          class="btn-icon expand"
-          @click="$emit('toggle-shown-window')">
-        <span class="fas fa-angle-down"></span>
+          class="btn-icon right"
+          @click="$emit('swipe-to-room')">
+        <span class="fas fa-times"></span>
       </button>
     </header>
     <main>
