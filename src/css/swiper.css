@@ -1,0 +1,7 @@
+.swiper-wrapper {
+    height: initial !important;
+}
+
+.swiper-slide {
+    display: flex;
+}

@@ -53,14 +53,6 @@ input, textarea {
     z-index: 1000;
 }
 
-.swiper-wrapper {
-    height: initial !important;
-}
-
-.swiper-slide {
-    display: flex;
-}
-
 .scrollable {
     position: absolute;
     height: 100%;
