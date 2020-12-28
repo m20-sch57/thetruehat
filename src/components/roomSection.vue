@@ -45,7 +45,7 @@
                   src="img/user.png"
                   alt="user-icon">
             </picture>
-            <h3> {{ username }} </h3>
+            <h3> {{ usernamePreview(username) }} </h3>
           </div>
         </div>
       </div>
@@ -68,6 +68,9 @@
 <script>
 import app from "src/app.js";
 import store from "src/store.js";
+
+const room = store.state.room;
+
 export default {
   computed: {
     canStart: function () {
@@ -78,8 +81,11 @@ export default {
     }
   },
   methods: {
+    usernamePreview: function (username) {
+      return username + (username === room.username ? " (я)" : "");
+    },
     copyKey: function () {
-      navigator.clipboard.writeText(this.$store.state.room.key);
+      navigator.clipboard.writeText(room.key);
     },
     copyLink: function () {
       navigator.clipboard.writeText(decodeURIComponent(window.location));
