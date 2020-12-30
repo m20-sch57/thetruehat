@@ -6,6 +6,8 @@ import faqPage from "cmp/faqPage.vue";
 import aboutPage from "cmp/aboutPage.vue";
 import gamePage from "cmp/gamePage.vue";
 
+import playPage from "cmp/playPage.vue"; // Remove then
+
 Vue.use(VueRouter);
 
 export default new VueRouter({
@@ -16,6 +18,7 @@ export default new VueRouter({
         {path: "/about",    component: aboutPage,  meta: "about"},
         {path: "/rules",    component: mainPage,   meta: "main"},
         {path: "/feedback", component: mainPage,   meta: "main"},
-        {path: "/game",     component: gamePage,   meta: "game"}
+        {path: "/game",     component: gamePage,   meta: "game"},
+        {path: "/test",     component: playPage}
     ]
 });

@@ -13,7 +13,7 @@
 import roomSection from "cmp/roomSection.vue";
 import settingsSection from "cmp/settingsSection.vue";
 
-import { Swiper, SwiperSlide } from "vue-awesome-swiper";
+import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import "swiper/swiper-bundle.css";
 
 export default {
