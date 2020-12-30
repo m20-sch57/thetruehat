@@ -1,18 +1,4 @@
 <template>
-  <body>
-  <navbar
-      currentPage="game"
-      @show-rules="showRules = true"
-      @show-feedback="showFeedback = true"
-  />
-  <rules
-      v-show="showRules"
-      @close="showRules = false"
-  />
-  <feedback
-      v-show="showFeedback"
-      @close="showFeedback = false"
-  />
   <div class="page" id="join">
     <article>
       <header>
@@ -122,25 +108,17 @@
       </footer>
     </article>
   </div>
-  </body>
 </template>
 
 <script>
-import navbar from "cmp/navbar.vue";
-import rules from "cmp/rulesPopup.vue";
-import feedback from "cmp/feedbackPopup.vue";
-
 import * as api from "src/api.js";
 import app from "src/app.js";
 import {VALIDATION_TIMEOUT} from "src/config.js";
 import {debounce} from "src/tools";
 
 export default {
-  components: {navbar, rules, feedback},
   data: function () {
     return {
-      showRules: false,
-      showFeedback: false,
       username: "",
       key: "",
       playersInfo: {},
