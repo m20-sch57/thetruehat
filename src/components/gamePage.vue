@@ -1,24 +1,34 @@
 <template>
-  <component v-bind:is='currentPageComponent'/>
+  <component :is='currentPageComponent'/>
 </template>
 
 <script>
 import preparationPage from "cmp/preparationPage.vue";
 import joinPage from "cmp/joinPage.vue";
+import playPage from "cmp/playPage.vue";
+
+import store from "src/store.js";
+
+const room = store.state.room;
 
 export default {
-  components: {preparationPage, joinPage},
+  components: {preparationPage, joinPage, playPage},
   computed: {
     currentPageComponent: function () {
-      if (this.$store.state.room.connection === "offline") {
+      if (room.connection === "offline") {
         return "joinPage";
-      } else if (this.$store.state.room.connection === "online") {
-        return "preparationPage";
-      } else if (this.$store.state.room.connection === "connection") {
+      } else if (room.connection === "connection") {
         return "joinPage";
-      } else {
-        return "";
+      } else if (room.connection === "online") {
+        if (room.state === "wait") {
+          return "preparationPage";
+        } else if (room.state === "play") {
+          return "playPage";
+        } else if (room.state === "end") {
+          return "resultPage";
+        }
       }
+      return "";
     }
   },
   beforeRouteEnter: function (to, from, next) {

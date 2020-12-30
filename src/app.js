@@ -104,11 +104,6 @@ class App {
         const handlers = {
             sYouJoined: data => {
                 store.commit("joinRoom", {
-                    phase: data.state === "wait"
-                        ? "preparation"
-                        : data.state === "play"
-                            ? data.substate
-                            : "end",
                     players: data.playerList,
                     ...data
                 });

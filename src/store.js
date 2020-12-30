@@ -17,7 +17,8 @@ const roomModule = {
         connection: "offline",
         key: null,
         username: null,
-        phase: null,
+        state: null,
+        substate: null,
         players: null,
         host: null,
         speaker: null,
@@ -32,7 +33,8 @@ const roomModule = {
     mutations: {
         leaveRoom(state) {
             state.connection = "offline";
-            state.phase = null;
+            state.state = null;
+            state.substate = null;
             state.players = null;
             state.host = null;
             state.speaker = null;
@@ -50,45 +52,42 @@ const roomModule = {
         },
         joinRoom(state, payload) {
             state.connection = "online";
-            set(["phase", "players", "host", "settings"])(state, payload);
+            set(["state", "players", "host", "settings"])(state, payload);
 
-            if (payload.phase !== "preparation" && payload.phase !== "end") {
-                set(["speaker", "listener", "wordsCount"])(state, payload);
-            }
+            if (payload.state === "play") {
+                set(["substate", "speaker", "listener", "wordsCount"])(state, payload);
 
-            // if (payload.phase === "wait") {
+                if (payload.substate === "explanation") {
+                    set(["word", "startTime"])(state, payload);
+                }
 
-            // }
-
-            if (payload.phase === "explanation") {
-                set(["word", "startTime"])(state, payload);
-            }
-
-            if (payload.phase === "edit") {
-                set(["editWords"])(state, payload);
+                if (payload.substate === "edit") {
+                    set(["editWords"])(state, payload);
+                }
             }
         },
         wordCollectionStarted(state) {
-            state.phase = "wordCollection";
+            state.state = "prepare";
         },
         gameStarted(state, payload) {
-            state.phase = "wait";
+            state.state = "play";
+            state.substate = "wait";
             set(["wordsCount", "speaker", "listener"])(state, payload);
         },
         explanationStarted(state, {startTime}) {
             state.startTime = startTime;
-            state.phase = "explanation";
+            state.substate = "explanation";
         },
         explanationEnded(state, {editWords}) {
             if (editWords) {
                 state.editWords = editWords;
             }
-            state.phase = "edit";
+            state.substate = "edit";
             state.startTime = null;
             state.word = null;
         },
         nextTurn(state, payload) {
-            state.phase = "wait";
+            state.substate = "wait";
             set(["speaker", "listener", "wordsCount"])(state, payload);
             state.editWords = null;
             state.roundId += 1;
@@ -99,7 +98,6 @@ const roomModule = {
         setPlayers: set("players"),
         setHost: set("host"),
         setSettings: set("settings"),
-        setPhase: set("phase"),
         setSpeakerListener: set(["speaker", "listener"]),
         setWordsCount: set("wordsCount"),
         setWord: set("word"),
