@@ -1,7 +1,7 @@
 <template>
   <body>
     <navbar
-        :currentPage="$route.meta"
+        :currentPage="$route.meta.nav"
         @show-rules="showRules = true"
         @show-feedback="showFeedback = true"
     />
