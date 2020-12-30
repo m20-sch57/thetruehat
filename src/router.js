@@ -8,6 +8,8 @@ import gamePage from "cmp/gamePage.vue";
 import rulesPopup from "cmp/rulesPopup.vue";
 import feedbackPopup from "cmp/feedbackPopup.vue";
 
+import playPage from "cmp/playPage.vue"; // Remove then
+
 Vue.use(VueRouter);
 
 export default new VueRouter({
@@ -18,6 +20,7 @@ export default new VueRouter({
         {path: "/about", component: aboutPage},
         {path: "/rules", component: rulesPopup},
         {path: "/feedback", component: feedbackPopup},
-        {path: "/game", component: gamePage}
+        {path: "/game", component: gamePage},
+        {path: "/test", component: playPage}
     ]
 });
