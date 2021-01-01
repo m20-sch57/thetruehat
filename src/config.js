@@ -1,8 +1,10 @@
-export const DEVEL = "devel";
-export const STAGING = "staging";
-export const PROD = "prod";
+import config from "../config.json";
 
-export const ENV = DEVEL;
+export const DEVEL = config.DEVEL;
+export const STAGING = config.STAGING;
+export const PROD = config.PROD;
+
+export const ENV = config.env;
 
 export const DEBUG = !(ENV === PROD);
 export const TIME_SYNC_DELTA = 70000;
