@@ -3,16 +3,13 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 
-module.exports = {
-    watchOptions: {
-        poll: 1000
-    },
+const config = require("./config.json");
+
+webpackConfig =  {
     entry: {
         css: "./src/css.js",
         js: "./src/main.js"
     },
-    mode: "development",
-    devtool: "eval-source-map",
     output: {
         path: path.resolve(__dirname, "./static/dist"),
         publicPath: "/dist/",
@@ -53,3 +50,33 @@ module.exports = {
         })
     ]
 };
+
+if (config.env === config.PROD) {
+    webpackConfig = {
+        ...webpackConfig,
+        mode: "production",
+    };
+}
+
+if (config.env === config.DEVEL) {
+    webpackConfig = {
+        ...webpackConfig,
+        mode: "development",
+        watch: true,
+        watchOptions: {
+            ignored: /node_modules/,
+            poll: 1000
+        },
+        devtool: "eval-source-map",
+    };
+}
+
+if (config.env === config.STAGING) {
+    webpackConfig = {
+        ...webpackConfig,
+        mode: "development",
+        devtool: "eval-source-map",
+    };
+}
+
+module.exports = webpackConfig;

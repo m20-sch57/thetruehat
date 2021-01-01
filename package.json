@@ -44,7 +44,7 @@
     }
   ],
   "scripts": {
-    "dev-build": "webpack --watch"
+    "build": "webpack --progress"
   },
   "main": "server.js",
   "dependencies": {
