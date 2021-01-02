@@ -1,0 +1,173 @@
+#playInfo header {
+    background-color: whitesmoke;
+}
+
+#playInfo main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#playInfo main .turns {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 15px 15px 0 15px;
+}
+
+#playInfo main .next-turn {
+    margin-bottom: 10px;
+}
+
+#playInfo main .next-turn h3 {
+    margin: 5px 10px;
+    font-weight: normal;
+}
+
+#playInfo main .current-turn {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+#playInfo main .current-turn h3 {
+    margin: 5px 10px;
+    font-weight: normal;
+}
+
+#playInfo main .previous-turns {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#playInfo main .previous-turns h3 {
+    margin: 5px 10px;
+    font-weight: normal;
+}
+
+#playInfo main .current-turn::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -15px;
+    height: calc(100% - 5px);
+    width: 3px;
+    background-color: #bfeac2;
+}
+
+#playInfo main .turn-layer {
+    border-radius: 20px;
+}
+
+#playInfo main .next-turn .turn-layer {
+    background-color: #d5f1fd;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#playInfo main .current-turn .turn-layer {
+    background-color: #d3f8d5;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#playInfo main .previous-turns .turn-layer:hover {
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+
+#playInfo main .turn-layer .turn-top {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 10px;
+}
+
+#playInfo main .turn-layer .turn-bottom {
+    display: flex;
+    flex-direction: row;
+    padding: 0 10px 5px 10px;
+}
+
+#playInfo main .turn-layer.collapsed .turn-bottom {
+    display: none;
+}
+
+#playInfo main .turn-layer .turn-pair {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    min-width: 0;
+}
+
+#playInfo main .turn-layer .turn-pair h4 {
+    flex: 1;
+    margin: 0;
+    font-weight: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#playInfo main .turn-layer .turn-pair .speaker {
+    text-align: left;
+}
+
+#playInfo main .turn-layer .turn-pair img {
+    height: 27px;
+}
+
+#playInfo main .turn-layer .turn-pair .listener {
+    text-align: right;
+}
+
+#playInfo main .turn-layer .turn-words-cnt {
+    flex-basis: 25px;
+    flex-shrink: 0;
+    margin-left: 10px;
+    color: dimgrey;
+    text-align: right;
+}
+
+#playInfo main .turn-layer .arrow-down {
+    transform: rotate(180deg);
+    transition: all 80ms linear;
+}
+
+#playInfo main .turn-layer.collapsed .arrow-down {
+    transform: none;
+}
+
+#playInfo footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 5px;
+    border-top: 1px solid whitesmoke;
+}
+
+#playInfo footer .remaining {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0 15px;
+}
+
+#playInfo footer .remaining h1, #playInfo footer .remaining h4 {
+    flex-grow: 1;
+    margin: 0 3px;
+    font-weight: normal;
+    text-align: center;
+}
+
+#playInfo footer .remaining h1 {
+    line-height: 28px;
+}
+
+#playInfo footer .remaining h4 {
+    line-height: 35px;
+}
+
+#playInfo footer button {
+    margin: 0;
+}

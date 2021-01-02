@@ -1,23 +1,23 @@
 <template>
   <swiper class="page" id="preparation" :options="swiperOptions">
     <swiper-slide>
-      <roomSection @swipe-to-settings="swiper().slideTo(1)"/>
+      <preparation-room-section @swipe-to-settings="swiper().slideTo(1)"/>
     </swiper-slide>
     <swiper-slide>
-      <settingsSection @swipe-to-room="swiper().slideTo(0)"/>
+      <preparation-settings-section @swipe-to-room="swiper().slideTo(0)"/>
     </swiper-slide>
   </swiper>
 </template>
 
 <script>
-import roomSection from "cmp/roomSection.vue";
-import settingsSection from "cmp/settingsSection.vue";
+import preparationRoomSection from "cmp/preparationRoomSection.vue";
+import preparationSettingsSection from "cmp/preparationSettingsSection.vue";
 
 import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import "swiper/swiper-bundle.css";
 
 export default {
-  components: {roomSection, settingsSection, Swiper, SwiperSlide},
+  components: {preparationRoomSection, preparationSettingsSection, Swiper, SwiperSlide},
   data: function () {
     return {
       swiperOptions: {

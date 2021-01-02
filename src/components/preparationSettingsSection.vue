@@ -1,5 +1,5 @@
 <template>
-  <article id="settings">
+  <article id="preparationSettings">
     <header>
       <h1>Параметры игры</h1>
       <button
@@ -8,7 +8,7 @@
         <span class="fas fa-times"></span>
       </button>
     </header>
-    <main>
+    <main class="scrollable-wrapper">
       <div class="scrollable">
         <div class="layer">
           <h4 class="label w-80">Играть</h4>
