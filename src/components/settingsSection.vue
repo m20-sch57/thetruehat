@@ -1,7 +1,10 @@
 <template>
   <article id="settings">
     <header>
-      <h1>Параметры игры</h1>
+      <h1>
+        <span v-translate:ru>Параметры игры</span>
+        <span v-translate:en.draft>Game options</span>
+      </h1>
       <button
           class="btn-icon right"
           @click="$emit('swipe-to-room')">
@@ -11,36 +14,74 @@
     <main>
       <div class="scrollable">
         <div class="layer">
-          <h4 class="label w-80">Играть</h4>
+          <h4 class="label w-80">
+            <span v-translate:ru>Играть</span>
+            <span v-translate:en.draft>Play</span>
+          </h4>
           <label class="field w-300 w-350-desktop">
             <select
                 :disabled="!editModeOn"
                 class="select btn-bordered btn-transparent"
                 v-model="settings.termCondition">
-              <option :value="'words'">Пока не кончатся слова</option>
-              <option :value="'turns'">Заданное число кругов</option>
+              <option :value="'words'">
+                <span v-translate:ru>Пока не кончатся слова</span>
+                <span v-translate:en.draft>Until the words run out</span>
+              </option>
+              <option :value="'turns'">
+                <span v-translate:ru>Заданное число кругов</span>
+                <span v-translate:en.draft>Fixed number of rounds</span>
+              </option>
             </select>
           </label>
         </div>
         <div class="layer">
-          <h4 class="label w-80">Слова</h4>
+          <h4 class="label w-80">
+            <span v-translate:ru>Слова</span>
+            <span v-translate:en.draft>Words</span>
+          </h4>
           <label class="field w-300 w-350-desktop">
             <select
                 :disabled="!editModeOn"
                 class="select btn-bordered btn-transparent"
                 v-model="settings.wordsetSource">
-              <option :value="['serverDictionary', 0]">Русские, 14141 слово</option>
-              <option :value="['serverDictionary', 1]">Английские, 1525 слов</option>
-              <option :value="['serverDictionary', 2]">Простые русские, 4627</option>
-              <option :value="['serverDictionary', 3]">Средние русские, 4506</option>
-              <option :value="['serverDictionary', 4]">Сложные русские, 4599</option>
-              <option :value="['hostDictionary']">Загрузить</option>
-              <option :value="['playerWords']">От каждого игрока</option>
+              <option :value="['serverDictionary', 0]">
+                <span v-translate:ru>Русские, 14141 слово</span>
+                <span v-translate:en.draft>Russian, 14141 words</span>
+              </option>
+              <option :value="['serverDictionary', 1]">
+                <span v-translate:ru>Английские, 1525 слов</span>
+                <span v-translate:en.draft>English, 1525 words</span>
+              </option>
+              <option :value="['serverDictionary', 2]">
+                <span v-translate:ru>Простые русские, 4627</span>
+                <span v-translate:en.draft>Simple russian, 4627</span>
+              </option>
+              <option :value="['serverDictionary', 3]">
+                <span v-translate:ru>Средние русские, 4506</span>
+                <span v-translate:en.draft>Middle russian, 4506</span>
+              </option>
+              <option :value="['serverDictionary', 4]">
+                <span v-translate:ru>Сложные русские, 4599</span>
+                <span v-translate:en.draft>Hard russian, 4599</span>
+              </option>
+              <option :value="['hostDictionary']">
+                <span v-translate:ru>Загрузить</span>
+                <span v-translate:en.draft>Load dictionary</span>
+              </option>
+              <option :value="['playerWords']">
+                <span v-translate:ru>От каждого игрока</span>
+                <span v-translate:en.draft>From each player</span>
+              </option>
             </select>
           </label>
         </div>
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
-          <h4 class="label w-250">Загрузить словарь</h4>
+          <h4 class="label w-250">
+
+              <span v-translate:ru>Загрузить словарь</span>
+              <span v-translate:en.draft>Load dictionary</span>
+
+          </h4>
           <div class="file field w-300 w-350-desktop">
             <input
                 type="file"
@@ -48,7 +89,10 @@
                 :disabled="!editModeOn"
                 @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
-              Выбрать
+
+                <span v-translate:ru>Выбрать</span>
+                <span v-translate:en.draft>Choose</span>
+
             </label>
             <label for="uploadDictionary">
               {{ dictionaryFilePreview }}
@@ -59,7 +103,12 @@
             class="layer"
             v-show="settings.termCondition === 'words' &&
               settings.wordsetSource[0] !== 'playerWords'">
-          <h4 class="label w-250">Число слов в шляпе</h4>
+          <h4 class="label w-250">
+
+              <span v-translate:ru>Число слов в шляпе</span>
+              <span v-translate:en.draft>The number of words</span>
+
+          </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
                 class="input"
@@ -68,7 +117,12 @@
           </label>
         </div>
         <div class="layer" v-show="settings.termCondition === 'turns'">
-          <h4 class="label w-250">Количество кругов</h4>
+          <h4 class="label w-250">
+
+              <span v-translate:ru>Количество кругов</span>
+              <span v-translate:en.draft>The number of laps</span>
+
+          </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
                 class="input"
@@ -77,7 +131,12 @@
           </label>
         </div>
         <div class="layer">
-          <h4 class="label w-250">Формат времени (сек)</h4>
+          <h4 class="label w-250">
+
+              <span v-translate:ru>Формат времени (сек)</span>
+              <span v-translate:en.draft>Time format (sec)</span>
+
+          </h4>
           <label class="field w-300 w-350-desktop">
             <input
                 class="input w-70"
@@ -106,7 +165,8 @@
               <span class="fas fa-check"></span>
             </label>
             <label for="strictModeCheckbox">
-              Строгий режим
+              <span v-translate:ru>Строгий режим</span>
+              <span v-translate:en.draft>Strict mode</span>
             </label>
           </div>
         </div>
@@ -117,10 +177,12 @@
           v-show="editModeOn"
           @click="applySettings()"
           class="btn btn-blue">
-        Сохранить
+        <span v-translate:ru>Сохранить</span>
+        <span v-translate:en.draft>Save</span>
       </button>
       <h4 v-show="!editModeOn">
-        Хост может изменять настройки
+        <span v-translate:ru>Хост может изменять настройки</span>
+        <span v-translate:en.draft>Host can change settings</span>
       </h4>
     </footer>
   </article>
@@ -134,6 +196,7 @@ import {DICTIONARY_MAX_SIZE} from "src/config.js";
 const room = store.state.room;
 
 export default {
+  name: "settingsSection",
   data: function () {
     return {
       settings: {}
@@ -146,10 +209,17 @@ export default {
     },
     dictionaryFilePreview: function () {
       if (this.settings.dictionaryFileInfo === undefined) {
-        return "Файл не загружен";
+        return this.$t({
+          ru: "Файл не загружен",
+          en: "File doesm't loaded"
+        });
       } else {
-        return `${this.settings.dictionaryFileInfo.wordNumber} слов, ${
-          this.settings.dictionaryFileInfo.filename}`;
+        const wordNumber = this.settings.dictionaryFileInfo.wordNumber;
+        const filename = this.settings.dictionaryFileInfo.filename;
+        return `${wordNumber} ${this.$tp(wordNumber, {
+          ru: ["слово", "слова", "слов"],
+          en: ["word", "words"]
+        })}, ${filename}`;
       }
     },
     editModeOn: function () {

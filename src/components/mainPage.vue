@@ -10,12 +10,14 @@
         <button
             class="btn btn-bordered btn-shadow btn-green"
             @click="$router.push('/game')">
-          Играть
+          <span v-translate:ru> Играть </span>
+          <span v-translate:en> Play </span>
         </button>
-        <button
+        <button v-show="true"
             class="btn btn-bordered btn-shadow btn-yellow"
             @click="$emit('show-rules')">
-          Правила
+          <span v-translate:ru> Правила </span>
+          <span v-translate:en> Rules </span>
         </button>
       </main>
     </article>
@@ -24,6 +26,7 @@
 
 <script>
 export default {
+  name: "mainPage",
   beforeRouteEnter: function (to, from, next) {
     next(vm => {
       if (vm.$route.path === "/feedback") {

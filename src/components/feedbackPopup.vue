@@ -2,7 +2,8 @@
   <div class="popup" id="feedback">
     <article>
       <header>
-        <h1>Обратная связь</h1>
+        <h1 v-translate:ru> Обратная связь </h1>
+        <h1 v-translate:en> Feedback </h1>
         <button
             class="btn-icon btn-transparent"
             @click="$emit('close')">
@@ -13,7 +14,10 @@
         <label>
           <textarea
               class="textarea"
-              placeholder="Напишите свой отзыв здесь"
+              :placeholder="$t({
+                ru: 'Напишите свой отзыв здесь',
+                en: 'Leave your comment here'
+              })"
               v-model="feedbackMessage">
           </textarea>
         </label>
@@ -26,7 +30,8 @@
             <span class="fas fa-check"></span>
           </label>
           <label for="feedbackCheckbox">
-            Отправить полную информацию
+            <span v-translate:ru>Отправить полную информацию</span>
+            <span v-translate:en>Send additional information</span>
           </label>
         </div>
       </main>
@@ -34,7 +39,8 @@
         <button
             class="btn btn-shadow btn-blue"
             @click="sendFeedback()">
-          Отправить
+          <span v-translate:ru>Отправить</span>
+          <span v-translate:en>Send</span>
         </button>
       </footer>
     </article>
@@ -46,6 +52,7 @@
 import * as api from "src/api.js";
 
 export default {
+  name: "feedbackPopup",
   data: function () {
     return {
       collectBrowserData: false,

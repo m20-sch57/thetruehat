@@ -17,6 +17,7 @@ import {Swiper, SwiperSlide} from "vue-awesome-swiper";
 import "swiper/swiper-bundle.css";
 
 export default {
+  name: "preparationPage",
   components: {roomSection, settingsSection, Swiper, SwiperSlide},
   data: function () {
     return {

@@ -15,19 +15,22 @@
               class="btn btn-transparent"
               @click="copyKey()">
             <span class="fas fa-clipboard"></span>
-            Ключ
+            <span v-translate:ru>Ключ</span>
+            <span v-translate:en>Key</span>
           </button>
           <button
               class="btn btn-transparent"
               @click="copyLink()">
             <span class="fas fa-link"></span>
-            Ссылка
+            <span v-translate:ru>Ссылка</span>
+            <span v-translate:en>Link</span>
           </button>
           <button
               class="btn btn-transparent leave-room"
               @click="leaveRoom()">
             <span class="fas fa-sign-out-alt"></span>
-            Выйти
+            <span v-translate:ru>Выйти</span>
+            <span v-translate:en>Exit</span>
           </button>
         </div>
         <div class="users">
@@ -56,10 +59,12 @@
           class="btn btn-green"
           @click="startGame()"
           :disabled="!canStart">
-        Начать игру
+        <span v-translate:ru>Начать игру</span>
+        <span v-translate:en>Start game</span>
       </button>
       <h4 v-show="!isHost">
-        Хост не начал игру
+        <span v-translate:ru>Хост не начал игру</span>
+        <span v-translate:en.draft>Host did not start the game</span>
       </h4>
     </footer>
   </article>
@@ -72,6 +77,7 @@ import store from "src/store.js";
 const room = store.state.room;
 
 export default {
+  name: "roomSection",
   computed: {
     canStart: function () {
       return this.$store.getters.onlinePlayers.length >= 2;
@@ -82,7 +88,10 @@ export default {
   },
   methods: {
     usernamePreview: function (username) {
-      return username + (username === room.username ? " (я)" : "");
+      return username + (username !== room.username ? "" : this.$t({
+        ru: " (я)",
+        en: " (you)"
+      }));
     },
     copyKey: function () {
       navigator.clipboard.writeText(room.key);

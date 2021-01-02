@@ -25,28 +25,32 @@
               :class="{active: currentPage === 'game'}"
               @click="$router.push('/game')"
               :disabled="currentPage === 'game'">
-            Игра
+            <span v-translate:ru>Игра</span>
+            <span v-translate:en>Game</span>
           </button>
           <button
               class="nav-link"
               :class="{active: currentPage === 'news'}"
               @click="$router.push('/news')"
               :disabled="currentPage === 'news'">
-            Новости
+            <span v-translate:ru>Новости</span>
+            <span v-translate:en>News</span>
           </button>
           <button
               class="nav-link"
               :class="{active: currentPage === 'faq'}"
               @click="$router.push('/faq')"
               :disabled="currentPage === 'faq'">
-            FAQ
+            <span v-translate:ru>FAQ</span>
+            <span v-translate:en>FAQ</span>
           </button>
           <button
               class="nav-link"
               :class="{active: currentPage === 'about'}"
               @click="$router.push('/about')"
               :disabled="currentPage === 'about'">
-            О нас
+              <span v-translate:ru>О нас</span>
+              <span v-translate:en>About us</span>
           </button>
         </div>
         <div class="nav-links-right">
@@ -57,7 +61,7 @@
             <span class="fas fa-comments"></span>
           </button>
           <label>
-            <select class="select btn-transparent">
+            <select class="select btn-transparent" v-model="currentLocale">
               <option value="ru">RU</option>
               <option value="en">EN</option>
             </select>
@@ -72,12 +76,14 @@
 import app from "src/app.js";
 
 export default {
+  name: "navbar",
   props: {
     currentPage: String
   },
   data: function () {
     return {
-      collapseMenu: false
+      collapseMenu: false,
+      currentLocale: this.$language.current
     };
   },
   methods: {
@@ -92,6 +98,11 @@ export default {
     document.addEventListener("click", () => {
       this.collapseMenu = false;
     });
+  },
+  watch: {
+    currentLocale: function (locale) {
+      this.$setLocale(locale);
+    }
   }
 };
 </script>

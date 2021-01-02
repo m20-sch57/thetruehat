@@ -2,7 +2,8 @@
   <div class="page" id="join">
     <article>
       <header>
-        <h1>Вход в игру</h1>
+        <h1 v-translate:ru>Вход в игру</h1>
+        <h1 v-translate:en.draft>Enter the game</h1>
       </header>
       <main>
         <section class="game-key">
@@ -12,7 +13,10 @@
                   :value="key"
                   @input="key = formatKey($event.target.value)"
                   class="input"
-                  placeholder="Ключ игры"
+                  :placeholder="$t({
+                    ru: 'Ключ игры',
+                    en: 'Game key'
+                  })"
               >
             </label>
           </div>
@@ -22,13 +26,15 @@
                   @click="pasteKey()"
                   class="btn btn-transparent">
                 <span class="fas fa-clipboard"></span>
-                Вставить
+                <span v-translate:ru>Вставить</span>
+                <span v-translate:en>Paste</span>
               </button>
               <button
                   @click="generateKey()"
                   class="btn btn-transparent">
                 <span class="fas fa-dice"></span>
-                Сгенерировать
+                <span v-translate:ru>Сгенерировать</span>
+                <span v-translate:en.draft>Generate</span>
               </button>
             </div>
             <div class="room-info checking" v-show="validationStatus.key === 'checking'">
@@ -38,18 +44,30 @@
                 <div></div>
                 <div></div>
               </div>
-              <h5>Проверка</h5>
+              <h5 v-translate:ru>Проверка</h5>
+              <h5 v-translate:en.draft>Checking</h5>
             </div>
             <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
-              <h5>Игра не началась</h5>
-              <button class="select btn-transparent">{{ playersList.length }} игроков</button>
+              <h5 v-translate:ru> Игра не началась </h5>
+              <h5 v-translate:en.draft> Game not started </h5>
+              <button class="select btn-transparent"> {{ playersList.length }}
+                <span v-translate:ru> {{ $p(playersList.length, "игрок", "игрока", "игроков")}} </span>
+                <span v-translate:en> {{ $p(playersList.length, "player", "players")}} </span>
+              </button>
             </div>
             <div class="room-info created" v-show="validationStatus.key === 'created'">
-              <h5>Игра уже идёт</h5>
-              <button class="select btn-transparent">{{ playersList.length }} игроков</button>
+              <h5 v-translate:ru> Игра уже идёт </h5>
+              <h5 v-translate:en draft> Game already started </h5>
+              <button class="select btn-transparent">{{ playersList.length }}
+                <span v-translate:ru> {{ $p(playersList.length, "игрок", "игрока", "игроков")}} </span>
+                <span v-translate:en> {{ $p(playersList.length, "player", "players")}} </span>
+              </button>
             </div>
             <div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
-              <h5><span class="fas fa-times"></span> Некорректный ключ</h5>
+              <h5><span class="fas fa-times"></span>
+                <span v-translate:ru> Некорректный ключ </span>
+                <span v-translate:en.draft> Incorrect key </span>
+              </h5>
             </div>
           </div>
         </section>
@@ -59,7 +77,10 @@
               <input
                   v-model.trim="username"
                   class="input"
-                  placeholder="Ваше имя"
+                  :placeholder="$t({
+                    ru: 'Ваше имя',
+                    en: 'Your name'
+                  })"
               >
             </label>
           </div>
@@ -67,7 +88,12 @@
             <div
                 class="name-info no-name"
                 v-show="validationStatus.username === 'empty'">
-              <h5>Имя нужно, чтобы игроки могли вас опознать</h5>
+              <h5 v-translate:ru>
+                Имя нужно, чтобы игроки могли вас опознать
+              </h5>
+              <h5 v-translate:en.draft>
+                The name is necessary so that the players can identify you
+              </h5>
             </div>
             <div
                 class="name-info checking"
@@ -78,22 +104,35 @@
                 <div></div>
                 <div></div>
               </div>
-              <h5>Проверка</h5>
+              <h5 v-translate:ru>Проверка</h5>
+              <h5 v-translate:en.draft>Checking</h5>
             </div>
             <div
                 class="name-info accepted"
                 v-show="validationStatus.username === 'accepted'">
-              <h5><span class="fas fa-check"></span> Нормально</h5>
+              <h5>
+                <span class="fas fa-check"></span>
+                <span v-translate:ru>Нормально</span>
+                <span v-translate:en.draft>Good</span>
+              </h5>
             </div>
             <div
                 class="name-info not-in-list"
                 v-show="validationStatus.username === 'not-in-list'">
-              <h5><span class="fas fa-times"></span> Не найдено в списке игроков</h5>
+              <h5>
+                <span class="fas fa-times"></span>
+                <span v-translate:ru>Не найдено в списке игроков</span>
+                <span v-translate:en.draft>Not found in players list</span>
+              </h5>
             </div>
             <div
                 class="name-info not-in-list"
                 v-show="validationStatus.username === 'name-occupied'">
-              <h5><span class="fas fa-times"></span> Имя уже занято другим игроком</h5>
+              <h5>
+                <span class="fas fa-times"></span>
+                <span v-translate:ru>Имя уже занято другим игроком</span>
+                <span v-translate:en.draft>Name is already taken by another player</span>
+              </h5>
             </div>
           </div>
         </section>
@@ -103,7 +142,8 @@
             class="btn btn-shadow btn-green"
             @click="joinRoom()"
             :disabled="!validated">
-          Поехали!
+          <span v-translate:ru>Поехали!</span>
+          <span v-translate:en.draft>Let's go!</span>
         </button>
       </footer>
     </article>
@@ -117,6 +157,7 @@ import {VALIDATION_TIMEOUT} from "src/config.js";
 import {debounce} from "src/tools";
 
 export default {
+  name: "joinPage",
   data: function () {
     return {
       username: "",
