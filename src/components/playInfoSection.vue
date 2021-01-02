@@ -28,7 +28,7 @@
             <div class="turn-layer">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker">Глеб</h4>
+                  <h4 class="speaker">Безобразие</h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
                   <h4 class="listener">Саша</h4>
                 </div>
@@ -40,11 +40,11 @@
             <div class="turn-layer">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker">OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO</h4>
+                  <h4 class="speaker">Глеб</h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
                   <h4 class="listener">Саша</h4>
                 </div>
-                <div class="turn-words-cnt">17</div>
+                <div class="turn-words-cnt">7</div>
                 <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
               </div>
               <div class="turn-bottom">

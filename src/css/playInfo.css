@@ -1,5 +1,5 @@
 #playInfo header {
-    background-color: whitesmoke;
+    background-color: lightblue;
 }
 
 #playInfo main {
@@ -52,7 +52,7 @@
     left: -15px;
     height: calc(100% - 5px);
     width: 3px;
-    background-color: #bfeac2;
+    background-color: #c9e3ef;
 }
 
 #playInfo main .turn-layer {
@@ -60,12 +60,11 @@
 }
 
 #playInfo main .next-turn .turn-layer {
-    background-color: #d5f1fd;
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 #playInfo main .current-turn .turn-layer {
-    background-color: #d3f8d5;
+    background-color: #d5f1fd;
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
