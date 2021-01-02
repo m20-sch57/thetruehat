@@ -1,57 +1,58 @@
-#room header {
+#preparationRoom header {
     background-color: lightgreen;
 }
 
-#room main {
-    position: relative;
+#preparationRoom main {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
 }
 
-#room main .room-actions {
+#preparationRoom main .room-actions {
     display: flex;
     flex-direction: row;
     padding: 10px;
     border-bottom: 1px solid whitesmoke;
 }
 
-#room main .room-actions button {
+#preparationRoom main .room-actions button {
     margin: 0;
 }
 
-#room main .room-actions .leave-room {
+#preparationRoom main .room-actions .leave-room {
     margin-left: auto;
 }
 
-#room main .users {
+#preparationRoom main .users {
     margin: 20px;
 }
 
-#room main .user-layer {
+#preparationRoom main .user-layer {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin: 7px 0;
 }
 
-#room main .user-layer picture {
+#preparationRoom main .user-layer picture {
     position: relative;
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
 
-#room main .user-layer img {
+#preparationRoom main .user-layer img {
     height: auto;
     width: 22px;
 }
 
-#room main .user-layer h3 {
+#preparationRoom main .user-layer h3 {
     margin: 0;
     font-weight: normal;
 }
 
 @media (max-width: 800px) {
-    #room main .room-actions {
+    #preparationRoom main .room-actions {
         padding: 5px;
     }
 }

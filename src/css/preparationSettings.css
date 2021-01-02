@@ -1,17 +1,12 @@
-#settings header {
+#preparationSettings header {
     background-color: lightblue;
 }
 
-#settings main {
-    position: relative;
-    flex-grow: 1;
-}
-
-#settings main .scrollable {
+#preparationSettings main .scrollable {
     padding: 10px;
 }
 
-#settings main .layer {
+#preparationSettings main .layer {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -19,7 +14,7 @@
     margin-bottom: 5px;
 }
 
-#settings main .layer-detached {
+#preparationSettings main .layer-detached {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -27,61 +22,61 @@
     margin: 20px 10px;
 }
 
-#settings main .layer .w-70 {
+#preparationSettings main .layer .w-70 {
     width: 70px;
     min-width: 70px;
 }
 
-#settings main .layer .w-80 {
+#preparationSettings main .layer .w-80 {
     width: 80px;
     min-width: 80px;
 }
 
-#settings main .layer .w-250 {
+#preparationSettings main .layer .w-250 {
     width: 250px;
     min-width: 250px;
 }
 
-#settings main .layer .w-300 {
+#preparationSettings main .layer .w-300 {
     width: 300px;
     min-width: 300px;
 }
 
-#settings main .layer .label {
+#preparationSettings main .layer .label {
     margin: 10px auto 10px 10px;
     font-weight: normal;
 }
 
-#settings main .layer .field {
+#preparationSettings main .layer .field {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-#settings main .layer .select {
+#preparationSettings main .layer .select {
     margin: 0;
     width: 100%;
 }
 
-#settings main .layer .input {
+#preparationSettings main .layer .input {
     flex-grow: 1;
     margin: 0 10px;
     text-align: center;
 }
 
 @media (max-width: 650px) {
-    #settings main .layer .w-70-mobile {
+    #preparationSettings main .layer .w-70-mobile {
         width: 70px;
         min-width: 70px;
     }
 
-    #settings main .layer .label, #settings main .layer .field {
+    #preparationSettings main .layer .label, #preparationSettings main .layer .field {
         flex-grow: 1;
     }
 }
 
 @media (min-width: 1000px) {
-    #settings main .layer .w-350-desktop {
+    #preparationSettings main .layer .w-350-desktop {
         width: 350px;
         min-width: 350px;
     }

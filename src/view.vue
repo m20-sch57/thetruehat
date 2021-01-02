@@ -5,11 +5,11 @@
         @show-rules="showRules = true"
         @show-feedback="showFeedback = true"
     />
-    <rules
+    <rules-popup
         v-show="showRules"
         @close="showRules = false"
     />
-    <feedback
+    <feedback-popup
         v-show="showFeedback"
         @close="showFeedback = false"
     />
@@ -22,11 +22,11 @@
 
 <script>
 import navbar from "cmp/navbar.vue";
-import rules from "cmp/rulesPopup.vue";
-import feedback from "cmp/feedbackPopup.vue";
+import rulesPopup from "cmp/rulesPopup.vue";
+import feedbackPopup from "cmp/feedbackPopup.vue";
 
 export default {
-  components: {navbar, rules, feedback},
+  components: {navbar, rulesPopup, feedbackPopup},
   data: function () {
     return {
       showRules: false,

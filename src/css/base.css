@@ -60,6 +60,11 @@ input, textarea {
     overflow: auto;
 }
 
+.scrollable-wrapper {
+    position: relative;
+    flex-grow: 1;
+}
+
 .nav {
     position: relative;
     display: flex;
