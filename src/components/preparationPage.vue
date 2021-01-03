@@ -1,10 +1,10 @@
 <template>
   <swiper class="page" id="preparation" :options="swiperOptions">
     <swiper-slide>
-      <preparation-room-section @swipe-to-settings="swiper().slideTo(1)"/>
+      <preparation-room-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
     <swiper-slide>
-      <preparation-settings-section @swipe-to-room="swiper().slideTo(0)"/>
+      <preparation-settings-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
   </swiper>
 </template>

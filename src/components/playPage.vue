@@ -1,10 +1,10 @@
 <template>
   <swiper class="page" id="play" :options="swiperOptions">
     <swiper-slide class="first-slide">
-      <play-info-section @swipe-to-turn="swiper().slideTo(1)"/>
+      <play-info-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
     <swiper-slide class="second-slide">
-      <play-turn-section @swipe-to-info="swiper().slideTo(0)"/>
+      <play-turn-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
   </swiper>
 </template>

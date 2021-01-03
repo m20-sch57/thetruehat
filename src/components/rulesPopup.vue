@@ -113,12 +113,14 @@
 
         <h2>How to explain a word?</h2>
         <p>
-        You can use your own rules (even pantomime), but there are the rules which we highly <b>recommend</b>:
-        <li>You can't use cognate words</li>
-        <li>You can't use non-existent words</li>
-        <li>You can't talk about the letters of the word (however, you can use terms such as "beginning of the word", suffix, prefix)</li>
-        <br>
-        You can find detailed rules there <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
+          You can use your own rules (even pantomime), but there are the rules which we highly <b>recommend</b>:
+          <ul>
+            <li>You can't use cognate words</li>
+            <li>You can't use non-existent words</li>
+            <li>You can't talk about the letters of the word (however, you can use terms such as "beginning of the word", suffix, prefix)</li>
+          </ul>
+          <br>
+          You can find detailed rules there <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
         </p>
 
         <h2>Summing up</h2>

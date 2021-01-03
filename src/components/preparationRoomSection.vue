@@ -4,7 +4,7 @@
       <h1>{{ $store.state.room.key }}</h1>
       <button
           class="btn-icon right"
-          @click="$emit('swipe-to-settings')">
+          @click="$emit('swipe-to', 1)">
         <span class="fas fa-cog"></span>
       </button>
     </header>

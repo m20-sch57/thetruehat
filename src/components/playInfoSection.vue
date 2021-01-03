@@ -1,10 +1,10 @@
 <template>
   <article id="playInfo">
     <header>
-      <h1>ЖУБЫРОЩАКЕК</h1>
+      <h1> {{ $store.state.room.key }} </h1>
       <button
           class="btn-icon right"
-          @click="$emit('swipe-to-turn')">
+          @click="$emit('swipe-to', 1)">
         <span class="fas fa-times"></span>
       </button>
     </header>
@@ -16,9 +16,9 @@
             <div class="turn-layer">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker">Вася</h4>
+                  <h4 class="speaker"> {{ nextTurn.speaker }} </h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">Петя</h4>
+                  <h4 class="listener"> {{ nextTurn.listener }} </h4>
                 </div>
               </div>
             </div>
@@ -28,37 +28,28 @@
             <div class="turn-layer">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker">Безобразие</h4>
+                  <h4 class="speaker"> {{ currentTurn.speaker }} </h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">Саша</h4>
+                  <h4 class="listener"> {{ currentTurn.listener }} </h4>
                 </div>
               </div>
             </div>
           </div>
           <div class="previous-turns">
             <h3>Предыдущие ходы</h3>
-            <div class="turn-layer">
+            <div
+                v-for="(turn, i) of turnsHistory"
+                @click="turn.collapsed = !turn.collapsed"
+                class="turn-layer"
+                :class="{collapsed: turn.collapsed}"
+                :key="i">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker">Глеб</h4>
+                  <h4 class="speaker"> {{ turn.speaker }} </h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">Саша</h4>
+                  <h4 class="listener"> {{ turn.listener }} </h4>
                 </div>
-                <div class="turn-words-cnt">7</div>
-                <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
-              </div>
-              <div class="turn-bottom">
-                Something
-              </div>
-            </div>
-            <div class="turn-layer collapsed">
-              <div class="turn-top">
-                <div class="turn-pair">
-                  <h4 class="speaker">Глеб</h4>
-                  <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">Саша</h4>
-                </div>
-                <div class="turn-words-cnt">2</div>
+                <div class="turn-words-cnt"> {{ turn.score }} </div>
                 <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
               </div>
               <div class="turn-bottom">
@@ -70,15 +61,28 @@
       </div>
     </main>
     <footer>
-      <div class="remaining">
-        <h1>57</h1>
+      <div
+          class="remaining"
+          v-if="$store.state.room.settings.termCondition === 'words'">
+        <h1> {{ $store.state.room.wordsLeft }} </h1>
         <h4>слов</h4>
       </div>
-      <button class="btn btn-transparent">
+      <div
+          class="remaining"
+          v-if="$store.state.room.settings.termCondition === 'turns'">
+        <h1> {{ $store.state.room.turnsLeft }} </h1>
+        <h4>кругов</h4>
+      </div>
+      <button
+          v-if="$store.state.room.username === $store.state.room.host"
+          class="btn btn-transparent"
+          @click="endGame()">
         <span class="fas fa-flag-checkered"></span>
         Закончить
       </button>
-      <button class="btn btn-transparent">
+      <button
+          class="btn btn-transparent"
+          @click="leaveGame()">
         <span class="fas fa-sign-out-alt"></span>
         Выйти
       </button>
@@ -87,5 +91,51 @@
 </template>
 
 <script>
-export default {}
+import app from "src/app.js";
+import store from "src/store.js";
+
+const room = store.state.room;
+
+export default {
+  data: function () {
+    return {
+      turnsHistory: [
+        {
+          speaker: "Саня",
+          listener: "Петя",
+          score: 7,
+          collapsed: true
+        },
+        {
+          speaker: "Гелб",
+          listener: "Федро",
+          score: 2,
+          collapsed: true
+        }
+      ]
+    };
+  },
+  computed: {
+    nextTurn: function () {
+      return {
+        speaker: room.timetable[1].speaker,
+        listener: room.timetable[1].listener
+      };
+    },
+    currentTurn: function () {
+      return {
+        speaker: room.speaker,
+        listener: room.listener
+      };
+    }
+  },
+  methods: {
+    endGame: function () {
+      app.finish();
+    },
+    leaveGame: function () {
+      app.leaveRoom();
+    }
+  }
+};
 </script>

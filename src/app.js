@@ -150,7 +150,12 @@ class App {
             },
 
             sWordExplanationEnded: data => {
-                store.commit("setWordsCount", data);
+                if (store.state.room.settings.termCondition === "words") {
+                    store.commit("setWordsLeft", data);
+                }
+                if (store.state.room.settings.termCondition === "turns") {
+                    store.commit("setTurnsLeft", data);
+                }
             },
 
             sExplanationEnded: data => {

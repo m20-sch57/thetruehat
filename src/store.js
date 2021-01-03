@@ -23,12 +23,15 @@ const roomModule = {
         host: null,
         speaker: null,
         listener: null,
-        wordsCount: null,
+        wordsLeft: null,
+        turnsLeft: null,
+        timetable: null,
         word: null,
         editWords: null,
-        roundId: 0,
+        startTime: null,
         results: null,
-        settings: null
+        settings: null,
+        roundId: 0
     },
     mutations: {
         leaveRoom(state) {
@@ -39,10 +42,13 @@ const roomModule = {
             state.host = null;
             state.speaker = null;
             state.listener = null;
-            state.wordsCount = null;
-            state.editWords = null;
+            state.wordsLeft = null;
+            state.turnsLeft = null;
+            state.timetable = null;
             state.word = null;
+            state.editWords = null;
             state.startTime = null;
+            state.results = null;
             state.settings = null;
             state.roundId += 1;
         },
@@ -55,7 +61,14 @@ const roomModule = {
             set(["state", "players", "host", "settings"])(state, payload);
 
             if (payload.state === "play") {
-                set(["substate", "speaker", "listener", "wordsCount"])(state, payload);
+                set(["substate", "speaker", "listener", "timetable"])(state, payload);
+
+                if (state.settings.termCondition === "words") {
+                    set("wordsLeft")(state, payload);
+                }
+                if (state.settings.termCondition === "turns") {
+                    set("turnsLeft")(state, payload);
+                }
 
                 if (payload.substate === "explanation") {
                     set(["word", "startTime"])(state, payload);
@@ -72,7 +85,13 @@ const roomModule = {
         gameStarted(state, payload) {
             state.state = "play";
             state.substate = "wait";
-            set(["wordsCount", "speaker", "listener"])(state, payload);
+            set(["speaker", "listener", "timetable"])(state, payload);
+            if (state.settings.termCondition === "words") {
+                set("wordsLeft")(state, payload);
+            }
+            if (state.settings.termCondition === "turns") {
+                set("turnsLeft")(state, payload);
+            }
         },
         explanationStarted(state, {startTime}) {
             state.startTime = startTime;
@@ -99,7 +118,8 @@ const roomModule = {
         setHost: set("host"),
         setSettings: set("settings"),
         setSpeakerListener: set(["speaker", "listener"]),
-        setWordsCount: set("wordsCount"),
+        setWordsLeft: set("wordsLeft"),
+        setTurnsLeft: set("turnsLeft"),
         setWord: set("word"),
     },
     getters: {

@@ -7,7 +7,7 @@
       </h1>
       <button
           class="btn-icon right"
-          @click="$emit('swipe-to-room')">
+          @click="$emit('swipe-to', 0)">
         <span class="fas fa-times"></span>
       </button>
     </header>
