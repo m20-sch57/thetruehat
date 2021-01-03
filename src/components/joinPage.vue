@@ -50,17 +50,17 @@
             <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
               <h5 v-translate:ru>Игра не началась</h5>
               <h5 v-translate:en.draft>Game not started</h5>
-              <button class="select btn-transparent"> {{ playersList.length }}
-                <span v-translate:ru> {{ $p(playersList.length, "игрок", "игрока", "игроков")}} </span>
-                <span v-translate:en> {{ $p(playersList.length, "player", "players")}} </span>
+              <button class="select btn-transparent">{{ playersList.length }}
+                <span v-translate:ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</span>
+                <span v-translate:en>{{ $p(playersList.length, "player", "players") }}</span>
               </button>
             </div>
             <div class="room-info created" v-show="validationStatus.key === 'created'">
               <h5 v-translate:ru>Игра уже идёт</h5>
               <h5 v-translate:en.draft>Game already started</h5>
               <button class="select btn-transparent">{{ playersList.length }}
-                <span v-translate:ru> {{ $p(playersList.length, "игрок", "игрока", "игроков")}} </span>
-                <span v-translate:en> {{ $p(playersList.length, "player", "players")}} </span>
+                <span v-translate:ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</span>
+                <span v-translate:en>{{ $p(playersList.length, "player", "players") }}</span>
               </button>
             </div>
             <div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
@@ -173,7 +173,7 @@ export default {
   computed: {
     validated: function () {
       return (
-        this.validationStatus.username === "accepted" &&
+          this.validationStatus.username === "accepted" &&
           (this.validationStatus.key === "not-created" ||
               this.validationStatus.key === "created"));
     }

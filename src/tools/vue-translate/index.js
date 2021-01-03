@@ -88,7 +88,7 @@ export default function install(Vue, options = {}) {
     Vue.prototype.$tp = translatePlural;
 
     Vue.directive("translate", {
-        bind: function(el, {arg, modifiers}, vnode) {
+        bind: function (el, {arg, modifiers}, vnode) {
             let html = el.innerHTML;
             el.innerHTML = arg === languageVm.current ? html : "";
             el.style.display = arg === languageVm.current ? "initial" : "none";

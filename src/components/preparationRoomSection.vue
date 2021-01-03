@@ -49,7 +49,7 @@
                     src="img/user.png"
                     alt="user-icon">
               </picture>
-              <h3> {{ usernamePreview(username) }} </h3>
+              <h3>{{ usernamePreview(username) }}</h3>
             </div>
           </div>
         </div>

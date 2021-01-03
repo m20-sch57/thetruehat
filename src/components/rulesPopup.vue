@@ -75,7 +75,7 @@
         </p>
 
         <p>
-          Подробнее читайте тут: <a href="http://thehat.ru/rules/rulesPopup.vue">http://thehat.ru/rules/</a>
+          Подробнее читайте тут: <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
         </p>
       </main>
       <main v-else-if="$language.current === 'en'">

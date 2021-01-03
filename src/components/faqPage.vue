@@ -1,5 +1,5 @@
 <template>
-  <p> FAQ </p>
+  <p>FAQ</p>
 </template>
 
 <script>

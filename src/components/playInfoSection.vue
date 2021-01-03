@@ -1,7 +1,7 @@
 <template>
   <article id="playInfo">
     <header>
-      <h1> {{ $store.state.room.key }} </h1>
+      <h1>{{ $store.state.room.key }}</h1>
       <button
           class="btn-icon right"
           @click="$emit('swipe-to', 1)">
@@ -16,9 +16,9 @@
             <div class="turn-layer">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker"> {{ nextTurn.speaker }} </h4>
+                  <h4 class="speaker">{{ nextTurn.speaker }}</h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener"> {{ nextTurn.listener }} </h4>
+                  <h4 class="listener">{{ nextTurn.listener }}</h4>
                 </div>
               </div>
             </div>
@@ -28,9 +28,9 @@
             <div class="turn-layer">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker"> {{ currentTurn.speaker }} </h4>
+                  <h4 class="speaker">{{ currentTurn.speaker }}</h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener"> {{ currentTurn.listener }} </h4>
+                  <h4 class="listener">{{ currentTurn.listener }}</h4>
                 </div>
               </div>
             </div>
@@ -45,11 +45,11 @@
                 :key="i">
               <div class="turn-top">
                 <div class="turn-pair">
-                  <h4 class="speaker"> {{ turn.speaker }} </h4>
+                  <h4 class="speaker">{{ turn.speaker }}</h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener"> {{ turn.listener }} </h4>
+                  <h4 class="listener">{{ turn.listener }}</h4>
                 </div>
-                <div class="turn-words-cnt"> {{ turn.score }} </div>
+                <div class="turn-words-cnt">{{ turn.score }}</div>
                 <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
               </div>
               <div class="turn-bottom">
@@ -64,13 +64,13 @@
       <div
           class="remaining"
           v-if="$store.state.room.settings.termCondition === 'words'">
-        <h1> {{ $store.state.room.wordsLeft }} </h1>
+        <h1>{{ $store.state.room.wordsLeft }}</h1>
         <h4>слов</h4>
       </div>
       <div
           class="remaining"
           v-if="$store.state.room.settings.termCondition === 'turns'">
-        <h1> {{ $store.state.room.turnsLeft }} </h1>
+        <h1>{{ $store.state.room.turnsLeft }}</h1>
         <h4>кругов</h4>
       </div>
       <button
