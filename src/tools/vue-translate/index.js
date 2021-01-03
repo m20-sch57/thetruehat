@@ -21,9 +21,9 @@ export default function install(Vue, options = {}) {
         }
     }
 
-    function error(...msg) {
+    function error(msg) {
         if (options.silent) return;
-        throw new Error(...msg);
+        throw new Error(msg);
     }
 
     function warn(...msg) {
@@ -49,20 +49,23 @@ export default function install(Vue, options = {}) {
         }
     }
 
-    function translate(translateObject) {
+    function checkLocalesList(localesList) {
         if (!options.silent) {
             for (let locale of options.availableLanguages) {
-                if (Object.keys(translateObject).indexOf(locale) === -1) {
+                if (localesList.indexOf(locale) === -1) {
                     error(`No ${locale} translation available.`);
-                    translateObject[locale] = "";
                 }
             }
-            for (let locale of Object.keys(translateObject)) {
+            for (let locale of localesList) {
                 if (options.availableLanguages.indexOf(locale) === -1) {
                     error(`Locale '${locale}' not in the list of available languages.`);
                 }
             }
         }
+    }
+
+    function translate(translateObject) {
+        checkLocalesList(Object.keys(translateObject));
         return translateObject[languageVm.current];
     }
 
@@ -71,19 +74,7 @@ export default function install(Vue, options = {}) {
     }
 
     function translatePlural(n, translateObject) {
-        if (!options.silent) {
-            for (let locale of options.availableLanguages) {
-                if (Object.keys(translateObject).indexOf(locale) === -1) {
-                    error(`No ${locale} translation available.`);
-                    translateObject[locale] = "";
-                }
-            }
-            for (let locale of Object.keys(translateObject)) {
-                if (options.availableLanguages.indexOf(locale) === -1) {
-                    error(`Locale '${locale}' not in the list of available languages.`);
-                }
-            }
-        }
+        checkLocalesList(Object.keys(translateObject));
         return plural(n, ...translateObject[languageVm.current]);
     }
 
