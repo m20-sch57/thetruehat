@@ -1,22 +1,22 @@
 <template>
   <body>
-    <navbar
-        :currentPage="$route.meta.nav"
-        @show-rules="showRules = true"
-        @show-feedback="showFeedback = true"
-    />
-    <rules-popup
-        v-show="showRules"
-        @close="showRules = false"
-    />
-    <feedback-popup
-        v-show="showFeedback"
-        @close="showFeedback = false"
-    />
-    <router-view
-        @show-feedback="showFeedback = true"
-        @show-rules="showRules = true"
-    />
+  <navbar
+      :currentPage="$route.meta.nav"
+      @show-rules="showRules = true"
+      @show-feedback="showFeedback = true"
+  />
+  <rules-popup
+      v-show="showRules"
+      @close="showRules = false"
+  />
+  <feedback-popup
+      v-show="showFeedback"
+      @close="showFeedback = false"
+  />
+  <router-view
+      @show-feedback="showFeedback = true"
+      @show-rules="showRules = true"
+  />
   </body>
 </template>
 

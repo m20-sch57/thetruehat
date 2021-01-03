@@ -10,14 +10,14 @@
         <button
             class="btn btn-bordered btn-shadow btn-green"
             @click="$router.push('/game')">
-          <span v-translate:ru> Играть </span>
-          <span v-translate:en> Play </span>
+          <span v-translate:ru>Играть</span>
+          <span v-translate:en>Play</span>
         </button>
         <button v-show="true"
-            class="btn btn-bordered btn-shadow btn-yellow"
-            @click="$emit('show-rules')">
-          <span v-translate:ru> Правила </span>
-          <span v-translate:en> Rules </span>
+                class="btn btn-bordered btn-shadow btn-yellow"
+                @click="$emit('show-rules')">
+          <span v-translate:ru>Правила</span>
+          <span v-translate:en>Rules</span>
         </button>
       </main>
     </article>

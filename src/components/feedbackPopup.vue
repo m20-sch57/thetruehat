@@ -2,8 +2,8 @@
   <div class="popup" id="feedback">
     <article>
       <header>
-        <h1 v-translate:ru> Обратная связь </h1>
-        <h1 v-translate:en> Feedback </h1>
+        <h1 v-translate:ru>Обратная связь</h1>
+        <h1 v-translate:en>Feedback</h1>
         <button
             class="btn-icon btn-transparent"
             @click="$emit('close')">
@@ -48,7 +48,6 @@
 </template>
 
 <script>
-
 import * as api from "src/api.js";
 
 export default {

@@ -49,8 +49,8 @@
               :class="{active: currentPage === 'about'}"
               @click="$router.push('/about')"
               :disabled="currentPage === 'about'">
-              <span v-translate:ru>О нас</span>
-              <span v-translate:en>About us</span>
+            <span v-translate:ru>О нас</span>
+            <span v-translate:en>About us</span>
           </button>
         </div>
         <div class="nav-links-right">

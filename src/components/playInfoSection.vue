@@ -97,6 +97,7 @@ import store from "src/store.js";
 const room = store.state.room;
 
 export default {
+  name: "playInfoSection",
   data: function () {
     return {
       turnsHistory: [

@@ -1,11 +1,10 @@
-/* eslint-disable no-undef */
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 
 const config = require("./config.json");
 
-webpackConfig =  {
+webpackConfig = {
     entry: {
         css: "./src/css.js",
         js: "./src/main.js"

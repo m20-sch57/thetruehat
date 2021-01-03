@@ -79,7 +79,7 @@ import store from "src/store.js";
 const room = store.state.room;
 
 export default {
-  name: "roomSection",
+  name: "preparationRoomSection",
   computed: {
     canStart: function () {
       return this.$store.getters.onlinePlayers.length >= 2;

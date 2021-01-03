@@ -78,8 +78,8 @@
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">
 
-              <span v-translate:ru>Загрузить словарь</span>
-              <span v-translate:en.draft>Load dictionary</span>
+            <span v-translate:ru>Загрузить словарь</span>
+            <span v-translate:en.draft>Load dictionary</span>
 
           </h4>
           <div class="file field w-300 w-350-desktop">
@@ -90,8 +90,8 @@
                 @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
 
-                <span v-translate:ru>Выбрать</span>
-                <span v-translate:en.draft>Choose</span>
+              <span v-translate:ru>Выбрать</span>
+              <span v-translate:en.draft>Choose</span>
 
             </label>
             <label for="uploadDictionary">
@@ -105,8 +105,8 @@
               settings.wordsetSource[0] !== 'playerWords'">
           <h4 class="label w-250">
 
-              <span v-translate:ru>Число слов в шляпе</span>
-              <span v-translate:en.draft>The number of words</span>
+            <span v-translate:ru>Число слов в шляпе</span>
+            <span v-translate:en.draft>The number of words</span>
 
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
@@ -119,8 +119,8 @@
         <div class="layer" v-show="settings.termCondition === 'turns'">
           <h4 class="label w-250">
 
-              <span v-translate:ru>Количество кругов</span>
-              <span v-translate:en.draft>The number of laps</span>
+            <span v-translate:ru>Количество кругов</span>
+            <span v-translate:en.draft>The number of laps</span>
 
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
@@ -133,8 +133,8 @@
         <div class="layer">
           <h4 class="label w-250">
 
-              <span v-translate:ru>Формат времени (сек)</span>
-              <span v-translate:en.draft>Time format (sec)</span>
+            <span v-translate:ru>Формат времени (сек)</span>
+            <span v-translate:en.draft>Time format (sec)</span>
 
           </h4>
           <label class="field w-300 w-350-desktop">
@@ -196,7 +196,7 @@ import {DICTIONARY_MAX_SIZE} from "src/config.js";
 const room = store.state.room;
 
 export default {
-  name: "settingsSection",
+  name: "preparationSettingsSection",
   data: function () {
     return {
       settings: {}
@@ -211,7 +211,7 @@ export default {
       if (this.settings.dictionaryFileInfo === undefined) {
         return this.$t({
           ru: "Файл не загружен",
-          en: "File doesm't loaded"
+          en: "File isn't loaded"
         });
       } else {
         const wordNumber = this.settings.dictionaryFileInfo.wordNumber;
@@ -258,7 +258,7 @@ export default {
             ...this.settings,
             dictionaryFileInfo: {
               filename: file.name,
-              wordNumber:  this.settings.wordset.length
+              wordNumber: this.settings.wordset.length
             }
           };
         };
@@ -301,7 +301,7 @@ export default {
         res.wordsetSource.push(room.settings.dictionaryId);
       }
       if (room.settings.termCondition === "words" &&
-        room.settings.wordsetType !== "playerWords") {
+          room.settings.wordsetType !== "playerWords") {
         res.wordNumber = room.settings.wordNumber;
       }
       if (room.settings.termCondition === "turns") {
@@ -328,7 +328,7 @@ export default {
         res.dictionaryId = this.settings.wordsetSource[1];
       }
       if (res.termCondition === "words" &&
-        res.wordsetType !== "playerWords") {
+          res.wordsetType !== "playerWords") {
         res.wordNumber = this.settings.wordNumber;
       }
       if (res.termCondition === "turns") {
@@ -342,7 +342,7 @@ export default {
     }
   },
 
-  created: function() {
+  created: function () {
     this.settings = this.localFromStoreSettings();
   },
 
