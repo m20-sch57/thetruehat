@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 import * as config from "./config.js";
-import view from "./view.vue";
+import view from "cmp/view.vue";
 import router from "./router.js";
 import store from "./store.js";
 import app from "./app.js";
@@ -33,7 +33,7 @@ let vue = new Vue({
     render: h => h(view)
 });
 
-timeSync.maintainDelta(config.TIME_SYNC_DELTA);
+timeSync.maintainDelta(config.TIME_SYNC_DELTA).then();
 timeSync.debug = config.DEBUG;
 app.debug = config.DEBUG;
 

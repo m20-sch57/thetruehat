@@ -13,7 +13,7 @@
                   :value="key"
                   @input="key = formatKey($event.target.value)"
                   class="input"
-                  :placeholder="$t({
+                  :placeholder="this.$t({
                     ru: 'Ключ игры',
                     en: 'Game key'
                   })"
@@ -77,7 +77,7 @@
               <input
                   v-model.trim="username"
                   class="input"
-                  :placeholder="$t({
+                  :placeholder="this.$t({
                     ru: 'Ваше имя',
                     en: 'Your name'
                   })"
