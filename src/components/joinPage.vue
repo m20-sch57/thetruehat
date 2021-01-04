@@ -13,7 +13,7 @@
                   :value="key"
                   @input="key = formatKey($event.target.value)"
                   class="input"
-                  :placeholder="this.$t({
+                  :placeholder="$t({
                     ru: 'Ключ игры',
                     en: 'Game key'
                   })"
@@ -77,7 +77,7 @@
               <input
                   v-model.trim="username"
                   class="input"
-                  :placeholder="this.$t({
+                  :placeholder="$t({
                     ru: 'Ваше имя',
                     en: 'Your name'
                   })"
@@ -173,9 +173,9 @@ export default {
   computed: {
     validated: function () {
       return (
-          this.validationStatus.username === "accepted" &&
-          (this.validationStatus.key === "not-created" ||
-              this.validationStatus.key === "created"));
+        this.validationStatus.username === "accepted" &&
+        (this.validationStatus.key === "not-created" ||
+            this.validationStatus.key === "created"));
     }
   },
   methods: {

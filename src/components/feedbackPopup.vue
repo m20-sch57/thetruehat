@@ -14,7 +14,7 @@
         <label>
           <textarea
               class="textarea"
-              :placeholder="this.$t({
+              :placeholder="$t({
                 ru: 'Напишите свой отзыв здесь',
                 en: 'Leave your comment here'
               })"
