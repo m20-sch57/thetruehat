@@ -77,10 +77,8 @@
         </div>
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">
-
             <span v-translate:ru>Загрузить словарь</span>
             <span v-translate:en.draft>Load dictionary</span>
-
           </h4>
           <div class="file field w-300 w-350-desktop">
             <input
@@ -89,10 +87,8 @@
                 :disabled="!editModeOn"
                 @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
-
               <span v-translate:ru>Выбрать</span>
               <span v-translate:en.draft>Choose</span>
-
             </label>
             <label for="uploadDictionary">
               {{ dictionaryFilePreview }}
@@ -104,10 +100,8 @@
             v-show="settings.termCondition === 'words' &&
               settings.wordsetSource[0] !== 'playerWords'">
           <h4 class="label w-250">
-
             <span v-translate:ru>Число слов в шляпе</span>
             <span v-translate:en.draft>The number of words</span>
-
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
@@ -118,10 +112,8 @@
         </div>
         <div class="layer" v-show="settings.termCondition === 'turns'">
           <h4 class="label w-250">
-
             <span v-translate:ru>Количество кругов</span>
             <span v-translate:en.draft>The number of laps</span>
-
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
@@ -132,10 +124,8 @@
         </div>
         <div class="layer">
           <h4 class="label w-250">
-
             <span v-translate:ru>Формат времени (сек)</span>
             <span v-translate:en.draft>Time format (sec)</span>
-
           </h4>
           <label class="field w-300 w-350-desktop">
             <input
