@@ -10,7 +10,7 @@
           <span class="fas fa-times"></span>
         </button>
       </header>
-      <main v-if="this.$language.current === 'ru'">
+      <main v-if="$language.current === 'ru'">
         <h2>Общее</h2>
         <p>
           Ваша главная задача в игре в шляпу &ndash; это объяснение как можно большего количества слов. Традиционно в
@@ -78,7 +78,7 @@
           Подробнее читайте тут: <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
         </p>
       </main>
-      <main v-else-if="this.$language.current === 'en'">
+      <main v-else-if="$language.current === 'en'">
         <p>The game is also known as "Alias" among English-speakers, but the name "Hat" will be used here.</p>
 
         <h2>General</h2>
