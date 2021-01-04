@@ -13,9 +13,10 @@
           <span v-translate:ru>Играть</span>
           <span v-translate:en>Play</span>
         </button>
-        <button v-show="true"
-                class="btn btn-bordered btn-shadow btn-yellow"
-                @click="$emit('show-rules')">
+        <button
+            v-show="true"
+            class="btn btn-bordered btn-shadow btn-yellow"
+            @click="$emit('show-rules')">
           <span v-translate:ru>Правила</span>
           <span v-translate:en>Rules</span>
         </button>
