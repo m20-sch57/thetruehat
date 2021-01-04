@@ -175,7 +175,7 @@ class App {
             sGameEnded: data => {
                 store.commit("leaveRoom");
                 store.commit("setResults", data);
-                router.push("/results").then();
+                router.push("/results");
             },
 
             // sFailure: data => {

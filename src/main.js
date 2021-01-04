@@ -33,7 +33,7 @@ let vue = new Vue({
     render: h => h(view)
 });
 
-timeSync.maintainDelta(config.TIME_SYNC_DELTA).then();
+timeSync.maintainDelta(config.TIME_SYNC_DELTA);
 timeSync.debug = config.DEBUG;
 app.debug = config.DEBUG;
 
