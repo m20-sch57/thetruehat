@@ -6,7 +6,7 @@ import faqPage from "cmp/faqPage.vue";
 import aboutPage from "cmp/aboutPage.vue";
 import gamePage from "cmp/gamePage.vue";
 
-import playPage from "cmp/playPage.vue"; // Remove then
+import testComponent from "cmp/test.vue";
 
 Vue.use(VueRouter);
 
@@ -48,8 +48,8 @@ export default new VueRouter({
             meta: {nav: "game"}
         },
         {
-            path: "/test",
-            component: playPage
+            path: "/test/:option",
+            component: testComponent
         }
     ]
 });
