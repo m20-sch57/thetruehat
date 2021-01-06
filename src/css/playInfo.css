@@ -128,7 +128,6 @@
 
 #playInfo main .turn-layer .arrow-down {
     transform: rotate(180deg);
-    transition: all 80ms linear;
 }
 
 #playInfo main .turn-layer.collapsed .arrow-down {
