@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    padding: 15px 15px 0 15px;
+    padding: 15px;
 }
 
 #playInfo main .next-turn {
@@ -82,11 +82,32 @@
 #playInfo main .turn-layer .turn-bottom {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     padding: 0 10px 5px 10px;
+    font-size: 0.9em;
+    line-height: 1.2em;
 }
 
 #playInfo main .turn-layer.collapsed .turn-bottom {
     display: none;
+}
+
+#playInfo main .turn-layer .turn-bottom .word {
+    padding: 0.3em 0.7em;
+    margin: 0 3px 3px 0;
+    border-radius: 0.9em;
+}
+
+#playInfo main .turn-layer .turn-bottom .word.guessed {
+    background-color: #c7efc7;
+}
+
+#playInfo main .turn-layer .turn-bottom .word.not-guessed {
+    background-color: #f3eda3;
+}
+
+#playInfo main .turn-layer .turn-bottom .word.mistake {
+    background-color: #f5afaf;
 }
 
 #playInfo main .turn-layer .turn-pair {
@@ -111,7 +132,7 @@
 }
 
 #playInfo main .turn-layer .turn-pair img {
-    height: 27px;
+    height: 22px;
 }
 
 #playInfo main .turn-layer .turn-pair .listener {
@@ -128,7 +149,6 @@
 
 #playInfo main .turn-layer .arrow-down {
     transform: rotate(180deg);
-    transition: all 80ms linear;
 }
 
 #playInfo main .turn-layer.collapsed .arrow-down {
