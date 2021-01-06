@@ -53,7 +53,9 @@
                 <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
               </div>
               <div class="turn-bottom">
-                Something
+                <div class="word guessed">безобразие</div>
+                <div class="word not-guessed">???</div>
+                <div class="word mistake">синхрофазотрон</div>
               </div>
             </div>
           </div>
