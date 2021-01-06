@@ -2,7 +2,7 @@ import app from "src/app.js";
 import {VERSION, HASH} from "./version.js";
 
 export async function getFreeKey() {
-    return (await (await fetch("api/getFreeKey")).json()).key;
+    return (await (await fetch("api/getFreeKey")).json()).key.toUpperCase();
 }
 
 class RoomInfo {

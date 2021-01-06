@@ -1,19 +1,20 @@
 import store from "./store";
-import router from "./router.js";
 import {timeSync} from "./tools";
 // import Vue from "vue";
 // import {ERROR_TIMEOUT} from "./config.js";
 
 const getTime = () => timeSync.getTime();
 
-class App {
-    constructor() {
+export class App {
+    constructor(store) {
         this.debug = false;
         this.applog = [];
 
         // eslint-disable-next-line no-undef
         this.socket = io.connect(window.location.origin,
             {"path": window.location.pathname + "socket.io"});
+
+        this.store = store;
 
         this.listen();
     }
@@ -50,7 +51,7 @@ class App {
     }
 
     joinRoom({username, key}) {
-        store.commit("connectRoom", {username, key});
+        this.store.commit("connectRoom", {username, key});
         this.emit("cJoinRoom", {
             username, key,
             time_zone_offset: (new Date()).getTimezoneOffset() * (-60000)
@@ -58,12 +59,12 @@ class App {
     }
 
     leaveRoom() {
-        store.commit("leaveRoom");
+        this.store.commit("leaveRoom");
         this.emit("cLeaveRoom");
     }
 
     applySettings(settings) {
-        store.commit("setSettings", {settings});
+        this.store.commit("setSettings", {settings});
         this.emit("cApplySettings", {settings});
     }
 
@@ -72,10 +73,10 @@ class App {
     }
 
     getReady() {
-        if (store.getters.myRole === "speaker") {
+        if (this.store.getters.myRole === "speaker") {
             this.emit("cSpeakerReady");
         }
-        if (store.getters.myRole === "listener") {
+        if (this.store.getters.myRole === "listener") {
             this.emit("cListenerReady");
         }
     }
@@ -103,79 +104,78 @@ class App {
     listen() {
         const handlers = {
             sYouJoined: data => {
-                store.commit("joinRoom", {
+                this.store.commit("joinRoom", {
                     players: data.playerList,
                     ...data
                 });
             },
 
             sPlayerJoined: data => {
-                store.commit("setPlayers", {
+                this.store.commit("setPlayers", {
                     players: data.playerList
                 });
-                store.commit("setHost", {
+                this.store.commit("setHost", {
                     host: data.host
                 });
             },
 
             sPlayerLeft: data => {
-                store.commit("setPlayers", {
+                this.store.commit("setPlayers", {
                     players: data.playerList
                 });
-                store.commit("setHost", {
+                this.store.commit("setHost", {
                     host: data.host
                 });
             },
 
             sNewSettings: data => {
-                store.commit("setSettings", data);
+                this.store.commit("setSettings", data);
             },
 
             sWordCollectionStarted: () => {
-                store.commit("wordCollectionStarted");
+                this.store.commit("wordCollectionStarted");
             },
 
             sGameStarted: data => {
-                store.commit("gameStarted", data);
+                this.store.commit("gameStarted", data);
             },
 
             sExplanationStarted: data => {
                 setTimeout(() => {
-                    store.commit("explanationStarted", data);
-                }, data.startTime - getTime() - store.state.room.settings.delayTime);
+                    this.store.commit("explanationStarted", data);
+                }, data.startTime - getTime() - this.store.state.room.settings.delayTime);
             },
 
             sNewWord: data => {
-                store.commit("setWord", data);
+                this.store.commit("setWord", data);
             },
 
             sWordExplanationEnded: data => {
-                if (store.state.room.settings.termCondition === "words") {
-                    store.commit("setWordsLeft", data);
+                if (this.store.state.room.settings.termCondition === "words") {
+                    this.store.commit("setWordsLeft", data);
                 }
-                if (store.state.room.settings.termCondition === "turns") {
-                    store.commit("setTurnsLeft", data);
+                if (this.store.state.room.settings.termCondition === "turns") {
+                    this.store.commit("setTurnsLeft", data);
                 }
             },
 
             sExplanationEnded: data => {
-                if (store.getters.myRole !== "speaker") {
-                    store.commit("explanationEnded", data);
+                if (this.store.getters.myRole !== "speaker") {
+                    this.store.commit("explanationEnded", data);
                 }
             },
 
             sWordsToEdit: data => {
-                store.commit("explanationEnded", data);
+                this.store.commit("explanationEnded", data);
             },
 
             sNextTurn: data => {
-                store.commit("nextTurn", data);
+                this.store.commit("nextTurn", data);
             },
 
             sGameEnded: data => {
-                store.commit("leaveRoom");
-                store.commit("setResults", data);
-                router.push("/results");
+                this.store.commit("leaveRoom");
+                this.store.commit("setResults", data);
             },
 
             // sFailure: data => {
@@ -195,4 +195,4 @@ class App {
     }
 }
 
-export default new App();
+export default new App(store);
