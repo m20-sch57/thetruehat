@@ -53,9 +53,13 @@
                 <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
               </div>
               <div class="turn-bottom">
-                <div class="word guessed">безобразие</div>
-                <div class="word not-guessed">???</div>
-                <div class="word mistake">синхрофазотрон</div>
+                <div
+                    v-for="(word, j) of turn.words"
+                    :key="j"
+                    class="word"
+                    :class="[word.status]">
+                  {{ word.word || "???" }}
+                </div>
               </div>
             </div>
           </div>
@@ -98,25 +102,78 @@ import store from "src/store.js";
 
 const room = store.state.room;
 
+const turnsHistory = [
+  {
+    speaker: "Гений",
+    listener: "Евгений",
+    score: 4,
+    words: [
+      {
+        word: "турок",
+        status: "guessed"
+      },
+      {
+        word: "шерсть",
+        status: "guessed"
+      },
+      {
+        word: "синхрофазотрон",
+        status: "guessed"
+      },
+      {
+        word: "пятилетка",
+        status: "guessed"
+      },{
+        status: "not-guessed"
+      }
+    ],
+    collapsed: true
+  },
+  {
+    speaker: "Саня",
+    listener: "Петя",
+    score: 1,
+    words: [
+      {
+        word: "безобразие",
+        status: "guessed"
+      },
+      {
+        status: "not-guessed"
+      },
+      {
+        word: "синхрофазотрон",
+        status: "mistake"
+      }
+    ],
+    collapsed: true
+  },
+  {
+    speaker: "Гелб",
+    listener: "Федро",
+    score: 2,
+    words: [
+      {
+        word: "фасоль",
+        status: "guessed"
+      },
+      {
+        word: "слив",
+        status: "guessed"
+      },
+      {
+        word: "синхрофазотрон",
+        status: "mistake"
+      }
+    ],
+    collapsed: true
+  }
+];
+
 export default {
   name: "playInfoSection",
   data: function () {
-    return {
-      turnsHistory: [
-        {
-          speaker: "Саня",
-          listener: "Петя",
-          score: 7,
-          collapsed: true
-        },
-        {
-          speaker: "Гелб",
-          listener: "Федро",
-          score: 2,
-          collapsed: true
-        }
-      ]
-    };
+    return {turnsHistory};
   },
   computed: {
     nextTurn: function () {
