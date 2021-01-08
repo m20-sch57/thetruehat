@@ -30,7 +30,7 @@
 }
 
 #preparation header .right {
-    display: none;
+    visibility: hidden;
 }
 
 #preparation footer {
@@ -63,6 +63,10 @@
         font-size: 80%;
     }
 
+    #preparation header .right {
+        visibility: visible;
+    }
+
     #preparation footer {
         padding: 10px;
     }
@@ -73,9 +77,5 @@
 
     #preparation footer h4 {
         text-align: center;
-    }
-
-    #preparation header .right {
-        display: initial;
     }
 }

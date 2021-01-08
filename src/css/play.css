@@ -37,8 +37,8 @@
     font-weight: normal;
 }
 
-#play header .right {
-    display: none;
+#play header .left, #play header .right {
+    visibility: hidden;
 }
 
 @media (max-width: 1100px) {
@@ -79,7 +79,7 @@
         font-size: 80%;
     }
 
-    #play header .right {
-        display: initial;
+    #play header .left, #play header .right {
+        visibility: visible;
     }
 }

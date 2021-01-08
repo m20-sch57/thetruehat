@@ -1,0 +1,135 @@
+#playTurn header {
+    background-color: transparent;
+}
+
+#playTurn header h1 {
+    text-align: center;
+}
+
+#playTurn .not-explaining {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 15px;
+}
+
+#playTurn main .turn-pair {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto 0;
+}
+
+#playTurn main .turn-pair .player {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-basis: 100px;
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 100%;
+}
+
+#playTurn main .turn-pair .player.speaker {
+    flex-direction: row;
+    text-align: left;
+}
+
+#playTurn main .turn-pair .player.listener {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+#playTurn main .turn-pair .player-main {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    min-width: 0;
+}
+
+#playTurn main .turn-pair .player-icon {
+    margin: 10px;
+    font-size: 2em;
+}
+
+#playTurn main .turn-pair .name {
+    margin: 0;
+    font-weight: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#playTurn main .turn-pair .player.speaker .name {
+    color: #20ac20;
+}
+
+#playTurn main .turn-pair .player.listener .name {
+    color: #25abc4;
+}
+
+#playTurn main .turn-pair .action {
+    margin: 0;
+    color: grey;
+    font-weight: normal;
+}
+
+#playTurn main .turn-pair .middle {
+    display: flex;
+    min-height: 100px;
+    max-height: 100px;
+}
+
+#playTurn main .turn-pair .timer {
+    margin: auto 20px;
+    font-weight: normal;
+}
+
+#playTurn main .turn-pair img {
+    margin: auto;
+    width: 60px;
+}
+
+#playTurn footer {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+#playTurn footer button.ready {
+    margin: auto;
+    width: 300px;
+}
+
+#playTurn footer h3.your-status {
+    margin: auto;
+    font-weight: normal;
+}
+
+@media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
+    #playTurn main .turn-pair {
+        flex-direction: column;
+    }
+
+    #playTurn main .turn-pair img {
+        transform: rotate(90deg);
+    }
+
+    #playTurn footer {
+        margin-bottom: 0;
+        border-top: 1px solid whitesmoke;
+    }
+
+    #playTurn footer button.ready {
+        flex-grow: 1;
+        max-width: 400px;
+    }
+
+    #playTurn footer h3.your-status {
+        color: grey;
+        font-size: 1em;
+        line-height: 2.5em;
+    }
+}

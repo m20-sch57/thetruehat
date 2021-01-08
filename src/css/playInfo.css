@@ -2,12 +2,6 @@
     background-color: lightblue;
 }
 
-#playInfo main {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
 #playInfo main .turns {
     display: flex;
     flex-direction: column;
@@ -98,11 +92,11 @@
     border-radius: 0.9em;
 }
 
-#playInfo main .turn-layer .turn-bottom .word.guessed {
+#playInfo main .turn-layer .turn-bottom .word.explained {
     background-color: #c7efc7;
 }
 
-#playInfo main .turn-layer .turn-bottom .word.not-guessed {
+#playInfo main .turn-layer .turn-bottom .word.not-explained {
     background-color: #f3eda3;
 }
 
@@ -160,7 +154,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    padding: 5px;
+    padding: 10px;
     border-top: 1px solid whitesmoke;
 }
 

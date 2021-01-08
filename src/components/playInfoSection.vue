@@ -53,8 +53,8 @@
                 <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
               </div>
               <div class="turn-bottom">
-                <div class="word guessed">безобразие</div>
-                <div class="word not-guessed">???</div>
+                <div class="word explained">безобразие</div>
+                <div class="word not-explained">???</div>
                 <div class="word mistake">синхрофазотрон</div>
               </div>
             </div>
