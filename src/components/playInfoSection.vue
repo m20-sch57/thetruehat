@@ -110,21 +110,21 @@ const turnsHistory = [
     words: [
       {
         word: "турок",
-        status: "guessed"
+        status: "explained"
       },
       {
         word: "шерсть",
-        status: "guessed"
+        status: "explained"
       },
       {
         word: "синхрофазотрон",
-        status: "guessed"
+        status: "explained"
       },
       {
         word: "пятилетка",
-        status: "guessed"
+        status: "explained"
       },{
-        status: "not-guessed"
+        status: "not-explained"
       }
     ],
     collapsed: true
@@ -136,10 +136,10 @@ const turnsHistory = [
     words: [
       {
         word: "безобразие",
-        status: "guessed"
+        status: "explained"
       },
       {
-        status: "not-guessed"
+        status: "not-explained"
       },
       {
         word: "синхрофазотрон",
@@ -155,11 +155,11 @@ const turnsHistory = [
     words: [
       {
         word: "фасоль",
-        status: "guessed"
+        status: "explained"
       },
       {
         word: "слив",
-        status: "guessed"
+        status: "explained"
       },
       {
         word: "синхрофазотрон",
