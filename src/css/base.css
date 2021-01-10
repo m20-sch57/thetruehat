@@ -164,6 +164,18 @@ input, textarea {
     background-color: rgb(230, 230, 96);
 }
 
+.btn-red {
+    background-color: rgb(250, 120, 120);
+}
+
+.btn-red:hover:not([disabled]) {
+    background-color: rgb(241, 101, 101);
+}
+
+.btn-red:active:not([disabled]) {
+    background-color: rgb(222, 87, 87);
+}
+
 .btn-white {
     background-color: white;
 }

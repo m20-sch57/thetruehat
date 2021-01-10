@@ -9,11 +9,12 @@
       <h1>Идёт объяснение</h1>
       <button class="btn-icon">
         <span class="fas fa-volume-up"></span>
+<!--        <span class="fas fa-volume-mute"></span>-->
       </button>
     </header>
     <main class="scrollable-wrapper">
       <div class="scrollable">
-        <div class="not-explaining">
+        <div class="not-explaining" style="display: none">
           <div class="turn-pair">
             <div class="player speaker">
               <div class="player-icon">
@@ -25,7 +26,7 @@
               </div>
             </div>
             <div class="middle">
-              <h2 class="timer" style="display: none">00:17</h2>
+              <h2 style="display: none">00:17</h2>
               <img src="img/long-arrow-right.png" alt="right-arrow">
             </div>
             <div class="player listener">
@@ -39,10 +40,17 @@
             </div>
           </div>
         </div>
+        <div class="explaining">
+          <div class="word-timer">
+            <h1 class="word" style="font-size: 40px">Синхрофазотрон</h1>
+<!--        Font size 40px - 50px look ok -->
+            <h2 class="timer">00:17</h2>
+          </div>
+        </div>
       </div>
     </main>
     <footer>
-      <button class="btn btn-green btn-shadow ready" style="">
+      <button class="btn btn-green btn-shadow ready" style="display: none">
         Я готов объяснять
       </button>
       <button class="btn btn-blue btn-shadow ready" style="display: none">
@@ -50,6 +58,17 @@
       </button>
       <h3 class="your-status" style="display: none">Ты объясняешь через 3 хода</h3>
       <h3 class="your-status" style="display: none">Ты отгадываешь через 2 хода</h3>
+      <div class="speaker-actions">
+        <button class="btn btn-blue btn-shadow not-guessed">
+          Не угадал
+        </button>
+        <button class="btn btn-green btn-shadow guessed">
+          Угадал
+        </button>
+        <button class="btn btn-red btn-shadow mistake">
+          Ошибка
+        </button>
+      </div>
     </footer>
   </article>
 </template>
