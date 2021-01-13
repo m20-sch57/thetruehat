@@ -39,16 +39,14 @@
                 class="user-layer"
                 v-for="username in $store.getters.onlinePlayers"
                 :key="username">
-              <picture>
-                <img
-                    v-if="username === $store.state.room.host"
-                    src="img/hat.png"
-                    alt="user-icon">
-                <img
-                    v-else
-                    src="img/user.png"
-                    alt="user-icon">
-              </picture>
+              <img
+                  v-if="username === $store.state.room.host"
+                  src="img/hat.png"
+                  alt="user-icon">
+              <img
+                  v-else
+                  src="img/user.png"
+                  alt="user-icon">
               <h3>{{ usernamePreview(username) }}</h3>
             </div>
           </div>
