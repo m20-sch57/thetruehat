@@ -144,7 +144,7 @@
                 v-model.number="settings.aftermathTime">
           </label>
         </div>
-        <div class="layer-detached">
+        <div class="layer detached">
           <div class="checkbox">
             <input
                 :disabled="!editModeOn"
