@@ -107,12 +107,12 @@ const roomModule = {
             state.substate = "edit";
             state.startTime = null;
             state.word = null;
+            state.roundId += 1;
         },
         nextTurn(state, payload) {
             state.substate = "wait";
             set(["speaker", "listener", "wordsCount"])(state, payload);
             state.editWords = null;
-            state.roundId += 1;
         },
         setResults(state, {results}) {
             state.results = results;
