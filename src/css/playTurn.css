@@ -6,6 +6,11 @@
     text-align: center;
 }
 
+#playTurn header button span {
+    min-width: 1.2em;
+    text-align: left;
+}
+
 #playTurn main .explanation-timer {
     margin: 0;
     font-weight: normal;
