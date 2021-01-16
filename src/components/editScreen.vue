@@ -1,6 +1,6 @@
 <template>
   <article id="playTurn">
-    <turn-title/>
+    <turn-title @swipe-to="$emit('swipe-to', $event)"/>
     <main class="scrollable-wrapper">
 
     </main>

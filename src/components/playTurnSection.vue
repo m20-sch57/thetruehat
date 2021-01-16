@@ -1,5 +1,5 @@
 <template>
-  <component :is="currentScreen"/>
+  <component :is="currentScreen" @swipe-to="$emit('swipe-to', $event)"/>
 </template>
 
 <script>

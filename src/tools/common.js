@@ -11,7 +11,6 @@ export function debounce(func, delay) {
 }
 
 export function throttle(func, cooldownTime) {
-    console.log("throttle");
     let callTime = performance.now() - cooldownTime;
     return function (...args) {
         let now = performance.now();

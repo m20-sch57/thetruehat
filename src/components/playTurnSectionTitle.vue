@@ -18,26 +18,49 @@
         Ты отгадываешь
       </span>
       <span v-if="substate === 'edit'">
-        Редактирование
+        Редактирование раунда
       </span>
     </h1>
     <button class="btn-icon">
-      <span class="fas fa-volume-up"></span>
+      <span
+          v-show="!muted"
+          @click="toggleSound"
+          class="fas fa-volume-up">
+      </span>
+      <span
+          v-show="muted"
+          @click="toggleSound"
+          class="fas fa-volume-mute">
+      </span>
     </button>
   </header>
 </template>
 
 <script>
+import {sound} from "src/tools";
 import {mapGetters, mapState} from "vuex";
 
 export default {
   name: "playTurnSectionTitle",
+
+  data: function () {
+    return {
+      muted: sound.isMuted
+    };
+  },
 
   computed: {
     ...mapState({
       substate: state => state.room.substate
     }),
     ...mapGetters(["myRole"])
+  },
+
+  methods: {
+    toggleSound: function () {
+      sound.toggleMute();
+      this.muted = !this.muted;
+    }
   }
 };
 </script>

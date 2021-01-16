@@ -103,6 +103,7 @@ export default {
       this.explanationTimeSec = 0;
     },
     animateAftermathTimer: async function (startTime, roundId) {
+      this.aftermathTimeMsec = Math.ceil(this.settings.aftermathTime / 100);
       await animate({
         startTime,
         duration: this.settings.aftermathTime,
@@ -120,13 +121,13 @@ export default {
 
   created: function () {
     this.$watch(() => (this.substate === "explanationDelay" || this.substate === "explanation"),
-        function (val) {
-          if (val) {
-            this.playSounds();
-            this.animateTimers();
-          }
-        },
-        {immediate: true}
+      function (val) {
+        if (val) {
+          this.playSounds();
+          this.animateTimers();
+        }
+      },
+      {immediate: true}
     );
   },
 
