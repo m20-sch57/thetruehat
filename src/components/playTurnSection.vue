@@ -1,80 +1,39 @@
 <template>
-  <article id="playTurn">
-    <header>
-      <button
-          class="btn-icon left"
-          @click="$emit('swipe-to', 0)">
-        <span class="fas fa-angle-right"></span>
-      </button>
-      <h1>Идёт объяснение</h1>
-      <button class="btn-icon">
-        <span class="fas fa-volume-up"></span>
-<!--        <span class="fas fa-volume-mute"></span>-->
-      </button>
-    </header>
-    <main class="scrollable-wrapper">
-      <div class="scrollable">
-        <div class="not-explaining" style="display: none">
-          <div class="turn-pair">
-            <div class="player speaker">
-              <div class="player-icon">
-                <span class="fas fa-microphone-alt"></span>
-              </div>
-              <div class="player-main">
-                <h2 class="name">Василий</h2>
-                <h3 class="action">объясняет</h3>
-              </div>
-            </div>
-            <div class="middle">
-              <h2 style="display: none">00:17</h2>
-              <img src="img/long-arrow-right.png" alt="right-arrow">
-            </div>
-            <div class="player listener">
-              <div class="player-icon">
-                <span class="fas fa-headphones-alt"></span>
-              </div>
-              <div class="player-main">
-                <h2 class="name">Пётр</h2>
-                <h3 class="action">отгадывает</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="explaining">
-          <div class="word-timer">
-            <h1 class="word" style="font-size: 40px">Синхрофазотрон</h1>
-<!--        Font size 40px - 50px look ok -->
-            <h2 class="timer">00:17</h2>
-          </div>
-        </div>
-      </div>
-    </main>
-    <footer>
-      <button class="btn btn-green btn-shadow ready" style="display: none">
-        Я готов объяснять
-      </button>
-      <button class="btn btn-blue btn-shadow ready" style="display: none">
-        Я готов отгадывать
-      </button>
-      <h3 class="your-status" style="display: none">Ты объясняешь через 3 хода</h3>
-      <h3 class="your-status" style="display: none">Ты отгадываешь через 2 хода</h3>
-      <div class="speaker-actions">
-        <button class="btn btn-blue btn-shadow not-guessed">
-          Не угадал
-        </button>
-        <button class="btn btn-green btn-shadow guessed">
-          Угадал
-        </button>
-        <button class="btn btn-red btn-shadow mistake">
-          Ошибка
-        </button>
-      </div>
-    </footer>
-  </article>
+  <component :is="currentScreen"/>
 </template>
 
 <script>
+import explanationScreen from "cmp/explanationScreen.vue";
+import observationScreen from "cmp/observationScreen.vue";
+import editScreen from "cmp/editScreen.vue";
+
+import {mapGetters, mapState} from "vuex";
+
 export default {
-  name: "playTurnSection"
+  name: "playTurnSection",
+
+  components: {explanationScreen, observationScreen, editScreen},
+
+  computed: {
+    ...mapState({
+      substate: state => state.room.substate,
+    }),
+    ...mapGetters(["myRole"]),
+    currentScreen: function() {
+      if (this.substate === "wait" || this.myRole !== "speaker") {
+        return "observation-screen";
+      }
+      if (this.substate === "explanationDelay") {
+        return "observation-screen";
+      }
+      if (this.substate === "explanation") {
+        return "explanation-screen";
+      }
+      if (this.substate === "edit") {
+        return "edit-screen";
+      }
+      return "";
+    }
+  }
 };
 </script>

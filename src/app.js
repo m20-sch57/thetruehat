@@ -142,8 +142,11 @@ export class App {
 
             sExplanationStarted: data => {
                 setTimeout(() => {
-                    this.store.commit("explanationStarted", data);
+                    this.store.commit("explanationDelayStarted", data);
                 }, data.startTime - getTime() - this.store.state.room.settings.delayTime);
+                setTimeout(() => {
+                    this.store.commit("explanationStarted");
+                }, data.startTime - getTime());
             },
 
             sNewWord: data => {

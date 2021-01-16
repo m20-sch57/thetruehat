@@ -93,9 +93,12 @@ const roomModule = {
                 set("turnsLeft")(state, payload);
             }
         },
-        explanationStarted(state, {startTime}) {
-            state.startTime = startTime;
+        explanationStarted(state) {
             state.substate = "explanation";
+        },
+        explanationDelayStarted(state, {startTime}) {
+            state.startTime = startTime;
+            state.substate = "explanationDelay";
         },
         explanationEnded(state, {editWords}) {
             if (editWords) {
@@ -137,6 +140,24 @@ const roomModule = {
                 if (state.speaker === state.username) return "speaker";
                 if (state.listener === state.username) return "listener";
                 return "observer";
+            }
+        },
+        timetableInfo(state) {
+            if (state.timetable) {
+                let res = {};
+                for (let i = 0; i < state.timetable.length; i++) {
+                    let pair = state.timetable[i];
+                    if (pair.speaker === state.username) {
+                        res.turnsCount = i-1;
+                        res.myNextRole = "speaker";
+                        return res;
+                    }
+                    if (pair.listener === state.username) {
+                        res.turnsCount = i-1;
+                        res.myNextRole = "listener";
+                        return res;
+                    }
+                }
             }
         }
     }
