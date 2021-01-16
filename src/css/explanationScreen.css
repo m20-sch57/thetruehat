@@ -1,0 +1,71 @@
+#explanationScreen {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+#explanationScreen .word-timer {
+    display: flex;
+    flex-direction: column;
+    margin: auto 0;
+    text-align: center;
+}
+
+#explanationScreen .word-timer .word {
+    margin: 0;
+    font-weight: normal;
+    line-height: 70px;
+}
+
+#explanationScreenFooter .speaker-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    align-items: center;
+    margin: auto;
+    max-width: 600px;
+}
+
+#explanationScreenFooter .guessed {
+    flex-grow: 1;
+    margin: 0 5px;
+    font-size: 1.2em;
+}
+
+#explanationScreenFooter .not-guessed, #explanationScreenFooter .mistake {
+    flex-basis: 160px;
+    margin: 0;
+}
+
+@media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
+    #explanationScreenFooter .your-status {
+        color: grey;
+        font-size: 1em;
+        line-height: 2.5em;
+    }
+
+    #explanationScreenFooter .guessed {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 600px), (min-width: 800px) and (max-width: 1000px) {
+    #explanationScreenFooter .guessed {
+        order: 1;
+        min-width: 300px;
+        margin: 10px 0 0 0;
+        font-size: 1.2em;
+    }
+
+    #explanationScreenFooter .not-guessed {
+        flex-grow: 1;
+        margin-right: 3px;
+    }
+
+    #explanationScreenFooter .mistake {
+        flex-grow: 1;
+        margin-left: 3px;
+    }
+}

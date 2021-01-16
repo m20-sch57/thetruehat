@@ -10,5 +10,8 @@ import "./css/preparationSettings.css";
 import "./css/play.css";
 import "./css/playInfo.css";
 import "./css/playTurn.css";
+import "./css/observationScreen.css";
+import "./css/explanationScreen.css";
+import "./css/editScreen.css";
 import "./css/rules.css";
 import "./css/feedback.css";

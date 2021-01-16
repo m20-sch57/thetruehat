@@ -6,113 +6,20 @@
     text-align: center;
 }
 
-#playTurn main .not-explaining {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-shrink: 0;
-}
-
-#playTurn main .turn-pair {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin: auto 0;
-}
-
-#playTurn main .turn-pair .player {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-basis: 100px;
-    flex-grow: 1;
-    min-width: 0;
-    max-width: 100%;
-}
-
-#playTurn main .turn-pair .player.speaker {
-    flex-direction: row;
+#playTurn header button span {
+    min-width: 1.2em;
     text-align: left;
 }
 
-#playTurn main .turn-pair .player.listener {
-    flex-direction: row-reverse;
-    text-align: right;
-}
-
-#playTurn main .turn-pair .player-main {
-    display: flex;
-    flex-direction: column;
-    margin: 10px;
-    min-width: 0;
-}
-
-#playTurn main .turn-pair .player-icon {
-    margin: 10px;
-    font-size: 2em;
-}
-
-#playTurn main .turn-pair .name {
+#playTurn main .explanation-timer {
     margin: 0;
     font-weight: normal;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
 }
 
-#playTurn main .turn-pair .player.speaker .name {
-    color: #20ac20;
-}
-
-#playTurn main .turn-pair .player.listener .name {
-    color: #25abc4;
-}
-
-#playTurn main .turn-pair .action {
-    margin: 0;
-    color: grey;
-    font-weight: normal;
-}
-
-#playTurn main .turn-pair .middle {
-    display: flex;
-    min-height: 100px;
-    max-height: 100px;
-}
-
-#playTurn main .turn-pair h2 {
-    margin: auto 20px;
-    font-weight: normal;
-}
-
-#playTurn main .turn-pair img {
-    margin: auto;
-    width: 60px;
-}
-
-#playTurn main .explaining {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-shrink: 0;
-}
-
-#playTurn main .word-timer {
-    display: flex;
-    flex-direction: column;
-    margin: auto 0;
-    text-align: center;
-}
-
-#playTurn main .word-timer .word {
+#playTurn main .aftermath-timer {
     margin: 0;
     font-weight: normal;
-    line-height: 70px;
-}
-
-#playTurn main .word-timer .timer {
-    margin: 0;
-    font-weight: normal;
+    color: red;
 }
 
 #playTurn footer {
@@ -120,85 +27,17 @@
     flex-direction: row;
     padding: 10px;
     margin-bottom: 40px;
+    min-height: calc(2.5em + 21px);
     text-align: center;
 }
 
-#playTurn footer .ready {
-    margin: auto;
-    width: 300px;
-}
-
-#playTurn footer .your-status {
-    margin: auto;
-    font-weight: normal;
-}
-
-#playTurn footer .speaker-actions {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    flex-grow: 1;
-    align-items: center;
-    margin: auto;
-    max-width: 600px;
-}
-
-#playTurn footer .guessed {
-    flex-grow: 1;
-    margin: 0 5px;
-    font-size: 1.2em;
-}
-
-#playTurn footer .not-guessed, #playTurn footer .mistake {
-    flex-basis: 160px;
-    margin: 0;
+#playTurn footer.hidden {
+    visibility: hidden;
 }
 
 @media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
-    #playTurn main .turn-pair {
-        flex-direction: column;
-    }
-
-    #playTurn main .turn-pair img {
-        transform: rotate(90deg);
-    }
-
     #playTurn footer {
         margin-bottom: 0;
         border-top: 1px solid whitesmoke;
-    }
-
-    #playTurn footer .ready {
-        flex-grow: 1;
-        max-width: 400px;
-    }
-
-    #playTurn footer .your-status {
-        color: grey;
-        font-size: 1em;
-        line-height: 2.5em;
-    }
-
-    #playTurn footer .guessed {
-        font-size: 1em;
-    }
-}
-
-@media (max-width: 600px), (min-width: 800px) and (max-width: 1000px) {
-    #playTurn footer .guessed {
-        order: 1;
-        min-width: 300px;
-        margin: 10px 0 0 0;
-        font-size: 1.2em;
-    }
-
-    #playTurn footer .not-guessed {
-        flex-grow: 1;
-        margin-right: 3px;
-    }
-
-    #playTurn footer .mistake {
-        flex-grow: 1;
-        margin-left: 3px;
     }
 }

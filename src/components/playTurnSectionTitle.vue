@@ -18,7 +18,7 @@
         Ты отгадываешь
       </span>
       <span v-if="substate === 'edit'">
-        Редактирование раунда
+        Редактирование
       </span>
     </h1>
     <button class="btn-icon">

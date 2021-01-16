@@ -3,7 +3,7 @@
     <turn-title @swipe-to="$emit('swipe-to', $event)"/>
     <main class="scrollable-wrapper">
       <div class="scrollable">
-        <div class="not-explaining">
+        <div id="observationScreen">
           <div class="turn-pair">
             <div class="player speaker">
               <div class="player-icon">
@@ -37,7 +37,7 @@
         </div>
       </div>
     </main>
-    <footer>
+    <footer id="observationScreenFooter">
       <button
           class="btn btn-green btn-shadow ready"
           v-show="myRole === 'speaker' && substate ==='wait'"

@@ -3,7 +3,7 @@
     <turn-title @swipe-to="$emit('swipe-to', $event)"/>
     <main class="scrollable-wrapper">
       <div class="scrollable">
-        <div class="explaining">
+        <div id="explanationScreen">
           <div class="word-timer">
             <h1 class="word" id="word-container">
               <word :max-word-width="maxWordWidth" :max-font-size="50"/>
@@ -13,7 +13,7 @@
         </div>
       </div>
     </main>
-    <footer>
+    <footer id="explanationScreenFooter">
       <div class="speaker-actions">
         <button
             class="btn btn-blue btn-shadow not-guessed"
