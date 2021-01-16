@@ -4,7 +4,7 @@
     <main class="scrollable-wrapper">
 
     </main>
-    <footer>
+    <footer id="editScreenFooter">
       <button
           class="btn btn-green btn-shadow ready"
           @click="acceptEditedWords">

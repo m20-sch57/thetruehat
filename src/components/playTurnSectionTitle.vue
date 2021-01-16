@@ -18,12 +18,11 @@
         Ты отгадываешь
       </span>
       <span v-if="substate === 'edit'">
-        Редактирование раунда
+        Редактирование
       </span>
     </h1>
     <button class="btn-icon">
       <span class="fas fa-volume-up"></span>
-      <!-- <span class="fas fa-volume-mute"></span> -->
     </button>
   </header>
 </template>

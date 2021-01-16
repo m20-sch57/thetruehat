@@ -23,13 +23,14 @@
     margin-left: auto;
 }
 
-#preparationRoom main .users {
-    margin: 20px;
+#preparationRoom main .scrollable {
+    padding: 20px;
 }
 
 #preparationRoom main .user-layer {
     display: flex;
     flex-direction: row;
+    flex-shrink: 0;
     align-items: center;
     margin-bottom: 7px;
 }
@@ -43,6 +44,8 @@
 #preparationRoom main .user-layer h3 {
     margin: 0;
     font-weight: normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 @media (max-width: 800px) {
