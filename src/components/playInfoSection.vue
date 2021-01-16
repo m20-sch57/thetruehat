@@ -123,7 +123,7 @@ const turnsHistory = [
       {
         word: "пятилетка",
         status: "explained"
-      },{
+      }, {
         status: "not-explained"
       }
     ],

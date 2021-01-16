@@ -1,10 +1,10 @@
-import { timeSync } from "src/tools";
+import {timeSync} from "src/tools";
 
 export function animate({startTime, timing, draw, duration, stopCondition}) {
     // Partially taken from https://learn.javascript.ru
     timing = timing || (time => time);
-    stopCondition = stopCondition || (() => (false));
-    return new Promise(function(resolve) {
+    stopCondition = stopCondition || (() => false);
+    return new Promise(function (resolve) {
         let start = startTime;
         requestAnimationFrame(function animate() {
             let time = timeSync.getTime();

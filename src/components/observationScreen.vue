@@ -10,7 +10,7 @@
                 <span class="fas fa-microphone-alt"></span>
               </div>
               <div class="player-main">
-                <h2 class="name">{{speaker}}</h2>
+                <h2 class="name">{{ speaker }}</h2>
                 <h3 class="action">объясняет</h3>
               </div>
             </div>
@@ -19,9 +19,9 @@
                   :key="roundId"
                   v-show="substate === 'explanation' || substate === 'explanationDelay'"/>
               <img
-                src="img/long-arrow-right.png"
-                alt="right-arrow"
-                v-show="substate !== 'explanation' && substate !== 'explanationDelay'"
+                  src="img/long-arrow-right.png"
+                  alt="right-arrow"
+                  v-show="substate !== 'explanation' && substate !== 'explanationDelay'"
               />
             </div>
             <div class="player listener">
@@ -29,7 +29,7 @@
                 <span class="fas fa-headphones-alt"></span>
               </div>
               <div class="player-main">
-                <h2 class="name">{{listener}}</h2>
+                <h2 class="name">{{ listener }}</h2>
                 <h3 class="action">отгадывает</h3>
               </div>
             </div>
@@ -55,12 +55,13 @@
       <h3
           class="your-status"
           v-show="myRole === 'observer' && timetableInfo.turnsCount > 0">
-        Ты {{timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь"}} через {{timetableInfo.turnsCount}} хода.
+        Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} через
+        {{ timetableInfo.turnsCount }} хода.
       </h3>
       <h3
           class="your-status"
           v-show="myRole === 'observer' && timetableInfo.turnsCount === 0">
-        Ты {{timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь"}} на следующем ходу.
+        Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} на следующем ходу.
       </h3>
     </footer>
   </article>
@@ -95,7 +96,7 @@ export default {
   },
 
   methods: {
-    getReady: function() {
+    getReady: function () {
       app.getReady();
       this.ready = true;
     }

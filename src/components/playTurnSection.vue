@@ -19,7 +19,7 @@ export default {
       substate: state => state.room.substate,
     }),
     ...mapGetters(["myRole"]),
-    currentScreen: function() {
+    currentScreen: function () {
       if (this.substate === "wait" || this.myRole !== "speaker") {
         return "observation-screen";
       }

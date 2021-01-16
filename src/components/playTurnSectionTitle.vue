@@ -6,7 +6,7 @@
       <span class="fas fa-angle-right"></span>
     </button>
     <h1>
-      <span	v-if="substate === 'wait' && myRole === 'observer'">
+      <span v-if="substate === 'wait' && myRole === 'observer'">
         Подготовка
       </span>
       <span v-if="substate === 'explanation' && myRole === 'observer'">
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import {mapGetters, mapState} from "vuex";
 
 export default {
   name: "playTurnSectionTitle",

@@ -1,6 +1,6 @@
 <template>
   <span :style="{fontSize: fontSize + 'px'}">
-    {{word}}
+    {{ word }}
   </span>
 </template>
 

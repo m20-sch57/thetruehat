@@ -1,7 +1,7 @@
 import {timeSync} from "src/tools";
 
 class Sound {
-    constructor () {
+    constructor() {
         this.currentSound = false;
         this.isMuted = false;
         this.volume = 1;
@@ -53,7 +53,7 @@ class Sound {
                 this.currentSound.play();
             }, startTime - timeSync.getTime());
         } else if (timeSync.getTime() - startTime <
-                sound.duration * 1000){
+            sound.duration * 1000) {
             this.killSound();
             this.currentSound = sound;
             this.updateVolume();

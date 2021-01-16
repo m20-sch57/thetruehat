@@ -10,7 +10,10 @@ import {App, default as app} from "src/app.js";
 import {getFreeKey} from "src/api.js";
 
 function createUser() {
-  return new App({commit: () => {}});
+  return new App({
+    commit: () => {
+    }
+  });
 }
 
 export default {
@@ -21,14 +24,14 @@ export default {
     },
     playPageComponent: function () {
       if (this.$store.state.room.connection === "online" &&
-      this.$store.state.room.state === "play") {
+          this.$store.state.room.state === "play") {
         return "playPage";
       }
       return "";
     },
     preparationPageComponent: function () {
       if (this.$store.state.room.connection === "online" &&
-      this.$store.state.room.state === "wait") {
+          this.$store.state.room.state === "wait") {
         return "preparationPage";
       }
       return "";

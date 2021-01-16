@@ -2,17 +2,17 @@
   <h2
       v-if="timerState === 'delay'"
       class="delay-timer">
-    {{delayTimeSec}}
+    {{ delayTimeSec }}
   </h2>
   <h2
       v-else-if="timerState === 'explanation'"
       class="explanation-timer">
-    {{explanationTime}}
+    {{ explanationTime }}
   </h2>
   <h2
       v-else-if="timerState === 'aftermath'"
       class="aftermath-timer">
-    {{aftermathTime}}
+    {{ aftermathTime }}
   </h2>
 </template>
 
@@ -46,10 +46,10 @@ export default {
     aftermathStartTime: function () {
       return this.explanationStartTime + this.settings.explanationTime;
     },
-    explanationTime: function() {
+    explanationTime: function () {
       return minSec(this.explanationTimeSec);
     },
-    aftermathTime: function() {
+    aftermathTime: function () {
       if (this.aftermathTimeMsec !== 0) return secMsec(this.aftermathTimeMsec);
       return "время истекло";
     }
@@ -76,7 +76,7 @@ export default {
       this.timerState = "aftermath";
       await this.animateAftermathTimer(this.aftermathStartTime, roundId);
     },
-    animateDelayTimer: async function(startTime, roundId) {
+    animateDelayTimer: async function (startTime, roundId) {
       await animate({
         startTime,
         duration: this.settings.delayTime,
@@ -88,13 +88,13 @@ export default {
         }
       });
     },
-    animateExplanationTimer: async function(startTime, roundId) {
+    animateExplanationTimer: async function (startTime, roundId) {
       await animate({
         startTime,
         duration: this.settings.explanationTime,
         draw: (progress) => {
           this.explanationTimeSec =
-            Math.ceil((1 - progress) * this.settings.explanationTime / 1000);
+              Math.ceil((1 - progress) * this.settings.explanationTime / 1000);
         },
         stopCondition: () => {
           return roundId !== this.$store.state.room.roundId;
@@ -102,13 +102,13 @@ export default {
       });
       this.explanationTimeSec = 0;
     },
-    animateAftermathTimer: async function(startTime, roundId) {
+    animateAftermathTimer: async function (startTime, roundId) {
       await animate({
         startTime,
         duration: this.settings.aftermathTime,
         draw: (progress) => {
           this.aftermathTimeMsec =
-            Math.ceil((1 - progress) * this.settings.aftermathTime / 100);
+              Math.ceil((1 - progress) * this.settings.aftermathTime / 100);
         },
         stopCondition: () => {
           return roundId !== this.$store.state.room.roundId;
@@ -120,13 +120,13 @@ export default {
 
   created: function () {
     this.$watch(() => (this.substate === "explanationDelay" || this.substate === "explanation"),
-      function (val) {
-        if (val) {
-          this.playSounds();
-          this.animateTimers();
-        }
-      },
-      {immediate: true}
+        function (val) {
+          if (val) {
+            this.playSounds();
+            this.animateTimers();
+          }
+        },
+        {immediate: true}
     );
   },
 

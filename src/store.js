@@ -148,12 +148,12 @@ const roomModule = {
                 for (let i = 0; i < state.timetable.length; i++) {
                     let pair = state.timetable[i];
                     if (pair.speaker === state.username) {
-                        res.turnsCount = i-1;
+                        res.turnsCount = i - 1;
                         res.myNextRole = "speaker";
                         return res;
                     }
                     if (pair.listener === state.username) {
-                        res.turnsCount = i-1;
+                        res.turnsCount = i - 1;
                         res.myNextRole = "listener";
                         return res;
                     }
