@@ -34,14 +34,8 @@
     margin-bottom: 7px;
 }
 
-#preparationRoom main .user-layer picture {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
 #preparationRoom main .user-layer img {
+    margin-right: 10px;
     height: auto;
     width: 22px;
 }
