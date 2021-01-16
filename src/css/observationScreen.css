@@ -88,9 +88,13 @@
     width: 300px;
 }
 
-#observationScreenFooter .your-status {
+#observationScreenFooter .your-status, #observationScreenFooter .pair-result {
     margin: auto;
     font-weight: normal;
+}
+
+#observationScreenFooter .your-status .short {
+    display: none;
 }
 
 @media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
@@ -105,5 +109,15 @@
     #observationScreenFooter .ready {
         flex-grow: 1;
         max-width: 400px;
+    }
+}
+
+@media (max-width: 500px), (min-width: 800px) and (max-width: 950px) {
+    #observationScreenFooter .your-status .full {
+        display: none;
+    }
+
+    #observationScreenFooter .your-status .short {
+        display: initial;
     }
 }
