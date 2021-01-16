@@ -56,12 +56,12 @@
           class="your-status"
           v-show="myRole === 'observer' && timetableInfo.turnsCount > 0">
         Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} через
-        {{ timetableInfo.turnsCount }} хода.
+        {{ timetableInfo.turnsCount }} хода
       </h3>
       <h3
           class="your-status"
           v-show="myRole === 'observer' && timetableInfo.turnsCount === 0">
-        Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} на следующем ходу.
+        Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} на следующем ходу
       </h3>
     </footer>
   </article>
