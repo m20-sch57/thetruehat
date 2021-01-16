@@ -37,7 +37,9 @@
         </div>
       </div>
     </main>
-    <footer id="observationScreenFooter">
+    <footer
+        :class="{hidden: myRole !== 'observer' && substate !== 'wait'}"
+        id="observationScreenFooter">
       <button
           class="btn btn-green btn-shadow ready"
           v-show="myRole === 'speaker' && substate ==='wait'"
