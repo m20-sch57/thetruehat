@@ -1,10 +1,10 @@
 <template>
   <swiper class="page" id="preparation" :options="swiperOptions">
     <swiper-slide>
-      <preparation-room-section @swipe-to="swiper().slideTo($event)"/>
+      <preparation-room-section @swipe-to="swiper().slideTo(1-$event)"/>
     </swiper-slide>
     <swiper-slide>
-      <preparation-settings-section @swipe-to="swiper().slideTo($event)"/>
+      <preparation-settings-section @swipe-to="swiper().slideTo(1-$event)"/>
     </swiper-slide>
   </swiper>
 </template>
@@ -23,10 +23,26 @@ export default {
     return {
       swiperOptions: {
         slidesPerView: 1,
+        virtualTranslate: true,
+        initialSlide: 1,
         breakpoints: {
           800: {
             followFinger: false,
             slidesPerView: 2,
+          }
+        },
+        on: {
+          setTranslate(swiper, translate) {
+            swiper.slides[1].style.transform =
+              `translate3D(${translate - swiper.slides[0].offsetWidth}px, 0px, 0px)`;
+          },
+          setTransition(swiper, transition) {
+            swiper.slides[1].style.transitionDuration = `${transition}ms`;
+          },
+          resize(swiper) {
+            swiper.slides[1].style.transform =
+              `translate3D(${swiper.translate - swiper.slides[0].offsetWidth}px, 0px, 0px)`;
+            swiper.slides[1].style.transitionDuration = `${swiper.transition}ms`;
           }
         }
       }
