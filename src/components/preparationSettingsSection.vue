@@ -220,7 +220,7 @@ export default {
   methods: {
     applySettings() {
       app.applySettings(this.storeFromLocalSettings());
-      this.$emit("swipe-to-room");
+      this.$emit("swipe-to", 0);
     },
 
     updateHostDictionary(el) {
