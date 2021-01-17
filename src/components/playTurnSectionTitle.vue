@@ -9,7 +9,7 @@
       <span v-if="substate === 'wait' && myRole === 'observer'">
         Подготовка
       </span>
-      <span v-if="substate === 'explanation' && myRole === 'observer'">
+      <span v-if="(substate === 'explanation' || substate === 'explanationDelay') && myRole === 'observer'">
         Идёт объяснение</span>
       <span v-if="myRole === 'speaker' && substate !== 'edit'">
         Ты объясняешь
