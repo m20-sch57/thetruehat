@@ -6,7 +6,7 @@
         <span v-translate:en.draft>Game options</span>
       </h1>
       <button
-          class="btn-icon right"
+          class="btn-icon btn-transparent close"
           @click="$emit('swipe-to', 0)">
         <span class="fas fa-times"></span>
       </button>

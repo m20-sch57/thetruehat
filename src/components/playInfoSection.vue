@@ -3,7 +3,7 @@
     <header>
       <h1>{{ $store.state.room.key }}</h1>
       <button
-          class="btn-icon right"
+          class="btn-icon btn-transparent close"
           @click="$emit('swipe-to', 1)">
         <span class="fas fa-times"></span>
       </button>

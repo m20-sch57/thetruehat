@@ -6,8 +6,8 @@
     text-align: center;
 }
 
-#playTurn header button span {
-    min-width: 1.2em;
+#playTurn header .volume span {
+    min-width: 1.1em;
     text-align: left;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <header>
     <button
-        class="btn-icon left"
+        class="btn-icon btn-transparent expand"
         @click="$emit('swipe-to', 0)">
       <span class="fas fa-angle-right"></span>
     </button>
@@ -21,7 +21,7 @@
         Редактирование
       </span>
     </h1>
-    <button class="btn-icon">
+    <button class="btn-icon btn-transparent volume">
       <span
           v-show="!muted"
           @click="toggleSound"
