@@ -21,15 +21,15 @@
         Редактирование
       </span>
     </h1>
-    <button class="btn-icon btn-transparent volume">
+    <button
+        class="btn-icon btn-transparent volume"
+        @click="toggleSound">
       <span
           v-show="!muted"
-          @click="toggleSound"
           class="fas fa-volume-up">
       </span>
       <span
           v-show="muted"
-          @click="toggleSound"
           class="fas fa-volume-mute">
       </span>
     </button>
