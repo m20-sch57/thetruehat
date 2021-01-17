@@ -88,7 +88,7 @@
     width: 300px;
 }
 
-#observationScreenFooter .your-status, #observationScreenFooter .pair-result {
+#observationScreenFooter .your-status {
     margin: auto;
     font-weight: normal;
 }
