@@ -24,6 +24,7 @@ export default {
       swiperOptions: {
         slidesPerView: "auto",
         initialSlide: 1,
+        virtualTranslate: true,
         breakpoints: {
           800: {
             followFinger: false
@@ -32,11 +33,16 @@ export default {
         on: {
           setTranslate(swiper, translate) {
             swiper.slides[1].style.transform =
-                `translate3D(${(-translate - swiper.slides[0].offsetWidth) *
-                (document.body.clientWidth < 800 ? 1 : 0)}px, 0px, 0px)`;
+              `translate3D(${-swiper.slides[0].offsetWidth}px, 0px, 0px)`;
+            swiper.slides[0].style.transform =
+              `translate3D(${translate}px, 0px, 0px)`;
           },
           setTransition(swiper, transition) {
-            swiper.slides[1].style.transitionDuration = `${transition}ms`;
+            swiper.slides[0].style.transitionDuration = `${transition}ms`;
+          },
+          resize(swiper) {
+            swiper.slides[1].style.transform =
+              `translate3D(${-swiper.slides[0].offsetWidth}px, 0px, 0px)`;
           }
         }
       }

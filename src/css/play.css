@@ -91,3 +91,9 @@
         visibility: visible;
     }
 }
+
+@media (min-width: 800px) {
+    #play .second-slide {
+        transform: none!important;
+    }
+}
