@@ -3,11 +3,15 @@
 }
 
 #play .first-slide {
+    position: relative;
     flex-basis: 33.33%;
+    z-index: 1;
 }
 
 #play .second-slide {
+    position: relative;
     flex-basis: 66.66%;
+    z-index: 0;
 }
 
 #play article {

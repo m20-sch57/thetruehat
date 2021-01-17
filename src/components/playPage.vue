@@ -1,7 +1,7 @@
 <template>
   <swiper class="page" id="play" :options="swiperOptions">
     <swiper-slide class="first-slide">
-      <play-info-section @swipe-to="swiper().slideTo($event)" style="z-index: 1"/>
+      <play-info-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
     <swiper-slide class="second-slide">
       <play-turn-section @swipe-to="swiper().slideTo($event)"/>
@@ -32,7 +32,8 @@ export default {
         on: {
           setTranslate(swiper, translate) {
             swiper.slides[1].style.transform =
-              `translate3D(${(-translate - swiper.slides[0].offsetWidth) * (document.body.clientWidth < 800 ? 1 : 0)}px, 0px, 0px)`;
+                `translate3D(${(-translate - swiper.slides[0].offsetWidth) *
+                (document.body.clientWidth < 800 ? 1 : 0)}px, 0px, 0px)`;
           },
           setTransition(swiper, transition) {
             swiper.slides[1].style.transitionDuration = `${transition}ms`;

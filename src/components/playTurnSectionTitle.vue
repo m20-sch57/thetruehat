@@ -53,7 +53,7 @@ export default {
     ...mapState({
       substate: state => state.room.substate
     }),
-    ...mapGetters(["myRole"])
+    ...mapGetters(["myRole",])
   },
 
   methods: {
