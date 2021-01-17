@@ -41,7 +41,12 @@
     font-weight: normal;
 }
 
-#play header .left, #play header .right {
+#play header button.btn-icon {
+    height: 2em;
+    width: 2em;
+}
+
+#play header .expand, #play header .close {
     visibility: hidden;
 }
 
@@ -87,7 +92,7 @@
         font-size: 80%;
     }
 
-    #play header .left, #play header .right {
+    #play header .expand, #play header .close {
         visibility: visible;
     }
 }

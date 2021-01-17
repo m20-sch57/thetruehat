@@ -29,7 +29,12 @@
     font-weight: normal;
 }
 
-#preparation header .right {
+#preparation header button.btn-icon {
+    height: 2em;
+    width: 2em;
+}
+
+#preparation header .expand, #preparation header .close {
     visibility: hidden;
 }
 
@@ -63,7 +68,7 @@
         font-size: 80%;
     }
 
-    #preparation header .right {
+    #preparation header .expand, #preparation header .close {
         visibility: visible;
     }
 
