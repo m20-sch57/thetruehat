@@ -108,6 +108,12 @@ export class App {
                     players: data.playerList,
                     ...data
                 });
+                if (this.store.state.room.substate === "explanation") {
+                    this.store.commit("setIsExplanationDelay", {isExplanationDelay: true});
+                    setTimeout(() => {
+                        this.store.commit("setIsExplanationDelay", {isExplanationDelay: false});
+                    }, data.startTime - getTime());
+                }
             },
 
             sPlayerJoined: data => {
@@ -142,9 +148,10 @@ export class App {
 
             sExplanationStarted: data => {
                 setTimeout(() => {
-                    this.store.commit("explanationDelayStarted", data);
+                    this.store.commit("explanationStarted", data);
+                    this.store.commit("setIsExplanationDelay", {isExplanationDelay: true});
                     setTimeout(() => {
-                        this.store.commit("explanationStarted");
+                        this.store.commit("setIsExplanationDelay", {isExplanationDelay: false});
                     }, this.store.state.room.settings.delayTime);
                 }, data.startTime - getTime() - this.store.state.room.settings.delayTime);
             },

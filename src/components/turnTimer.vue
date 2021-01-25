@@ -120,7 +120,7 @@ export default {
   },
 
   created: function () {
-    this.$watch(() => (this.substate === "explanationDelay" || this.substate === "explanation"),
+    this.$watch(() => (this.substate === "explanation"),
       function (val) {
         if (val) {
           this.playSounds();

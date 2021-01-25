@@ -17,11 +17,11 @@
             <div class="middle">
               <timer
                   :key="roundId"
-                  v-show="substate === 'explanation' || substate === 'explanationDelay'"/>
+                  v-show="substate === 'explanation'"/>
               <img
                   src="img/long-arrow-right.png"
                   alt="right-arrow"
-                  v-show="substate !== 'explanation' && substate !== 'explanationDelay'"
+                  v-show="substate !== 'explanation'"
               />
             </div>
             <div class="player listener">

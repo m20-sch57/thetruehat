@@ -19,6 +19,7 @@ const roomModule = {
         username: null,
         state: null,
         substate: null,
+        isExplanationDelay: null,
         players: null,
         host: null,
         speaker: null,
@@ -38,6 +39,7 @@ const roomModule = {
             state.connection = "offline";
             state.state = null;
             state.substate = null;
+            state.isExplanationDelay = null;
             state.players = null;
             state.host = null;
             state.speaker = null;
@@ -93,12 +95,9 @@ const roomModule = {
                 set("turnsLeft")(state, payload);
             }
         },
-        explanationStarted(state) {
-            state.substate = "explanation";
-        },
-        explanationDelayStarted(state, {startTime}) {
+        explanationStarted(state, {startTime}) {
             state.startTime = startTime;
-            state.substate = "explanationDelay";
+            state.substate = "explanation";
         },
         explanationEnded(state, {editWords}) {
             if (editWords) {
@@ -124,6 +123,7 @@ const roomModule = {
         setWordsLeft: set("wordsLeft"),
         setTurnsLeft: set("turnsLeft"),
         setWord: set("word"),
+        setIsExplanationDelay: set("isExplanationDelay")
     },
     getters: {
         onlinePlayers(state) {
