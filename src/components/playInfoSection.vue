@@ -15,10 +15,13 @@
             <h3>Следующий ход</h3>
             <div class="turn-layer">
               <div class="turn-top">
-                <div class="turn-pair">
+                <div class="turn-pair" v-if="nextTurn">
                   <h4 class="speaker">{{ nextTurn.speaker }}</h4>
                   <img src="img/long-arrow-right.png" alt="right-arrow">
                   <h4 class="listener">{{ nextTurn.listener }}</h4>
+                </div>
+                <div v-else>
+                  конец игры
                 </div>
               </div>
             </div>
@@ -177,10 +180,7 @@ export default {
   },
   computed: {
     nextTurn: function () {
-      return {
-        speaker: room.timetable[1].speaker,
-        listener: room.timetable[1].listener
-      };
+      return room.timetable[1];
     },
     currentTurn: function () {
       return {
