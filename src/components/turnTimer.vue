@@ -1,6 +1,10 @@
 <template>
   <h2
       v-if="timerState === 'delay'"
+      :style="{
+        'animation-duration': `${settings.delayTime}ms`,
+        'animation-delay': `${animationDelay}ms`
+      }"
       class="delay-timer">
     {{ delayTimeSec }}
   </h2>
@@ -19,6 +23,7 @@
 <script>
 import {sound, countdownSound, startSound, final1Sound, final2Sound} from "src/tools";
 import {animate, minSec, secMsec} from "src/tools";
+import {timeSync} from "src/tools";
 import {mapState} from "vuex";
 
 export default {
@@ -29,7 +34,8 @@ export default {
       timerState: null,
       delayTimeSec: 0,
       aftermathTimeMsec: 0,
-      explanationTimeSec: 0
+      explanationTimeSec: 0,
+      animationDelay: 0
     };
   },
 
@@ -70,6 +76,7 @@ export default {
     animateTimers: async function () {
       const roundId = this.$store.state.room.roundId;
       this.timerState = "delay";
+      this.animationDelay = this.delayStartTime - timeSync.getTime();
       await this.animateDelayTimer(this.delayStartTime, roundId);
       this.timerState = "explanation";
       await this.animateExplanationTimer(this.explanationStartTime, roundId);
