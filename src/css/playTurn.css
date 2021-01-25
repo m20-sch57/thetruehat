@@ -57,8 +57,17 @@
     0% {
         background-color: forestgreen;
     }
-    50% {
+    22.22% {
+        background-color: forestgreen;
+    }
+    44.44% {
         background-color: gold;
+    }
+    55.55% {
+        background-color: gold;
+    }
+    77.77% {
+        background-color: red;
     }
     100% {
         background-color: red;
