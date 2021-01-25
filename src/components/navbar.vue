@@ -15,15 +15,15 @@
     <div class="nav-links" @click.stop>
       <button
           class="btn-icon btn-transparent nav-expand"
-          @click="collapseMenu = !collapseMenu">
+          @click="isMenuCollapsed = !isMenuCollapsed">
         <span class="fas fa-ellipsis-h"></span>
       </button>
-      <div class="nav-collapsible" :class="{'collapsed': !collapseMenu}">
+      <div class="nav-collapsible" :class="{'collapsed': isMenuCollapsed}">
         <div class="nav-links-center">
           <button
               class="nav-link"
               :class="{active: currentPage === 'game'}"
-              @click="$router.push('/game')"
+              @click="goToPage('/game')"
               :disabled="currentPage === 'game'">
             <span v-translate:ru>Игра</span>
             <span v-translate:en>Game</span>
@@ -31,7 +31,7 @@
           <button
               class="nav-link"
               :class="{active: currentPage === 'news'}"
-              @click="$router.push('/news')"
+              @click="goToPage('/news')"
               :disabled="currentPage === 'news'">
             <span v-translate:ru>Новости</span>
             <span v-translate:en>News</span>
@@ -39,7 +39,7 @@
           <button
               class="nav-link"
               :class="{active: currentPage === 'faq'}"
-              @click="$router.push('/faq')"
+              @click="goToPage('/faq')"
               :disabled="currentPage === 'faq'">
             <span v-translate:ru>FAQ</span>
             <span v-translate:en>FAQ</span>
@@ -47,7 +47,7 @@
           <button
               class="nav-link"
               :class="{active: currentPage === 'about'}"
-              @click="$router.push('/about')"
+              @click="goToPage('/about')"
               :disabled="currentPage === 'about'">
             <span v-translate:ru>О нас</span>
             <span v-translate:en>About us</span>
@@ -82,7 +82,7 @@ export default {
   },
   data: function () {
     return {
-      collapseMenu: false,
+      isMenuCollapsed: true,
       currentLocale: this.$language.current
     };
   },
@@ -92,11 +92,15 @@ export default {
         app.leaveRoom();
       }
       this.$router.push("/");
+    },
+    goToPage: function (page) {
+      this.$router.push(page);
+      this.isMenuCollapsed = true;
     }
   },
   created() {
     document.addEventListener("click", () => {
-      this.collapseMenu = false;
+      this.isMenuCollapsed = true;
     });
   },
   watch: {
