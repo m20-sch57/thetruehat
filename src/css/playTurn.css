@@ -11,6 +11,17 @@
     text-align: left;
 }
 
+#playTurn main .delay-timer {
+    height: 80px;
+    width: 80px;
+    padding: calc(40px - 0.5em) 0;
+    color: white;
+    border-radius: 50%;
+    line-height: 1em;
+    text-align: center;
+    animation-name: changeColor;
+}
+
 #playTurn main .explanation-timer {
     margin: 0;
     font-weight: normal;
@@ -39,5 +50,17 @@
     #playTurn footer {
         margin-bottom: 0;
         border-top: 1px solid whitesmoke;
+    }
+}
+
+@keyframes changeColor {
+    0% {
+        background-color: forestgreen;
+    }
+    50% {
+        background-color: gold;
+    }
+    100% {
+        background-color: red;
     }
 }

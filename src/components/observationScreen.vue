@@ -66,11 +66,6 @@
         Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }}
         на <span class="full">следующем</span><span class="short">след.</span> ходу
       </h3>
-      <h3
-          class="pair-result"
-          style="display: none">
-        Результат пары: 3 слова
-      </h3>
     </footer>
   </article>
 </template>
