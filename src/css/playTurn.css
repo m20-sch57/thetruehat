@@ -17,6 +17,7 @@
     padding: calc(40px - 0.5em) 0;
     color: white;
     border-radius: 50%;
+    font-size: 2em;
     line-height: 1em;
     text-align: center;
     animation-name: changeColor;

@@ -146,8 +146,6 @@
           words they have explained and guessed during the game.
         </p>
       </main>
-      <footer>
-      </footer>
     </article>
   </div>
 </template>
