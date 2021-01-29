@@ -24,7 +24,7 @@ Query string:
 
 - `success (bool)` - успешен ли запрос. Если ключ комнаты не валидный, то `success = false`, иначе `success = true`.
 - `stage (string)` - состояние комнаты.
-- `playerList` - Если `stage = wait, play`. Список игроков. Описание игрока состоит из:
+- `playersList` - Если `stage = wait, play`. Список игроков. Описание игрока состоит из:
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
 - `host` - Если `stage = wait, play`. Хост комнаты.
@@ -69,7 +69,7 @@ __5.__ `io` <a name="cLeaveRoom">`cLeaveRoom`</a> - функция, удаляю
 __6.__ `io` <a name="sPlayerJoined">`sPlayerJoined`</a> - сигнал, посылаемый сервером всем клиентам в комнате при присоединении нового игрока.
 
 - `username (string)` - имя вошедшего игрока.
-- `playerList (array)` - список игроков.
+- `playersList (array)` - список игроков.
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
 - `host` - хост комнаты.
@@ -79,7 +79,7 @@ __6.__ `io` <a name="sPlayerJoined">`sPlayerJoined`</a> - сигнал, посы
 __7.__ `io` <a name="sPlayerLeft">`sPlayerLeft`</a> - сигнал, посылаемый сервером всем клиентам в комнате при уходе игрока.
 
 - `username (string)` - имя ушедшего игрока.
-- `playerList (array)` - список игроков.
+- `playersList (array)` - список игроков.
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
 - `host` - хост комнаты.
@@ -92,7 +92,7 @@ __8.__ `io` <a name="sYouJoined">`sYouJoined`</a> - сигнал, посылае
 - `stage (string)` - состояние комнаты.
 
 Если `stage = wait, play`:
-- `playerList` - Список игроков. Игроки описаны так:
+- `playersList` - Список игроков. Игроки описаны так:
     - `username (string)` - имя игрока.
     - `online (bool)` - подключен ли игрок к серверу.
 - `host` - Хост комнаты.
