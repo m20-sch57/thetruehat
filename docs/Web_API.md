@@ -111,7 +111,7 @@ __8.__ `io` <a name="sYouJoined">`sYouJoined`</a> - сигнал, посылае
   + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
   + `endTime` - Время окончания объяснения.
 
-Если `stage = edit`:
+Если `stage = play_edit`:
 
 - `editWords (array)` - список слов для правки. Состоит из:
   + `word (string)` - само слово, которые объясняли.
