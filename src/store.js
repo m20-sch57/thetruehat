@@ -131,14 +131,18 @@ const roomModule = {
     },
     actions: {
         explanationStarted({commit, state}, {startTime}) {
+            const roundId = state.roundId;
             setTimeout(() => {
+                if (state.roundId !== roundId) return;
                 commit("explanationStarted", {startTime});
                 commit("setExplanationTimer", {explanationTimer: "delay"});
             }, startTime - getTime() - state.settings.delayTime);
             setTimeout(() => {
+                if (state.roundId !== roundId) return;
                 commit("setExplanationTimer", {explanationTimer: "explanation"});
             }, startTime - getTime());
             setTimeout(() => {
+                if (state.roundId !== roundId) return;
                 commit("setExplanationTimer", {explanationTimer: "aftermath"});
             }, startTime - getTime() + state.settings.explanationTime);
         },
