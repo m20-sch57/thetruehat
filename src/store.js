@@ -1,6 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
+import {timeSync} from "./tools";
+const getTime = () => timeSync.getTime();
+
 Vue.use(Vuex);
 
 function set(props) {
@@ -19,7 +22,7 @@ const roomModule = {
         username: null,
         state: null,
         substate: null,
-        isExplanationDelay: null,
+        explanationTimer: null,
         players: null,
         host: null,
         speaker: null,
@@ -39,7 +42,7 @@ const roomModule = {
             state.connection = "offline";
             state.state = null;
             state.substate = null;
-            state.isExplanationDelay = null;
+            state.explanationTimer = null;
             state.players = null;
             state.host = null;
             state.speaker = null;
@@ -112,6 +115,7 @@ const roomModule = {
             state.substate = "wait";
             set(["speaker", "listener", "wordsCount", "timetable"])(state, payload);
             state.editWords = null;
+            state.explanationTimer = null;
         },
         setResults(state, {results}) {
             state.results = results;
@@ -123,7 +127,21 @@ const roomModule = {
         setWordsLeft: set("wordsLeft"),
         setTurnsLeft: set("turnsLeft"),
         setWord: set("word"),
-        setIsExplanationDelay: set("isExplanationDelay")
+        setExplanationTimer: set("explanationTimer")
+    },
+    actions: {
+        explanationStarted({commit, state}, {startTime}) {
+            setTimeout(() => {
+                commit("explanationStarted", {startTime});
+                commit("setExplanationTimer", {explanationTimer: "delay"});
+            }, startTime - getTime() - state.settings.delayTime);
+            setTimeout(() => {
+                commit("setExplanationTimer", {explanationTimer: "explanation"});
+            }, startTime - getTime());
+            setTimeout(() => {
+                commit("setExplanationTimer", {explanationTimer: "aftermath"});
+            }, startTime - getTime() + state.settings.explanationTime);
+        },
     },
     getters: {
         onlinePlayers(state) {
