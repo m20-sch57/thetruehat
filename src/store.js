@@ -130,21 +130,29 @@ const roomModule = {
         setExplanationTimer: set("explanationTimer")
     },
     actions: {
-        explanationStarted({commit, state}, {startTime}) {
+        async explanationStarted({commit, state}, {startTime}) {
             const roundId = state.roundId;
-            setTimeout(() => {
-                if (state.roundId !== roundId) return;
+            const until = (ms) => {
+                return new Promise((resolve) => {
+                    setTimeout(resolve, ms - getTime());
+                });
+            };
+
+            await until(startTime - state.settings.delayTime);
+            if (state.roundId !== roundId) return;
+            if (state.settings.delayTime !== 0) {
                 commit("explanationStarted", {startTime});
                 commit("setExplanationTimer", {explanationTimer: "delay"});
-            }, startTime - getTime() - state.settings.delayTime);
-            setTimeout(() => {
-                if (state.roundId !== roundId) return;
-                commit("setExplanationTimer", {explanationTimer: "explanation"});
-            }, startTime - getTime());
-            setTimeout(() => {
-                if (state.roundId !== roundId) return;
-                commit("setExplanationTimer", {explanationTimer: "aftermath"});
-            }, startTime - getTime() + state.settings.explanationTime);
+            }
+            await until(startTime);
+            if (state.roundId !== roundId) return;
+            if (state.settings.delayTime === 0) {
+                commit("explanationStarted", {startTime});
+            }
+            commit("setExplanationTimer", {explanationTimer: "explanation"});
+            await until(startTime + state.settings.explanationTime);
+            if (state.roundId !== roundId) return;
+            commit("setExplanationTimer", {explanationTimer: "aftermath"});
         },
     },
     getters: {
