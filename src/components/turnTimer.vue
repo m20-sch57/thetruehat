@@ -125,13 +125,13 @@ export default {
 
   created: function () {
     this.$watch(() => (this.substate === "explanation"),
-      function (val) {
-        if (val) {
-          this.playSounds();
-          this.animateTimers();
-        }
-      },
-      {immediate: true}
+        function (val) {
+          if (val) {
+            this.playSounds();
+            this.animateTimers();
+          }
+        },
+        {immediate: true}
     );
   },
 
