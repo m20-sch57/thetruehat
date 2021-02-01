@@ -1,6 +1,6 @@
 <template>
   <article id="playTurn">
-    <turn-title @swipe-to="$emit('swipe-to', $event)"/>
+    <slot/>
     <main class="scrollable-wrapper">
       <div class="scrollable">
         <div id="explanationScreen">
@@ -37,7 +37,6 @@
 
 <script>
 import timer from "cmp/turnTimer.vue";
-import turnTitle from "cmp/playTurnSectionTitle.vue";
 import word from "cmp/word.vue";
 
 import {mapState} from "vuex";
@@ -48,7 +47,7 @@ import {GAME_BUTTON_COOLDOWN_TIME} from "src/config.js";
 export default {
   name: "explanationScreen",
 
-  components: {timer, turnTitle, word},
+  components: {timer, word},
 
   data: function () {
     return {

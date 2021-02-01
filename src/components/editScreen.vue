@@ -1,6 +1,6 @@
 <template>
   <article id="playTurn">
-    <turn-title @swipe-to="$emit('swipe-to', $event)"/>
+    <slot/>
     <main class="scrollable-wrapper">
       <div class="scrollable">
         <div id="editScreen">
@@ -44,14 +44,10 @@
 </template>
 
 <script>
-import turnTitle from "cmp/playTurnSectionTitle.vue";
-
 import app from "src/app.js";
 
 export default {
   name: "editScreen",
-
-  components: {turnTitle},
 
   data: function () {
     return {

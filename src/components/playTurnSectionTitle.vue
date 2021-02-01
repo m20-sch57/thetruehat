@@ -1,8 +1,9 @@
 <template>
   <header>
     <button
+        :style="{visibility: isMenuHidden ? 'visible' : 'hidden'}"
         class="btn-icon btn-transparent expand"
-        @click="$emit('swipe-to', 0)">
+        @click="$emit('show-menu')">
       <span class="fas fa-angle-right"></span>
     </button>
     <h1>
@@ -42,6 +43,10 @@ import {mapGetters, mapState} from "vuex";
 
 export default {
   name: "playTurnSectionTitle",
+
+  props: {
+    isMenuHidden: Boolean
+  },
 
   data: function () {
     return {
