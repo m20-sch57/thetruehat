@@ -1,6 +1,6 @@
 <template>
   <article id="playTurn">
-    <turn-title @swipe-to="$emit('swipe-to', $event)"/>
+    <slot/>
     <main class="scrollable-wrapper">
       <div class="scrollable">
         <div id="observationScreen">
@@ -72,7 +72,6 @@
 
 <script>
 import timer from "cmp/turnTimer.vue";
-import turnTitle from "cmp/playTurnSectionTitle.vue";
 
 import {mapGetters, mapState} from "vuex";
 import app from "src/app.js";
@@ -80,7 +79,7 @@ import app from "src/app.js";
 export default {
   name: "observationScreen",
 
-  components: {timer, turnTitle},
+  components: {timer},
 
   data: function () {
     return {

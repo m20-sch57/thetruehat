@@ -113,7 +113,7 @@ const roomModule = {
         },
         nextTurn(state, payload) {
             state.substate = "wait";
-            set(["speaker", "listener", "wordsCount", "timetable"])(state, payload);
+            set(["speaker", "listener", "wordsLeft", "timetable"])(state, payload);
             state.editWords = null;
             state.explanationTimer = null;
         },
