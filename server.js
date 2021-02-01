@@ -231,7 +231,7 @@ function getTimetable(key) {
         listener: rooms[key].listener
     };
     for (let i = 0; i < timetableDepth; ++i) {
-        if (turnsLeft === 0) break;
+        if (turnsLeft === 0 && rooms[key].settings.termCondition === "turns") break;
         timetable.push({
             "speaker": rooms[key].users[obj.speaker].username,
             "listener": rooms[key].users[obj.listener].username
