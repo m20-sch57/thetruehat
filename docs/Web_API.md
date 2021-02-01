@@ -91,6 +91,9 @@ Query string:
 - `key (string)` - ключ комнаты.
 - `stage (string)` - состояние комнаты.
 
+Если `stage = prepare` и `fixedPairs = true`
+- `pairs` (array) - список пар игроков, которые образуют команды
+
 Если `stage = wait, play`:
 - `playersList` - Список игроков. Игроки описаны так:
     - `username (string)` - имя игрока.
@@ -152,6 +155,36 @@ Query string:
 `io` <a name="cWordsReady">`cWordsReady`</a> - функция, отсылающая слова, также сообщающая серверу о готовности игрока.
 
 - `words (array<string>)` - список слов, введённых игроком
+
+
+#### Распределение на пары
+
+`io` <a name="cConstructPair">`cConstructPair`</a> - функция, объединяющая двух игроков в пару.
+
+- `username1 (string)` - имя первого игрока в паре
+- `username2 (string)` - имя второго игрока в паре
+
+---
+
+`io` <a name="sPairConstructed">`sPairConstructed`</a> - сигнал, посылаемый сервером всем клиентам при создании пары.
+
+- `username1 (string)` - имя первого игрока в паре
+- `username2 (string)` - имя второго игрока в паре
+- `pairs` (array) - список пар игроков, которые образуют команды. В том числе тоьлко что созданная пара.
+
+
+`io` <a name="cDestroyPair">`cDestroyPair`</a> - функция, разформировывающая пару игроков.
+
+- `username1 (string)` - имя первого игрока в паре
+- `username2 (string)` - имя второго игрока в паре
+
+---
+
+`io` <a name="sPairDestroyed">`sPairDestroyed`</a> - сигнал, посылаемый сервером всем клиентам при разформировании пары.
+
+- `username1 (string)` - имя первого игрока в паре
+- `username2 (string)` - имя второго игрока в паре
+- `pairs` (array) - список пар игроков, которые образуют команды. Без только что разрушенной пары.
 
 #### Игра
 
