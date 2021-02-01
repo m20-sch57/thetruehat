@@ -1,7 +1,7 @@
 import "./css/base.css";
 import "./css/animations.css";
 import "./css/swiper.css";
-import "./css/nav.css";
+import "./css/navbar.css";
 import "./css/main.css";
 import "./css/join.css";
 import "./css/preparation.css";

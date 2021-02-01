@@ -21,7 +21,7 @@
       <div class="nav-collapsible" :class="{'collapsed': isMenuCollapsed}">
         <div class="nav-links-center">
           <button
-              class="nav-link"
+              class="btn-nav nav-link"
               :class="{active: currentPage === 'game'}"
               @click="goToPage('/game')"
               :disabled="currentPage === 'game'">
@@ -29,7 +29,7 @@
             <span v-translate:en>Game</span>
           </button>
           <button
-              class="nav-link"
+              class="btn-nav nav-link"
               :class="{active: currentPage === 'news'}"
               @click="goToPage('/news')"
               :disabled="currentPage === 'news'">
@@ -37,7 +37,7 @@
             <span v-translate:en>News</span>
           </button>
           <button
-              class="nav-link"
+              class="btn-nav nav-link"
               :class="{active: currentPage === 'faq'}"
               @click="goToPage('/faq')"
               :disabled="currentPage === 'faq'">
@@ -45,7 +45,7 @@
             <span v-translate:en>FAQ</span>
           </button>
           <button
-              class="nav-link"
+              class="btn-nav nav-link"
               :class="{active: currentPage === 'about'}"
               @click="goToPage('/about')"
               :disabled="currentPage === 'about'">

@@ -2,13 +2,72 @@
   <article id="playTurn">
     <turn-title @swipe-to="$emit('swipe-to', $event)"/>
     <main class="scrollable-wrapper">
-
+      <div class="scrollable">
+        <div id="editScreen">
+          <div class="word-row">
+            <h3 class="word">Синхрофазотрон</h3>
+            <div class="options">
+              <button class="btn-nav option guessed active">
+                Угадал
+              </button>
+              <button class="btn-nav option not-guessed">
+                Не угадал
+              </button>
+              <button class="btn-nav option mistake">
+                Ошибка
+              </button>
+            </div>
+          </div>
+          <div class="word-row">
+            <h3 class="word">Турок</h3>
+            <div class="options">
+              <button class="btn-nav option guessed active">
+                Угадал
+              </button>
+              <button class="btn-nav option not-guessed">
+                Не угадал
+              </button>
+              <button class="btn-nav option mistake">
+                Ошибка
+              </button>
+            </div>
+          </div>
+          <div class="word-row">
+            <h3 class="word">Безобразие</h3>
+            <div class="options">
+              <button class="btn-nav option guessed">
+                Угадал
+              </button>
+              <button class="btn-nav option not-guessed active">
+                Не угадал
+              </button>
+              <button class="btn-nav option mistake">
+                Ошибка
+              </button>
+            </div>
+          </div>
+          <div class="word-row">
+            <h3 class="word">Слив</h3>
+            <div class="options">
+              <button class="btn-nav option guessed">
+                Угадал
+              </button>
+              <button class="btn-nav option not-guessed">
+                Не угадал
+              </button>
+              <button class="btn-nav option mistake active">
+                Ошибка
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     <footer id="editScreenFooter">
       <button
-          class="btn btn-green btn-shadow ready"
+          class="btn btn-green btn-shadow confirm"
           @click="acceptEditedWords">
-        Безобразие, подтвердите повторную отправку формы.
+        Подтвердить
       </button>
     </footer>
   </article>

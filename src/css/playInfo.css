@@ -7,25 +7,20 @@
     flex-direction: column;
     flex-grow: 1;
     flex-shrink: 0;
+    padding: 15px;
 }
 
-#playInfo main .next-turn {
+#playInfo main .next-turn, #playInfo main .current-turn {
     margin-bottom: 10px;
 }
 
-#playInfo main .next-turn h3 {
+#playInfo main .next-turn h3, #playInfo main .current-turn h3 {
     margin: 5px 10px;
     font-weight: normal;
 }
 
-#playInfo main .current-turn {
-    position: relative;
-    margin-bottom: 10px;
-}
-
-#playInfo main .current-turn h3 {
-    margin: 5px 10px;
-    font-weight: normal;
+#playInfo main .next-turn .turn-layer, #playInfo main .current-turn .turn-layer {
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 #playInfo main .previous-turns {
@@ -39,27 +34,8 @@
     font-weight: normal;
 }
 
-#playInfo main .current-turn::before {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: -15px;
-    height: calc(100% - 5px);
-    width: 3px;
-    background-color: #c9e3ef;
-}
-
 #playInfo main .turn-layer {
     border-radius: 20px;
-}
-
-#playInfo main .next-turn .turn-layer {
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-#playInfo main .current-turn .turn-layer {
-    background-color: #d5f1fd;
-    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 #playInfo main .previous-turns .turn-layer:hover {
@@ -97,7 +73,7 @@
 }
 
 #playInfo main .turn-layer .turn-bottom .word.not-explained {
-    background-color: #f3eda3;
+    background-color: #c9e3ef;
 }
 
 #playInfo main .turn-layer .turn-bottom .word.mistake {

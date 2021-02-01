@@ -1,0 +1,73 @@
+#editScreen {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    margin: auto 0;
+}
+
+#editScreen .word-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid whitesmoke;
+}
+
+#editScreen .word-row:first-child {
+    border-top: 1px solid whitesmoke;
+}
+
+#editScreen .word-row .word {
+    flex-grow: 1;
+    flex-basis: 300px;
+    margin: 10px 0;
+    font-weight: normal;
+    text-align: center;
+}
+
+#editScreen .word-row .options {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    flex-basis: 300px;
+    justify-content: center;
+}
+
+#editScreen .word-row .option {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 15px 10px;
+    border-left: 1px solid whitesmoke;
+}
+
+#editScreen .word-row .option.guessed {
+    --nav-color: #76cb76;
+    --nav-bg-color: #f2faf2;
+}
+
+#editScreen .word-row .option.not-guessed {
+    --nav-color: #6dc0ff;
+    --nav-bg-color: #f1fcff;
+}
+
+#editScreen .word-row .option.mistake {
+    --nav-color: #ff7373;
+    --nav-bg-color: #fff7f7;
+}
+
+#editScreenFooter .confirm {
+    margin: auto;
+    width: 300px;
+}
+
+@media (max-width: 620px), (min-width: 800px) and (max-width: 1100px) {
+    #editScreen .word-row .option {
+        background-color: transparent;
+        border: none;
+    }
+
+    #editScreenFooter .confirm {
+        flex-grow: 1;
+        max-width: 400px;
+    }
+}
