@@ -91,7 +91,7 @@ Query string:
 - `key (string)` - ключ комнаты.
 - `stage (string)` - состояние комнаты.
 
-Если `stage = prepare` и `termCondition = rounds`
+Если `stage = prepare` и `fixedPairs = true`
 - `pairs` (array) - список пар игроков, которые образуют команды
 
 Если `stage = wait, play`:
