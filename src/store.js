@@ -1,6 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
+import {timeSync} from "./tools";
+const getTime = () => timeSync.getTime();
+
 Vue.use(Vuex);
 
 function set(props) {
@@ -19,7 +22,7 @@ const roomModule = {
         username: null,
         state: null,
         substate: null,
-        isExplanationDelay: null,
+        explanationTimer: null,
         players: null,
         host: null,
         speaker: null,
@@ -39,7 +42,7 @@ const roomModule = {
             state.connection = "offline";
             state.state = null;
             state.substate = null;
-            state.isExplanationDelay = null;
+            state.explanationTimer = null;
             state.players = null;
             state.host = null;
             state.speaker = null;
@@ -112,6 +115,7 @@ const roomModule = {
             state.substate = "wait";
             set(["speaker", "listener", "wordsCount", "timetable"])(state, payload);
             state.editWords = null;
+            state.explanationTimer = null;
         },
         setResults(state, {results}) {
             state.results = results;
@@ -123,7 +127,33 @@ const roomModule = {
         setWordsLeft: set("wordsLeft"),
         setTurnsLeft: set("turnsLeft"),
         setWord: set("word"),
-        setIsExplanationDelay: set("isExplanationDelay")
+        setExplanationTimer: set("explanationTimer")
+    },
+    actions: {
+        async explanationStarted({commit, state}, {startTime}) {
+            const roundId = state.roundId;
+            const until = (ms) => {
+                return new Promise((resolve) => {
+                    setTimeout(resolve, ms - getTime());
+                });
+            };
+
+            await until(startTime - state.settings.delayTime);
+            if (state.roundId !== roundId) return;
+            if (state.settings.delayTime !== 0) {
+                commit("explanationStarted", {startTime});
+                commit("setExplanationTimer", {explanationTimer: "delay"});
+            }
+            await until(startTime);
+            if (state.roundId !== roundId) return;
+            if (state.settings.delayTime === 0) {
+                commit("explanationStarted", {startTime});
+            }
+            commit("setExplanationTimer", {explanationTimer: "explanation"});
+            await until(startTime + state.settings.explanationTime);
+            if (state.roundId !== roundId) return;
+            commit("setExplanationTimer", {explanationTimer: "aftermath"});
+        },
     },
     getters: {
         onlinePlayers(state) {

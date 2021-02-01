@@ -17,17 +17,17 @@ export default {
   computed: {
     ...mapState({
       substate: state => state.room.substate,
-      isExplanationDelay: state => state.room.isExplanationDelay
+      explanationTimer: state => state.room.explanationTimer
     }),
     ...mapGetters(["myRole"]),
     currentScreen: function () {
       if (this.substate === "wait" || this.myRole !== "speaker") {
         return "observation-screen";
       }
-      if (this.substate === "explanation" && this.isExplanationDelay) {
+      if (this.substate === "explanation" && this.explanationTimer === "delay") {
         return "observation-screen";
       }
-      if (this.substate === "explanation" && !this.isExplanationDelay) {
+      if (this.substate === "explanation" && !this.explanationTimer !== "delay") {
         return "explanation-screen";
       }
       if (this.substate === "edit") {

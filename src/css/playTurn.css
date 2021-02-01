@@ -21,6 +21,7 @@
     line-height: 1em;
     text-align: center;
     animation-name: changeColor;
+    animation-fill-mode: both;
 }
 
 #playTurn main .explanation-timer {

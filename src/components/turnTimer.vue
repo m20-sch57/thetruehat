@@ -1,6 +1,6 @@
 <template>
   <h2
-      v-if="timerState === 'delay'"
+      v-if="explanationTimer === 'delay'"
       :style="{
         'animation-duration': `${settings.delayTime}ms`,
         'animation-delay': `${animationDelay}ms`
@@ -9,12 +9,12 @@
     {{ delayTimeSec }}
   </h2>
   <h2
-      v-else-if="timerState === 'explanation'"
+      v-else-if="explanationTimer === 'explanation'"
       class="explanation-timer">
     {{ explanationTime }}
   </h2>
   <h2
-      v-else-if="timerState === 'aftermath'"
+      v-else-if="explanationTimer === 'aftermath'"
       class="aftermath-timer">
     {{ aftermathTime }}
   </h2>
@@ -31,7 +31,6 @@ export default {
 
   data: function () {
     return {
-      timerState: null,
       delayTimeSec: 0,
       aftermathTimeMsec: 0,
       explanationTimeSec: 0,
@@ -44,7 +43,8 @@ export default {
       substate: state => state.room.substate,
       explanationStartTime: state => state.room.startTime,
       settings: state => state.room.settings,
-      roundId: state => state.room.roundId
+      roundId: state => state.room.roundId,
+      explanationTimer: state => state.room.explanationTimer
     }),
     delayStartTime: function () {
       return this.explanationStartTime - this.settings.delayTime;
@@ -75,12 +75,9 @@ export default {
     },
     animateTimers: async function () {
       const roundId = this.$store.state.room.roundId;
-      this.timerState = "delay";
       this.animationDelay = this.delayStartTime - timeSync.getTime();
       await this.animateDelayTimer(this.delayStartTime, roundId);
-      this.timerState = "explanation";
       await this.animateExplanationTimer(this.explanationStartTime, roundId);
-      this.timerState = "aftermath";
       await this.animateAftermathTimer(this.aftermathStartTime, roundId);
     },
     animateDelayTimer: async function (startTime, roundId) {
