@@ -94,9 +94,6 @@ Query string:
 Если `stage = prepare` и `termCondition = rounds`
 - `pairs` (array) - список пар игроков, которые образуют команды
 
-Если `stage = prepare` и `termCondition = rounds`:
-- `playerList` - Список игроков. Игроки описаны так:
-
 Если `stage = wait, play`:
 - `playersList` - Список игроков. Игроки описаны так:
     - `username (string)` - имя игрока.
