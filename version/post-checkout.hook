@@ -3,7 +3,7 @@
 outputClient=${1:-../static/version.js}
 outputServer=${1:-../version.json}
 
-describe=$(git describe --tags --long  --always --match=v[0-9]*.[0-9]*)
+describe=$(git describe --tags --long --always --first-parent --match=v[0-9]*.[0-9]*)
 
 hash=${describe##*-}
 version=${describe%-*}
