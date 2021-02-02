@@ -38,6 +38,18 @@
     flex-grow: 1;
     padding: 15px 30px 30px 30px;
     overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#rules main::-webkit-scrollbar {
+    width: 10px;
+    background-color: transparent;
+}
+
+#rules main::-webkit-scrollbar-thumb {
+    background-color: lightgrey;
+    border-radius: 5px;
 }
 
 #rules main h2 {
