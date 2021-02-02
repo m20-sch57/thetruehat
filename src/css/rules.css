@@ -40,6 +40,7 @@
     overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    scrollbar-color: lightgrey transparent;
 }
 
 #rules main::-webkit-scrollbar {
