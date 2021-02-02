@@ -38,6 +38,11 @@
     flex-grow: 1;
     padding: 15px 30px 30px 30px;
     overflow: auto;
+    -ms-overflow-style: none;
+}
+
+#rules main::-webkit-scrollbar {
+    display: none;
 }
 
 #rules main h2 {
