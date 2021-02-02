@@ -39,6 +39,7 @@
     padding: 15px 30px 30px 30px;
     overflow: auto;
     -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 #rules main::-webkit-scrollbar {
