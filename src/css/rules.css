@@ -38,8 +38,8 @@
     flex-grow: 1;
     padding: 15px 30px 30px 30px;
     overflow: auto;
+    scrollbar-width: none;
     -ms-overflow-style: none;
-    scrollbar-color: lightgrey transparent;
 }
 
 #rules main::-webkit-scrollbar {
