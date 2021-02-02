@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import {timeSync} from "./tools";
+
 const getTime = () => timeSync.getTime();
 
 Vue.use(Vuex);

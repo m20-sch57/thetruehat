@@ -10,11 +10,13 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 #editScreen .word-row .word {
     flex-grow: 1;
-    flex-basis: 300px;
+    flex-basis: 350px;
+    max-width: 400px;
     margin: 10px 0;
     font-weight: normal;
     text-align: center;
@@ -24,8 +26,8 @@
     display: flex;
     flex-direction: row;
     flex-grow: 1;
-    flex-basis: 300px;
-    justify-content: center;
+    flex-basis: 350px;
+    max-width: 400px;
     border-bottom: 1px solid whitesmoke;
 }
 
@@ -33,22 +35,18 @@
     flex-grow: 1;
     flex-shrink: 0;
     padding: 15px 10px;
-    background-color: transparent;
 }
 
 #editScreen .word-row .option.guessed {
     --nav-color: #76cb76;
-    --nav-bg-color: #f2faf2;
 }
 
 #editScreen .word-row .option.not-guessed {
     --nav-color: #6dc0ff;
-    --nav-bg-color: #f1fcff;
 }
 
 #editScreen .word-row .option.mistake {
     --nav-color: #ff7373;
-    --nav-bg-color: #fff7f7;
 }
 
 #editScreenFooter .confirm {

@@ -8,7 +8,7 @@
               v-for="({word, wordState}, i) of editWords"
               class="word-row"
               :key="i">
-            <h3 class="word">{{word}}</h3>
+            <h3 class="word">{{ word }}</h3>
             <div class="options">
               <button
                   @click="setWordState(i, 'explained')"
