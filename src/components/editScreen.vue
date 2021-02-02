@@ -1,8 +1,16 @@
 <template>
-  <article id="playTurn">
+  <article
+      :class="{
+        topShadow: !maxTopScroll,
+        bottomShadow: !maxBottomScroll
+      }"
+      id="playTurn">
     <slot/>
     <main class="scrollable-wrapper">
-      <div class="scrollable">
+      <div
+          class="scrollable"
+          v-scroll-top="maxTopScroll"
+          v-scroll-bottom="maxBottomScroll">
         <div id="editScreen">
           <div
               v-for="({word, wordState}, i) of editWords"
@@ -51,7 +59,9 @@ export default {
 
   data: function () {
     return {
-      editWords: this.$store.state.room.editWords
+      editWords: this.$store.state.room.editWords,
+      maxTopScroll: true,
+      maxBottomScroll: true
     };
   },
 
@@ -62,6 +72,32 @@ export default {
     acceptEditedWords: function () {
       app.editWords(this.editWords);
     }
-  }
+  },
+
+  directives: {
+    scrollTop: {
+      bind: function(el, binding, vnode) {
+        el.addEventListener("scroll", () => {
+          // Можно использовать eval для более честого получения реактивного поля
+          // Без eval можно обращаться только к корневым полям vue.
+          // eval("vnode.context."+binding.expression+"= el.scrollTop == 0");
+          vnode.context[binding.expression] = el.scrollTop === 0;
+        });
+      },
+      inserted: function(el, binding, vnode) {
+        vnode.context[binding.expression] = el.scrollTop === 0;
+      }
+    },
+    scrollBottom: {
+      bind: function(el, binding, vnode) {
+        el.addEventListener("scroll", () => {
+          vnode.context[binding.expression] = (el.scrollHeight - el.scrollTop <= el.clientHeight + 1);
+        });
+      },
+      inserted: function(el, binding, vnode) {
+        vnode.context[binding.expression] = (el.scrollHeight - el.scrollTop <= el.clientHeight + 1);
+      }
+    }
+  },
 };
 </script>

@@ -56,6 +56,14 @@
     }
 }
 
+#playTurn.topShadow header {
+    box-shadow: 0 2px 10px -7px grey;
+}
+
+#playTurn.bottomShadow footer {
+    box-shadow: 0 -2px 10px -7px grey;
+}
+
 @keyframes changeColor {
     0% {
         background-color: forestgreen;
