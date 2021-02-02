@@ -30,7 +30,7 @@ export default {
   components: {playInfoSection, playTurnSection, Swiper, SwiperSlide},
   data: function () {
     return {
-      isMenuHidden: true,
+      isMenuHidden: localStorage.isMenuHidden === "true",
       swiperOptions: {
         slidesPerView: "auto",
         initialSlide: 1,
@@ -66,10 +66,12 @@ export default {
       console.log("here");
       this.swiper().slideTo(0);
       this.isMenuHidden = false;
+      localStorage.isMenuHidden = "false";
     },
     hideMenu: function () {
       this.swiper().slideTo(1);
       this.isMenuHidden = true;
+      localStorage.isMenuHidden = "true";
     }
   }
 };
