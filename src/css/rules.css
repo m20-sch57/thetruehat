@@ -43,7 +43,13 @@
 }
 
 #rules main::-webkit-scrollbar {
-    display: none;
+    width: 10px;
+    background-color: transparent;
+}
+
+#rules main::-webkit-scrollbar-thumb {
+    background-color: lightgrey;
+    border-radius: 5px;
 }
 
 #rules main h2 {
