@@ -146,7 +146,7 @@ Query string:
 
 `io` <a name="cEndStage">`cEndStage`</a> - функция, завершающая этап. Используется только хостом.
 
-- `stage` - этап, который необходимо завершить (допустимые значения: `wait`, `preparation_pairMatching`).
+- `stage` - этап, который необходимо завершить (допустимые значения: `wait`, `prepare_pairMatching`).
 
 ---
 
