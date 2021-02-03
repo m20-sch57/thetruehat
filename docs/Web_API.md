@@ -94,7 +94,7 @@ Query string:
 Если `stage = prepare` и `fixedPairs = true`
 - `pairs` (array) - список пар игроков, которые образуют команды
 
-Если `stage = wait, play`:
+Если `stage != end`:
 - `playersList` - Список игроков. Игроки описаны так:
     - `username (string)` - имя игрока.
     - `online (bool)` - подключен ли игрок к серверу.
