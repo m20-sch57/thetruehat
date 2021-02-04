@@ -109,6 +109,7 @@ Query string:
 - `listener (string)` - имя того, кому будут объяснять.
 - `wordsLeft (int)` - Если `settings.termCondition = words`. Кол-во оставшихся слов.
 - `roundsLeft (int)` - Если `settings.termCondition = rounds`. Кол-во оставшихся кругов.
+
 Если `stage = play_explanation`:
 
   + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
