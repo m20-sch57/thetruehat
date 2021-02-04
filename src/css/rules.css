@@ -44,7 +44,7 @@
 }
 
 #rules main .scrollable::-webkit-scrollbar {
-    width: 16px;
+    width: 11px;
     background-color: transparent;
 }
 
@@ -53,9 +53,9 @@
 }
 
 #rules main .scrollable::-webkit-scrollbar-thumb {
-    background-color: darkgrey;
-    border: 4px solid white;
-    border-radius: 8px;
+    background-color: grey;
+    border: 2px solid white;
+    border-radius: 6px;
 }
 
 #rules main .rules-content {
