@@ -53,6 +53,7 @@
 
 <script>
 import app from "src/app.js";
+import {scrollTop, scrollBottom} from "src/tools";
 
 export default {
   name: "editScreen",
@@ -74,30 +75,6 @@ export default {
     }
   },
 
-  directives: {
-    scrollTop: {
-      bind: function(el, binding, vnode) {
-        el.addEventListener("scroll", () => {
-          // Можно использовать eval для более честого получения реактивного поля
-          // Без eval можно обращаться только к корневым полям vue.
-          // eval("vnode.context."+binding.expression+"= el.scrollTop == 0");
-          vnode.context[binding.expression] = el.scrollTop === 0;
-        });
-      },
-      inserted: function(el, binding, vnode) {
-        vnode.context[binding.expression] = el.scrollTop === 0;
-      }
-    },
-    scrollBottom: {
-      bind: function(el, binding, vnode) {
-        el.addEventListener("scroll", () => {
-          vnode.context[binding.expression] = (el.scrollHeight - el.scrollTop <= el.clientHeight + 1);
-        });
-      },
-      inserted: function(el, binding, vnode) {
-        vnode.context[binding.expression] = (el.scrollHeight - el.scrollTop <= el.clientHeight + 1);
-      }
-    }
-  },
+  directives: {scrollTop, scrollBottom}
 };
 </script>

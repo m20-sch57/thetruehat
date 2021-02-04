@@ -15,3 +15,4 @@ import "./css/explanationScreen.css";
 import "./css/editScreen.css";
 import "./css/rules.css";
 import "./css/feedback.css";
+import "./css/news.css";

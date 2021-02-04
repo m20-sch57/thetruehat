@@ -48,19 +48,19 @@
                 <span v-translate:ru>Русские, 14141 слово</span>
                 <span v-translate:en.draft>Russian, 14141 words</span>
               </option>
-              <option :value="['serverDictionary', 1]">
+              <option :value="['serverDictionary', 4]">
                 <span v-translate:ru>Английские, 1525 слов</span>
                 <span v-translate:en.draft>English, 1525 words</span>
               </option>
-              <option :value="['serverDictionary', 2]">
+              <option :value="['serverDictionary', 1]">
                 <span v-translate:ru>Простые русские, 4627</span>
                 <span v-translate:en.draft>Simple russian, 4627</span>
               </option>
-              <option :value="['serverDictionary', 3]">
+              <option :value="['serverDictionary', 2]">
                 <span v-translate:ru>Средние русские, 4506</span>
                 <span v-translate:en.draft>Middle russian, 4506</span>
               </option>
-              <option :value="['serverDictionary', 4]">
+              <option :value="['serverDictionary', 3]">
                 <span v-translate:ru>Сложные русские, 4599</span>
                 <span v-translate:en.draft>Hard russian, 4599</span>
               </option>
