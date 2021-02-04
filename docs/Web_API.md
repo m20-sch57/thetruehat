@@ -24,12 +24,16 @@ Query string:
 
 - `success (bool)` - успешен ли запрос. Если ключ комнаты не валидный, то `success = false`, иначе `success = true`.
 - `stage (string)` - состояние комнаты.
-- `playersList` - Если `stage = wait, play`. Список игроков. Описание игрока состоит из:
+
+Если `stage != end`:
+- `playersList` - Список игроков. Описание игрока состоит из:
   - `username (string)` - имя игрока.
   - `online (bool)` - подключен ли игрок к серверу.
-- `host` - Если `stage = wait, play`. Хост комнаты.
-- `settings` - Если `stage = wait, play`. Словарь с настройками комнаты.
-- `results (array)` - Если `stage = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
+- `host` - Хост комнаты.
+- `settings` - Словарь с настройками комнаты.
+
+Если `stage = end`:
+- `results (array)` - Список результатов по убыванию. (MVP-next) Каждый результат хранит:
     - `username (string)` - имя игрока.
     - `scoreExplained (int)` - количество объяснённых слов.
     - `scoreGuessed (int)` - количество отгаданных слов.
@@ -91,15 +95,15 @@ Query string:
 - `key (string)` - ключ комнаты.
 - `stage (string)` - состояние комнаты.
 
-Если `stage = prepare` и `fixedPairs = true`
-- `pairs` (array) - список пар игроков, которые образуют команды
-
-Если `stage = wait, play`:
+Если `stage != end`:
 - `playersList` - Список игроков. Игроки описаны так:
     - `username (string)` - имя игрока.
     - `online (bool)` - подключен ли игрок к серверу.
 - `host` - Хост комнаты.
 - `settings` - Словарь с настройками комнаты.
+
+Если `stage = prepare_pairMatching` и `fixedPairs = true`
+- `pairs` (array) - список пар игроков, которые образуют команды. Каждый игрок в каждой паре описывается своим `username`-ом.
 
 Если `stage = play`:
 - `timetable (array)` - следующие N пар. Состоит из:
@@ -109,6 +113,7 @@ Query string:
 - `listener (string)` - имя того, кому будут объяснять.
 - `wordsLeft (int)` - Если `settings.termCondition = words`. Кол-во оставшихся слов.
 - `roundsLeft (int)` - Если `settings.termCondition = rounds`. Кол-во оставшихся кругов.
+
 Если `stage = play_explanation`:
 
   + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
@@ -177,8 +182,9 @@ Query string:
 
 - `username1 (string)` - имя первого игрока в паре
 - `username2 (string)` - имя второго игрока в паре
-- `pairs` (array) - список пар игроков, которые образуют команды. В том числе тоьлко что созданная пара.
+- `pairs` (array) - список пар игроков, которые образуют команды. В том числе тоьлко что созданная пара. Каждый игрок в каждой паре описывается своим `username`-ом.
 
+---
 
 `io` <a name="cDestroyPair">`cDestroyPair`</a> - функция, разформировывающая пару игроков.
 
@@ -191,7 +197,7 @@ Query string:
 
 - `username1 (string)` - имя первого игрока в паре
 - `username2 (string)` - имя второго игрока в паре
-- `pairs` (array) - список пар игроков, которые образуют команды. Без только что разрушенной пары.
+- `pairs` (array) - список пар игроков, которые образуют команды. Без только что разрушенной пары. Каждый игрок в каждой паре описывается своим `username`-ом.
 
 #### Игра
 
