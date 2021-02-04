@@ -1,5 +1,10 @@
 <template>
-  <article id="playInfo">
+  <article
+      :class="{
+        topShadow: !maxTopScroll,
+        bottomShadow: !maxBottomScroll
+      }"
+      id="playInfo">
     <header>
       <h1>{{ $store.state.room.key }}</h1>
       <button
@@ -9,7 +14,10 @@
       </button>
     </header>
     <main class="scrollable-wrapper">
-      <div class="scrollable">
+      <div
+          class="scrollable"
+          v-scroll-top="maxTopScroll"
+          v-scroll-bottom="maxBottomScroll">
         <div class="turns">
           <div class="next-turn">
             <h3>Следующий ход</h3>
@@ -102,6 +110,7 @@
 <script>
 import app from "src/app.js";
 import store from "src/store.js";
+import {scrollTop, scrollBottom} from "src/tools";
 
 const room = store.state.room;
 
@@ -173,11 +182,27 @@ const turnsHistory = [
   }
 ];
 
+for (let i = 0; i < 15; i++) {
+  turnsHistory.push({
+    speaker: "Гелб",
+    listener: "Федро",
+    score: 2,
+    words: [],
+    collapsed: true
+  });
+}
+
 export default {
   name: "playInfoSection",
+
   data: function () {
-    return {turnsHistory};
+    return {
+      turnsHistory,
+      maxTopScroll: true,
+      maxBottomScroll: true
+    };
   },
+
   computed: {
     nextTurn: function () {
       return room.timetable[1];
@@ -189,6 +214,7 @@ export default {
       };
     }
   },
+
   methods: {
     endGame: function () {
       app.finish();
@@ -196,6 +222,8 @@ export default {
     leaveGame: function () {
       app.leaveRoom();
     }
-  }
+  },
+
+  directives: {scrollTop, scrollBottom}
 };
 </script>
