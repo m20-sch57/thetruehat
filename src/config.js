@@ -13,3 +13,4 @@ export const ERROR_TIMEOUT = 4000;
 export const VALIDATION_TIMEOUT = 250;
 export const DICTIONARY_MAX_SIZE = 64 * 1000 * 1000;
 export const GAME_BUTTON_COOLDOWN_TIME = 200;
+export const NEWS_RELEVANCE_TIME = 30 * 24 * 3600 * 1000;

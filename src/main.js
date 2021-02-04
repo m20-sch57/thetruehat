@@ -26,16 +26,20 @@ Vue.component("version", {
     render: h => h("span", VERSION)
 });
 
+timeSync.maintainDelta(config.TIME_SYNC_DELTA);
+timeSync.debug = config.DEBUG;
+app.debug = config.DEBUG;
+
+if (localStorage.readNews === undefined) {
+    localStorage.readNews = "[]";
+}
+
 let vue = new Vue({
     router,
     store,
     el: "#app",
     render: h => h(view)
 });
-
-timeSync.maintainDelta(config.TIME_SYNC_DELTA);
-timeSync.debug = config.DEBUG;
-app.debug = config.DEBUG;
 
 if (config.DEBUG) {
     window.vue = vue;
