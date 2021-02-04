@@ -1,6 +1,5 @@
 #news article {
     font-size: 20px;
-    text-align: justify;
 }
 
 #news .content {
@@ -35,4 +34,8 @@
 
 #news .news-post .new {
     color: green;
+}
+
+#news .news-post p, #news .news-post ul {
+    text-align: justify;
 }
