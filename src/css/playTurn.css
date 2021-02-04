@@ -49,11 +49,11 @@
     visibility: hidden;
 }
 
-#playTurn.topShadow header {
+article.topShadow header {
     box-shadow: 0 4px 10px -9px grey;
 }
 
-#playTurn.bottomShadow footer {
+article.bottomShadow footer {
     box-shadow: 0 -4px 10px -9px grey;
 }
 
