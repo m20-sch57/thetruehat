@@ -33,7 +33,7 @@ Query string:
 - `settings` - Словарь с настройками комнаты.
 
 Если `stage = end`:
-- `results (array)` - Если `stage = end`. Список результатов по убыванию. (MVP-next) Каждый результат хранит:
+- `results (array)` - Список результатов по убыванию. (MVP-next) Каждый результат хранит:
     - `username (string)` - имя игрока.
     - `scoreExplained (int)` - количество объяснённых слов.
     - `scoreGuessed (int)` - количество отгаданных слов.
