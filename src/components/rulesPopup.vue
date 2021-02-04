@@ -12,7 +12,7 @@
       </header>
       <main class="scrollable-wrapper">
         <div class="scrollable">
-          <div class="rules-content" v-if="$language.current === 'ru'">
+          <div class="content" v-if="$language.current === 'ru'">
             <h2>Общее</h2>
             <p>
               Ваша главная задача в игре в шляпу &ndash; это объяснение как можно большего количества слов. Традиционно
@@ -91,7 +91,7 @@
               Подробнее читайте тут: <a href="http://thehat.ru/rules/">http://thehat.ru/rules/</a>
             </p>
           </div>
-          <div class="rules-content" v-else-if="$language.current === 'en'">
+          <div class="content" v-else-if="$language.current === 'en'">
             <p>The game is also known as "Alias" among English-speakers, but the name "Hat" will be used here.</p>
 
             <h2>General</h2>

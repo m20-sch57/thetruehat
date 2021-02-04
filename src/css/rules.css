@@ -58,16 +58,16 @@
     border-radius: 6px;
 }
 
-#rules main .rules-content {
+#rules main .content {
     flex-shrink: 0;
     padding: 15px 30px 30px 30px;
 }
 
-#rules main .rules-content h2 {
+#rules main .content h2 {
     font-weight: normal;
 }
 
-#rules main .rules-content p {
+#rules main .content p {
     text-align: justify;
 }
 
