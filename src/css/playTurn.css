@@ -49,14 +49,6 @@
     visibility: hidden;
 }
 
-article.topShadow header {
-    box-shadow: 0 4px 10px -9px grey;
-}
-
-article.bottomShadow footer {
-    box-shadow: 0 -4px 10px -9px grey;
-}
-
 @media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
     #playTurn footer {
         margin-bottom: 0;
