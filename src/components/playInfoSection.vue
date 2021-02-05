@@ -18,63 +18,7 @@
           class="scrollable"
           v-scroll-top="maxTopScroll"
           v-scroll-bottom="maxBottomScroll">
-        <div class="turns">
-          <div class="next-turn">
-            <h3>Следующий ход</h3>
-            <div class="turn-layer">
-              <div class="turn-top">
-                <div class="turn-pair" v-if="nextTurn">
-                  <h4 class="speaker">{{ nextTurn.speaker }}</h4>
-                  <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">{{ nextTurn.listener }}</h4>
-                </div>
-                <div v-else>
-                  конец игры
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="current-turn">
-            <h3>Этот ход</h3>
-            <div class="turn-layer">
-              <div class="turn-top">
-                <div class="turn-pair">
-                  <h4 class="speaker">{{ currentTurn.speaker }}</h4>
-                  <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">{{ currentTurn.listener }}</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="previous-turns">
-            <h3>Предыдущие ходы</h3>
-            <div
-                v-for="(turn, i) of turnsHistory"
-                @click="turn.collapsed = !turn.collapsed"
-                class="turn-layer"
-                :class="{collapsed: turn.collapsed}"
-                :key="i">
-              <div class="turn-top">
-                <div class="turn-pair">
-                  <h4 class="speaker">{{ turn.speaker }}</h4>
-                  <img src="img/long-arrow-right.png" alt="right-arrow">
-                  <h4 class="listener">{{ turn.listener }}</h4>
-                </div>
-                <div class="turn-words-cnt">{{ turn.score }}</div>
-                <img src="img/arrow-down.svg" class="arrow-down" alt="arrow-down">
-              </div>
-              <div class="turn-bottom">
-                <div
-                    v-for="(word, j) of turn.words"
-                    :key="j"
-                    class="word"
-                    :class="[word.status]">
-                  {{ word.word || "???" }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <turns-timeline/>
       </div>
     </main>
     <footer>
@@ -109,110 +53,20 @@
 
 <script>
 import app from "src/app.js";
-import store from "src/store.js";
 import {scrollTop, scrollBottom} from "src/tools";
 
-const room = store.state.room;
-
-const turnsHistory = [
-  {
-    speaker: "Гений",
-    listener: "Евгений",
-    score: 4,
-    words: [
-      {
-        word: "турок",
-        status: "explained"
-      },
-      {
-        word: "шерсть",
-        status: "explained"
-      },
-      {
-        word: "синхрофазотрон",
-        status: "explained"
-      },
-      {
-        word: "пятилетка",
-        status: "explained"
-      }, {
-        status: "not-explained"
-      }
-    ],
-    collapsed: true
-  },
-  {
-    speaker: "Саня",
-    listener: "Петя",
-    score: 1,
-    words: [
-      {
-        word: "безобразие",
-        status: "explained"
-      },
-      {
-        status: "not-explained"
-      },
-      {
-        word: "синхрофазотрон",
-        status: "mistake"
-      }
-    ],
-    collapsed: true
-  },
-  {
-    speaker: "Гелб",
-    listener: "Федро",
-    score: 2,
-    words: [
-      {
-        word: "фасоль",
-        status: "explained"
-      },
-      {
-        word: "слив",
-        status: "explained"
-      },
-      {
-        word: "синхрофазотрон",
-        status: "mistake"
-      }
-    ],
-    collapsed: true
-  }
-];
-
-for (let i = 0; i < 15; i++) {
-  turnsHistory.push({
-    speaker: "Гелб",
-    listener: "Федро",
-    score: 2,
-    words: [],
-    collapsed: true
-  });
-}
+import turnsTimeline from "cmp/turnsTimeline.vue";
 
 export default {
   name: "playInfoSection",
 
+  components: {turnsTimeline},
+
   data: function () {
     return {
-      turnsHistory,
       maxTopScroll: true,
       maxBottomScroll: true
     };
-  },
-
-  computed: {
-    nextTurn: function () {
-      return room.timetable[1];
-    },
-    currentTurn: function () {
-      return {
-        speaker: room.speaker,
-        listener: room.listener
-      };
-    }
   },
 
   methods: {
