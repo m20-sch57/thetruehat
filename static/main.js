@@ -1549,12 +1549,12 @@ class App {
             this.gamePages.$edit.push();
         })
         this.socket.on("sNextTurn", data => {
-            this.game.stage = "wait";
+            this.game.stage = "play_wait";
             this.game.update(data);
             this.gamePages.$wait.push();
         })
         this.socket.on("sWordExplanationEnded", data => {
-            this.game.stage = "edit";
+            this.game.stage = "play_edit";
             this.game.update(data);
         })
         this.socket.on("sExplanationEnded", data => {
