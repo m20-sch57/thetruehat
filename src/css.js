@@ -8,6 +8,7 @@ import "./css/preparation.css";
 import "./css/preparationRoom.css";
 import "./css/preparationSettings.css";
 import "./css/play.css";
+import "./css/turns.css";
 import "./css/playInfo.css";
 import "./css/playTurn.css";
 import "./css/observationScreen.css";
