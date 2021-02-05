@@ -117,6 +117,20 @@ function getPlayersList(users) {
 }
 
 /**
+ * Returns pairs structure,
+ * @see API.md
+ *
+ * @param {Room} room Room object
+ * @return list of players
+ */
+function getPairs(room) { //TODO: Ждём ответа от коллег...
+    return room.pairs.map(el => {return [
+            {"username": room.users[el[0]].username, "online": room.users[el[0]].online},
+            {"username": room.users[el[1]].username, "online": room.users[el[1]].online}
+        ];});
+}
+
+/**
  * Returns host username
  *
  * @param users list of users
@@ -435,8 +449,10 @@ class Signals {
      * @param username User's name
      */
     static sPlayerJoined(sid, room, username) {
-        Signals.emit(sid, "sPlayerJoined", {
-                "username": username, "playersList": getPlayersList(room.users),
+        Signals.emit(sid, "sPlayerJoined",
+            {
+                "username": username,
+                "playersList": getPlayersList(room.users),
                 "host": getHostUsername(room.users)
             });
     }
@@ -451,10 +467,12 @@ class Signals {
      */
     static sPlayerLeft(sid, room, username) {
         // Sending new stage of the room.
-        Signals.emit(sid, "sPlayerLeft", {
-            "username": username, "playersList": getPlayersList(room.users),
-            "host": getHostUsername(room.users)
-        });
+        Signals.emit(sid, "sPlayerLeft",
+            {
+                "username": username,
+                "playersList": getPlayersList(room.users),
+                "host": getHostUsername(room.users)
+            });
     }
 
     /**
@@ -471,19 +489,18 @@ class Signals {
         const name = room.users[pos].username;
         let joinObj = {
             "key": key,
+            "stage": room.stage,
             "playersList": getPlayersList(room.users),
             "host": getHostUsername(room.users),
             "settings": room.settings
         };
         switch (true) {
             case room.stage === "wait":
-                joinObj.stage = "wait";
                 break;
             case room.stage.startsWith("prepare"):
-                joinObj.stage = room.stage;
+                joinObj.pairs = getPairs(room)
                 break;
             case room.stage.startsWith("play"):
-                joinObj.stage = room.stage;
                 joinObj.timetable = getTimetable(key);
                 joinObj.speaker = room.users[room.speaker].username;
                 joinObj.listener = room.users[room.listener].username;
@@ -521,7 +538,7 @@ class Signals {
                 break;
             default:
                 console.log(rooms[key]);
-                break;
+                return;
         }
         Signals.emit(sid, "sYouJoined", joinObj);
     }
@@ -815,13 +832,14 @@ app.get("/getRoomInfo", function(req, res) {
  *     - key --- key of the room
  *     - stage --- stage of the room,
  *     - users --- list of users (User objects)
+ *     - pairs --- list of fixed pairs. If `settings.fixedPairs === false` it is not used.
  *     - settings --- room settings
  *     - hostDictionary --- "dictionary" with words from host:
  *         - words --- list of words
  *         - wordsNumber --- count of words
  *         - name --- "Host's dictionary"
  *
- * if stage === "play_*":
+ * if `stage === "play_*"`:
  *     - freshWords --- list of words in hat,
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
@@ -845,6 +863,7 @@ class Room {
         this.key = key;
         this.stage = "wait";
         this.users = [];
+        this.pairs = [];
         this.settings = Object.assign({}, config.defaultSettings);
         this.hostDictionary = {
             words: [],
