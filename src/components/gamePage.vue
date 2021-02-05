@@ -22,11 +22,11 @@ export default {
       } else if (room.connection === "connection") {
         return "joinPage";
       } else if (room.connection === "online") {
-        if (room.state === "wait") {
+        if (room.stage.startsWith("wait")) {
           return "preparationPage";
-        } else if (room.state === "play") {
+        } else if (room.stage.startsWith("play")) {
           return "playPage";
-        } else if (room.state === "end") {
+        } else if (room.stage.startsWith("end")) {
           return "resultsPage";
         }
       }

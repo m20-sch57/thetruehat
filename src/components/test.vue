@@ -25,14 +25,14 @@ export default {
     },
     playPageComponent: function () {
       if (this.$store.state.room.connection === "online" &&
-          this.$store.state.room.state === "play") {
+          this.$store.state.room.stage.startsWith("play")) {
         return "playPage";
       }
       return "";
     },
     preparationPageComponent: function () {
       if (this.$store.state.room.connection === "online" &&
-          this.$store.state.room.state === "wait") {
+          this.$store.state.room.stage === "wait") {
         return "preparationPage";
       }
       return "";

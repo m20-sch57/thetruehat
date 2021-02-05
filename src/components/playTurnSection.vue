@@ -25,21 +25,21 @@ export default {
 
   computed: {
     ...mapState({
-      substate: state => state.room.substate,
+      stage: state => state.room.stage,
       explanationTimer: state => state.room.explanationTimer
     }),
     ...mapGetters(["myRole"]),
     currentScreen: function () {
-      if (this.substate === "wait" || this.myRole !== "speaker") {
+      if (this.stage === "play_wait" || this.myRole !== "speaker") {
         return "observation-screen";
       }
-      if (this.substate === "explanation" && this.explanationTimer === "delay") {
+      if (this.stage === "play_explanation" && this.explanationTimer === "delay") {
         return "observation-screen";
       }
-      if (this.substate === "explanation" && !this.explanationTimer !== "delay") {
+      if (this.stage === "play_explanation" && !this.explanationTimer !== "delay") {
         return "explanation-screen";
       }
-      if (this.substate === "edit") {
+      if (this.stage === "play_edit") {
         return "edit-screen";
       }
       return "";

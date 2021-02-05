@@ -54,7 +54,7 @@ export class App {
         this.store.commit("connectRoom", {username, key});
         this.emit("cJoinRoom", {
             username, key,
-            time_zone_offset: (new Date()).getTimezoneOffset() * (-60000)
+            timeZoneOffset: (new Date()).getTimezoneOffset() * (-60000)
         });
     }
 
@@ -105,17 +105,17 @@ export class App {
         const handlers = {
             sYouJoined: data => {
                 this.store.commit("joinRoom", {
-                    players: data.playerList,
+                    players: data.playersList,
                     ...data
                 });
-                if (this.store.state.room.substate === "explanation") {
+                if (this.store.state.room.stage === "play_explanation") {
                     this.store.dispatch("explanationStarted", {startTime: data.startTime});
                 }
             },
 
             sPlayerJoined: data => {
                 this.store.commit("setPlayers", {
-                    players: data.playerList
+                    players: data.playersList
                 });
                 this.store.commit("setHost", {
                     host: data.host
@@ -124,7 +124,7 @@ export class App {
 
             sPlayerLeft: data => {
                 this.store.commit("setPlayers", {
-                    players: data.playerList
+                    players: data.playersList
                 });
                 this.store.commit("setHost", {
                     host: data.host
@@ -155,8 +155,8 @@ export class App {
                 if (this.store.state.room.settings.termCondition === "words") {
                     this.store.commit("setWordsLeft", data);
                 }
-                if (this.store.state.room.settings.termCondition === "turns") {
-                    this.store.commit("setTurnsLeft", data);
+                if (this.store.state.room.settings.termCondition === "rounds") {
+                    this.store.commit("setRoundsLeft", data);
                 }
             },
 

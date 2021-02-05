@@ -208,7 +208,7 @@ export default {
         this.validationStatus.key = "empty";
       } else if (!this.roomInfo.success) {
         this.validationStatus.key = "invalid";
-      } else if (this.roomInfo.state === "wait") {
+      } else if (this.roomInfo.stage === "wait") {
         this.validationStatus.key = "not-created";
       } else {
         this.validationStatus.key = "created";
@@ -220,7 +220,7 @@ export default {
         this.validationStatus.username = "empty";
       } else if (!this.roomInfo.success) {
         this.validationStatus.username = "accepted";
-      } else if (!(this.roomInfo.state === "wait" ||
+      } else if (!(this.roomInfo.stage === "wait" ||
           username in this.roomInfo.playersInfo)) {
         this.validationStatus.username = "not-in-list";
       } else if (username in this.roomInfo.playersInfo &&

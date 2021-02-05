@@ -17,11 +17,11 @@
             <div class="middle">
               <timer
                   :key="roundId"
-                  v-show="substate === 'explanation'"/>
+                  v-show="stage === 'play_explanation'"/>
               <img
                   src="img/long-arrow-right.png"
                   alt="right-arrow"
-                  v-show="substate !== 'explanation'"
+                  v-show="stage !== 'play_explanation'"
               />
             </div>
             <div class="player listener">
@@ -38,18 +38,18 @@
       </div>
     </main>
     <footer
-        :class="{hidden: myRole !== 'observer' && substate !== 'wait'}"
+        :class="{hidden: myRole !== 'observer' && stage !== 'play_wait'}"
         id="observationScreenFooter">
       <button
           class="btn btn-green btn-shadow ready"
-          v-show="myRole === 'speaker' && substate ==='wait'"
+          v-show="myRole === 'speaker' && stage ==='play_wait'"
           :disabled="ready"
           @click="getReady">
         Я готов объяснять
       </button>
       <button
           class="btn btn-blue btn-shadow ready"
-          v-show="myRole === 'listener' && substate ==='wait'"
+          v-show="myRole === 'listener' && stage ==='play_wait'"
           :disabled="ready"
           @click="getReady">
         Я готов отгадывать
@@ -89,7 +89,7 @@ export default {
 
   computed: {
     ...mapState({
-      substate: state => state.room.substate,
+      stage: state => state.room.stage,
       speaker: state => state.room.speaker,
       listener: state => state.room.listener,
       roundId: state => state.room.roundId,

@@ -7,18 +7,18 @@
       <span class="fas fa-angle-right"></span>
     </button>
     <h1>
-      <span v-if="substate === 'wait' && myRole === 'observer'">
+      <span v-if="stage === 'play_wait' && myRole === 'observer'">
         Подготовка
       </span>
-      <span v-if="substate === 'explanation' && myRole === 'observer'">
+      <span v-if="stage === 'play_explanation' && myRole === 'observer'">
         Идёт объяснение</span>
-      <span v-if="myRole === 'speaker' && substate !== 'edit'">
+      <span v-if="myRole === 'speaker' && stage !== 'play_edit'">
         Ты объясняешь
       </span>
-      <span v-if="myRole === 'listener' && substate !== 'edit'">
+      <span v-if="myRole === 'listener' && stage !== 'play_edit'">
         Ты отгадываешь
       </span>
-      <span v-if="substate === 'edit'">
+      <span v-if="stage === 'play_edit'">
         Редактирование
       </span>
     </h1>
@@ -56,7 +56,7 @@ export default {
 
   computed: {
     ...mapState({
-      substate: state => state.room.substate
+      stage: state => state.room.stage
     }),
     ...mapGetters(["myRole",])
   },

@@ -15,8 +15,8 @@ class RoomInfo {
         this.data = data;
         this.success = true;
 
-        this.state = data.state;
-        this.playersList = data.playerList;
+        this.stage = data.stage;
+        this.playersList = data.playersList;
         this.playersInfo = Object.fromEntries(this.playersList.map(u => [u.username, u.online]));
     }
 }

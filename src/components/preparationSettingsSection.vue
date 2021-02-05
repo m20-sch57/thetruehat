@@ -27,7 +27,7 @@
                 <span v-translate:ru>Пока не кончатся слова</span>
                 <span v-translate:en.draft>Until the words run out</span>
               </option>
-              <option :value="'turns'">
+              <option :value="'rounds'">
                 <span v-translate:ru>Заданное число кругов</span>
                 <span v-translate:en.draft>Fixed number of rounds</span>
               </option>
@@ -107,10 +107,10 @@
             <input
                 class="input"
                 :disabled="!editModeOn"
-                v-model.number="settings.wordNumber">
+                v-model.number="settings.wordsNumber">
           </label>
         </div>
-        <div class="layer" v-show="settings.termCondition === 'turns'">
+        <div class="layer" v-show="settings.termCondition === 'rounds'">
           <h4 class="label w-250">
             <span v-translate:ru>Количество кругов</span>
             <span v-translate:en.draft>The number of laps</span>
@@ -119,7 +119,7 @@
             <input
                 class="input"
                 :disabled="!editModeOn"
-                v-model.number="settings.turnsNumber">
+                v-model.number="settings.roundsNumber">
           </label>
         </div>
         <div class="layer">
@@ -204,9 +204,9 @@ export default {
           en: "File isn't loaded"
         });
       } else {
-        const wordNumber = this.settings.dictionaryFileInfo.wordNumber;
+        const wordsNumber = this.settings.dictionaryFileInfo.wordsNumber;
         const filename = this.settings.dictionaryFileInfo.filename;
-        return `${wordNumber} ${this.$tp(wordNumber, {
+        return `${wordsNumber} ${this.$tp(wordsNumber, {
           ru: ["слово", "слова", "слов"],
           en: ["word", "words"]
         })}, ${filename}`;
@@ -248,7 +248,7 @@ export default {
             ...this.settings,
             dictionaryFileInfo: {
               filename: file.name,
-              wordNumber: this.settings.wordset.length
+              wordsNumber: this.settings.wordset.length
             }
           };
         };
@@ -294,8 +294,8 @@ export default {
           room.settings.wordsetType !== "playerWords") {
         res.wordNumber = room.settings.wordNumber;
       }
-      if (room.settings.termCondition === "turns") {
-        res.turnsNumber = room.settings.turnsNumber;
+      if (room.settings.termCondition === "rounds") {
+        res.roundsNumber = room.settings.roundsNumber;
       }
       if (room.settings.wordsetType === "hostDictionary") {
         res.dictionaryFileInfo = room.settings.dictionaryFileInfo;
@@ -321,8 +321,8 @@ export default {
           res.wordsetType !== "playerWords") {
         res.wordNumber = this.settings.wordNumber;
       }
-      if (res.termCondition === "turns") {
-        res.turnsNumber = this.settings.turnsNumber;
+      if (res.termCondition === "rounds") {
+        res.turnsNumber = this.settings.roundsNumber;
       }
       if (res.wordsetType === "hostDictionary") {
         res.dictionaryFileInfo = this.settings.dictionaryFileInfo;

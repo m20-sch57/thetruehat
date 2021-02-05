@@ -40,7 +40,7 @@ export default {
 
   computed: {
     ...mapState({
-      substate: state => state.room.substate,
+      stage: state => state.room.stage,
       explanationStartTime: state => state.room.startTime,
       settings: state => state.room.settings,
       roundId: state => state.room.roundId,
@@ -124,14 +124,14 @@ export default {
   },
 
   created: function () {
-    this.$watch(() => (this.substate === "explanation"),
-        function (val) {
-          if (val) {
-            this.playSounds();
-            this.animateTimers();
-          }
-        },
-        {immediate: true}
+    this.$watch(() => (this.stage === "play_explanation"),
+      function (val) {
+        if (val) {
+          this.playSounds();
+          this.animateTimers();
+        }
+      },
+      {immediate: true}
     );
   },
 

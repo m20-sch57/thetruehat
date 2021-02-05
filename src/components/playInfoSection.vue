@@ -30,8 +30,8 @@
       </div>
       <div
           class="remaining"
-          v-if="$store.state.room.settings.termCondition === 'turns'">
-        <h1>{{ $store.state.room.turnsLeft }}</h1>
+          v-if="$store.state.room.settings.termCondition === 'rounds'">
+        <h1>{{ $store.state.room.roundsLeft }}</h1>
         <h4>кругов</h4>
       </div>
       <button
