@@ -117,7 +117,7 @@ Query string:
 Если `stage = play_explanation`:
 
   + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
-  + `endTime` - Время окончания объяснения.
+  + `startTime` - Время окончания объяснения.
 
 Если `stage = play_edit`:
 
@@ -208,7 +208,7 @@ Query string:
   + `listener (string)` - имя того, кому будут объяснять.
 - `speaker (string)` - имя следующего объясняющего.
 - `listener (string)` - имя того, кому будут объяснять.
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 - `roundsLeft (int)` - Если `settings.termCondition = rounds`. Количество оставшихся кругов.
 
 ---
@@ -221,7 +221,7 @@ Query string:
   + `listener (string)` - имя того, кому будут объяснять.
 - `speaker (string)` - имя следующего объясняющего.
 - `listener (string)` - имя того, кому будут объяснять.
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 - `roundsLeft (int)` - Если `settings.termCondition = rounds`. Количество оставшихся кругов.
 - `words (array)` - Список слов после правок.
   + `word (string)` - слово.
@@ -266,12 +266,12 @@ Query string:
   - `explained` - слово было объяснено.
   - `mistake` - слово было объяснено с ошибкой.
   - `notExplained` - слово не было объяснено.
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 ---
 
 `io` <a name="sExplanationEnded">`sExplanationEnded`</a> - сигнал, посылаемый всем клиентам в конце объяснения слов.
 
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 ---
 
 `io` <a name="sWordsToEdit">`sWordsToEdit`</a> - сигнал, посылаемый `speaker`-у со списком слов для редактирования.

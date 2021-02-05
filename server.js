@@ -124,10 +124,7 @@ function getPlayersList(users) {
  * @return list of players
  */
 function getPairs(room) { //TODO: Ждём ответа от коллег...
-    return room.pairs.map(el => {return [
-            {"username": room.users[el[0]].username, "online": room.users[el[0]].online},
-            {"username": room.users[el[1]].username, "online": room.users[el[1]].online}
-        ];});
+    return room.pairs.map(el => {return el.map(pos => room.users[pos].username);});
 }
 
 /**
@@ -567,13 +564,48 @@ class Signals {
     }
 
     /**
-     * Implementation of sWordCollectionStarted signal
+     * Implementation of sStageStarted signal
      * @see API.md
      *
-     * @param key Id of the Room
+     * @param sid Id of socket to emit
+     * @param stage Name of stage is currently starting
      */
-    static sWordCollectionStarted(key) {
-        Signals.emit(key, "sWordCollectionStarted")
+    static sStageStarted(sid, stage) {
+        Signals.emit(sid, "sStageStarted", {"stage": stage})
+    }
+
+    /**
+     * Implementation of sPairConstructed signal
+     * @see API.md
+     *
+     * @param key Key of the Room
+     * @param username1 Username of the first player in the new pair
+     * @param username2 Username of the second player in the new pair
+     */
+    static sPairConstructed(key, username1, username2) {
+        Signals.emit(key, "sStageStarted",
+            {
+                "username1": username1,
+                "username2": username2,
+                "pairs": getPairs(rooms[key])
+            })
+    }
+
+    /**
+     * Implementation of sPairDestroyed signal
+     * @see API.md
+     *
+     * @param key Key of the Room
+     * @param username1 Username of the first player in the removed pair
+     * @param username2 Username of the second player in the removed pair\
+     */
+    static sPairDestroyed(key, username1, username2) {
+        Signals.emit(key, "sPairDestroyed",
+            {
+                "username1": username1,
+                "username2": username2,
+                "pairs": getPairs(rooms[key])
+            })
     }
 
     /**
@@ -745,15 +777,10 @@ function sendResponse(req, res, data) {
  */
 app.get("/getDictionaryList", function(req, res) {
     // preparing data
-    let dictionaries = [];
-    for (let i = 0; i < dicts.length; ++i) {
-        dictionaries.push({
-            "name": dicts[i].name,
-            "wordsNumber": dicts[i].wordsNumber
-        });
-    }
 
-    sendResponse(req, res, {"dictionaries": dictionaries});
+    sendResponse(req, res, {"dictionaries":
+            dicts.map(dict => {return {"name": dict.name, "wordsNumber": dict.wordsNumber};})
+    });
 });
 
 /**
