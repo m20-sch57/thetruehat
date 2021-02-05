@@ -5,7 +5,6 @@ class Sound {
         this.currentSound = false;
         this.isMuted = false;
         this.volume = 1;
-        console.log(localStorage);
         if (localStorage.volume && localStorage.volume === "off") {
             this.toggleMute();
         }

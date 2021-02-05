@@ -6,6 +6,7 @@
 import preparationPage from "cmp/preparationPage.vue";
 import joinPage from "cmp/joinPage.vue";
 import playPage from "cmp/playPage.vue";
+import resultsPage from "cmp/resultsPage.vue";
 
 import store from "src/store.js";
 
@@ -13,7 +14,7 @@ const room = store.state.room;
 
 export default {
   name: "gamePage",
-  components: {preparationPage, joinPage, playPage},
+  components: {preparationPage, joinPage, playPage, resultsPage},
   computed: {
     currentPageComponent: function () {
       if (room.connection === "offline") {
@@ -26,7 +27,7 @@ export default {
         } else if (room.state === "play") {
           return "playPage";
         } else if (room.state === "end") {
-          return "resultPage";
+          return "resultsPage";
         }
       }
       return "";

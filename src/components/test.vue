@@ -5,6 +5,7 @@
 <script>
 import playPage from "cmp/playPage.vue";
 import preparationPage from "cmp/preparationPage.vue";
+import resultsPage from "cmp/resultsPage.vue";
 
 import {App, default as app} from "src/app.js";
 import {getFreeKey} from "src/api.js";
@@ -17,7 +18,7 @@ function createUser() {
 }
 
 export default {
-  components: {playPage, preparationPage},
+  components: {playPage, preparationPage, resultsPage},
   computed: {
     testComponent: function () {
       return this[this.$route.params.option + "Component"];
@@ -35,6 +36,9 @@ export default {
         return "preparationPage";
       }
       return "";
+    },
+    resultsPageComponent: function () {
+      return "resultsPage";
     }
   },
 
