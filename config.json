@@ -50,8 +50,8 @@
         "termCondition": "words",
         "wordsetType": "serverDictionary",
         "dictionaryId": 0,
-        "wordNumber": 100,
-        "turnsNumber": 10
+        "wordsNumber": 100,
+        "roundsNumber": 10
     },
     "settingsRange": {
         "delayTime": {
@@ -66,11 +66,11 @@
             "min": 0,
             "max": 100000
         },
-        "wordNumber": {
+        "wordsNumber": {
             "min": 1,
             "max": 1000
         },
-        "turnsNumber": {
+        "roundsNumber": {
             "min": 1,
             "max": 1000
         }

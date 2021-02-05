@@ -27,7 +27,7 @@ for (let i = 0; i < dictsConf.length; ++i) {
     let dict = {};
     dict["words"] = require(dictsConf[i].path).words;
     dict["name"] = dictsConf[i].name;
-    dict["wordNumber"] = dict.words.length;
+    dict["wordsNumber"] = dict.words.length;
     dicts.push(dict);
 }
 
@@ -106,13 +106,13 @@ function genFreeKey() {
 }
 
 /**
- * Returns playerList structure,
+ * Returns playersList structure,
  * @see API.md
  *
  * @param users list of users
  * @return list of players
  */
-function getPlayerList(users) {
+function getPlayersList(users) {
     return users.map(el => {return {"username": el.username, "online": el.online};});
 }
 
@@ -217,7 +217,7 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 }
 
 /**
- * Get timetable for N turns
+ * Get timetable for N rounds
  *
  * @param key key of the room
  * @return array of speaker and listeners' names
@@ -225,19 +225,19 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 function getTimetable(key) {
     const timetable = [];
     const timetableDepth = 2 * rooms[key].users.length - 1
-    let turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
+    let roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
     let obj = {
         speaker: rooms[key].speaker,
         listener: rooms[key].listener
     };
     for (let i = 0; i < timetableDepth; ++i) {
-        if (turnsLeft === 0) break;
+        if (roundsLeft === 0 && rooms[key].settings.termCondition === "rounds") break;
         timetable.push({
             "speaker": rooms[key].users[obj.speaker].username,
             "listener": rooms[key].users[obj.listener].username
         });
         obj = getNextPair(rooms[key].users.length, obj.speaker, obj.listener);
-        if (obj.speaker === 0 && obj.listener === 1) --turnsLeft;
+        if (obj.speaker === 0 && obj.listener === 1) --roundsLeft;
     }
     return timetable;
 }
@@ -248,7 +248,7 @@ function getTimetable(key) {
  * @param key --- key of the room
  */
 function startExplanation(key) {
-    rooms[key].substate = "explanation";
+    rooms[key].stage = "play_explanation";
     const currentTime = (new Date()).getTime();
     rooms[key].startTime = currentTime + (rooms[key].settings.delayTime + TRANSFER_TIME);
     rooms[key].word = rooms[key].freshWords.pop();
@@ -284,10 +284,10 @@ function finishExplanation(key) {
     }
 
     // if signal has been sent
-    if (rooms[key].substate !== "explanation") {
+    if (rooms[key].stage !== "play_explanation") {
         return;
     }
-    rooms[key].substate = "edit";
+    rooms[key].stage = "play_edit";
 
     if (rooms[key].word !== "") {
         rooms[key].editWords.push({
@@ -391,7 +391,7 @@ function sendStat(room) {
     sendObject.mode = config.mode;
     sendObject.start_timestamp = room.start_timestamp;
     sendObject.end_timestamp = room.end_timestamp;
-    sendObject.player_time_zone_offsets = room.users.map(el => el.time_zone_offset);
+    sendObject.player_time_zone_offsets = room.users.map(el => el.timeZoneOffset);
     sendObject.attempts = [];
     for (let i = 0; i < room.explanationRecords.length; ++i) {
         for (let j = 0; j < room.explanationRecords[i].length; ++j) {
@@ -436,7 +436,7 @@ class Signals {
      */
     static sPlayerJoined(sid, room, username) {
         Signals.emit(sid, "sPlayerJoined", {
-                "username": username, "playerList": getPlayerList(room.users),
+                "username": username, "playersList": getPlayersList(room.users),
                 "host": getHostUsername(room.users)
             });
     }
@@ -450,9 +450,9 @@ class Signals {
      * @param username User's name
      */
     static sPlayerLeft(sid, room, username) {
-        // Sending new state of the room.
+        // Sending new stage of the room.
         Signals.emit(sid, "sPlayerLeft", {
-            "username": username, "playerList": getPlayerList(room.users),
+            "username": username, "playersList": getPlayersList(room.users),
             "host": getHostUsername(room.users)
         });
     }
@@ -471,19 +471,19 @@ class Signals {
         const name = room.users[pos].username;
         let joinObj = {
             "key": key,
-            "playerList": getPlayerList(room.users),
+            "playersList": getPlayersList(room.users),
             "host": getHostUsername(room.users),
             "settings": room.settings
         };
-        switch (room.state) {
-            case "wait":
-                joinObj.state = "wait";
+        switch (true) {
+            case room.stage === "wait":
+                joinObj.stage = "wait";
                 break;
-            case "prepare":
-                joinObj.state = "prepare";
+            case room.stage.startsWith("prepare"):
+                joinObj.stage = room.stage;
                 break;
-            case "play":
-                joinObj.state = "play";
+            case room.stage.startsWith("play"):
+                joinObj.stage = room.stage;
                 joinObj.timetable = getTimetable(key);
                 joinObj.speaker = room.users[room.speaker].username;
                 joinObj.listener = room.users[room.listener].username;
@@ -491,18 +491,16 @@ class Signals {
                     case "words":
                         joinObj.wordsLeft = room.freshWords.length;
                         break;
-                    case "turns":
-                        joinObj.turnsLeft = room.settings.turnsNumber - room.numberOfLap;
+                    case "rounds":
+                        joinObj.roundsLeft = room.settings.roundsNumber - room.numberOfLap;
                         break;
                     default:
                         console.warn("Incorrect value of room's termCondition: " + JSON.stringify(room.settings.termCondition));
                 }
-                switch (room.substate) {
-                    case "wait":
-                        joinObj.substate = "wait";
+                switch (room.stage) {
+                    case "play_wait":
                         break;
-                    case "explanation":
-                        joinObj.substate = "explanation";
+                    case "play_explanation":
                         joinObj.startTime = room.startTime;
                         if (room.settings.termCondition === "words") {
                             joinObj.wordsLeft++;
@@ -511,8 +509,7 @@ class Signals {
                             joinObj.word = room.word;
                         }
                         break;
-                    case "edit":
-                        joinObj.substate = "edit";
+                    case "play_edit":
                         if (joinObj.speaker === name) {
                             joinObj.editWords = room.editWords;
                         }
@@ -574,8 +571,8 @@ class Signals {
             case "words":
                 leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
-            case "turns":
-                leftObj.turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
+            case "rounds":
+                leftObj.roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -601,8 +598,8 @@ class Signals {
             case "words":
                 leftObj.wordsLeft = rooms[key].freshWords.length;
                 break;
-            case "turns":
-                leftObj.turnsLeft = rooms[key].settings.turnsNumber - rooms[key].numberOfLap;
+            case "rounds":
+                leftObj.roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -650,7 +647,7 @@ class Signals {
                 leftObj.wordsLeft = rooms[key].freshWords.length +
                     ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
                 break;
-            case "turns":
+            case "rounds":
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -674,7 +671,7 @@ class Signals {
                 leftObj.wordsLeft = rooms[key].freshWords.length +
                     ((rooms[key].editWords[rooms[key].editWords.length - 1].wordState === "notExplained") ? 1 : 0)
                 break;
-            case "turns":
+            case "rounds":
                 break;
             default:
                 console.warn("Incorrect value of room's termCondition: " + JSON.stringify(rooms[key].settings.termCondition));
@@ -735,7 +732,7 @@ app.get("/getDictionaryList", function(req, res) {
     for (let i = 0; i < dicts.length; ++i) {
         dictionaries.push({
             "name": dicts[i].name,
-            "wordNumber": dicts[i].wordNumber
+            "wordsNumber": dicts[i].wordsNumber
         });
     }
 
@@ -771,28 +768,33 @@ app.get("/getRoomInfo", function(req, res) {
     // Case of nonexistent room
     if (!(key in rooms)) {
         sendResponse(req, res, {"success": true,
-                  "state": "wait",
-                  "playerList": [],
+                  "stage": "wait",
+                  "playersList": [],
                   "settings": config.defaultSettings,
                   "host": ""});
         return;
     }
 
     const room = rooms[key]; // The room
-    switch (room.state) {
+    switch (room.stage) {
         case "wait":
-        case "play":
-        case "prepare":
+
+        case "prepare_wordCollection":
+        case "prepare_pairMatching":
+
+        case "play_wait":
+        case "play_explanation":
+        case "play_edit":
             sendResponse(req, res, {"success": true,
-                      "state": room.state,
-                      "playerList": getPlayerList(room.users),
+                      "stage": room.stage,
+                      "playersList": getPlayersList(room.users),
                       "settings": room.settings,
                       "host": getHostUsername(room.users)});
             break;
 
         case "end":
             // TODO Implement
-            sendResponse(req, res, {"success": true, "state": "end"});
+            sendResponse(req, res, {"success": true, "stage": "end"});
             console.log("WARN: getRoomInfo: You forgot to remove the room after the game ended!")
             break;
 
@@ -811,16 +813,15 @@ app.get("/getRoomInfo", function(req, res) {
  *
  * Room's info is an object that has fields:
  *     - key --- key of the room
- *     - state --- state of the room,
+ *     - stage --- stage of the room,
  *     - users --- list of users (User objects)
  *     - settings --- room settings
  *     - hostDictionary --- "dictionary" with words from host:
  *         - words --- list of words
- *         - wordNumber --- count of words
+ *         - wordsNumber --- count of words
  *         - name --- "Host's dictionary"
  *
- * if state === "play":
- *     - substate --- substate of the room,
+ * if stage === "play_*":
  *     - freshWords --- list of words in hat,
  *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
  *         - status --- word status,
@@ -842,12 +843,12 @@ app.get("/getRoomInfo", function(req, res) {
 class Room {
     constructor(key) {
         this.key = key;
-        this.state = "wait";
+        this.stage = "wait";
         this.users = [];
         this.settings = Object.assign({}, config.defaultSettings);
         this.hostDictionary = {
             words: [],
-            wordNumber: 0,
+            wordsNumber: 0,
             name: {
                 "ru": "Словарь хоста",
                 "en": "Host's dictionary"
@@ -859,9 +860,6 @@ class Room {
      * Preparing room for the game
      */
     gamePrepare() {
-        // changing state to 'play'
-        this.state = "play";
-
         // generating word list
         this.generateWords();
 
@@ -897,8 +895,8 @@ class Room {
             return false;
         }
 
-        // setting substate to 'wait'
-        this.substate = "wait";
+        // setting stage to 'play_wait'
+        this.stage = "play_wait";
 
         // preparing storage for words to edit
         this.editWords = [];
@@ -926,7 +924,7 @@ class Room {
             this.numberOfLap++;
         }
 
-        if (this.settings.termCondition === "turns" && this.numberOfLap === this.settings["turnsNumber"]) {
+        if (this.settings.termCondition === "rounds" && this.numberOfLap === this.settings["roundsNumber"]) {
             endGame(this.key);
             return false;
         }
@@ -961,23 +959,23 @@ class Room {
 
                 dict = {
                     words: wordList,
-                    wordNumber: wordList.length,
+                    wordsNumber: wordList.length,
                     name: "Players' dictionary"
                 }
 
-                settings.wordNumber = Math.min(dict.wordNumber, config.settingsRange.wordNumber.max - 1);
+                settings.wordsNumber = Math.min(dict.wordsNumber, config.settingsRange.wordsNumber.max - 1);
 
                 // checking number of words
-                if (wordList.length > settings.wordNumber) {
+                if (wordList.length > settings.wordsNumber) {
                     Signals.sFailure(this.key, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
                 }
                 break;
         }
         const words = [];
         const used = {};
-        const numberOfAllWords = dict.wordNumber;
-        const wordNumber = settings["wordNumber"];
-        while (words.length < wordNumber) {
+        const numberOfAllWords = dict.wordsNumber;
+        const wordsNumber = settings["wordsNumber"];
+        while (words.length < wordsNumber) {
             const pos = randrange(numberOfAllWords);
             if (!(pos in used)) {
                 used[pos] = true;
@@ -997,18 +995,18 @@ class Room {
  *     - online --- whether the player is online,
  *     - scoreExplained --- no comments,
  *     - scoreGuessed --- no comments,
- *     - time_zone_offset --- no comments,
+ *     - timeZoneOffset --- no comments,
  *     - userWords --- if game setting `wordsetType === playerWords`, words from this user
  *     - userReady --- if game setting `wordsetType === playerWords`, whether this user is ready
  */
 class User {
-    constructor(username, sids, time_zone_offset, online=true) {
+    constructor(username, sids, timeZoneOffset, online=true) {
         this.username = username;
         this.sids = sids;
         this.online = online;
         this.scoreExplained = 0;
         this.scoreGuessed = 0;
-        this.time_zone_offset = time_zone_offset;
+        this.timeZoneOffset = timeZoneOffset;
     }
 }
 
@@ -1062,7 +1060,7 @@ class CheckConditions {
             }
 
             // If game has started, only logging in can be performed
-            if (rooms[key].state === "play" && pos === -1) {
+            if (rooms[key].stage.startsWith("play") && pos === -1) {
                 Signals.sFailure(socket.id, "cJoinRoom", 104, "Игра уже идёт, возможен только вход");
                 return false;
             }
@@ -1110,8 +1108,8 @@ class CheckConditions {
             return false;
         }
 
-        // if state isn't 'wait', something went wrong
-        if (rooms[key].state !== "wait") {
+        // if stage isn't 'wait', something went wrong
+        if (rooms[key].stage !== "wait") {
             Signals.sFailure(socket.id, "cApplySettings", null, "Игра уже начата");
             return false;
         }
@@ -1144,13 +1142,13 @@ class CheckConditions {
             return false;
         }
 
-        // if state isn't 'wait', something went wrong
-        if (rooms[key].state !== "wait") {
+        // if stage isn't 'wait', something went wrong
+        if (rooms[key].stage !== "wait") {
             Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
             return false;
         }
 
-        // if this state should be present
+        // if this stage should be present
         if (rooms[key].settings["wordsetType"] !== "playerWords") {
             Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
             return false;
@@ -1196,9 +1194,9 @@ class CheckConditions {
             return false;
         }
 
-        // if state isn't 'wait', something went wrong
-        if (rooms[key].state !== "prepare") {
-            Signals.sFailure(socket.id, "cWordsReady", null, "Состояние игры - не 'prepare'");
+        // if stage isn't 'prepare_wordCollection', something went wrong
+        if (rooms[key].stage !== "prepare_wordCollection") {
+            Signals.sFailure(socket.id, "cWordsReady", null, "Состояние игры - не 'prepare_wordCollection'");
             return false;
         }
 
@@ -1230,8 +1228,8 @@ class CheckConditions {
             return false;
         }
 
-        // if state isn't 'wait', something went wrong
-        if (rooms[key].state !== "wait") {
+        // if stage isn't 'wait', something went wrong
+        if (rooms[key].stage !== "wait") {
             Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
             return false;
         }
@@ -1282,15 +1280,9 @@ class CheckConditions {
             return false;
         }
 
-        // the game must be in 'play' state
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket.id, "cSpeakerReady", 401, "Состояние игры - не 'play'");
-            return false;
-        }
-
-        // the game substate must be 'wait'
-        if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket.id, "cSpeakerReady", 402, "Подсостояние игры - не 'wait'");
+        // the game must be in 'play_wait' stage
+        if (rooms[key].stage !== "play_wait") {
+            Signals.sFailure(socket.id, "cSpeakerReady", 401, "Состояние игры - не 'play_wait'");
             return false;
         }
 
@@ -1321,15 +1313,9 @@ class CheckConditions {
             return false;
         }
 
-        // the game must be in 'play' state
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket.id, "cListenerReady", 501, "Состояние игры - не 'play'");
-            return false;
-        }
-
-        // the game substate must be 'wait'
-        if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket.id, "cListenerReady", 502, "Подсостояние игры - не 'wait'");
+        // the game must be in 'play_wait' stage
+        if (rooms[key].stage !== "play_wait") {
+            Signals.sFailure(socket.id, "cListenerReady", 501, "Состояние игры - не 'play_wait'");
             return false;
         }
 
@@ -1360,13 +1346,9 @@ class CheckConditions {
             return false;
         }
 
-        // checking if proper state and substate
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket.id, "cEndWordExplanation", 601, "Состояние игры - не 'play'");
-            return false;
-        }
-        if (rooms[key].substate !== "explanation") {
-            Signals.sFailure(socket.id, "cEndWordExplanation", 602, "Подсостояние игры - не 'explanation'");
+        // checking for proper stage
+        if (rooms[key].stage !== "play_explanation") {
+            Signals.sFailure(socket.id, "cEndWordExplanation", 601, "Состояние игры - не 'play_explanation'");
             return false;
         }
 
@@ -1397,15 +1379,9 @@ class CheckConditions {
             return false;
         }
 
-        // check if game state is 'edit'
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket.id, "cWordsEdited", 701, "Состояние игры - не 'play'")
-            return false;
-        }
-
-        // check if game substate is 'edit'
-        if (rooms[key].substate !== "edit") {
-            Signals.sFailure(socket.id, "cWordsEdited", 702, "Подсостояние игры - не 'edit'")
+        // check if game stage is 'play_edit'
+        if (rooms[key].stage !== "play_edit") {
+            Signals.sFailure(socket.id, "cWordsEdited", 701, "Состояние игры - не 'play_edit'")
             return false;
         }
 
@@ -1436,15 +1412,9 @@ class CheckConditions {
             return false;
         }
 
-        // if state isn't 'play', something went wrong
-        if (rooms[key].state !== "play") {
-            Signals.sFailure(socket.id, "cEndGame", null, "Состояние игры не `play`");
-            return false;
-        }
-
-        // works only in substate 'wait'
-        if (rooms[key].substate !== "wait") {
-            Signals.sFailure(socket.id, "cEndGame", null, "Подсостояние игры не `wait`");
+        // if stage isn't 'play_wait', something went wrong
+        if (rooms[key].stage !== "play_wait") {
+            Signals.sFailure(socket.id, "cEndGame", null, "Состояние игры не `play_wait`");
             return false;
         }
 
@@ -1468,7 +1438,7 @@ class Callbacks {
     static cJoinRoom(socket, data, err) {
         const key = data.key.toLowerCase().replace(/\s+/g, ""); // key of the room
         const name = data.username.trim().replace(/\s+/g, " "); // name of the user
-        const time_zone_offset = data.time_zone_offset;
+        const timeZoneOffset = data.timeZoneOffset;
 
         // If any error happened
         if (err) {
@@ -1491,7 +1461,7 @@ class Callbacks {
         const pos = findFirstPos(rooms[key].users, "username", name);
         if (pos === -1) {
             // creating new one
-            rooms[key].users.push(new User(name, [socket.id], time_zone_offset));
+            rooms[key].users.push(new User(name, [socket.id], timeZoneOffset));
         } else {
             // logging in user
             rooms[key].users[pos].sids = [socket.id];
@@ -1584,7 +1554,7 @@ class Callbacks {
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 `Неверный тип значения поля настроек "termCondition": ${typeof(value)} вместо string`)
                             break;
-                        case value in {"words": 0, "turns": 0}:
+                        case value in {"words": 0, "rounds": 0}:
                             Signals.sFailure(socket.id, "cApplySettings", null,
                                 "Неверное значение поля настроек \"termCondition\"")
                             break;
@@ -1620,32 +1590,32 @@ class Callbacks {
                             roomSettings["dictionaryId"] = value;
                     }
                     break;
-                case "wordNumber":
+                case "wordsNumber":
                     switch (false) {
                         case typeof(value) === "number":
                             Signals.sFailure(socket.id, "cApplySettings", null,
-                                `Неверный тип значения поля настроек "wordNumber": ${typeof(value)} вместо number`)
+                                `Неверный тип значения поля настроек "wordsNumber": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["wordNumber"].min <= value && value < settingsRange["wordNumber"].max:
+                        case settingsRange["wordsNumber"].min <= value && value < settingsRange["wordsNumber"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
-                                "Неверное значение поля настроек \"wordNumber\"")
+                                "Неверное значение поля настроек \"wordsNumber\"")
                             break;
                         default:
-                            roomSettings["wordNumber"] = value;
+                            roomSettings["wordsNumber"] = value;
                     }
                     break;
-                case "turnsNumber":
+                case "roundsNumber":
                     switch (false) {
                         case typeof(value) === "number":
                             Signals.sFailure(socket.id, "cApplySettings", null,
-                                `Неверный тип значения поля настроек "turnsNumber": ${typeof(value)} вместо number`)
+                                `Неверный тип значения поля настроек "roundsNumber": ${typeof(value)} вместо number`)
                             break;
-                        case settingsRange["turnsNumber"].min <= value && value < settingsRange["turnsNumber"].max:
+                        case settingsRange["roundsNumber"].min <= value && value < settingsRange["roundsNumber"].max:
                             Signals.sFailure(socket.id, "cApplySettings", null,
-                                "Неверное значение поля настроек \"turnsNumber\"")
+                                "Неверное значение поля настроек \"roundsNumber\"")
                             break;
                         default:
-                            roomSettings["turnsNumber"] = value;
+                            roomSettings["roundsNumber"] = value;
                     }
                     break;
                 case "dictionaryFileInfo":
@@ -1668,7 +1638,7 @@ class Callbacks {
                                     "Дублирующиеся слова из словаря хоста удалены.")
                             }
                             room.hostDictionary.words = words;
-                            room.hostDictionary.wordNumber = words.length
+                            room.hostDictionary.wordsNumber = words.length
                     }
                     break;
                 default:
@@ -1682,19 +1652,19 @@ class Callbacks {
             let upperBound;
             switch (roomSettings["wordsetType"]) {
                 case "serverDictionary":
-                    upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
+                    upperBound = dicts[roomSettings["dictionaryId"]].wordsNumber;
                     break;
                 case "hostDictionary":
-                    upperBound = room.hostDictionary.wordNumber;
+                    upperBound = room.hostDictionary.wordsNumber;
                     break;
                 default:
                     upperBound = null;
             }
             if (upperBound !== null &&
-                roomSettings["wordNumber"] > upperBound) {
-                roomSettings["wordNumber"] = upperBound;
+                roomSettings["wordsNumber"] > upperBound) {
+                roomSettings["wordsNumber"] = upperBound;
                 Signals.sFailure(socket.id, "cApplySettings", null,
-                    "Значение \"wordNumber\" уменьшено до размера словаря")
+                    "Значение \"wordsNumber\" уменьшено до размера словаря")
             }
         }
 
@@ -1718,7 +1688,7 @@ class Callbacks {
         // removing offline users
         rooms[key].users = onlineUsers;
 
-        rooms[key].state = "prepare";
+        rooms[key].stage = "prepare_wordCollection";
 
         for (let i = 0; i < rooms[key].users.length; ++i) {
             rooms[key].users[i].userWords = [];
@@ -1735,9 +1705,9 @@ class Callbacks {
         rooms[key].users[userPos].userWords = words;
 
         // checking words number
-        if (rooms[key].users[userPos].userWords.length >= config.settingsRange.wordNumber.max) {
+        if (rooms[key].users[userPos].userWords.length >= config.settingsRange.wordsNumber.max) {
             Signals.sFailure(socket.id, "cWordsReady", null, "Количество слов уменьшено до максимально возможного");
-            rooms[key].users[userPos].userWords.length = config.settingsRange.wordNumber.max - 1
+            rooms[key].users[userPos].userWords.length = config.settingsRange.wordsNumber.max - 1
         }
 
         // if everyone is ready --- let's start!
@@ -1980,7 +1950,7 @@ io.on("connection", function(socket) {
         }
 
         // Checking input format
-        if (!checkInputFormat(socket, data, {"key": "string", "username": "string", "time_zone_offset": typeof(0)}, "cJoinRoom")) {
+        if (!checkInputFormat(socket, data, {"key": "string", "username": "string", "timeZoneOffset": typeof(0)}, "cJoinRoom")) {
             return;
         }
 
