@@ -13,8 +13,8 @@ const ERROR_TIMEOUT = 4000;
 const GAME_BUTTON_COOLDOWN_TIME = 200;
 const DICTIONARY_MAX_SIZE = 64 * 1000 * 1000
 const DEFAULT_SETTINGS = {
-    wordNumber: 100,
-    turnsNumber: 10
+    wordsNumber: 100,
+    roundsNumber: 10
 }
 const ERROR_MSGS = {
 	101: "Нужно ввести ключ комнаты",
