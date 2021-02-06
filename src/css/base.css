@@ -42,7 +42,7 @@ input, textarea {
     background-color: rgb(250, 250, 250);
 }
 
-.popup {
+.popup-wrapper {
     position: fixed;
     top: 0;
     left: 0;
@@ -53,6 +53,34 @@ input, textarea {
     z-index: 1000;
 }
 
+.window {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 7px lightgrey;
+}
+
+.window header {
+    flex-shrink: 0;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.popup-window {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: -3px 3px 10px dimgrey;
+}
+
+.popup-window header {
+    flex-shrink: 0;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
 .scrollable {
     position: absolute;
     height: 100%;
@@ -60,6 +88,17 @@ input, textarea {
     display: flex;
     flex-direction: column;
     overflow: auto;
+}
+
+.scrollable.custom-scroll::-webkit-scrollbar {
+    width: 11px;
+    background-color: transparent;
+}
+
+.scrollable.custom-scroll::-webkit-scrollbar-thumb {
+    background-color: grey;
+    border: 2px solid white;
+    border-radius: 6px;
 }
 
 .scrollable-wrapper {

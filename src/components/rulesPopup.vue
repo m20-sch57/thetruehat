@@ -1,6 +1,6 @@
 <template>
-  <div class="popup" id="rules">
-    <article>
+  <div class="popup-wrapper" id="rules">
+    <article class="popup-window">
       <header>
         <h1 v-translate:ru>Правила</h1>
         <h1 v-translate:en>Rules</h1>
@@ -11,7 +11,7 @@
         </button>
       </header>
       <main class="scrollable-wrapper">
-        <div class="scrollable">
+        <div class="scrollable custom-scroll">
           <div class="content" v-if="$language.current === 'ru'">
             <h2>Общее</h2>
             <p>

@@ -1,5 +1,6 @@
 <template>
   <article
+      class="window"
       :class="{
         topShadow: !maxTopScroll,
         bottomShadow: !maxBottomScroll
@@ -8,7 +9,7 @@
     <slot/>
     <main class="scrollable-wrapper">
       <div
-          class="scrollable"
+          class="scrollable custom-scroll"
           v-scroll-top="maxTopScroll"
           v-scroll-bottom="maxBottomScroll">
         <div id="editScreen">

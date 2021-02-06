@@ -1,5 +1,5 @@
 <template>
-  <article id="playTurn">
+  <article class="window" id="playTurn">
     <slot/>
     <main class="scrollable-wrapper">
       <div class="scrollable">

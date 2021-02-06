@@ -1,26 +1,18 @@
 #feedback article {
-    display: flex;
-    flex-direction: column;
     margin: auto;
     height: calc(100% - 20px);
     max-height: 550px;
     width: calc(100% - 20px);
     max-width: 700px;
-    background-color: white;
-    border-radius: 30px;
     font-size: 20px;
-    box-shadow: -3px 3px 10px dimgrey;
 }
 
 #feedback header {
     display: flex;
     flex-direction: row;
-    flex-shrink: 0;
     align-items: center;
     padding: 30px;
     background-color: lightblue;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
 }
 
 #feedback header h1 {

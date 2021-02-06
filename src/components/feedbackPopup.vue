@@ -1,6 +1,6 @@
 <template>
-  <div class="popup" id="feedback">
-    <article>
+  <div class="popup-wrapper" id="feedback">
+    <article class="popup-window">
       <header>
         <h1 v-translate:ru>Обратная связь</h1>
         <h1 v-translate:en>Feedback</h1>

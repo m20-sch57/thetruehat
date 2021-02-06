@@ -1,5 +1,6 @@
 <template>
   <article
+      class="window"
       :class="{
         topShadow: !maxTopScroll,
         bottomShadow: !maxBottomScroll
@@ -15,7 +16,7 @@
     </header>
     <main class="scrollable-wrapper">
       <div
-          class="scrollable"
+          class="scrollable custom-scroll"
           v-scroll-top="maxTopScroll"
           v-scroll-bottom="maxBottomScroll">
         <turns-timeline/>

@@ -1,5 +1,5 @@
 <template>
-  <article id="preparationSettings">
+  <article class="window" id="preparationSettings">
     <header>
       <h1>
         <span v-translate:ru>Параметры игры</span>

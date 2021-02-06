@@ -1,6 +1,6 @@
 <template>
   <div class="page" id="join">
-    <article>
+    <article class="window">
       <header>
         <h1 v-translate:ru>Вход в игру</h1>
         <h1 v-translate:en.draft>Enter the game</h1>

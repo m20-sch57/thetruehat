@@ -3,24 +3,16 @@
 }
 
 #preparation article {
-    display: flex;
-    flex-direction: column;
     flex-grow: 1;
     margin: 10px;
-    background-color: white;
-    border-radius: 20px;
     font-size: 20px;
-    box-shadow: 0 0 7px lightgrey;
 }
 
 #preparation header {
     display: flex;
     flex-direction: row;
-    flex-shrink: 0;
     align-items: center;
     padding: 20px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
 }
 
 #preparation header h1 {

@@ -1,26 +1,18 @@
 #rules article {
-    display: flex;
-    flex-direction: column;
     margin: auto;
     height: calc(100% - 20px);
     max-height: 600px;
     width: calc(100% - 20px);
     max-width: 900px;
-    background-color: white;
-    border-radius: 30px;
     font-size: 20px;
-    box-shadow: -3px 3px 10px dimgrey;
 }
 
 #rules header {
     display: flex;
     flex-direction: row;
-    flex-shrink: 0;
     align-items: center;
     padding: 30px;
     background-color: rgb(253, 253, 131);
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
 }
 
 #rules header h1 {
@@ -38,24 +30,8 @@
     flex-grow: 1;
 }
 
-#rules main .scrollable {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-#rules main .scrollable::-webkit-scrollbar {
-    width: 11px;
-    background-color: transparent;
-}
-
 #rules main .scrollable::-webkit-scrollbar-track {
     margin-bottom: 25px;
-}
-
-#rules main .scrollable::-webkit-scrollbar-thumb {
-    background-color: grey;
-    border: 2px solid white;
-    border-radius: 6px;
 }
 
 #rules main .content {
