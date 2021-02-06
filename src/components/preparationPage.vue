@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import {SWIPER_OPTIONS} from "src/config.js";
+
 import preparationRoomSection from "cmp/preparationRoomSection.vue";
 import preparationSettingsSection from "cmp/preparationSettingsSection.vue";
 
@@ -22,6 +24,7 @@ export default {
   data: function () {
     return {
       swiperOptions: {
+        ...SWIPER_OPTIONS,
         slidesPerView: 1,
         virtualTranslate: true,
         initialSlide: 1,

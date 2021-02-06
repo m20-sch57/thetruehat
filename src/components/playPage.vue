@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import {SWIPER_OPTIONS} from "src/config.js";
+
 import playInfoSection from "cmp/playInfoSection.vue";
 import playTurnSection from "cmp/playTurnSection.vue";
 
@@ -32,6 +34,7 @@ export default {
     return {
       isMenuHidden: localStorage.isMenuHidden === "true",
       swiperOptions: {
+        ...SWIPER_OPTIONS,
         slidesPerView: "auto",
         initialSlide: 1,
         virtualTranslate: true,

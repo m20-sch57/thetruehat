@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import {SWIPER_OPTIONS} from "src/config.js";
+
 import resultsHistorySection from "cmp/resultsHistorySection.vue";
 import resultsTableSection from "cmp/resultsTableSection.vue";
 import resultsStatisticsSection from "cmp/resultsStatisticsSection.vue";
@@ -27,9 +29,9 @@ export default {
   data: function () {
     return {
       swiperOptions: {
+        ...SWIPER_OPTIONS,
         slidesPerView: 1,
         initialSlide: 1,
-        // virtualTranslate: true,
         breakpoints: {
           1250: {
             allowTouchMove: false,
