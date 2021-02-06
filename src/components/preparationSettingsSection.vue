@@ -2,8 +2,8 @@
   <article class="window" id="preparationSettings">
     <header>
       <h1>
-        <span v-translate:ru>Параметры игры</span>
-        <span v-translate:en.draft>Game options</span>
+        <ru>Параметры игры</ru>
+        <en draft>Game options</en>
       </h1>
       <button
           class="btn-icon btn-transparent close"
@@ -15,8 +15,8 @@
       <div class="scrollable">
         <div class="layer">
           <h4 class="label w-80">
-            <span v-translate:ru>Играть</span>
-            <span v-translate:en.draft>Play</span>
+            <ru>Играть</ru>
+            <en draft>Play</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <select
@@ -24,20 +24,20 @@
                 class="select btn-bordered btn-transparent"
                 v-model="settings.termCondition">
               <option :value="'words'">
-                <span v-translate:ru>Пока не кончатся слова</span>
-                <span v-translate:en.draft>Until the words run out</span>
+                <ru>Пока не кончатся слова</ru>
+                <en draft>Until the words run out</en>
               </option>
               <option :value="'rounds'">
-                <span v-translate:ru>Заданное число кругов</span>
-                <span v-translate:en.draft>Fixed number of rounds</span>
+                <ru>Заданное число кругов</ru>
+                <en draft>Fixed number of rounds</en>
               </option>
             </select>
           </label>
         </div>
         <div class="layer">
           <h4 class="label w-80">
-            <span v-translate:ru>Слова</span>
-            <span v-translate:en.draft>Words</span>
+            <ru>Слова</ru>
+            <en draft>Words</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <select
@@ -45,40 +45,40 @@
                 class="select btn-bordered btn-transparent"
                 v-model="settings.wordsetSource">
               <option :value="['serverDictionary', 0]">
-                <span v-translate:ru>Русские, 14141 слово</span>
-                <span v-translate:en.draft>Russian, 14141 words</span>
+                <ru>Русские, 14141 слово</ru>
+                <en draft>Russian, 14141 words</en>
               </option>
               <option :value="['serverDictionary', 4]">
-                <span v-translate:ru>Английские, 1525 слов</span>
-                <span v-translate:en.draft>English, 1525 words</span>
+                <ru>Английские, 1525 слов</ru>
+                <en draft>English, 1525 words</en>
               </option>
               <option :value="['serverDictionary', 1]">
-                <span v-translate:ru>Простые русские, 4627</span>
-                <span v-translate:en.draft>Simple russian, 4627</span>
+                <ru>Простые русские, 4627</ru>
+                <en draft>Simple russian, 4627</en>
               </option>
               <option :value="['serverDictionary', 2]">
-                <span v-translate:ru>Средние русские, 4506</span>
-                <span v-translate:en.draft>Middle russian, 4506</span>
+                <ru>Средние русские, 4506</ru>
+                <en draft>Middle russian, 4506</en>
               </option>
               <option :value="['serverDictionary', 3]">
-                <span v-translate:ru>Сложные русские, 4599</span>
-                <span v-translate:en.draft>Hard russian, 4599</span>
+                <ru>Сложные русские, 4599</ru>
+                <en draft>Hard russian, 4599</en>
               </option>
               <option :value="['hostDictionary']">
-                <span v-translate:ru>Загрузить</span>
-                <span v-translate:en.draft>Load dictionary</span>
+                <ru>Загрузить</ru>
+                <en draft>Load dictionary</en>
               </option>
               <option :value="['playerWords']">
-                <span v-translate:ru>От каждого игрока</span>
-                <span v-translate:en.draft>From each player</span>
+                <ru>От каждого игрока</ru>
+                <en draft>From each player</en>
               </option>
             </select>
           </label>
         </div>
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">
-            <span v-translate:ru>Загрузить словарь</span>
-            <span v-translate:en.draft>Load dictionary</span>
+            <ru>Загрузить словарь</ru>
+            <en draft>Load dictionary</en>
           </h4>
           <div class="file field w-300 w-350-desktop">
             <input
@@ -87,8 +87,8 @@
                 :disabled="!editModeOn"
                 @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
-              <span v-translate:ru>Выбрать</span>
-              <span v-translate:en.draft>Choose</span>
+              <ru>Выбрать</ru>
+              <en draft>Choose</en>
             </label>
             <label for="uploadDictionary">
               {{ dictionaryFilePreview }}
@@ -100,8 +100,8 @@
             v-show="settings.termCondition === 'words' &&
               settings.wordsetSource[0] !== 'playerWords'">
           <h4 class="label w-250">
-            <span v-translate:ru>Число слов в шляпе</span>
-            <span v-translate:en.draft>The number of words</span>
+            <ru>Число слов в шляпе</ru>
+            <en draft>The number of words</en>
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
@@ -112,8 +112,8 @@
         </div>
         <div class="layer" v-show="settings.termCondition === 'rounds'">
           <h4 class="label w-250">
-            <span v-translate:ru>Количество кругов</span>
-            <span v-translate:en.draft>The number of laps</span>
+            <ru>Количество кругов</ru>
+            <en draft>The number of laps</en>
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
@@ -124,8 +124,8 @@
         </div>
         <div class="layer">
           <h4 class="label w-250">
-            <span v-translate:ru>Формат времени (сек)</span>
-            <span v-translate:en.draft>Time format (sec)</span>
+            <ru>Формат времени (сек)</ru>
+            <en draft>Time format (sec)</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <input
@@ -155,8 +155,8 @@
               <span class="fas fa-check"></span>
             </label>
             <label for="strictModeCheckbox">
-              <span v-translate:ru>Строгий режим</span>
-              <span v-translate:en.draft>Strict mode</span>
+              <ru>Строгий режим</ru>
+              <en draft>Strict mode</en>
             </label>
           </div>
         </div>
@@ -167,12 +167,12 @@
           v-show="editModeOn"
           @click="applySettings()"
           class="btn btn-blue">
-        <span v-translate:ru>Сохранить</span>
-        <span v-translate:en.draft>Save</span>
+        <ru>Сохранить</ru>
+        <en draft>Save</en>
       </button>
       <h4 v-show="!editModeOn">
-        <span v-translate:ru>Хост может изменять настройки</span>
-        <span v-translate:en.draft>Host can change settings</span>
+        <ru>Хост может изменять настройки</ru>
+        <en draft>Host can change settings</en>
       </h4>
     </footer>
   </article>

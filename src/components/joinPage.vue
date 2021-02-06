@@ -2,8 +2,8 @@
   <div class="page" id="join">
     <article class="window">
       <header>
-        <h1 v-translate:ru>Вход в игру</h1>
-        <h1 v-translate:en.draft>Enter the game</h1>
+        <ru tag="h1">Вход в игру</ru>
+        <en tag="h1" draft>Enter the game</en>
       </header>
       <main>
         <section class="game-key">
@@ -26,15 +26,15 @@
                   @click="pasteKey()"
                   class="btn btn-transparent">
                 <span class="fas fa-clipboard"></span>
-                <span v-translate:ru>Вставить</span>
-                <span v-translate:en>Paste</span>
+                <ru>Вставить</ru>
+                <en>Paste</en>
               </button>
               <button
                   @click="generateKey()"
                   class="btn btn-transparent">
                 <span class="fas fa-dice"></span>
-                <span v-translate:ru>Сгенерировать</span>
-                <span v-translate:en.draft>Generate</span>
+                <ru>Сгенерировать</ru>
+                <en draft>Generate</en>
               </button>
             </div>
             <div class="room-info checking" v-show="validationStatus.key === 'checking'">
@@ -44,29 +44,29 @@
                 <div></div>
                 <div></div>
               </div>
-              <h5 v-translate:ru>Проверка</h5>
-              <h5 v-translate:en.draft>Checking</h5>
+              <ru tag="h5">Проверка</ru>
+              <en tag="h5" draft>Checking</en>
             </div>
             <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
-              <h5 v-translate:ru>Игра не началась</h5>
-              <h5 v-translate:en.draft>Game not started</h5>
+              <ru tag="h5">Игра не началась</ru>
+              <en tag="h5" draft>Game not started</en>
               <button class="select btn-transparent">{{ playersList.length }}
-                <span v-translate:ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</span>
-                <span v-translate:en>{{ $p(playersList.length, "player", "players") }}</span>
+                <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
+                <en>{{ $p(playersList.length, "player", "players") }}</en>
               </button>
             </div>
             <div class="room-info created" v-show="validationStatus.key === 'created'">
-              <h5 v-translate:ru>Игра уже идёт</h5>
-              <h5 v-translate:en.draft>Game already started</h5>
+              <ru tag="h5">Игра уже идёт</ru>
+              <en tag="h5" draft>Game already started</en>
               <button class="select btn-transparent">{{ playersList.length }}
-                <span v-translate:ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</span>
-                <span v-translate:en>{{ $p(playersList.length, "player", "players") }}</span>
+                <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
+                <en>{{ $p(playersList.length, "player", "players") }}</en>
               </button>
             </div>
             <div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
               <h5><span class="fas fa-times"></span>
-                <span v-translate:ru>Некорректный ключ</span>
-                <span v-translate:en.draft>Incorrect key</span>
+                <ru>Некорректный ключ</ru>
+                <en draft>Incorrect key</en>
               </h5>
             </div>
           </div>
@@ -88,12 +88,12 @@
             <div
                 class="name-info no-name"
                 v-show="validationStatus.username === 'empty'">
-              <h5 v-translate:ru>
+              <ru tag="h5">
                 Имя нужно, чтобы игроки могли вас опознать
-              </h5>
-              <h5 v-translate:en.draft>
+              </ru>
+              <en tag="h5" draft>
                 The name is necessary so that the players can identify you
-              </h5>
+              </en>
             </div>
             <div
                 class="name-info checking"
@@ -104,16 +104,16 @@
                 <div></div>
                 <div></div>
               </div>
-              <h5 v-translate:ru>Проверка</h5>
-              <h5 v-translate:en.draft>Checking</h5>
+              <ru tag="h5">Проверка</ru>
+              <en tag="h5" draft>Checking</en>
             </div>
             <div
                 class="name-info accepted"
                 v-show="validationStatus.username === 'accepted'">
               <h5>
                 <span class="fas fa-check"></span>
-                <span v-translate:ru>Нормально</span>
-                <span v-translate:en.draft>Good</span>
+                <ru>Нормально</ru>
+                <en draft>Good</en>
               </h5>
             </div>
             <div
@@ -121,8 +121,8 @@
                 v-show="validationStatus.username === 'not-in-list'">
               <h5>
                 <span class="fas fa-times"></span>
-                <span v-translate:ru>Не найдено в списке игроков</span>
-                <span v-translate:en.draft>Not found in players list</span>
+                <ru>Не найдено в списке игроков</ru>
+                <en draft>Not found in players list</en>
               </h5>
             </div>
             <div
@@ -130,8 +130,8 @@
                 v-show="validationStatus.username === 'name-occupied'">
               <h5>
                 <span class="fas fa-times"></span>
-                <span v-translate:ru>Имя уже занято другим игроком</span>
-                <span v-translate:en.draft>Name is already taken by another player</span>
+                <ru>Имя уже занято другим игроком</ru>
+                <en draft>Name is already taken by another player</en>
               </h5>
             </div>
           </div>
@@ -142,8 +142,8 @@
             class="btn btn-shadow btn-green"
             @click="joinRoom()"
             :disabled="!validated">
-          <span v-translate:ru>Поехали!</span>
-          <span v-translate:en.draft>Let's go!</span>
+          <ru>Поехали!</ru>
+          <en draft>Let's go!</en>
         </button>
       </footer>
     </article>

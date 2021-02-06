@@ -2,8 +2,8 @@
   <div class="popup-wrapper" id="feedback">
     <article class="popup-window">
       <header>
-        <h1 v-translate:ru>Обратная связь</h1>
-        <h1 v-translate:en>Feedback</h1>
+        <ru tag="h1">Обратная связь</ru>
+        <en tag="h1">Feedback</en>
         <button
             class="btn-icon btn-transparent"
             @click="$emit('close')">
@@ -30,8 +30,8 @@
             <span class="fas fa-check"></span>
           </label>
           <label for="feedbackCheckbox">
-            <span v-translate:ru>Отправить полную информацию</span>
-            <span v-translate:en>Send additional information</span>
+            <ru>Отправить полную информацию</ru>
+            <en>Send additional information</en>
           </label>
         </div>
       </main>
@@ -39,8 +39,8 @@
         <button
             class="btn btn-shadow btn-blue"
             @click="sendFeedback()">
-          <span v-translate:ru>Отправить</span>
-          <span v-translate:en>Send</span>
+          <ru>Отправить</ru>
+          <en>Send</en>
         </button>
       </footer>
     </article>
