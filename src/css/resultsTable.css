@@ -1,0 +1,17 @@
+#resultsTable header h1 {
+    text-align: center;
+}
+
+#resultsTable footer {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    border-top: 1px solid whitesmoke;
+    text-align: center;
+}
+
+#resultsTable footer .play-again {
+    flex-grow: 1;
+    margin: auto;
+    max-width: 400px;
+}

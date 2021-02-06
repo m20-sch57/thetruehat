@@ -41,7 +41,6 @@ export default {
       return "resultsPage";
     }
   },
-
   created: async function () {
     if (this.$route.params.option === "playPage") {
       let key = await getFreeKey();

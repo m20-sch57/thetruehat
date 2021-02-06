@@ -28,7 +28,6 @@ import {mapState} from "vuex";
 
 export default {
   name: "turnTimer",
-
   data: function () {
     return {
       delayTimeSec: 0,
@@ -37,7 +36,6 @@ export default {
       animationDelay: 0
     };
   },
-
   computed: {
     ...mapState({
       stage: state => state.room.stage,
@@ -60,7 +58,6 @@ export default {
       return "время истекло";
     }
   },
-
   methods: {
     playSounds: function () {
       const roundId = this.$store.state.room.roundId;
@@ -122,7 +119,6 @@ export default {
       this.aftermathTimeMsec = 0;
     }
   },
-
   created: function () {
     this.$watch(() => (this.stage === "play_explanation"),
       function (val) {
@@ -133,7 +129,6 @@ export default {
       },
       {immediate: true}
     );
-  },
-
+  }
 };
 </script>

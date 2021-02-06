@@ -60,16 +60,13 @@ import turnsTimeline from "cmp/turnsTimeline.vue";
 
 export default {
   name: "playInfoSection",
-
   components: {turnsTimeline},
-
   data: function () {
     return {
       maxTopScroll: true,
       maxBottomScroll: true
     };
   },
-
   methods: {
     endGame: function () {
       app.finish();
@@ -78,7 +75,6 @@ export default {
       app.leaveRoom();
     }
   },
-
   directives: {scrollTop, scrollBottom}
 };
 </script>

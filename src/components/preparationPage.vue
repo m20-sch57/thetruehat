@@ -27,7 +27,7 @@ export default {
         initialSlide: 1,
         breakpoints: {
           800: {
-            followFinger: false,
+            allowTouchMove: false,
             slidesPerView: 2,
           }
         },

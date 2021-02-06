@@ -21,7 +21,6 @@ import {NEWS_RELEVANCE_TIME} from "src/config.js";
 
 export default {
   name: "newsPost",
-
   props: {
     date: {
       type: Date,
@@ -36,14 +35,12 @@ export default {
       required: true
     }
   },
-
   data: function () {
     return {
       isNew: JSON.parse(localStorage.readNews).indexOf(this.id) === -1 &&
           Date.now() - this.date < NEWS_RELEVANCE_TIME
     };
   },
-
   computed: {
     dateString: function () {
       if (this.$language.current === "ru") {
@@ -61,7 +58,6 @@ export default {
       return "";
     }
   },
-
   mounted: function () {
     if (JSON.parse(localStorage.readNews).indexOf(this.id) === -1) {
       let readNews = JSON.parse(localStorage.readNews);

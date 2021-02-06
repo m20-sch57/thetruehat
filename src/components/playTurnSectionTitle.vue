@@ -43,24 +43,20 @@ import {mapGetters, mapState} from "vuex";
 
 export default {
   name: "playTurnSectionTitle",
-
   props: {
     isMenuHidden: Boolean
   },
-
   data: function () {
     return {
       muted: sound.isMuted
     };
   },
-
   computed: {
     ...mapState({
       stage: state => state.room.stage
     }),
     ...mapGetters(["myRole",])
   },
-
   methods: {
     toggleSound: function () {
       sound.toggleMute();

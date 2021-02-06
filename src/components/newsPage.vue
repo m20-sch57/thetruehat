@@ -82,7 +82,6 @@ import newsPost from "cmp/newsPost.vue";
 
 export default {
   name: "newsPage",
-
   components: {newsPost}
 };
 </script>

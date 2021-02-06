@@ -38,14 +38,6 @@
     width: 2em;
 }
 
-#play article.topShadow header {
-    box-shadow: 0 4px 10px -9px grey;
-}
-
-#play article.bottomShadow footer {
-    box-shadow: 0 -4px 10px -9px grey;
-}
-
 @media (max-width: 1100px) {
     #play .first-slide {
         flex-basis: 40%;

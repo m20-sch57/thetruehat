@@ -78,15 +78,12 @@ import app from "src/app.js";
 
 export default {
   name: "observationScreen",
-
   components: {timer},
-
   data: function () {
     return {
       ready: false
     };
   },
-
   computed: {
     ...mapState({
       stage: state => state.room.stage,
@@ -96,14 +93,12 @@ export default {
     }),
     ...mapGetters(["myRole", "timetableInfo"])
   },
-
   methods: {
     getReady: function () {
       app.getReady();
       this.ready = true;
     }
   },
-
   watch: {
     roundId: function () {
       this.ready = false;

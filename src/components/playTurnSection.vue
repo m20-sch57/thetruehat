@@ -16,13 +16,10 @@ import {mapGetters, mapState} from "vuex";
 
 export default {
   name: "playTurnSection",
-
   components: {explanationScreen, observationScreen, editScreen, turnTitle},
-
   props: {
     isMenuHidden: Boolean
   },
-
   computed: {
     ...mapState({
       stage: state => state.room.stage,

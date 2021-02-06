@@ -192,7 +192,6 @@ export default {
       settings: {}
     };
   },
-
   computed: {
     serverSettings: function () {
       return room.settings;
@@ -216,7 +215,6 @@ export default {
       return store.getters.isHost;
     }
   },
-
   methods: {
     applySettings() {
       app.applySettings(this.storeFromLocalSettings());
@@ -331,11 +329,9 @@ export default {
       return res;
     }
   },
-
   created: function () {
     this.settings = this.localFromStoreSettings();
   },
-
   watch: {
     serverSettings: function () {
       this.settings = this.localFromStoreSettings();

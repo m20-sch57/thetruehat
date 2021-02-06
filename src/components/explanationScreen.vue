@@ -46,27 +46,22 @@ import {GAME_BUTTON_COOLDOWN_TIME} from "src/config.js";
 
 export default {
   name: "explanationScreen",
-
   components: {timer, word},
-
   data: function () {
     return {
       maxWordWidth: 0
     };
   },
-
   computed: {
     ...mapState({
       roundId: state => state.room.roundId
     })
   },
-
   methods: {
     explainedAction: throttle(() => app.explained(), GAME_BUTTON_COOLDOWN_TIME),
     notExplainedAction: throttle(() => app.notExplained(), GAME_BUTTON_COOLDOWN_TIME),
     mistakeAction: throttle(() => app.mistake(), GAME_BUTTON_COOLDOWN_TIME),
   },
-
   mounted: function () {
     const wordContainer = document.getElementById("word-container");
     this.maxWordWidth = wordContainer.getBoundingClientRect().width;
