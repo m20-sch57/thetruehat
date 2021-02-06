@@ -175,8 +175,7 @@ export class App {
             },
 
             sGameEnded: data => {
-                this.store.commit("leaveRoom");
-                this.store.commit("setResults", data);
+                this.store.commit("gameEnded", data);
             },
 
             // sFailure: data => {

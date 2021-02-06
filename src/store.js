@@ -121,7 +121,8 @@ const roomModule = {
             state.editWords = null;
             state.explanationTimer = null;
         },
-        setResults(state, {results}) {
+        gameEnded(state, {results}) {
+            state.stage = "end";
             state.results = results;
         },
         setPlayers: set("players"),

@@ -290,7 +290,7 @@ export default {
       }
       if (room.settings.termCondition === "words" &&
           room.settings.wordsetType !== "playerWords") {
-        res.wordNumber = room.settings.wordNumber;
+        res.wordsNumber = room.settings.wordsNumber;
       }
       if (room.settings.termCondition === "rounds") {
         res.roundsNumber = room.settings.roundsNumber;
@@ -317,7 +317,7 @@ export default {
       }
       if (res.termCondition === "words" &&
           res.wordsetType !== "playerWords") {
-        res.wordNumber = this.settings.wordNumber;
+        res.wordsNumber = this.settings.wordsNumber;
       }
       if (res.termCondition === "rounds") {
         res.turnsNumber = this.settings.roundsNumber;
