@@ -31,6 +31,19 @@
 }
 
 @media (max-width: 1250px) {
+    #results {
+        padding: 5px;
+    }
+
+    #results article {
+        margin: 5px;
+    }
+
+    #results header {
+        padding: 15px;
+        font-size: 80%;
+    }
+
     #results header .expand, #results header .close {
         visibility: visible;
     }

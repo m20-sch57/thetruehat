@@ -4,13 +4,13 @@
       <button
           class="btn-icon btn-transparent expand"
           @click="$emit('swipe-to', 0)">
-        <span class="fas fa-angle-right"></span>
+        <span class="fas fa-history"></span>
       </button>
       <h1>Результаты</h1>
       <button
           class="btn-icon btn-transparent expand"
           @click="$emit('swipe-to', 2)">
-        <span class="fas fa-angle-left"></span>
+        <span class="fas fa-chart-pie"></span>
       </button>
     </header>
     <main class="scrollable-wrapper">
