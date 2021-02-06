@@ -11,7 +11,7 @@
     </swiper-slide>
     <swiper-slide class="second-slide">
       <play-turn-section
-        :isMenuHidden="isMenuHidden"
+          :isMenuHidden="isMenuHidden"
           @show-menu="showMenu"
           @hide-menu="hideMenu"/>
     </swiper-slide>

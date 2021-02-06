@@ -24,8 +24,10 @@ import "swiper/swiper-bundle.css";
 
 export default {
   name: "resultsPage",
-  components: {resultsHistorySection, resultsTableSection, resultsStatisticsSection,
-    Swiper, SwiperSlide},
+  components: {
+    resultsHistorySection, resultsTableSection, resultsStatisticsSection,
+    Swiper, SwiperSlide
+  },
   data: function () {
     return {
       swiperOptions: {
