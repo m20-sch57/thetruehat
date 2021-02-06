@@ -106,6 +106,14 @@ input, textarea {
     flex-grow: 1;
 }
 
+.topShadow header {
+    box-shadow: 0 4px 10px -9px grey;
+}
+
+.bottomShadow footer {
+    box-shadow: 0 -4px 10px -9px grey;
+}
+
 .nav {
     position: relative;
     display: flex;

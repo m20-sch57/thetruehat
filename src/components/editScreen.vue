@@ -58,7 +58,6 @@ import {scrollTop, scrollBottom} from "src/tools";
 
 export default {
   name: "editScreen",
-
   data: function () {
     return {
       editWords: this.$store.state.room.editWords,
@@ -66,7 +65,6 @@ export default {
       maxBottomScroll: true
     };
   },
-
   methods: {
     setWordState: function (i, state) {
       this.editWords[i].wordState = state;
@@ -75,7 +73,6 @@ export default {
       app.editWords(this.editWords);
     }
   },
-
   directives: {scrollTop, scrollBottom}
 };
 </script>

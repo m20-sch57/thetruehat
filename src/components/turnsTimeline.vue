@@ -43,9 +43,7 @@ const room = store.state.room;
 
 export default {
   name: "turnsTimeline",
-
   components: {turnsHistory},
-
   computed: {
     nextTurn: function () {
       return room.timetable[1];

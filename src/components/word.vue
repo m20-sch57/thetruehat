@@ -11,7 +11,6 @@ const defaultFontSize = 40;
 
 export default {
   name: "word",
-
   props: {
     maxWordWidth: {
       required: true
@@ -20,20 +19,17 @@ export default {
       required: true
     }
   },
-
   data: function () {
     return {
       fontSize: defaultFontSize,
       wordContainer: null
     };
   },
-
   computed: {
     ...mapState({
       word: state => state.room.word
     })
   },
-
   methods: {
     sizeWord: function (word, maxWordWidth) {
       if (!word) return;
@@ -48,11 +44,9 @@ export default {
       document.body.removeChild(wordContainer);
     }
   },
-
   mounted: function () {
     this.sizeWord(this.word);
   },
-
   watch: {
     word: function (word) {
       this.sizeWord(word, this.maxWordWidth);

@@ -1,0 +1,15 @@
+#resultsHistory header {
+    background-color: lightblue;
+}
+
+#resultsHistory main .scrollable::-webkit-scrollbar-track {
+    margin-bottom: 20px;
+}
+
+#resultsHistory main .turns {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 15px;
+}
