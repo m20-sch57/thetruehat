@@ -10,7 +10,7 @@
       <button
           class="btn-icon btn-transparent expand"
           @click="$emit('swipe-to', 2)">
-        <span class="fas fa-angle-left"></span>
+        <span class="fas fa-chart-pie"></span>
       </button>
     </header>
     <main class="scrollable-wrapper">
