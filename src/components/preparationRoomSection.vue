@@ -14,22 +14,22 @@
             class="btn btn-transparent"
             @click="copyKey()">
           <span class="fas fa-clipboard"></span>
-          <span v-translate:ru>Ключ</span>
-          <span v-translate:en>Key</span>
+          <ru>Ключ</ru>
+          <en>Key</en>
         </button>
         <button
             class="btn btn-transparent"
             @click="copyLink()">
           <span class="fas fa-link"></span>
-          <span v-translate:ru>Ссылка</span>
-          <span v-translate:en>Link</span>
+          <ru>Ссылка</ru>
+          <en>Link</en>
         </button>
         <button
             class="btn btn-transparent leave-room"
             @click="leaveRoom()">
           <span class="fas fa-sign-out-alt"></span>
-          <span v-translate:ru>Выйти</span>
-          <span v-translate:en>Exit</span>
+          <ru>Выйти</ru>
+          <en>Exit</en>
         </button>
       </div>
       <div class="scrollable-wrapper">
@@ -57,12 +57,12 @@
           class="btn btn-green"
           @click="startGame()"
           :disabled="!canStart">
-        <span v-translate:ru>Начать игру</span>
-        <span v-translate:en>Start game</span>
+        <ru>Начать игру</ru>
+        <en>Start game</en>
       </button>
       <h4 v-show="!isHost">
-        <span v-translate:ru>Хост не начал игру</span>
-        <span v-translate:en.draft>Host did not start the game</span>
+        <ru>Хост не начал игру</ru>
+        <en draft>Host did not start the game</en>
       </h4>
     </footer>
   </article>

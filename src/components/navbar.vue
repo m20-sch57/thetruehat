@@ -25,32 +25,32 @@
               :class="{active: currentPage === 'game'}"
               @click="goToPage('/game')"
               :disabled="currentPage === 'game'">
-            <span v-translate:ru>Игра</span>
-            <span v-translate:en>Game</span>
+            <ru>Игра</ru>
+            <en>Game</en>
           </button>
           <button
               class="btn-nav nav-link"
               :class="{active: currentPage === 'news'}"
               @click="goToPage('/news')"
               :disabled="currentPage === 'news'">
-            <span v-translate:ru>Новости</span>
-            <span v-translate:en>News</span>
+            <ru>Новости</ru>
+            <en>News</en>
           </button>
           <button
               class="btn-nav nav-link"
               :class="{active: currentPage === 'faq'}"
               @click="goToPage('/faq')"
               :disabled="currentPage === 'faq'">
-            <span v-translate:ru>FAQ</span>
-            <span v-translate:en>FAQ</span>
+            <ru>FAQ</ru>
+            <en>FAQ</en>
           </button>
           <button
               class="btn-nav nav-link"
               :class="{active: currentPage === 'about'}"
               @click="goToPage('/about')"
               :disabled="currentPage === 'about'">
-            <span v-translate:ru>О нас</span>
-            <span v-translate:en>About us</span>
+            <ru>О нас</ru>
+            <en>About us</en>
           </button>
         </div>
         <div class="nav-links-right">

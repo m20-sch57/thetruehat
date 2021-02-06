@@ -2,8 +2,8 @@
   <div class="popup-wrapper" id="rules">
     <article class="popup-window">
       <header>
-        <h1 v-translate:ru>Правила</h1>
-        <h1 v-translate:en>Rules</h1>
+        <ru tag="h1">Правила</ru>
+        <en tag="h1">Rules</en>
         <button
             class="btn-icon btn-transparent"
             @click="$emit('close')">

@@ -21,6 +21,15 @@ export default function install(Vue, options = {}) {
         }
     }
 
+    let languageVm = new Vue({
+        created: function () {
+            this.available = options.availableLanguages;
+        },
+        data: {
+            current: options.defaultLanguage
+        }
+    });
+
     function error(msg) {
         if (options.silent) return;
         throw new Error(msg);
@@ -31,16 +40,6 @@ export default function install(Vue, options = {}) {
         console.warn(...msg);
     }
 
-    let languageVm = new Vue({
-        created: function () {
-            this.available = options.availableLanguages;
-            this._error = error;
-        },
-        data: {
-            current: options.defaultLanguage
-        }
-    });
-
     function setLocale(locale) {
         if (options.availableLanguages.indexOf(locale) === -1 && !options.silent) {
             error(`${locale} is invalid locale.`);
@@ -49,23 +48,7 @@ export default function install(Vue, options = {}) {
         }
     }
 
-    function checkLocalesList(localesList) {
-        if (!options.silent) {
-            for (let locale of options.availableLanguages) {
-                if (localesList.indexOf(locale) === -1) {
-                    error(`No ${locale} translation available.`);
-                }
-            }
-            for (let locale of localesList) {
-                if (options.availableLanguages.indexOf(locale) === -1) {
-                    error(`Locale '${locale}' not in the list of available languages.`);
-                }
-            }
-        }
-    }
-
     function translate(translateObject) {
-        checkLocalesList(Object.keys(translateObject));
         return translateObject[languageVm.current];
     }
 
@@ -74,7 +57,6 @@ export default function install(Vue, options = {}) {
     }
 
     function translatePlural(n, translateObject) {
-        checkLocalesList(Object.keys(translateObject));
         return plural(n, ...translateObject[languageVm.current]);
     }
 
@@ -87,21 +69,40 @@ export default function install(Vue, options = {}) {
     Vue.prototype.$p = plural;
     Vue.prototype.$tp = translatePlural;
 
-    Vue.directive("translate", {
-        bind: function (el, {arg, modifiers}, vnode) {
-            let html = el.innerHTML;
-            el.innerHTML = arg === languageVm.current ? html : "";
-            el.style.display = arg === languageVm.current ? "initial" : "none";
-            languageVm.$watch("current", (locale) => {
-                el.innerHTML = arg === languageVm.current ? html : "";
-                el.style.display = arg === locale ? "initial" : "none";
-            });
-
-            if (options.silent) return;
-
-            if (modifiers.draft) {
-                warn(`Draft translation at component ${vnode.context.$options.name}: ${arg} - "${html}"`);
+    for (let lang of options.availableLanguages) {
+        Vue.component(lang, {
+            render: function(createElement) {
+                if (languageVm.current === lang) {
+                    return createElement(
+                        this.tag,
+                        this.$slots.default
+                    );
+                }
+                return createElement();
+            },
+            name: lang,
+            props: {
+                draft: {
+                    type: Boolean,
+                    default: false
+                },
+                tag: {
+                    type: String,
+                    default: "span"
+                }
+            },
+            mounted: function () {
+                const concatArray = (arr) => {
+                    let result = "";
+                    for (let elem of arr) result += elem;
+                    return result;
+                };
+                if (this.draft) {
+                    const component = this.$parent.$options.name;
+                    const text = concatArray(this.$slots.default.map(node => node.text || node.elm.innerText));
+                    warn(`Draft translation at component ${component}: ${lang} - "${text}"`);
+                }
             }
-        }
-    });
+        });
+    }
 }
