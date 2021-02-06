@@ -123,7 +123,7 @@ function getPlayersList(users) {
  * @param {Room} room Room object
  * @return list of players
  */
-function getPairs(room) { //TODO: Ждём ответа от коллег...
+function getPairs(room) {
     return room.pairs.map(el => {return el.map(pos => room.users[pos].username);});
 }
 
@@ -210,12 +210,31 @@ function getRoom(socket) {
 /**
  * Get next speaker and listener
  *
+ * @param {Room} room Room which used to define next next pair
+ * @param lastSpeaker Index of previous speaker
+ * @param lastListener Index of previous listener
+ * @return object with fields: speaker and listener --- indices of speaker and listener
+ */
+function getNextPair(room, lastSpeaker, lastListener) {
+    if (room.settings.fixedPairs) {
+        return {
+            "speaker": room.nextPlayers[lastSpeaker],
+            "listener": room.nextPlayers[lastListener]
+        }
+    } else {
+        return getNextCircledPair(room.users.length, lastSpeaker, lastListener)
+    }
+}
+
+/**
+ * Get next speaker and listener in circle (everyone-to-everyone) mode
+ *
  * @param numberOfPlayers Number of players
  * @param lastSpeaker Index of previous speaker
  * @param lastListener Index of previous listener
  * @return object with fields: speaker and listener --- indices of speaker and listener
  */
-function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
+function getNextCircledPair(numberOfPlayers, lastSpeaker, lastListener) {
     let speaker = (lastSpeaker + 1) % numberOfPlayers;
     let listener = (lastListener + 1) % numberOfPlayers;
     if (speaker === 0) {
@@ -230,12 +249,12 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 /**
  * Get timetable for N rounds
  *
- * @param key key of the room
- * @return array of speaker and listeners' names
+ * @param key Key of the room
+ * @return Array of speakers' and listeners' names
  */
 function getTimetable(key) {
     const timetable = [];
-    const timetableDepth = 2 * rooms[key].users.length - 1
+    const timetableDepth = rooms[key].settings.fixedPairs ? rooms[key].users / 2 : 2 * rooms[key].users.length - 1
     let roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
     let obj = {
         speaker: rooms[key].speaker,
@@ -247,8 +266,12 @@ function getTimetable(key) {
             "speaker": rooms[key].users[obj.speaker].username,
             "listener": rooms[key].users[obj.listener].username
         });
-        obj = getNextPair(rooms[key].users.length, obj.speaker, obj.listener);
-        if (obj.speaker === 0 && obj.listener === 1) --roundsLeft;
+        obj = getNextPair(rooms[key], obj.speaker, obj.listener);
+        if ((!rooms[key].settings.fixedPairs
+                && obj.speaker === 0 && obj.listener === 1) ||
+            (rooms[key].settings.fixedPairs
+                && obj.speaker === rooms[key].pairs[0][0] && obj.listener === rooms[key].pairs[0][1]))
+            --roundsLeft;
     }
     return timetable;
 }
@@ -256,7 +279,7 @@ function getTimetable(key) {
 /**
  * Start an explanation
  *
- * @param key --- key of the room
+ * @param key Key of the room
  */
 function startExplanation(key) {
     rooms[key].stage = "play_explanation";
@@ -856,34 +879,39 @@ app.get("/getRoomInfo", function(req, res) {
  * Room class
  *
  * Room's info is an object that has fields:
- *     - key --- key of the room
- *     - stage --- stage of the room,
- *     - users --- list of users (User objects)
- *     - pairs --- list of fixed pairs. If `settings.fixedPairs === false` it is not used.
- *     - settings --- room settings
- *     - hostDictionary --- "dictionary" with words from host:
- *         - words --- list of words
- *         - wordsNumber --- count of words
- *         - name --- "Host's dictionary"
+ *     - `key` --- key of the room.
+ *     - `stage` --- stage of the room.
+ *     - `users` --- list of users (`User` objects).
+ *     - `pairs` --- list of fixed pairs. If `settings.fixedPairs === false` it is not used.
+ *     - `nextPlayers` --- list of the same length as list `users` have.
+ *          For each `i` `nextPlayers[i]` is index in `users` of player that will inherit role player `users[i]` had before.
+ *          If `settings.fixedPairs === false` it is not used.
+ *          IS generated as soon as `pairs` is confirmed.
+ *     - `settings` --- room settings.
+ *     - `hostDictionary` --- "dictionary" with words from host:
+ *         - `words` --- list of words;
+ *         - `wordsNumber` --- count of words;
+ *         - `name` --- "Host's dictionary".
  *
  * if `stage === "play_*"`:
- *     - freshWords --- list of words in hat,
- *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
- *         - status --- word status,
- *     - speaker --- position of speaker,
- *     - listener --- position of listener,
- *     - speakerReady --- bool,
- *     - listenerReady --- bool,
- *     - word --- current word,
- *     - startTime --- UTC time of start of explanation (in milliseconds).
- *     - editWords --- list of words to edit
- *     - numberOfTurn --- number of turn
- *     - numberOfLap --- number of lap
- *     - explanationRecords --- array with explanation records (see [here](https://sombreroapi.docs.apiary.io/#reference/1/gamelog) for more info, but `time` is `time` plus `extra_time`)
- *     - start_timestamp --- start timestamp
- *     - end_timestamp --- end timestamp
- *     - explStartMainTime --- start timestamp of word explanation
- *     - explStartExtraTime --- start timestamp of extra time
+ *     - `freshWords` --- list of words in the hat.
+ *     - `usedWords` --- dictionary of words, that aren't in the hat; its keys --- words, each has:
+ *         - `status` --- word status.
+ *     - `speaker` --- position of speaker.
+ *     - `listener` --- position of listener.
+ *     - `speakerReady: bool`.
+ *     - `listenerReady: bool`.
+ *     - `word` --- current word.
+ *     - `startTime` --- UTC time of start of explanation (in milliseconds).
+ *     - `editWords` --- list of words to edit.
+ *     - `numberOfTurn` --- number of turn.
+ *     - `numberOfLap` --- number of lap.
+ *     - `explanationRecords` --- array with explanation records
+ *     (see [here](https://sombreroapi.docs.apiary.io/#reference/1/gamelog) for more info, but `time` is `time` plus `extra_time`).
+ *     - `start_timestamp` --- start timestamp.
+ *     - `end_timestamp` --- end timestamp.
+ *     - `explStartMainTime` --- start timestamp of word explanation.
+ *     - `explStartExtraTime` --- start timestamp of extra time.
  */
 class Room {
     constructor(key) {
@@ -919,6 +947,15 @@ class Room {
         const numberOfPlayers = this.users.length;
         this.speaker = numberOfPlayers - 1;
         this.listener = numberOfPlayers - 2;
+        if (this.settings.fixedPairs) {
+            this.nextPlayers = Array(this.pairs.length)
+            for (let i = 1; i < this.pairs.length; i++) {
+                this.nextPlayers[this.pairs[i-1][0]] = this.pairs[i][0];
+                this.nextPlayers[this.pairs[i-1][1]] = this.pairs[i][1];
+                this.nextPlayers[this.pairs[this.pairs.length - 1][0]] = this.pairs[0][1];
+                this.nextPlayers[this.pairs[this.pairs.length - 1][1]] = this.pairs[0][0];
+            }
+        }
         this.explanationRecords = [];
 
         if (!this.roundPrepare()) {
@@ -961,8 +998,7 @@ class Room {
         this.numberOfTurn++;
 
         // preparing 'speaker' and 'listener'
-        const numberOfPlayers = this.users.length;
-        const nextPair = getNextPair(numberOfPlayers, this.speaker, this.listener);
+        const nextPair = getNextPair(this, this.speaker, this.listener);
         this.speaker = nextPair.speaker;
         this.listener = nextPair.listener;
 
@@ -1175,57 +1211,61 @@ class CheckConditions {
         return true;
     }
 
-    static cStartWordCollection(socket, key) {
-        // Checking if user is not in the room
-        if (key === socket.id) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
-            return false;
-        }
-
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Игра закончена");
-            return false;
-        }
-
-        // if stage isn't 'wait', something went wrong
-        if (rooms[key].stage !== "wait") {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
-            return false;
-        }
-
-        // if this stage should be present
-        if (rooms[key].settings["wordsetType"] !== "playerWords") {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
-            return false;
-        }
-
-        // checking whether signal owner is host
-        const hostPos = findFirstPos(rooms[key].users, "online", true);
-        if (hostPos === -1) {
-            // very strange case, probably something went wrong, let's log it!
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Все оффлайн");
-            return false;
-        }
-        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать приготовление к игре");
-            return false;
-        }
-
-        // Fail if only one user is online
-        let cnt = 0
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                cnt++;
-            }
-        }
-        if (cnt < 2) {
-            Signals.sFailure(socket.id,"cStartWordCollection", null,
-                "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
-            return false;
-        }
-        return true;
+    static cEndStage(socket, key, stage) {
+        // TODO
     }
+
+    // static cStartWordCollection(socket, key) { // DELETEME
+    //     // Checking if user is not in the room
+    //     if (key === socket.id) {
+    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
+    //         return false;
+    //     }
+    //
+    //     // if game ended
+    //     if (!(key in rooms)) {
+    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Игра закончена");
+    //         return false;
+    //     }
+    //
+    //     // if stage isn't 'wait', something went wrong
+    //     if (rooms[key].stage !== "wait") {
+    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
+    //         return false;
+    //     }
+    //
+    //     // if this stage should be present
+    //     if (rooms[key].settings["wordsetType"] !== "playerWords") {
+    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
+    //         return false;
+    //     }
+    //
+    //     // checking whether signal owner is host
+    //     const hostPos = findFirstPos(rooms[key].users, "online", true);
+    //     if (hostPos === -1) {
+    //         // very strange case, probably something went wrong, let's log it!
+    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Все оффлайн");
+    //         return false;
+    //     }
+    //     if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать приготовление к игре");
+    //         return false;
+    //     }
+    //
+    //     // Fail if only one user is online
+    //     let cnt = 0
+    //     for (let i = 0; i < rooms[key].users.length; ++i) {
+    //         if (rooms[key].users[i].online) {
+    //             cnt++;
+    //         }
+    //     }
+    //     if (cnt < 2) {
+    //         Signals.sFailure(socket.id,"cStartWordCollection", null,
+    //             "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     static cWordsReady(socket, key, words) {
         // Checking if user is not in the room
@@ -1261,57 +1301,65 @@ class CheckConditions {
         return true;
     }
 
-    static cStartGame(socket, key) {
-        // Checking if user is not in the room
-        if (key === socket.id) {
-            Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
-            return false;
-        }
-
-        // if game ended
-        if (!(key in rooms)) {
-            Signals.sFailure(socket.id, "cStartGame", 300, "Игра закончена");
-            return false;
-        }
-
-        // if stage isn't 'wait', something went wrong
-        if (rooms[key].stage !== "wait") {
-            Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
-            return false;
-        }
-
-        // if there should be preparation --- this signal can't be sent from client
-        if (rooms[key].settings["wordsetType"] === "playerWords") {
-            Signals.sFailure(socket.id, "cStartGame", null, "Игра предусматривает набор слов, нельзя начать игру");
-            return false;
-        }
-
-        // checking whether signal owner is host
-        const hostPos = findFirstPos(rooms[key].users, "online", true);
-        if (hostPos === -1) {
-            // very strange case, probably something went wrong, let's log it!
-            Signals.sFailure(socket.id, "cStartGame", 302, "Все оффлайн");
-            return false;
-        }
-        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cStartGame", 303, "Только хост может начать игру");
-            return false;
-        }
-
-        // Fail if only one user is online
-        let cnt = 0
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                cnt++;
-            }
-        }
-        if (cnt < 2) {
-            Signals.sFailure(socket.id,"cStartGame", 302,
-                "Недостаточно игроков онлайн в комнате, чтобы начать игру (необходимо хотя бы два)");
-            return false;
-        }
-        return true;
+    static cConstructPair(socket, key, username1, username2) {
+        // TODO
     }
+
+    static cDestroyPair(socket, key, username1, username2) {
+        // TODO
+    }
+
+    // static cStartGame(socket, key) { // DELETEME
+    //     // Checking if user is not in the room
+    //     if (key === socket.id) {
+    //         Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
+    //         return false;
+    //     }
+    //
+    //     // if game ended
+    //     if (!(key in rooms)) {
+    //         Signals.sFailure(socket.id, "cStartGame", 300, "Игра закончена");
+    //         return false;
+    //     }
+    //
+    //     // if stage isn't 'wait', something went wrong
+    //     if (rooms[key].stage !== "wait") {
+    //         Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
+    //         return false;
+    //     }
+    //
+    //     // if there should be preparation --- this signal can't be sent from client
+    //     if (rooms[key].settings["wordsetType"] === "playerWords") {
+    //         Signals.sFailure(socket.id, "cStartGame", null, "Игра предусматривает набор слов, нельзя начать игру");
+    //         return false;
+    //     }
+    //
+    //     // checking whether signal owner is host
+    //     const hostPos = findFirstPos(rooms[key].users, "online", true);
+    //     if (hostPos === -1) {
+    //         // very strange case, probably something went wrong, let's log it!
+    //         Signals.sFailure(socket.id, "cStartGame", 302, "Все оффлайн");
+    //         return false;
+    //     }
+    //     if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+    //         Signals.sFailure(socket.id, "cStartGame", 303, "Только хост может начать игру");
+    //         return false;
+    //     }
+    //
+    //     // Fail if only one user is online
+    //     let cnt = 0
+    //     for (let i = 0; i < rooms[key].users.length; ++i) {
+    //         if (rooms[key].users[i].online) {
+    //             cnt++;
+    //         }
+    //     }
+    //     if (cnt < 2) {
+    //         Signals.sFailure(socket.id,"cStartGame", 302,
+    //             "Недостаточно игроков онлайн в комнате, чтобы начать игру (необходимо хотя бы два)");
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     static cSpeakerReady(socket, key) {
         // Checking if user is not in the room
@@ -1717,32 +1765,36 @@ class Callbacks {
         Signals.sNewSettings(key);
     }
 
-    static cStartWordCollection(socket, key) {
-        /**
-         * kicking off offline users
-         */
-        // preparing containers
-        let onlineUsers = [];
-
-        // copying each user in proper container
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                onlineUsers.push(rooms[key].users[i]);
-            }
-        }
-
-        // removing offline users
-        rooms[key].users = onlineUsers;
-
-        rooms[key].stage = "prepare_wordCollection";
-
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            rooms[key].users[i].userWords = [];
-            rooms[key].users[i].userReady = false;
-        }
-
-        Signals.sWordCollectionStarted(key);
+    static cEndStage(socket, key, stage) {
+        // TODO
     }
+
+    // static cStartWordCollection(socket, key) { // DELETEME
+    //     /**
+    //      * kicking off offline users
+    //      */
+    //     // preparing containers
+    //     let onlineUsers = [];
+    //
+    //     // copying each user in proper container
+    //     for (let i = 0; i < rooms[key].users.length; ++i) {
+    //         if (rooms[key].users[i].online) {
+    //             onlineUsers.push(rooms[key].users[i]);
+    //         }
+    //     }
+    //
+    //     // removing offline users
+    //     rooms[key].users = onlineUsers;
+    //
+    //     rooms[key].stage = "prepare_wordCollection";
+    //
+    //     for (let i = 0; i < rooms[key].users.length; ++i) {
+    //         rooms[key].users[i].userWords = [];
+    //         rooms[key].users[i].userReady = false;
+    //     }
+    //
+    //     Signals.sWordCollectionStarted(key);
+    // }
 
     static cWordsReady(socket, key, words) {
         // setting ready flag and storing words
@@ -1770,26 +1822,34 @@ class Callbacks {
         }
     }
 
-    static cStartGame(socket, key) {
-        /**
-         * kicking off offline users
-         */
-        // preparing containers
-        let onlineUsers = [];
-
-        // copying each user in proper container
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                onlineUsers.push(rooms[key].users[i]);
-            }
-        }
-
-        // removing offline users
-        rooms[key].users = onlineUsers;
-
-        // game preparation
-        rooms[key].gamePrepare();
+    static cConstructPair(socket, key, username1, username2) {
+        // TODO
     }
+
+    static cDestroyPair(socket, key, username1, username2) {
+        // TODO
+    }
+
+    // static cStartGame(socket, key) { // DELETEME
+    //     /**
+    //      * kicking off offline users
+    //      */
+    //     // preparing containers
+    //     let onlineUsers = [];
+    //
+    //     // copying each user in proper container
+    //     for (let i = 0; i < rooms[key].users.length; ++i) {
+    //         if (rooms[key].users[i].online) {
+    //             onlineUsers.push(rooms[key].users[i]);
+    //         }
+    //     }
+    //
+    //     // removing offline users
+    //     rooms[key].users = onlineUsers;
+    //
+    //     // game preparation
+    //     rooms[key].gamePrepare();
+    // }
 
     static cEndWordExplanation(socket, key, cause) {
         const currentTime = (new Date()).getTime();
@@ -2053,23 +2113,31 @@ io.on("connection", function(socket) {
         Callbacks.cApplySettings(socket, key, data.settings);
     });
 
+    // /**
+    //  * Implementation of cStartWordCollection function
+    //  * @see API.md
+    //  */
+    // socket.on("cStartWordCollection", function() { // DELETEME
+    //     if (WRITE_LOGS) {
+    //         console.log(socket.id, "cStartWordCollection", undefined);
+    //     }
+    //
+    //     const key = getRoom(socket); // key of the room
+    //
+    //     // checking signal conditions
+    //     if (!CheckConditions.cStartWordCollection(socket, key)) {
+    //         return;
+    //     }
+    //
+    //     Callbacks.cStartWordCollection(socket, key);
+    // });
+
     /**
-     * Implementation of cStartWordCollection function
+     * Implementation of cEndStage function
      * @see API.md
      */
-    socket.on("cStartWordCollection", function() {
-        if (WRITE_LOGS) {
-            console.log(socket.id, "cStartWordCollection", undefined);
-        }
-
-        const key = getRoom(socket); // key of the room
-
-        // checking signal conditions
-        if (!CheckConditions.cStartWordCollection(socket, key)) {
-            return;
-        }
-
-        Callbacks.cStartWordCollection(socket, key);
+    socket.on("cEndStage", function(data) {
+        // TODO
     });
 
     /**
@@ -2096,23 +2164,39 @@ io.on("connection", function(socket) {
         Callbacks.cWordsReady(socket, key, data.words);
     });
 
+    // /**
+    //  * Implementation of cStartGame function
+    //  * @see API.md
+    //  */
+    // socket.on("cStartGame", function() { // DELETEME
+    //     if (WRITE_LOGS) {
+    //         console.log(socket.id, "cStartGame", undefined);
+    //     }
+    //
+    //     const key = getRoom(socket); // key of the room
+    //
+    //     // checking signal conditions
+    //     if (!CheckConditions.cStartGame(socket, key)) {
+    //         return;
+    //     }
+    //
+    //     Callbacks.cStartGame(socket, key);
+    // });
+
     /**
-     * Implementation of cStartGame function
+     * Implementation of cConstructPair function
      * @see API.md
      */
-    socket.on("cStartGame", function() {
-        if (WRITE_LOGS) {
-            console.log(socket.id, "cStartGame", undefined);
-        }
+    socket.on("cConstructPair", function() {
+        // TODO
+    });
 
-        const key = getRoom(socket); // key of the room
-
-        // checking signal conditions
-        if (!CheckConditions.cStartGame(socket, key)) {
-            return;
-        }
-
-        Callbacks.cStartGame(socket, key);
+    /**
+     * Implementation of cDestroyPair function
+     * @see API.md
+     */
+    socket.on("cDestroyPair", function() {
+        // TODO
     });
 
     /**

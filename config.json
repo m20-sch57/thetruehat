@@ -51,7 +51,9 @@
         "wordsetType": "serverDictionary",
         "dictionaryId": 0,
         "wordsNumber": 100,
-        "roundsNumber": 10
+        "roundsNumber": 10,
+        "fixedPairs": false,
+        "pairMatching": "random"
     },
     "settingsRange": {
         "delayTime": {
