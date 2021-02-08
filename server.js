@@ -195,7 +195,7 @@ function findFirstSidPos(users, sid) {
  * @param socket The socket of the player
  * @return id of current player's room: his own socket room or game room with him
  */
-function getRoom(socket) {
+function getRoomKey(socket) {
     const sid = socket.id;
     const roomsList = Object.keys(socket.rooms);
     // Searching for the game room with the user
@@ -1116,7 +1116,7 @@ class CheckConditions {
         const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
 
         // If user is not in his own room, it will be an error
-        if (getRoom(socket) !== socket.id) {
+        if (getRoomKey(socket) !== socket.id) {
             Signals.sFailure(socket.id, "cJoinRoom", 100, "Вы уже находитесь в комнате");
             return false;
         }
@@ -1212,60 +1212,66 @@ class CheckConditions {
     }
 
     static cEndStage(socket, key, stage) {
-        // TODO
-    }
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Вы не в комнате");
+            return false;
+        }
 
-    // static cStartWordCollection(socket, key) { // DELETEME
-    //     // Checking if user is not in the room
-    //     if (key === socket.id) {
-    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
-    //         return false;
-    //     }
-    //
-    //     // if game ended
-    //     if (!(key in rooms)) {
-    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Игра закончена");
-    //         return false;
-    //     }
-    //
-    //     // if stage isn't 'wait', something went wrong
-    //     if (rooms[key].stage !== "wait") {
-    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
-    //         return false;
-    //     }
-    //
-    //     // if this stage should be present
-    //     if (rooms[key].settings["wordsetType"] !== "playerWords") {
-    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
-    //         return false;
-    //     }
-    //
-    //     // checking whether signal owner is host
-    //     const hostPos = findFirstPos(rooms[key].users, "online", true);
-    //     if (hostPos === -1) {
-    //         // very strange case, probably something went wrong, let's log it!
-    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Все оффлайн");
-    //         return false;
-    //     }
-    //     if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-    //         Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать приготовление к игре");
-    //         return false;
-    //     }
-    //
-    //     // Fail if only one user is online
-    //     let cnt = 0
-    //     for (let i = 0; i < rooms[key].users.length; ++i) {
-    //         if (rooms[key].users[i].online) {
-    //             cnt++;
-    //         }
-    //     }
-    //     if (cnt < 2) {
-    //         Signals.sFailure(socket.id,"cStartWordCollection", null,
-    //             "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
-    //         return false;
-    //     }
-    //     return true;
-    // }
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Игра закончена");
+            return false;
+        }
+
+        // if `stage` isn't current stage, something went wrong
+        if (rooms[key].stage !== stage) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Неверное значение `stage`");
+            return false;
+        }
+
+        // if stage isn't interruptible one
+        if (!(stage in {
+            "wait": 0,
+            "prepare_pairMatching": 0
+        })) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Данный этап невозможно закончить.");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cEndStage", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Только хост может завершать этап");
+            return false;
+        }
+
+        switch (stage) {
+            case "wait":
+                let usersOnline = 0
+                for (let i = 0; i < rooms[key].users.length; i++) {
+                    if (rooms[key].users[i].online) usersOnline++;
+                }
+                if (rooms[key].settings["fixedPairs"] === true && usersOnline % 2 !== 0) {
+                    Signals.sFailure(socket.id, "cEndStage", null, "Нельзя начать игру по парам с нечётным числом игроков");
+                    return false;
+                }
+                break;
+            case "prepare_pairMatching":
+                if (rooms[key].pairs.length * 2 !== rooms[key].users.length) {
+                    Signals.sFailure(socket.id, "cEndStage", null, "Не все разбились на пары");
+                    return false;
+                }
+                break;
+        }
+
+        return true;
+    }
 
     static cWordsReady(socket, key, words) {
         // Checking if user is not in the room
@@ -1302,64 +1308,112 @@ class CheckConditions {
     }
 
     static cConstructPair(socket, key, username1, username2) {
-        // TODO
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Игра закончена");
+            return false;
+        }
+
+        // if stage isn't 'prepare_wordCollection', something went wrong
+        if (rooms[key].stage !== "prepare_pairMatching") {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Состояние игры - не 'prepare_pairMatching'");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cConstructPair", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Только хост может изменять парсоч");
+            return false;
+        }
+
+        // if the `username1` should not make new pair
+        if (!rooms[key].users.map(user => {return user.username}).includes(username1)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которого нет ни у одного игрока в комнате");
+            return false;
+        }
+        if (rooms[key].pairs.map(pair => {pair.includes(username1)}).includes(true)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которое уже участвует в паре");
+            return false;
+        }
+
+        // if the `username2` should not make new pair
+        if (!rooms[key].users.map(user => {return user.username}).includes(username2)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которого нет ни у одного игрока в комнате");
+            return false;
+        }
+        if (rooms[key].pairs.map(pair => {pair.includes(username2)}).includes(true)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которое уже участвует в паре");
+            return false;
+        }
+
+        // if `username1 === username2`
+        if (username1 === username2) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Значение полей `username1` и `username2` идентичны");
+            return false;
+        }
+
+        return true;
     }
 
     static cDestroyPair(socket, key, username1, username2) {
-        // TODO
-    }
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Вы не в комнате");
+            return false;
+        }
 
-    // static cStartGame(socket, key) { // DELETEME
-    //     // Checking if user is not in the room
-    //     if (key === socket.id) {
-    //         Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
-    //         return false;
-    //     }
-    //
-    //     // if game ended
-    //     if (!(key in rooms)) {
-    //         Signals.sFailure(socket.id, "cStartGame", 300, "Игра закончена");
-    //         return false;
-    //     }
-    //
-    //     // if stage isn't 'wait', something went wrong
-    //     if (rooms[key].stage !== "wait") {
-    //         Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
-    //         return false;
-    //     }
-    //
-    //     // if there should be preparation --- this signal can't be sent from client
-    //     if (rooms[key].settings["wordsetType"] === "playerWords") {
-    //         Signals.sFailure(socket.id, "cStartGame", null, "Игра предусматривает набор слов, нельзя начать игру");
-    //         return false;
-    //     }
-    //
-    //     // checking whether signal owner is host
-    //     const hostPos = findFirstPos(rooms[key].users, "online", true);
-    //     if (hostPos === -1) {
-    //         // very strange case, probably something went wrong, let's log it!
-    //         Signals.sFailure(socket.id, "cStartGame", 302, "Все оффлайн");
-    //         return false;
-    //     }
-    //     if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-    //         Signals.sFailure(socket.id, "cStartGame", 303, "Только хост может начать игру");
-    //         return false;
-    //     }
-    //
-    //     // Fail if only one user is online
-    //     let cnt = 0
-    //     for (let i = 0; i < rooms[key].users.length; ++i) {
-    //         if (rooms[key].users[i].online) {
-    //             cnt++;
-    //         }
-    //     }
-    //     if (cnt < 2) {
-    //         Signals.sFailure(socket.id,"cStartGame", 302,
-    //             "Недостаточно игроков онлайн в комнате, чтобы начать игру (необходимо хотя бы два)");
-    //         return false;
-    //     }
-    //     return true;
-    // }
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Игра закончена");
+            return false;
+        }
+
+        // if stage isn't 'prepare_wordCollection', something went wrong
+        if (rooms[key].stage !== "prepare_pairMatching") {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Состояние игры - не 'prepare_pairMatching'");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Только хост может изменять парсоч");
+            return false;
+        }
+
+        // if `username1 === username2`
+        if (username1 === username2) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Значение полей `username1` и `username2` идентичны");
+            return false;
+        }
+
+        // if the players are not in the same pair (or any pair either)
+        const pos1 = rooms[key].pairs.findIndex((element) => {return element.includes(username1)})
+        const pos2 = rooms[key].pairs.findIndex((element) => {return element.includes(username2)})
+        if (pos1 !== pos2 || pos1 === -1) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Нет пары состоящей из `username1` и `username2`");
+            return false;
+        }
+
+        return true;
+    }
 
     static cSpeakerReady(socket, key) {
         // Checking if user is not in the room
@@ -1541,7 +1595,7 @@ class Callbacks {
         }
 
         // If user haven't joined the room
-        if (getRoom(socket) !== key) {
+        if (getRoomKey(socket) !== key) {
             Signals.sFailure(socket.id, "сJoinRoom", 105, "Не получилось войти в комнату");
             return;
         }
@@ -1998,7 +2052,7 @@ class Callbacks {
 
     static disconnect(socket) {
         /**
-         * room key can't be accessed via getRoom(socket)
+         * room key can't be accessed via getRoomKey(socket)
          * findFirstSidPos must be used instead
          */
 
@@ -2078,7 +2132,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cLeaveRoom", undefined);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // Checking signal conditions
         if (!CheckConditions.cLeaveRoom(socket, key)) {
@@ -2098,7 +2152,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cApplySettings", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"settings": "object"}, "cApplySettings")) {
@@ -2113,31 +2167,28 @@ io.on("connection", function(socket) {
         Callbacks.cApplySettings(socket, key, data.settings);
     });
 
-    // /**
-    //  * Implementation of cStartWordCollection function
-    //  * @see API.md
-    //  */
-    // socket.on("cStartWordCollection", function() { // DELETEME
-    //     if (WRITE_LOGS) {
-    //         console.log(socket.id, "cStartWordCollection", undefined);
-    //     }
-    //
-    //     const key = getRoom(socket); // key of the room
-    //
-    //     // checking signal conditions
-    //     if (!CheckConditions.cStartWordCollection(socket, key)) {
-    //         return;
-    //     }
-    //
-    //     Callbacks.cStartWordCollection(socket, key);
-    // });
-
     /**
      * Implementation of cEndStage function
      * @see API.md
      */
     socket.on("cEndStage", function(data) {
-        // TODO
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cEndStage", data);
+        }
+
+        const key = getRoomKey(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"stage": "string"}, "cEndStage")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cEndStage(socket, key, data.stage)) {
+            return;
+        }
+
+        Callbacks.cEndStage(socket, key, data.words);
     });
 
     /**
@@ -2149,7 +2200,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cWordsReady", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"words": "object"}, "cWordsReady")) {
@@ -2164,39 +2215,52 @@ io.on("connection", function(socket) {
         Callbacks.cWordsReady(socket, key, data.words);
     });
 
-    // /**
-    //  * Implementation of cStartGame function
-    //  * @see API.md
-    //  */
-    // socket.on("cStartGame", function() { // DELETEME
-    //     if (WRITE_LOGS) {
-    //         console.log(socket.id, "cStartGame", undefined);
-    //     }
-    //
-    //     const key = getRoom(socket); // key of the room
-    //
-    //     // checking signal conditions
-    //     if (!CheckConditions.cStartGame(socket, key)) {
-    //         return;
-    //     }
-    //
-    //     Callbacks.cStartGame(socket, key);
-    // });
-
     /**
      * Implementation of cConstructPair function
      * @see API.md
      */
-    socket.on("cConstructPair", function() {
-        // TODO
+    socket.on("cConstructPair", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cConstructPair", data);
+        }
+
+        const key = getRoomKey(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"username1": "string", "username2": "string"}, "cConstructPair")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cConstructPair(socket, key, data.words)) {
+            return;
+        }
+
+        Callbacks.cConstructPair(socket, key, data.words);
     });
 
     /**
      * Implementation of cDestroyPair function
      * @see API.md
      */
-    socket.on("cDestroyPair", function() {
-        // TODO
+    socket.on("cDestroyPair", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cDestroyPair", data);
+        }
+
+        const key = getRoomKey(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"username1": "string", "username2": "string"}, "cDestroyPair")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cDestroyPair(socket, key, data.words)) {
+            return;
+        }
+
+        Callbacks.cDestroyPair(socket, key, data.words);
     });
 
     /**
@@ -2208,7 +2272,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cListenerReady", undefined);
         }
 
-        const key = getRoom(socket); // key of room
+        const key = getRoomKey(socket); // key of room
 
         if (!CheckConditions.cListenerReady(socket, key)) {
             return;
@@ -2232,7 +2296,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cSpeakerReady", undefined);
         }
 
-        const key = getRoom(socket); // key of room
+        const key = getRoomKey(socket); // key of room
 
         if (!CheckConditions.cSpeakerReady(socket, key)) {
             return;
@@ -2256,7 +2320,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cEndWordExplanation", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"cause": "string"}, "cEndWordExplanation")) {
@@ -2280,7 +2344,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cWordsEdited", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"editWords": "object"}, "cWordsEdited")) {
@@ -2304,7 +2368,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cEndGame");
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking signal conditions
         if (!CheckConditions.cEndGame(socket, key)) {
