@@ -590,11 +590,11 @@ class Signals {
      * Implementation of sStageStarted signal
      * @see API.md
      *
-     * @param sid Id of socket to emit
+     * @param key Key of the Room
      * @param stage Name of stage is currently starting
      */
-    static sStageStarted(sid, stage) {
-        Signals.emit(sid, "sStageStarted", {"stage": stage})
+    static sStageStarted(key, stage) {
+        Signals.emit(key, "sStageStarted", {"stage": stage})
     }
 
     /**
@@ -1820,35 +1820,55 @@ class Callbacks {
     }
 
     static cEndStage(socket, key, stage) {
-        // TODO
-    }
+        switch (stage) {
+            case "wait":
+                /**
+                 * kicking off offline users
+                 */
+                // preparing containers
+                let onlineUsers = [];
 
-    // static cStartWordCollection(socket, key) { // DELETEME
-    //     /**
-    //      * kicking off offline users
-    //      */
-    //     // preparing containers
-    //     let onlineUsers = [];
-    //
-    //     // copying each user in proper container
-    //     for (let i = 0; i < rooms[key].users.length; ++i) {
-    //         if (rooms[key].users[i].online) {
-    //             onlineUsers.push(rooms[key].users[i]);
-    //         }
-    //     }
-    //
-    //     // removing offline users
-    //     rooms[key].users = onlineUsers;
-    //
-    //     rooms[key].stage = "prepare_wordCollection";
-    //
-    //     for (let i = 0; i < rooms[key].users.length; ++i) {
-    //         rooms[key].users[i].userWords = [];
-    //         rooms[key].users[i].userReady = false;
-    //     }
-    //
-    //     Signals.sWordCollectionStarted(key);
-    // }
+                // copying each user in proper container
+                for (let i = 0; i < rooms[key].users.length; ++i) {
+                    if (rooms[key].users[i].online) {
+                        onlineUsers.push(rooms[key].users[i]);
+                    }
+                }
+
+                // removing offline users
+                rooms[key].users = onlineUsers;
+
+                switch (true) {
+                    case rooms[key].settings["wordsetType"] === "playerWords":
+                        rooms[key].stage = "prepare_wordCollection";
+
+                        for (let i = 0; i < rooms[key].users.length; ++i) {
+                            rooms[key].users[i].userWords = [];
+                            rooms[key].users[i].userReady = false;
+                        }
+
+                        Signals.sStageStarted(key, "prepare_wordCollection");
+                        break;
+
+                    case rooms[key].settings["fixedPairs"] === true && rooms[key].settings["pairMatching"] === "host":
+                        rooms[key].stage = "prepare_pairMatching";
+
+                        Signals.sStageStarted(key, "prepare_pairMatching");
+                        break;
+
+                    default:
+                        // game preparation
+                        rooms[key].gamePrepare();
+                        break;
+                }
+                break;
+
+            case "prepare_pairMatching":
+                // game preparation
+                rooms[key].gamePrepare();
+                break
+        }
+    }
 
     static cWordsReady(socket, key, words) {
         // setting ready flag and storing words
@@ -1877,33 +1897,12 @@ class Callbacks {
     }
 
     static cConstructPair(socket, key, username1, username2) {
-        // TODO
+        rooms[key].pairs.push([username1, username2])
     }
 
     static cDestroyPair(socket, key, username1, username2) {
-        // TODO
+        rooms[key].pairs = rooms[key].pairs.filter(el => !el.includes(username1))
     }
-
-    // static cStartGame(socket, key) { // DELETEME
-    //     /**
-    //      * kicking off offline users
-    //      */
-    //     // preparing containers
-    //     let onlineUsers = [];
-    //
-    //     // copying each user in proper container
-    //     for (let i = 0; i < rooms[key].users.length; ++i) {
-    //         if (rooms[key].users[i].online) {
-    //             onlineUsers.push(rooms[key].users[i]);
-    //         }
-    //     }
-    //
-    //     // removing offline users
-    //     rooms[key].users = onlineUsers;
-    //
-    //     // game preparation
-    //     rooms[key].gamePrepare();
-    // }
 
     static cEndWordExplanation(socket, key, cause) {
         const currentTime = (new Date()).getTime();
