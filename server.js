@@ -55,8 +55,8 @@ console.log("Listening on port " + PORT);
 /**
  * Checks object with the pattern
  *
- * @param object --- object
- * @param pattern --- pattern
+ * @param object object
+ * @param pattern pattern
  * @return if objects corresponds to the pattern
  */
 function checkObject(object, pattern) {
@@ -309,7 +309,7 @@ function startExplanation(key) {
 /**
  * Finish an explanation
  *
- * @param key --- key of the room
+ * @param key key of the room
  */
 function finishExplanation(key) {
     // if game has ended
@@ -358,7 +358,7 @@ function finishExplanation(key) {
 /**
  * End the game
  *
- * @param key --- key of the room
+ * @param key key of the room
  */
 function endGame(key) {
     // recording time
@@ -413,7 +413,7 @@ function endGame(key) {
 /**
  * Send statistics
  *
- * @param room --- room object
+ * @param room room object
  */
 function sendStat(room) {
     let sendObject = {};
@@ -952,9 +952,9 @@ class Room {
             for (let i = 1; i < this.pairs.length; i++) {
                 this.nextPlayers[this.pairs[i-1][0]] = this.pairs[i][0];
                 this.nextPlayers[this.pairs[i-1][1]] = this.pairs[i][1];
-                this.nextPlayers[this.pairs[this.pairs.length - 1][0]] = this.pairs[0][1];
-                this.nextPlayers[this.pairs[this.pairs.length - 1][1]] = this.pairs[0][0];
             }
+            this.nextPlayers[this.pairs[this.pairs.length - 1][0]] = this.pairs[0][1];
+            this.nextPlayers[this.pairs[this.pairs.length - 1][1]] = this.pairs[0][0];
         }
         this.explanationRecords = [];
 
@@ -1142,7 +1142,7 @@ class CheckConditions {
             }
 
             // If game has started, only logging in can be performed
-            if (rooms[key].stage.startsWith("play") && pos === -1) {
+            if (rooms[key].stage !== "wait" && pos === -1) {
                 Signals.sFailure(socket.id, "cJoinRoom", 104, "Игра уже идёт, возможен только вход");
                 return false;
             }
@@ -1693,7 +1693,7 @@ class Callbacks {
                         roomSettings["strictMode"] = value;
                     } else {
                         Signals.sFailure(socket.id, "cApplySettings", null,
-                            `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо boolean`)
+                            `Неверный тип значения поля настроек "strictMode": ${typeof(value)} вместо boolean`)
                     }
                     break;
                 case "termCondition":
@@ -1787,6 +1787,28 @@ class Callbacks {
                             }
                             room.hostDictionary.words = words;
                             room.hostDictionary.wordsNumber = words.length
+                    }
+                    break;
+                case "fixedPairs":
+                    if (typeof(value) === "boolean") {
+                        roomSettings["fixedPairs"] = value;
+                    } else {
+                        Signals.sFailure(socket.id, "cApplySettings", null,
+                            `Неверный тип значения поля настроек "fixedPairs": ${typeof(value)} вместо boolean`)
+                    }
+                    break;
+                case "pairMatching":
+                    switch (false) {
+                        case typeof(value) === "string":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "pairMatching": ${typeof(value)} вместо string`)
+                            break;
+                        case value in {"random": 0, "host": 0}:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"pairMatching\"")
+                            break;
+                        default:
+                            roomSettings["termCondition"] = value;
                     }
                     break;
                 default:
