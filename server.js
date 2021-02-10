@@ -254,7 +254,7 @@ function getNextCircledPair(numberOfPlayers, lastSpeaker, lastListener) {
  */
 function getTimetable(key) {
     const timetable = [];
-    const timetableDepth = rooms[key].settings.fixedPairs ? rooms[key].users / 2 : 2 * rooms[key].users.length - 1
+    const timetableDepth = rooms[key].settings.fixedPairs ? rooms[key].users.length / 2 : 2 * rooms[key].users.length - 1
     let roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
     let obj = {
         speaker: rooms[key].speaker,
