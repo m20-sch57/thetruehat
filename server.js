@@ -18,7 +18,7 @@ const argv = require("yargs")
     .argv;
 
 const PORT = config.port;
-const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
+const WRITE_LOGS = (config.env === config.DEVEL) ? true : false;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
 const dictsConf = config.dicts;
@@ -254,7 +254,7 @@ function getNextCircledPair(numberOfPlayers, lastSpeaker, lastListener) {
  */
 function getTimetable(key) {
     const timetable = [];
-    const timetableDepth = rooms[key].settings.fixedPairs ? rooms[key].users.length / 2 : 2 * rooms[key].users.length - 1
+    const timetableDepth = rooms[key].settings.fixedPairs ? Math.max(rooms[key].pairs.length, 2) : 2 * rooms[key].users.length - 1
     let roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
     let obj = {
         speaker: rooms[key].speaker,
@@ -930,6 +930,16 @@ class Room {
         }
     }
 
+    randomlyGeneratePairs() {
+        let free = [...Array(this.users.length).keys()]
+        while (free.length !== 0) {
+            const pos1 = free.pop()
+            const pos2 = free[randrange(free.length)]
+            free = free.filter(el => el !== pos2)
+            this.pairs.push([pos1, pos2])
+        }
+    }
+
     /**
      * Preparing room for the game
      */
@@ -1343,7 +1353,7 @@ class CheckConditions {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которого нет ни у одного игрока в комнате");
             return false;
         }
-        if (rooms[key].pairs.map(pair => {pair.includes(username1)}).includes(true)) {
+        if (rooms[key].pairs.map(pair => {pair.includes(rooms[key].users.findIndex(user => user.username === username1))}).includes(true)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которое уже участвует в паре");
             return false;
         }
@@ -1353,7 +1363,7 @@ class CheckConditions {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которого нет ни у одного игрока в комнате");
             return false;
         }
-        if (rooms[key].pairs.map(pair => {pair.includes(username2)}).includes(true)) {
+        if (rooms[key].pairs.map(pair => {pair.includes(rooms[key].users.findIndex(user => user.username === username2))}).includes(true)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которое уже участвует в паре");
             return false;
         }
@@ -1808,7 +1818,7 @@ class Callbacks {
                                 "Неверное значение поля настроек \"pairMatching\"")
                             break;
                         default:
-                            roomSettings["termCondition"] = value;
+                            roomSettings["pairMatching"] = value;
                     }
                     break;
                 default:
@@ -1872,10 +1882,18 @@ class Callbacks {
                         Signals.sStageStarted(key, "prepare_wordCollection");
                         break;
 
-                    case rooms[key].settings["fixedPairs"] === true && rooms[key].settings["pairMatching"] === "host":
-                        rooms[key].stage = "prepare_pairMatching";
+                    case rooms[key].settings["fixedPairs"] === true:
+                        switch (rooms[key].settings["pairMatching"]) {
+                            case "host":
+                                rooms[key].stage = "prepare_pairMatching";
 
-                        Signals.sStageStarted(key, "prepare_pairMatching");
+                                Signals.sStageStarted(key, "prepare_pairMatching");
+                                break;
+                            case "random":
+                                rooms[key].randomlyGeneratePairs()
+                                rooms[key].gamePrepare()
+                                break;
+                        }
                         break;
 
                     default:
@@ -1919,11 +1937,18 @@ class Callbacks {
     }
 
     static cConstructPair(socket, key, username1, username2) {
-        rooms[key].pairs.push([username1, username2])
+        rooms[key].pairs.push([
+            rooms[key].users.findIndex(user => user.username === username1),
+            rooms[key].users.findIndex(user => user.username === username2)
+        ])
+
+        Signals.sPairConstructed(key, username1, username2)
     }
 
     static cDestroyPair(socket, key, username1, username2) {
-        rooms[key].pairs = rooms[key].pairs.filter(el => !el.includes(username1))
+        rooms[key].pairs = rooms[key].pairs.filter(el => !el.includes(rooms[key].users.findIndex(user => user.username === username1)))
+
+        Signals.sPairDestroyed(key, username1, username2)
     }
 
     static cEndWordExplanation(socket, key, cause) {
@@ -2209,7 +2234,7 @@ io.on("connection", function(socket) {
             return;
         }
 
-        Callbacks.cEndStage(socket, key, data.words);
+        Callbacks.cEndStage(socket, key, data.stage);
     });
 
     /**
@@ -2253,11 +2278,11 @@ io.on("connection", function(socket) {
         }
 
         // checking signal conditions
-        if (!CheckConditions.cConstructPair(socket, key, data.words)) {
+        if (!CheckConditions.cConstructPair(socket, key, data.username1, data.username2)) {
             return;
         }
 
-        Callbacks.cConstructPair(socket, key, data.words);
+        Callbacks.cConstructPair(socket, key, data.username1, data.username2);
     });
 
     /**
@@ -2277,11 +2302,11 @@ io.on("connection", function(socket) {
         }
 
         // checking signal conditions
-        if (!CheckConditions.cDestroyPair(socket, key, data.words)) {
+        if (!CheckConditions.cDestroyPair(socket, key, data.username1, data.username2)) {
             return;
         }
 
-        Callbacks.cDestroyPair(socket, key, data.words);
+        Callbacks.cDestroyPair(socket, key, data.username1, data.username2);
     });
 
     /**
