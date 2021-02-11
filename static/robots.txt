@@ -1,0 +1,4 @@
+user-agent: * # All bots
+allow: /TTH-SM/
+disallow: /TTH-SM/meta.html
+disallow: /TTH-SM/robots.compileme

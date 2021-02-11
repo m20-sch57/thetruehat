@@ -1,7 +1,7 @@
 # TheTrueHat
 *Available languages: [in English](README.md), [in Russian](README.ru.md).*
 
-TheTrueHat is a web-application for the game Alias. You can play the Alias with your friends or organise an Alias tournament.
+TheTrueHat is a web-application for game Alias (or Hat). You can play the game with your friends or organise an Alias tournament.
 This project supports a web-interface for the game, and a server that will took responsibility for all technical details.
 
 ## Play now!
