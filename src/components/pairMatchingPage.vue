@@ -2,11 +2,11 @@
   <div>
     <h2>Пары</h2>
     <div
-        v-for="({username1, username2}, i) of pairs"
-        @click="destroyPair(username1, username2)"
+        v-for="(pair, i) of pairs"
+        @click="destroyPair(pair[0], pair[1])"
         :key="i">
-      <span>{{username1}}</span><br>
-      <span>{{username2}}</span>
+      <span>{{pair[0]}}</span><br>
+      <span>{{pair[1]}}</span>
     </div>
     <h2>Игроки</h2>
     <div
@@ -41,7 +41,7 @@ export default {
   computed: {
     lonePlayers: function () {
       return this.players.map(user => user.username).filter(username =>
-        !(this.pairs.map(pair => pair.username1).concat(this.pairs.map(pair => pair.username2)))
+        !(this.pairs.map(pair => pair[0]).concat(this.pairs.map(pair => pair[1])))
           .includes(username));
     }
   },
@@ -56,13 +56,13 @@ export default {
         console.error(`${username2} is already in pair.`);
         return;
       }
-      this.pairs.push({username1, username2});
+      this.pairs.push([username1, username2]);
       app.constructPair(username1, username2);
     },
 
     destroyPair: function (username1, username2) {
       if (!removeByPredicat(this.pairs, pair => (
-        pair.username1 === username1 && pair.username2 === username2
+        pair[0] === username1 && pair[1] === username2
       ))) {
         console.error(`${username1} and ${username2} aren't a pair`);
         return;

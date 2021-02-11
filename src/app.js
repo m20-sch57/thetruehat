@@ -152,6 +152,14 @@ export class App {
                 }
             },
 
+            sPairConstructed: data => {
+                //
+            },
+
+            sPairDestroyed: data => {
+                //
+            },
+
             sGameStarted: data => {
                 this.store.commit("gameStarted", data);
             },
