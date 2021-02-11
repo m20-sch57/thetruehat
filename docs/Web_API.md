@@ -5,8 +5,8 @@
 Вот несколько правил, по которым устроено API.
 
 - Пометка `io` обозначает, что данные передаются по протоколу `socketio`.
-  - Если сигнал начинается с `c`, значит его отправляет клиент.
-  - Если сигнал начинается с `s`, значит его отправляет сервер.
+    - Если сигнал начинается с `c`, значит его отправляет клиент.
+    - Если сигнал начинается с `s`, значит его отправляет сервер.
 - Пометка `GET`/`POST` обозначает, что данные передаются по протоколу `HTTP` методом `GET`/`POST`.
 
 Все данные по протоколу `HTTP` передаются в теле запроса в формате `JSON` по адресу `http://<document.domain>/function`, где `function` — название функции.<br>
@@ -27,8 +27,8 @@ Query string:
 
 Если `stage != end`:
 - `playersList` - Список игроков. Описание игрока состоит из:
-  - `username (string)` - имя игрока.
-  - `online (bool)` - подключен ли игрок к серверу.
+    - `username (string)` - имя игрока.
+    - `online (bool)` - подключен ли игрок к серверу.
 - `host` - Хост комнаты.
 - `settings` - Словарь с настройками комнаты.
 
@@ -74,8 +74,8 @@ Query string:
 
 - `username (string)` - имя вошедшего игрока.
 - `playersList (array)` - список игроков.
-  - `username (string)` - имя игрока.
-  - `online (bool)` - подключен ли игрок к серверу.
+    - `username (string)` - имя игрока.
+    - `online (bool)` - подключен ли игрок к серверу.
 - `host` - хост комнаты.
 
 ---
@@ -84,8 +84,8 @@ Query string:
 
 - `username (string)` - имя ушедшего игрока.
 - `playersList (array)` - список игроков.
-  - `username (string)` - имя игрока.
-  - `online (bool)` - подключен ли игрок к серверу.
+    - `username (string)` - имя игрока.
+    - `online (bool)` - подключен ли игрок к серверу.
 - `host` - хост комнаты.
 
 ---
@@ -107,8 +107,8 @@ Query string:
 
 Если `stage = play`:
 - `timetable (array)` - следующие N пар. Состоит из:
-  + `speaker (string)` - имя следующего объясняющего.
-  + `listener (string)` - имя того, кому будут объяснять.
+    + `speaker (string)` - имя следующего объясняющего.
+    + `listener (string)` - имя того, кому будут объяснять.
 - `speaker (string)` - имя следующего объясняющего.
 - `listener (string)` - имя того, кому будут объяснять.
 - `wordsLeft (int)` - Если `settings.termCondition = words`. Кол-во оставшихся слов.
@@ -116,17 +116,17 @@ Query string:
 
 Если `stage = play_explanation`:
 
-  + `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
-  + `endTime` - Время окончания объяснения.
++ `word (string)` - Если пользователь есть `speaker`. Слово для объяснения.
++ `startTime` - Время окончания объяснения.
 
 Если `stage = play_edit`:
 
 - `editWords (array)` - список слов для правки. Состоит из:
-  + `word (string)` - само слово, которые объясняли.
-  + `wordState (string)` - состояние слова (угадано/не угадано/etc.).
-    * `notExplained` - слово не было объяснено.
-    * `explained` - слово было объяснено.
-    * `mistake` - слово было объяснено с ошибкой.
+    + `word (string)` - само слово, которые объясняли.
+    + `wordState (string)` - состояние слова (угадано/не угадано/etc.).
+        * `notExplained` - слово не было объяснено.
+        * `explained` - слово было объяснено.
+        * `mistake` - слово было объяснено с ошибкой.
 
 ---
 
@@ -155,7 +155,7 @@ Query string:
 
 ---
 
-`io` <a name="sStageStarted">`sStageStarted`</a> - сигнал, посылаемый сервером всем клиантам, когда этап завершается и начинается следующий
+`io` <a name="sStageStarted">`sStageStarted`</a> - сигнал, посылаемый сервером всем клиентам, когда этап завершается и начинается следующий
 (когда не используется один из специальных сигналов с дополнительной информацией).
 
 - `stage (string)` - этап, который начинается.
@@ -182,18 +182,18 @@ Query string:
 
 - `username1 (string)` - имя первого игрока в паре
 - `username2 (string)` - имя второго игрока в паре
-- `pairs` (array) - список пар игроков, которые образуют команды. В том числе тоьлко что созданная пара. Каждый игрок в каждой паре описывается своим `username`-ом.
+- `pairs` (array) - список пар игроков, которые образуют команды. В том числе только что созданная пара. Каждый игрок в каждой паре описывается своим `username`-ом.
 
 ---
 
-`io` <a name="cDestroyPair">`cDestroyPair`</a> - функция, разформировывающая пару игроков.
+`io` <a name="cDestroyPair">`cDestroyPair`</a> - функция, расформировывающая пару игроков.
 
 - `username1 (string)` - имя первого игрока в паре
 - `username2 (string)` - имя второго игрока в паре
 
 ---
 
-`io` <a name="sPairDestroyed">`sPairDestroyed`</a> - сигнал, посылаемый сервером всем клиентам при разформировании пары.
+`io` <a name="sPairDestroyed">`sPairDestroyed`</a> - сигнал, посылаемый сервером всем клиентам при расформировании пары.
 
 - `username1 (string)` - имя первого игрока в паре
 - `username2 (string)` - имя второго игрока в паре
@@ -204,11 +204,11 @@ Query string:
 `io` <a name="sGameStarted">`sGameStarted`</a> - сигнал, посылаемый сервером всем клиентам, когда игра началась.
 
 - `timetable (array)` - следующие N пар. Состоит из
-  + `speaker (string)` - имя следующего объясняющего.
-  + `listener (string)` - имя того, кому будут объяснять.
+    + `speaker (string)` - имя следующего объясняющего.
+    + `listener (string)` - имя того, кому будут объяснять.
 - `speaker (string)` - имя следующего объясняющего.
 - `listener (string)` - имя того, кому будут объяснять.
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 - `roundsLeft (int)` - Если `settings.termCondition = rounds`. Количество оставшихся кругов.
 
 ---
@@ -217,17 +217,17 @@ Query string:
 
 
 - `timetable (array)` - следующие N пар. Состоит из
-  + `speaker (string)` - имя следующего объясняющего.
-  + `listener (string)` - имя того, кому будут объяснять.
+    + `speaker (string)` - имя следующего объясняющего.
+    + `listener (string)` - имя того, кому будут объяснять.
 - `speaker (string)` - имя следующего объясняющего.
 - `listener (string)` - имя того, кому будут объяснять.
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 - `roundsLeft (int)` - Если `settings.termCondition = rounds`. Количество оставшихся кругов.
 - `words (array)` - Список слов после правок.
-  + `word (string)` - слово.
-  + `wordState (string)` - состояние слова.
-    * `explained` - слово было объяснено.
-    * `mistake` - слово было объяснено с ошибкой.
+    + `word (string)` - слово.
+    + `wordState (string)` - состояние слова.
+        * `explained` - слово было объяснено.
+        * `mistake` - слово было объяснено с ошибкой.
 
 ---
 
@@ -254,45 +254,45 @@ Query string:
 `io` <a name="cEndWordExplanation">`cEndWordExplanation`</a> - функция, обозначающая, что `speaker` закончил объяснять текущее слово.
 
 - `cause (string)` - причина окончания объяснения.
-  - `explained` - слово было объяснено.
-  - `mistake` - слово было объяснено с ошибкой.
-  - `notExplained` - слово не было объяснено.
+    - `explained` - слово было объяснено.
+    - `mistake` - слово было объяснено с ошибкой.
+    - `notExplained` - слово не было объяснено.
 
 ---
 
 `io` <a name="sWordExplanationEnded">`sWordExplanationEnded`</a> - сигнал, посылаемый всем клиентам, когда объяснение одного слова закончилось.
 
 - `cause (string)` - причина окончания объяснения.
-  - `explained` - слово было объяснено.
-  - `mistake` - слово было объяснено с ошибкой.
-  - `notExplained` - слово не было объяснено.
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+    - `explained` - слово было объяснено.
+    - `mistake` - слово было объяснено с ошибкой.
+    - `notExplained` - слово не было объяснено.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 ---
 
 `io` <a name="sExplanationEnded">`sExplanationEnded`</a> - сигнал, посылаемый всем клиентам в конце объяснения слов.
 
-- `wordsCount (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
+- `wordsLeft (int)` - Если `settings.termCondition = words`. Количество слов в шляпе.
 ---
 
 `io` <a name="sWordsToEdit">`sWordsToEdit`</a> - сигнал, посылаемый `speaker`-у со списком слов для редактирования.
 
 - `editWords (array)` - Список слов для внесения правок.
-  + `word (string)` - слово.
-  + `wordState (string)` - состояние слова.
-    * `explained` - слово было объяснено.
-    * `mistake` - слово было объяснено с ошибкой.
-    * `notExplained` - слово не было объяснено.
+    + `word (string)` - слово.
+    + `wordState (string)` - состояние слова.
+        * `explained` - слово было объяснено.
+        * `mistake` - слово было объяснено с ошибкой.
+        * `notExplained` - слово не было объяснено.
 
 ---
 
 `io` <a name="cWordsEdited">`cWordsEdited`</a> - сигнал, посылаемый `speaker`-ом, когда все правки внесены.
 
 - `editWords (array)` - Список слов с внесёнными правками.
-  + `word (string)` - слово.
-  + `wordState (string)` - состояние слова.
-    * `explained` - слово было объяснено.
-    * `mistake` - слово было объяснено с ошибкой.
-    * `notExplained` - слово не было объяснено.
+    + `word (string)` - слово.
+    + `wordState (string)` - состояние слова.
+        * `explained` - слово было объяснено.
+        * `mistake` - слово было объяснено с ошибкой.
+        * `notExplained` - слово не было объяснено.
 
 ---
 

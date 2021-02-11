@@ -55,8 +55,8 @@ console.log("Listening on port " + PORT);
 /**
  * Checks object with the pattern
  *
- * @param object --- object
- * @param pattern --- pattern
+ * @param object object
+ * @param pattern pattern
  * @return if objects corresponds to the pattern
  */
 function checkObject(object, pattern) {
@@ -114,6 +114,17 @@ function genFreeKey() {
  */
 function getPlayersList(users) {
     return users.map(el => {return {"username": el.username, "online": el.online};});
+}
+
+/**
+ * Returns pairs structure,
+ * @see API.md
+ *
+ * @param {Room} room Room object
+ * @return list of players
+ */
+function getPairs(room) {
+    return room.pairs.map(el => {return el.map(pos => room.users[pos].username);});
 }
 
 /**
@@ -184,7 +195,7 @@ function findFirstSidPos(users, sid) {
  * @param socket The socket of the player
  * @return id of current player's room: his own socket room or game room with him
  */
-function getRoom(socket) {
+function getRoomKey(socket) {
     const sid = socket.id;
     const roomsList = Object.keys(socket.rooms);
     // Searching for the game room with the user
@@ -199,12 +210,31 @@ function getRoom(socket) {
 /**
  * Get next speaker and listener
  *
+ * @param {Room} room Room which used to define next next pair
+ * @param lastSpeaker Index of previous speaker
+ * @param lastListener Index of previous listener
+ * @return object with fields: speaker and listener --- indices of speaker and listener
+ */
+function getNextPair(room, lastSpeaker, lastListener) {
+    if (room.settings.fixedPairs) {
+        return {
+            "speaker": room.nextPlayers[lastSpeaker],
+            "listener": room.nextPlayers[lastListener]
+        }
+    } else {
+        return getNextCircledPair(room.users.length, lastSpeaker, lastListener)
+    }
+}
+
+/**
+ * Get next speaker and listener in circle (everyone-to-everyone) mode
+ *
  * @param numberOfPlayers Number of players
  * @param lastSpeaker Index of previous speaker
  * @param lastListener Index of previous listener
  * @return object with fields: speaker and listener --- indices of speaker and listener
  */
-function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
+function getNextCircledPair(numberOfPlayers, lastSpeaker, lastListener) {
     let speaker = (lastSpeaker + 1) % numberOfPlayers;
     let listener = (lastListener + 1) % numberOfPlayers;
     if (speaker === 0) {
@@ -219,12 +249,12 @@ function getNextPair(numberOfPlayers, lastSpeaker, lastListener) {
 /**
  * Get timetable for N rounds
  *
- * @param key key of the room
- * @return array of speaker and listeners' names
+ * @param key Key of the room
+ * @return Array of speakers' and listeners' names
  */
 function getTimetable(key) {
     const timetable = [];
-    const timetableDepth = 2 * rooms[key].users.length - 1
+    const timetableDepth = rooms[key].settings.fixedPairs ? rooms[key].users.length / 2 : 2 * rooms[key].users.length - 1
     let roundsLeft = rooms[key].settings.roundsNumber - rooms[key].numberOfLap;
     let obj = {
         speaker: rooms[key].speaker,
@@ -236,8 +266,12 @@ function getTimetable(key) {
             "speaker": rooms[key].users[obj.speaker].username,
             "listener": rooms[key].users[obj.listener].username
         });
-        obj = getNextPair(rooms[key].users.length, obj.speaker, obj.listener);
-        if (obj.speaker === 0 && obj.listener === 1) --roundsLeft;
+        obj = getNextPair(rooms[key], obj.speaker, obj.listener);
+        if ((!rooms[key].settings.fixedPairs
+                && obj.speaker === 0 && obj.listener === 1) ||
+            (rooms[key].settings.fixedPairs
+                && obj.speaker === rooms[key].pairs[0][0] && obj.listener === rooms[key].pairs[0][1]))
+            --roundsLeft;
     }
     return timetable;
 }
@@ -245,7 +279,7 @@ function getTimetable(key) {
 /**
  * Start an explanation
  *
- * @param key --- key of the room
+ * @param key Key of the room
  */
 function startExplanation(key) {
     rooms[key].stage = "play_explanation";
@@ -275,7 +309,7 @@ function startExplanation(key) {
 /**
  * Finish an explanation
  *
- * @param key --- key of the room
+ * @param key key of the room
  */
 function finishExplanation(key) {
     // if game has ended
@@ -324,7 +358,7 @@ function finishExplanation(key) {
 /**
  * End the game
  *
- * @param key --- key of the room
+ * @param key key of the room
  */
 function endGame(key) {
     // recording time
@@ -379,7 +413,7 @@ function endGame(key) {
 /**
  * Send statistics
  *
- * @param room --- room object
+ * @param room room object
  */
 function sendStat(room) {
     let sendObject = {};
@@ -435,8 +469,10 @@ class Signals {
      * @param username User's name
      */
     static sPlayerJoined(sid, room, username) {
-        Signals.emit(sid, "sPlayerJoined", {
-                "username": username, "playersList": getPlayersList(room.users),
+        Signals.emit(sid, "sPlayerJoined",
+            {
+                "username": username,
+                "playersList": getPlayersList(room.users),
                 "host": getHostUsername(room.users)
             });
     }
@@ -451,10 +487,12 @@ class Signals {
      */
     static sPlayerLeft(sid, room, username) {
         // Sending new stage of the room.
-        Signals.emit(sid, "sPlayerLeft", {
-            "username": username, "playersList": getPlayersList(room.users),
-            "host": getHostUsername(room.users)
-        });
+        Signals.emit(sid, "sPlayerLeft",
+            {
+                "username": username,
+                "playersList": getPlayersList(room.users),
+                "host": getHostUsername(room.users)
+            });
     }
 
     /**
@@ -471,19 +509,18 @@ class Signals {
         const name = room.users[pos].username;
         let joinObj = {
             "key": key,
+            "stage": room.stage,
             "playersList": getPlayersList(room.users),
             "host": getHostUsername(room.users),
             "settings": room.settings
         };
         switch (true) {
             case room.stage === "wait":
-                joinObj.stage = "wait";
                 break;
             case room.stage.startsWith("prepare"):
-                joinObj.stage = room.stage;
+                joinObj.pairs = getPairs(room)
                 break;
             case room.stage.startsWith("play"):
-                joinObj.stage = room.stage;
                 joinObj.timetable = getTimetable(key);
                 joinObj.speaker = room.users[room.speaker].username;
                 joinObj.listener = room.users[room.listener].username;
@@ -521,7 +558,7 @@ class Signals {
                 break;
             default:
                 console.log(rooms[key]);
-                break;
+                return;
         }
         Signals.emit(sid, "sYouJoined", joinObj);
     }
@@ -550,13 +587,48 @@ class Signals {
     }
 
     /**
-     * Implementation of sWordCollectionStarted signal
+     * Implementation of sStageStarted signal
      * @see API.md
      *
-     * @param key Id of the Room
+     * @param key Key of the Room
+     * @param stage Name of stage is currently starting
      */
-    static sWordCollectionStarted(key) {
-        Signals.emit(key, "sWordCollectionStarted")
+    static sStageStarted(key, stage) {
+        Signals.emit(key, "sStageStarted", {"stage": stage})
+    }
+
+    /**
+     * Implementation of sPairConstructed signal
+     * @see API.md
+     *
+     * @param key Key of the Room
+     * @param username1 Username of the first player in the new pair
+     * @param username2 Username of the second player in the new pair
+     */
+    static sPairConstructed(key, username1, username2) {
+        Signals.emit(key, "sStageStarted",
+            {
+                "username1": username1,
+                "username2": username2,
+                "pairs": getPairs(rooms[key])
+            })
+    }
+
+    /**
+     * Implementation of sPairDestroyed signal
+     * @see API.md
+     *
+     * @param key Key of the Room
+     * @param username1 Username of the first player in the removed pair
+     * @param username2 Username of the second player in the removed pair\
+     */
+    static sPairDestroyed(key, username1, username2) {
+        Signals.emit(key, "sPairDestroyed",
+            {
+                "username1": username1,
+                "username2": username2,
+                "pairs": getPairs(rooms[key])
+            })
     }
 
     /**
@@ -728,15 +800,10 @@ function sendResponse(req, res, data) {
  */
 app.get("/getDictionaryList", function(req, res) {
     // preparing data
-    let dictionaries = [];
-    for (let i = 0; i < dicts.length; ++i) {
-        dictionaries.push({
-            "name": dicts[i].name,
-            "wordsNumber": dicts[i].wordsNumber
-        });
-    }
 
-    sendResponse(req, res, {"dictionaries": dictionaries});
+    sendResponse(req, res, {"dictionaries":
+            dicts.map(dict => {return {"name": dict.name, "wordsNumber": dict.wordsNumber};})
+    });
 });
 
 /**
@@ -812,39 +879,46 @@ app.get("/getRoomInfo", function(req, res) {
  * Room class
  *
  * Room's info is an object that has fields:
- *     - key --- key of the room
- *     - stage --- stage of the room,
- *     - users --- list of users (User objects)
- *     - settings --- room settings
- *     - hostDictionary --- "dictionary" with words from host:
- *         - words --- list of words
- *         - wordsNumber --- count of words
- *         - name --- "Host's dictionary"
+ *     - `key` --- key of the room.
+ *     - `stage` --- stage of the room.
+ *     - `users` --- list of users (`User` objects).
+ *     - `pairs` --- list of fixed pairs. If `settings.fixedPairs === false` it is not used.
+ *     - `nextPlayers` --- list of the same length as list `users` have.
+ *          For each `i` `nextPlayers[i]` is index in `users` of player that will inherit role player `users[i]` had before.
+ *          If `settings.fixedPairs === false` it is not used.
+ *          IS generated as soon as `pairs` is confirmed.
+ *     - `settings` --- room settings.
+ *     - `hostDictionary` --- "dictionary" with words from host:
+ *         - `words` --- list of words;
+ *         - `wordsNumber` --- count of words;
+ *         - `name` --- "Host's dictionary".
  *
- * if stage === "play_*":
- *     - freshWords --- list of words in hat,
- *     - usedWords --- dictionary of words, that aren't in hat, its keys --- words, each has:
- *         - status --- word status,
- *     - speaker --- position of speaker,
- *     - listener --- position of listener,
- *     - speakerReady --- bool,
- *     - listenerReady --- bool,
- *     - word --- current word,
- *     - startTime --- UTC time of start of explanation (in milliseconds).
- *     - editWords --- list of words to edit
- *     - numberOfTurn --- number of turn
- *     - numberOfLap --- number of lap
- *     - explanationRecords --- array with explanation records (see [here](https://sombreroapi.docs.apiary.io/#reference/1/gamelog) for more info, but `time` is `time` plus `extra_time`)
- *     - start_timestamp --- start timestamp
- *     - end_timestamp --- end timestamp
- *     - explStartMainTime --- start timestamp of word explanation
- *     - explStartExtraTime --- start timestamp of extra time
+ * if `stage === "play_*"`:
+ *     - `freshWords` --- list of words in the hat.
+ *     - `usedWords` --- dictionary of words, that aren't in the hat; its keys --- words, each has:
+ *         - `status` --- word status.
+ *     - `speaker` --- position of speaker.
+ *     - `listener` --- position of listener.
+ *     - `speakerReady: bool`.
+ *     - `listenerReady: bool`.
+ *     - `word` --- current word.
+ *     - `startTime` --- UTC time of start of explanation (in milliseconds).
+ *     - `editWords` --- list of words to edit.
+ *     - `numberOfTurn` --- number of turn.
+ *     - `numberOfLap` --- number of lap.
+ *     - `explanationRecords` --- array with explanation records
+ *     (see [here](https://sombreroapi.docs.apiary.io/#reference/1/gamelog) for more info, but `time` is `time` plus `extra_time`).
+ *     - `start_timestamp` --- start timestamp.
+ *     - `end_timestamp` --- end timestamp.
+ *     - `explStartMainTime` --- start timestamp of word explanation.
+ *     - `explStartExtraTime` --- start timestamp of extra time.
  */
 class Room {
     constructor(key) {
         this.key = key;
         this.stage = "wait";
         this.users = [];
+        this.pairs = [];
         this.settings = Object.assign({}, config.defaultSettings);
         this.hostDictionary = {
             words: [],
@@ -873,6 +947,15 @@ class Room {
         const numberOfPlayers = this.users.length;
         this.speaker = numberOfPlayers - 1;
         this.listener = numberOfPlayers - 2;
+        if (this.settings.fixedPairs) {
+            this.nextPlayers = Array(this.pairs.length)
+            for (let i = 1; i < this.pairs.length; i++) {
+                this.nextPlayers[this.pairs[i-1][0]] = this.pairs[i][0];
+                this.nextPlayers[this.pairs[i-1][1]] = this.pairs[i][1];
+            }
+            this.nextPlayers[this.pairs[this.pairs.length - 1][0]] = this.pairs[0][1];
+            this.nextPlayers[this.pairs[this.pairs.length - 1][1]] = this.pairs[0][0];
+        }
         this.explanationRecords = [];
 
         if (!this.roundPrepare()) {
@@ -915,8 +998,7 @@ class Room {
         this.numberOfTurn++;
 
         // preparing 'speaker' and 'listener'
-        const numberOfPlayers = this.users.length;
-        const nextPair = getNextPair(numberOfPlayers, this.speaker, this.listener);
+        const nextPair = getNextPair(this, this.speaker, this.listener);
         this.speaker = nextPair.speaker;
         this.listener = nextPair.listener;
 
@@ -1034,7 +1116,7 @@ class CheckConditions {
         const name = (data.username).trim().replace(/\s+/g, ' '); // name of the user
 
         // If user is not in his own room, it will be an error
-        if (getRoom(socket) !== socket.id) {
+        if (getRoomKey(socket) !== socket.id) {
             Signals.sFailure(socket.id, "cJoinRoom", 100, "Вы уже находитесь в комнате");
             return false;
         }
@@ -1060,7 +1142,7 @@ class CheckConditions {
             }
 
             // If game has started, only logging in can be performed
-            if (rooms[key].stage.startsWith("play") && pos === -1) {
+            if (rooms[key].stage !== "wait" && pos === -1) {
                 Signals.sFailure(socket.id, "cJoinRoom", 104, "Игра уже идёт, возможен только вход");
                 return false;
             }
@@ -1129,28 +1211,31 @@ class CheckConditions {
         return true;
     }
 
-    static cStartWordCollection(socket, key) {
+    static cEndStage(socket, key, stage) {
         // Checking if user is not in the room
         if (key === socket.id) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Вы не в комнате");
+            Signals.sFailure(socket.id, "cEndStage", null, "Вы не в комнате");
             return false;
         }
 
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Игра закончена");
+            Signals.sFailure(socket.id, "cEndStage", null, "Игра закончена");
             return false;
         }
 
-        // if stage isn't 'wait', something went wrong
-        if (rooms[key].stage !== "wait") {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Состояние игры - не 'wait'");
+        // if `stage` isn't current stage, something went wrong
+        if (rooms[key].stage !== stage) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Неверное значение `stage`");
             return false;
         }
 
-        // if this stage should be present
-        if (rooms[key].settings["wordsetType"] !== "playerWords") {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Данный этап не предусмотрен настройками игры");
+        // if stage isn't interruptible one
+        if (!(stage in {
+            "wait": 0,
+            "prepare_pairMatching": 0
+        })) {
+            Signals.sFailure(socket.id, "cEndStage", null, "Данный этап невозможно закончить.");
             return false;
         }
 
@@ -1158,26 +1243,33 @@ class CheckConditions {
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Все оффлайн");
+            Signals.sFailure(socket.id, "cEndStage", null, "Все оффлайн");
             return false;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cStartWordCollection", null, "Только хост может начать приготовление к игре");
+            Signals.sFailure(socket.id, "cEndStage", null, "Только хост может завершать этап");
             return false;
         }
 
-        // Fail if only one user is online
-        let cnt = 0
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                cnt++;
-            }
+        switch (stage) {
+            case "wait":
+                let usersOnline = 0
+                for (let i = 0; i < rooms[key].users.length; i++) {
+                    if (rooms[key].users[i].online) usersOnline++;
+                }
+                if (rooms[key].settings["fixedPairs"] === true && usersOnline % 2 !== 0) {
+                    Signals.sFailure(socket.id, "cEndStage", null, "Нельзя начать игру по парам с нечётным числом игроков");
+                    return false;
+                }
+                break;
+            case "prepare_pairMatching":
+                if (rooms[key].pairs.length * 2 !== rooms[key].users.length) {
+                    Signals.sFailure(socket.id, "cEndStage", null, "Не все разбились на пары");
+                    return false;
+                }
+                break;
         }
-        if (cnt < 2) {
-            Signals.sFailure(socket.id,"cStartWordCollection", null,
-                "Недостаточно игроков онлайн в комнате, чтобы начать приготовление к игре (необходимо хотя бы два)");
-            return false;
-        }
+
         return true;
     }
 
@@ -1215,28 +1307,22 @@ class CheckConditions {
         return true;
     }
 
-    static cStartGame(socket, key) {
+    static cConstructPair(socket, key, username1, username2) {
         // Checking if user is not in the room
         if (key === socket.id) {
-            Signals.sFailure(socket.id, "cStartGame", 304, "Вы не в комнате");
+            Signals.sFailure(socket.id, "cConstructPair", null, "Вы не в комнате");
             return false;
         }
 
         // if game ended
         if (!(key in rooms)) {
-            Signals.sFailure(socket.id, "cStartGame", 300, "Игра закончена");
+            Signals.sFailure(socket.id, "cConstructPair", null, "Игра закончена");
             return false;
         }
 
-        // if stage isn't 'wait', something went wrong
-        if (rooms[key].stage !== "wait") {
-            Signals.sFailure(socket.id, "cStartGame", 301, "Игра уже начата");
-            return false;
-        }
-
-        // if there should be preparation --- this signal can't be sent from client
-        if (rooms[key].settings["wordsetType"] === "playerWords") {
-            Signals.sFailure(socket.id, "cStartGame", null, "Игра предусматривает набор слов, нельзя начать игру");
+        // if stage isn't 'prepare_wordCollection', something went wrong
+        if (rooms[key].stage !== "prepare_pairMatching") {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Состояние игры - не 'prepare_pairMatching'");
             return false;
         }
 
@@ -1244,26 +1330,88 @@ class CheckConditions {
         const hostPos = findFirstPos(rooms[key].users, "online", true);
         if (hostPos === -1) {
             // very strange case, probably something went wrong, let's log it!
-            Signals.sFailure(socket.id, "cStartGame", 302, "Все оффлайн");
+            Signals.sFailure(socket.id, "cConstructPair", null, "Все оффлайн");
             return false;
         }
         if (rooms[key].users[hostPos].sids[0] !== socket.id) {
-            Signals.sFailure(socket.id, "cStartGame", 303, "Только хост может начать игру");
+            Signals.sFailure(socket.id, "cConstructPair", null, "Только хост может изменять парсоч");
             return false;
         }
 
-        // Fail if only one user is online
-        let cnt = 0
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                cnt++;
-            }
-        }
-        if (cnt < 2) {
-            Signals.sFailure(socket.id,"cStartGame", 302,
-                "Недостаточно игроков онлайн в комнате, чтобы начать игру (необходимо хотя бы два)");
+        // if the `username1` should not make new pair
+        if (!rooms[key].users.map(user => {return user.username}).includes(username1)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которого нет ни у одного игрока в комнате");
             return false;
         }
+        if (rooms[key].pairs.map(pair => {pair.includes(username1)}).includes(true)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которое уже участвует в паре");
+            return false;
+        }
+
+        // if the `username2` should not make new pair
+        if (!rooms[key].users.map(user => {return user.username}).includes(username2)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которого нет ни у одного игрока в комнате");
+            return false;
+        }
+        if (rooms[key].pairs.map(pair => {pair.includes(username2)}).includes(true)) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которое уже участвует в паре");
+            return false;
+        }
+
+        // if `username1 === username2`
+        if (username1 === username2) {
+            Signals.sFailure(socket.id, "cConstructPair", null, "Значение полей `username1` и `username2` идентичны");
+            return false;
+        }
+
+        return true;
+    }
+
+    static cDestroyPair(socket, key, username1, username2) {
+        // Checking if user is not in the room
+        if (key === socket.id) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Вы не в комнате");
+            return false;
+        }
+
+        // if game ended
+        if (!(key in rooms)) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Игра закончена");
+            return false;
+        }
+
+        // if stage isn't 'prepare_wordCollection', something went wrong
+        if (rooms[key].stage !== "prepare_pairMatching") {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Состояние игры - не 'prepare_pairMatching'");
+            return false;
+        }
+
+        // checking whether signal owner is host
+        const hostPos = findFirstPos(rooms[key].users, "online", true);
+        if (hostPos === -1) {
+            // very strange case, probably something went wrong, let's log it!
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Все оффлайн");
+            return false;
+        }
+        if (rooms[key].users[hostPos].sids[0] !== socket.id) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Только хост может изменять парсоч");
+            return false;
+        }
+
+        // if `username1 === username2`
+        if (username1 === username2) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Значение полей `username1` и `username2` идентичны");
+            return false;
+        }
+
+        // if the players are not in the same pair (or any pair either)
+        const pos1 = rooms[key].pairs.findIndex((element) => {return element.includes(username1)})
+        const pos2 = rooms[key].pairs.findIndex((element) => {return element.includes(username2)})
+        if (pos1 !== pos2 || pos1 === -1) {
+            Signals.sFailure(socket.id, "cDestroyPair", null, "Нет пары состоящей из `username1` и `username2`");
+            return false;
+        }
+
         return true;
     }
 
@@ -1447,7 +1595,7 @@ class Callbacks {
         }
 
         // If user haven't joined the room
-        if (getRoom(socket) !== key) {
+        if (getRoomKey(socket) !== key) {
             Signals.sFailure(socket.id, "сJoinRoom", 105, "Не получилось войти в комнату");
             return;
         }
@@ -1545,7 +1693,7 @@ class Callbacks {
                         roomSettings["strictMode"] = value;
                     } else {
                         Signals.sFailure(socket.id, "cApplySettings", null,
-                            `Неверный тип значения поля настроек "aftermathTime": ${typeof(value)} вместо boolean`)
+                            `Неверный тип значения поля настроек "strictMode": ${typeof(value)} вместо boolean`)
                     }
                     break;
                 case "termCondition":
@@ -1641,6 +1789,28 @@ class Callbacks {
                             room.hostDictionary.wordsNumber = words.length
                     }
                     break;
+                case "fixedPairs":
+                    if (typeof(value) === "boolean") {
+                        roomSettings["fixedPairs"] = value;
+                    } else {
+                        Signals.sFailure(socket.id, "cApplySettings", null,
+                            `Неверный тип значения поля настроек "fixedPairs": ${typeof(value)} вместо boolean`)
+                    }
+                    break;
+                case "pairMatching":
+                    switch (false) {
+                        case typeof(value) === "string":
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                `Неверный тип значения поля настроек "pairMatching": ${typeof(value)} вместо string`)
+                            break;
+                        case value in {"random": 0, "host": 0}:
+                            Signals.sFailure(socket.id, "cApplySettings", null,
+                                "Неверное значение поля настроек \"pairMatching\"")
+                            break;
+                        default:
+                            roomSettings["termCondition"] = value;
+                    }
+                    break;
                 default:
                     Signals.sFailure(socket.id, "cApplySettings", null,
                         `Неверное поле настроек "${arg}"`)
@@ -1671,31 +1841,55 @@ class Callbacks {
         Signals.sNewSettings(key);
     }
 
-    static cStartWordCollection(socket, key) {
-        /**
-         * kicking off offline users
-         */
-        // preparing containers
-        let onlineUsers = [];
+    static cEndStage(socket, key, stage) {
+        switch (stage) {
+            case "wait":
+                /**
+                 * kicking off offline users
+                 */
+                // preparing containers
+                let onlineUsers = [];
 
-        // copying each user in proper container
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                onlineUsers.push(rooms[key].users[i]);
-            }
+                // copying each user in proper container
+                for (let i = 0; i < rooms[key].users.length; ++i) {
+                    if (rooms[key].users[i].online) {
+                        onlineUsers.push(rooms[key].users[i]);
+                    }
+                }
+
+                // removing offline users
+                rooms[key].users = onlineUsers;
+
+                switch (true) {
+                    case rooms[key].settings["wordsetType"] === "playerWords":
+                        rooms[key].stage = "prepare_wordCollection";
+
+                        for (let i = 0; i < rooms[key].users.length; ++i) {
+                            rooms[key].users[i].userWords = [];
+                            rooms[key].users[i].userReady = false;
+                        }
+
+                        Signals.sStageStarted(key, "prepare_wordCollection");
+                        break;
+
+                    case rooms[key].settings["fixedPairs"] === true && rooms[key].settings["pairMatching"] === "host":
+                        rooms[key].stage = "prepare_pairMatching";
+
+                        Signals.sStageStarted(key, "prepare_pairMatching");
+                        break;
+
+                    default:
+                        // game preparation
+                        rooms[key].gamePrepare();
+                        break;
+                }
+                break;
+
+            case "prepare_pairMatching":
+                // game preparation
+                rooms[key].gamePrepare();
+                break
         }
-
-        // removing offline users
-        rooms[key].users = onlineUsers;
-
-        rooms[key].stage = "prepare_wordCollection";
-
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            rooms[key].users[i].userWords = [];
-            rooms[key].users[i].userReady = false;
-        }
-
-        Signals.sWordCollectionStarted(key);
     }
 
     static cWordsReady(socket, key, words) {
@@ -1724,25 +1918,12 @@ class Callbacks {
         }
     }
 
-    static cStartGame(socket, key) {
-        /**
-         * kicking off offline users
-         */
-        // preparing containers
-        let onlineUsers = [];
+    static cConstructPair(socket, key, username1, username2) {
+        rooms[key].pairs.push([username1, username2])
+    }
 
-        // copying each user in proper container
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                onlineUsers.push(rooms[key].users[i]);
-            }
-        }
-
-        // removing offline users
-        rooms[key].users = onlineUsers;
-
-        // game preparation
-        rooms[key].gamePrepare();
+    static cDestroyPair(socket, key, username1, username2) {
+        rooms[key].pairs = rooms[key].pairs.filter(el => !el.includes(username1))
     }
 
     static cEndWordExplanation(socket, key, cause) {
@@ -1892,7 +2073,7 @@ class Callbacks {
 
     static disconnect(socket) {
         /**
-         * room key can't be accessed via getRoom(socket)
+         * room key can't be accessed via getRoomKey(socket)
          * findFirstSidPos must be used instead
          */
 
@@ -1972,7 +2153,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cLeaveRoom", undefined);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // Checking signal conditions
         if (!CheckConditions.cLeaveRoom(socket, key)) {
@@ -1992,7 +2173,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cApplySettings", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"settings": "object"}, "cApplySettings")) {
@@ -2008,22 +2189,27 @@ io.on("connection", function(socket) {
     });
 
     /**
-     * Implementation of cStartWordCollection function
+     * Implementation of cEndStage function
      * @see API.md
      */
-    socket.on("cStartWordCollection", function() {
+    socket.on("cEndStage", function(data) {
         if (WRITE_LOGS) {
-            console.log(socket.id, "cStartWordCollection", undefined);
+            console.log(socket.id, "cEndStage", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
-        // checking signal conditions
-        if (!CheckConditions.cStartWordCollection(socket, key)) {
+        // checking input format
+        if (!checkInputFormat(socket, data, {"stage": "string"}, "cEndStage")) {
             return;
         }
 
-        Callbacks.cStartWordCollection(socket, key);
+        // checking signal conditions
+        if (!CheckConditions.cEndStage(socket, key, data.stage)) {
+            return;
+        }
+
+        Callbacks.cEndStage(socket, key, data.words);
     });
 
     /**
@@ -2035,7 +2221,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cWordsReady", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"words": "object"}, "cWordsReady")) {
@@ -2051,22 +2237,51 @@ io.on("connection", function(socket) {
     });
 
     /**
-     * Implementation of cStartGame function
+     * Implementation of cConstructPair function
      * @see API.md
      */
-    socket.on("cStartGame", function() {
+    socket.on("cConstructPair", function(data) {
         if (WRITE_LOGS) {
-            console.log(socket.id, "cStartGame", undefined);
+            console.log(socket.id, "cConstructPair", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
-        // checking signal conditions
-        if (!CheckConditions.cStartGame(socket, key)) {
+        // checking input format
+        if (!checkInputFormat(socket, data, {"username1": "string", "username2": "string"}, "cConstructPair")) {
             return;
         }
 
-        Callbacks.cStartGame(socket, key);
+        // checking signal conditions
+        if (!CheckConditions.cConstructPair(socket, key, data.words)) {
+            return;
+        }
+
+        Callbacks.cConstructPair(socket, key, data.words);
+    });
+
+    /**
+     * Implementation of cDestroyPair function
+     * @see API.md
+     */
+    socket.on("cDestroyPair", function(data) {
+        if (WRITE_LOGS) {
+            console.log(socket.id, "cDestroyPair", data);
+        }
+
+        const key = getRoomKey(socket); // key of the room
+
+        // checking input format
+        if (!checkInputFormat(socket, data, {"username1": "string", "username2": "string"}, "cDestroyPair")) {
+            return;
+        }
+
+        // checking signal conditions
+        if (!CheckConditions.cDestroyPair(socket, key, data.words)) {
+            return;
+        }
+
+        Callbacks.cDestroyPair(socket, key, data.words);
     });
 
     /**
@@ -2078,7 +2293,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cListenerReady", undefined);
         }
 
-        const key = getRoom(socket); // key of room
+        const key = getRoomKey(socket); // key of room
 
         if (!CheckConditions.cListenerReady(socket, key)) {
             return;
@@ -2102,7 +2317,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cSpeakerReady", undefined);
         }
 
-        const key = getRoom(socket); // key of room
+        const key = getRoomKey(socket); // key of room
 
         if (!CheckConditions.cSpeakerReady(socket, key)) {
             return;
@@ -2126,7 +2341,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cEndWordExplanation", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"cause": "string"}, "cEndWordExplanation")) {
@@ -2150,7 +2365,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cWordsEdited", data);
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking input format
         if (!checkInputFormat(socket, data, {"editWords": "object"}, "cWordsEdited")) {
@@ -2174,7 +2389,7 @@ io.on("connection", function(socket) {
             console.log(socket.id, "cEndGame");
         }
 
-        const key = getRoom(socket); // key of the room
+        const key = getRoomKey(socket); // key of the room
 
         // checking signal conditions
         if (!CheckConditions.cEndGame(socket, key)) {
