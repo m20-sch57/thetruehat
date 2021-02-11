@@ -146,6 +146,43 @@
           <div class="checkbox">
             <input
                 :disabled="!editModeOn"
+                v-model="settings.fixedPairs"
+                type="checkbox"
+                id="fixedPairsCheckbox">
+            <label for="fixedPairsCheckbox">
+              <span class="fas fa-check"></span>
+            </label>
+            <label for="fixedPairsCheckbox">
+              <ru draft>Фиксированные пары</ru>
+              <en draft>Fixed pairs</en>
+            </label>
+          </div>
+        </div>
+        <div class="layer" v-show="settings.fixedPairs">
+          <h4 class="label w-80">
+            <ru draft>Пары</ru>
+            <en draft>Пары</en>
+          </h4>
+          <label class="field w-300 w-350-desktop">
+            <select
+                :disabled="!editModeOn"
+                class="select btn-bordered btn-transparent"
+                v-model="settings.pairMatching">
+              <option :value="'random'">
+                <ru draft>Случайные</ru>
+                <en draft>Random</en>
+              </option>
+              <option :value="'host'">
+                <ru draft>Выбирает хост</ru>
+                <en draft>Host</en>
+              </option>
+            </select>
+          </label>
+        </div>
+        <div class="layer detached">
+          <div class="checkbox">
+            <input
+                :disabled="!editModeOn"
                 v-model="settings.strictMode"
                 type="checkbox"
                 id="strictModeCheckbox">
@@ -273,6 +310,10 @@ export default {
 
       res.strictMode = room.settings.strictMode;
       res.termCondition = room.settings.termCondition;
+      res.fixedPairs = room.settings.fixedPairs;
+      if (res.fixedPairs) {
+        res.pairMatching = room.settings.pairMatching;
+      }
 
       // В данном случае wordsetSource это пара из wordsetType и доп. опций.
       // Если wordset набирается из словаря с сервера, то необходимо
@@ -309,6 +350,11 @@ export default {
 
       res.strictMode = this.settings.strictMode;
       res.termCondition = this.settings.termCondition;
+      res.fixedPairs = this.settings.fixedPairs;
+      if (res.fixedPairs) {
+        res.pairMatching = this.settings.pairMatching;
+      }
+
       res.wordsetType = this.settings.wordsetSource[0];
       if (res.wordsetType === "serverDictionary") {
         res.dictionaryId = this.settings.wordsetSource[1];

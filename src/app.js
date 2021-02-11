@@ -68,8 +68,16 @@ export class App {
         this.emit("cApplySettings", {settings});
     }
 
-    startGame() {
-        this.emit("cStartGame");
+    endStage() {
+        this.emit("cEndStage", {stage: this.store.state.room.stage});
+    }
+
+    constructPair(username1, username2) {
+        this.emit("cConstructPair", {username1, username2});
+    }
+
+    destroyPair(username1, username2) {
+        this.emit("cDestroyPair", {username1, username2});
     }
 
     getReady() {
@@ -135,8 +143,13 @@ export class App {
                 this.store.commit("setSettings", data);
             },
 
-            sWordCollectionStarted: () => {
-                this.store.commit("wordCollectionStarted");
+            sStageStarted: data => {
+                if (data.stage === "prepare_wordCollection") {
+                    this.store.commit("wordCollectionStarted");
+                }
+                if (data.stage === "prepare_pairMatching") {
+                    this.store.commit("pairMatchingStarted");
+                }
             },
 
             sGameStarted: data => {
@@ -178,12 +191,12 @@ export class App {
                 this.store.commit("gameEnded", data);
             },
 
-            // sFailure: data => {
-            //     Vue.notify({
-            //     	msg: data.msg,
-            //     	duration: ERROR_TIMEOUT
-            //     });
-            // }
+            sFailure: data => {
+                // Vue.notify({
+                // 	msg: data.msg,
+                // 	duration: ERROR_TIMEOUT
+                // });
+            }
         };
 
         for (let event of Object.keys(handlers)) {

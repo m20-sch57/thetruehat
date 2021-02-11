@@ -24,6 +24,7 @@ const roomModule = {
         stage: null,
         explanationTimer: null,
         players: null,
+        pairs: null,
         host: null,
         speaker: null,
         listener: null,
@@ -43,6 +44,7 @@ const roomModule = {
             state.stage = null;
             state.explanationTimer = null;
             state.players = null;
+            state.pairs = null;
             state.host = null;
             state.speaker = null;
             state.listener = null;
@@ -63,6 +65,10 @@ const roomModule = {
         joinRoom(state, payload) {
             state.connection = "online";
             set(["stage", "players", "host", "settings"])(state, payload);
+
+            if (payload.stage === "prepare_pairMatching") {
+                set("pairs")(state, payload);
+            }
 
             if (payload.stage.startsWith("play")) {
                 set(["speaker", "listener", "timetable"])(state, payload);
@@ -85,6 +91,10 @@ const roomModule = {
         },
         wordCollectionStarted(state) {
             state.stage = "prepare_wordCollection";
+        },
+        pairMatchingStarted(state) {
+            state.stage = "prepare_pairMatching";
+            state.pairs = [];
         },
         gameStarted(state, payload) {
             state.stage = "play_wait";

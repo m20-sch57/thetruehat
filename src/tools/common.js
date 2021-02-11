@@ -34,3 +34,25 @@ export function secMsec(msec) {
     msec -= 10 * sec;
     return `${sec}.${msec}`;
 }
+
+export function removeByValue(array, value) {
+    const ind = array.indexOf(value);
+    if (ind === -1) return false;
+    array.splice(ind, 1);
+    return true;
+}
+
+export function removeByPredicat(array, p) {
+    const ind = array.findIndex(p);
+    if (ind === -1) return false;
+    array.splice(ind, 1);
+    return true;
+}
+
+export function concat(array) {
+    let result = [];
+    for (let elem of array) {
+        result.concat(elem);
+    }
+    return result;
+}

@@ -55,7 +55,7 @@
       <button
           v-show="isHost"
           class="btn btn-green"
-          @click="startGame()"
+          @click="endStage()"
           :disabled="!canStart">
         <ru>Начать игру</ru>
         <en>Start game</en>
@@ -97,8 +97,8 @@ export default {
     copyLink: function () {
       navigator.clipboard.writeText(decodeURIComponent(window.location));
     },
-    startGame: function () {
-      app.startGame();
+    endStage: function () {
+      app.endStage();
     },
     leaveRoom: function () {
       app.leaveRoom();

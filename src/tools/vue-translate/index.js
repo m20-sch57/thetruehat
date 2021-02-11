@@ -1,3 +1,5 @@
+import {concat} from "src/tools";
+
 export default function install(Vue, options = {}) {
 
     let defaultConfig = {
@@ -92,14 +94,9 @@ export default function install(Vue, options = {}) {
                 }
             },
             mounted: function () {
-                const concatArray = (arr) => {
-                    let result = "";
-                    for (let elem of arr) result += elem;
-                    return result;
-                };
                 if (this.draft) {
                     const component = this.$parent.$options.name;
-                    const text = concatArray(this.$slots.default.map(node => node.text || node.elm.innerText));
+                    const text = concat(this.$slots.default.map(node => node.text || node.elm.innerText));
                     warn(`Draft translation at component ${component}: ${lang} - "${text}"`);
                 }
             }

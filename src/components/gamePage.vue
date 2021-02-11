@@ -7,6 +7,7 @@ import preparationPage from "cmp/preparationPage.vue";
 import joinPage from "cmp/joinPage.vue";
 import playPage from "cmp/playPage.vue";
 import resultsPage from "cmp/resultsPage.vue";
+import pairMatchingPage from "cmp/pairMatchingPage.vue";
 
 import store from "src/store.js";
 
@@ -14,7 +15,7 @@ const room = store.state.room;
 
 export default {
   name: "gamePage",
-  components: {preparationPage, joinPage, playPage, resultsPage},
+  components: {preparationPage, joinPage, playPage, resultsPage, pairMatchingPage},
   computed: {
     currentPageComponent: function () {
       if (room.connection === "offline") {
@@ -24,6 +25,8 @@ export default {
       } else if (room.connection === "online") {
         if (room.stage.startsWith("wait")) {
           return "preparationPage";
+        } else if (room.stage === "prepare_pairMatching") {
+          return "pairMatchingPage";
         } else if (room.stage.startsWith("play")) {
           return "playPage";
         } else if (room.stage.startsWith("end")) {
