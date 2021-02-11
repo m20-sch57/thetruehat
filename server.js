@@ -606,7 +606,7 @@ class Signals {
      * @param username2 Username of the second player in the new pair
      */
     static sPairConstructed(key, username1, username2) {
-        Signals.emit(key, "sStageStarted",
+        Signals.emit(key, "sPairConstructed",
             {
                 "username1": username1,
                 "username2": username2,
