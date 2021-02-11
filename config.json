@@ -41,7 +41,7 @@
         }
     ],
     "feedbackPath": "./feedback.log",
-    "env": "staging",
+    "env": "devel",
     "defaultSettings": {
         "delayTime": 3000,
         "explanationTime": 40000,

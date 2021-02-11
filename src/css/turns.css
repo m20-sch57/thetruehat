@@ -1,0 +1,114 @@
+.turns .next-turn, .turns .current-turn {
+    margin-bottom: 10px;
+}
+
+.turns .next-turn h3, .turns .current-turn h3 {
+    margin: 5px 10px;
+    font-weight: normal;
+}
+
+.turns .next-turn .turn-layer, .turns .current-turn .turn-layer {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.turns .previous-turns {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.turns .previous-turns h3 {
+    margin: 5px 10px;
+    font-weight: normal;
+}
+
+.turns .turn-layer {
+    border-radius: 20px;
+}
+
+.turns .previous-turns .turn-layer:hover {
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+
+.turns .turn-layer .turn-top {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 10px;
+}
+
+.turns .turn-layer .turn-bottom {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 10px 5px 10px;
+    font-size: 0.9em;
+    line-height: 1.2em;
+}
+
+.turns .turn-layer.collapsed .turn-bottom {
+    display: none;
+}
+
+.turns .turn-layer .turn-bottom .word {
+    padding: 0.3em 0.7em;
+    margin: 0 3px 3px 0;
+    border-radius: 0.9em;
+}
+
+.turns .turn-layer .turn-bottom .word.explained {
+    background-color: #c7efc7;
+}
+
+.turns .turn-layer .turn-bottom .word.not-explained {
+    background-color: #c9e3ef;
+}
+
+.turns .turn-layer .turn-bottom .word.mistake {
+    background-color: #f5afaf;
+}
+
+.turns .turn-layer .turn-pair {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    min-width: 0;
+}
+
+.turns .turn-layer .turn-pair h4 {
+    flex: 1;
+    margin: 0;
+    font-weight: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.turns .turn-layer .turn-pair .speaker {
+    text-align: left;
+}
+
+.turns .turn-layer .turn-pair img {
+    height: 22px;
+}
+
+.turns .turn-layer .turn-pair .listener {
+    text-align: right;
+}
+
+.turns .turn-layer .turn-words-cnt {
+    flex-basis: 25px;
+    flex-shrink: 0;
+    margin-left: 10px;
+    color: dimgrey;
+    text-align: right;
+}
+
+.turns .turn-layer .arrow-down {
+    transform: rotate(180deg);
+}
+
+.turns .turn-layer.collapsed .arrow-down {
+    transform: none;
+}

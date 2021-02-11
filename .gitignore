@@ -425,6 +425,7 @@ out
 gen
 
 # Caddy server
+caddy
 Caddyfile
 runCaddy
 run
@@ -433,5 +434,8 @@ localCaddyfile
 localRunCaddy
 
 # versioning
-static/version.js
+src/version.js
 version.json
+
+# build
+static/index.html

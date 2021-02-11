@@ -1,0 +1,75 @@
+#feedback article {
+    margin: auto;
+    height: calc(100% - 20px);
+    max-height: 550px;
+    width: calc(100% - 20px);
+    max-width: 700px;
+    font-size: 20px;
+}
+
+#feedback header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 30px;
+    background-color: lightblue;
+}
+
+#feedback header h1 {
+    margin: 0;
+    font-weight: normal;
+}
+
+#feedback header button {
+    height: 2.5em;
+    width: 2.5em;
+    margin-left: auto;
+}
+
+#feedback main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 30px;
+}
+
+#feedback main > label {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#feedback main .checkbox {
+    margin-top: 10px;
+}
+
+#feedback footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+#feedback footer button {
+    padding-left: 40px;
+    padding-right: 40px;
+    font-size: 1.1em;
+}
+
+@media (max-height: 550px), (max-width: 700px) {
+    #feedback article {
+        max-height: initial;
+        max-width: initial;
+    }
+
+    #feedback header {
+        padding: 20px;
+        font-size: 80%;
+    }
+
+    #feedback footer {
+        padding: 15px;
+    }
+
+    #feedback footer button {
+        width: 100%;
+    }
+}

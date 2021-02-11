@@ -1,0 +1,41 @@
+#news article {
+    font-size: 20px;
+}
+
+#news .content {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 30px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1000px;
+}
+
+#news .news-post {
+    padding-bottom: 10px;
+    margin-top: 20px;
+    border-bottom: 1px solid lightgrey;
+}
+
+#news .news-post .title {
+    margin: 5px 0;
+    font-weight: normal;
+}
+
+#news .news-post .date {
+    margin-right: 10px;
+    color: grey;
+}
+
+#news .news-post .version {
+    margin-right: 10px;
+    color: grey;
+}
+
+#news .news-post .new {
+    color: green;
+}
+
+#news .news-post p, #news .news-post ul {
+    text-align: justify;
+}

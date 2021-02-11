@@ -1,0 +1,78 @@
+#playTurn header {
+    background-color: transparent;
+}
+
+#playTurn header h1 {
+    text-align: center;
+}
+
+#playTurn header .volume span {
+    min-width: 1.1em;
+    text-align: left;
+}
+
+#playTurn main .delay-timer {
+    height: 80px;
+    width: 80px;
+    padding: calc(40px - 0.5em) 0;
+    color: white;
+    border-radius: 50%;
+    font-size: 2em;
+    font-weight: bold;
+    line-height: 1em;
+    text-align: center;
+    animation-name: changeColor;
+    animation-fill-mode: both;
+}
+
+#playTurn main .explanation-timer {
+    margin: 0;
+    font-weight: normal;
+}
+
+#playTurn main .aftermath-timer {
+    margin: 0;
+    font-weight: normal;
+    color: red;
+}
+
+#playTurn footer {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin-bottom: 40px;
+    min-height: calc(2.5em + 21px);
+    text-align: center;
+}
+
+#playTurn footer.hidden {
+    visibility: hidden;
+}
+
+@media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
+    #playTurn footer {
+        margin-bottom: 0;
+        border-top: 1px solid whitesmoke;
+    }
+}
+
+@keyframes changeColor {
+    0% {
+        background-color: forestgreen;
+    }
+    22.22% {
+        background-color: forestgreen;
+    }
+    44.44% {
+        background-color: gold;
+    }
+    55.55% {
+        background-color: gold;
+    }
+    77.77% {
+        background-color: red;
+    }
+    100% {
+        background-color: red;
+    }
+}

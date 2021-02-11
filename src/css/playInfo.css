@@ -1,0 +1,47 @@
+#playInfo header {
+    background-color: lightblue;
+}
+
+#playInfo main .turns {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 15px;
+}
+
+#playInfo footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px;
+    border-top: 1px solid whitesmoke;
+}
+
+#playInfo footer .remaining {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0 15px;
+}
+
+#playInfo footer .remaining h1, #playInfo footer .remaining h4 {
+    flex-grow: 1;
+    margin: 0 3px;
+    font-weight: normal;
+    text-align: center;
+}
+
+#playInfo footer .remaining h1 {
+    line-height: 28px;
+}
+
+#playInfo footer .remaining h4 {
+    line-height: 35px;
+}
+
+#playInfo footer button {
+    margin: 0;
+}

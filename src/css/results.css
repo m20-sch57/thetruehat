@@ -1,0 +1,52 @@
+#results {
+    padding: 10px;
+}
+
+#results article {
+    flex-grow: 1;
+    margin: 10px;
+    font-size: 20px;
+}
+
+#results header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+}
+
+#results header h1 {
+    flex-grow: 1;
+    margin: 0;
+    font-weight: normal;
+}
+
+#results header button.btn-icon {
+    height: 2em;
+    width: 2em;
+}
+
+#results header .expand, #results header .close {
+    visibility: hidden;
+}
+
+@media (max-width: 1250px) {
+    #results header .expand, #results header .close {
+        visibility: visible;
+    }
+}
+
+@media (max-width: 800px) {
+    #results {
+        padding: 5px;
+    }
+
+    #results article {
+        margin: 5px;
+    }
+
+    #results header {
+        padding: 15px;
+        font-size: 80%;
+    }
+}

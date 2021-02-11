@@ -1,0 +1,124 @@
+#observationScreen {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 15px;
+}
+
+#observationScreen .turn-pair {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto 0;
+}
+
+#observationScreen .turn-pair .player {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-basis: 100px;
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 100%;
+}
+
+#observationScreen .turn-pair .player.speaker {
+    flex-direction: row;
+    text-align: left;
+}
+
+#observationScreen .turn-pair .player.listener {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+#observationScreen .turn-pair .player-main {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    min-width: 0;
+}
+
+#observationScreen .turn-pair .player-icon {
+    margin: 10px;
+    font-size: 2em;
+}
+
+#observationScreen .turn-pair .name {
+    margin: 0;
+    font-weight: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#observationScreen .turn-pair .player.speaker .name {
+    color: #20ac20;
+}
+
+#observationScreen .turn-pair .player.listener .name {
+    color: #25abc4;
+}
+
+#observationScreen .turn-pair .action {
+    margin: 0;
+    color: grey;
+    font-weight: normal;
+}
+
+#observationScreen .turn-pair .middle {
+    display: flex;
+    margin: 0 20px;
+    min-height: 100px;
+    max-height: 100px;
+    min-width: 220px;
+}
+
+#observationScreen .turn-pair .middle h2 {
+    margin: auto;
+}
+
+#observationScreen .turn-pair .middle img {
+    margin: auto;
+    width: 60px;
+}
+
+#observationScreenFooter .ready {
+    margin: auto;
+    width: 300px;
+}
+
+#observationScreenFooter .your-status {
+    margin: auto;
+    font-weight: normal;
+}
+
+#observationScreenFooter .your-status .short {
+    display: none;
+}
+
+@media (max-width: 770px), (min-width: 800px) and (max-width: 1100px) {
+    #observationScreen .turn-pair {
+        flex-direction: column;
+    }
+
+    #observationScreen .turn-pair .middle img {
+        transform: rotate(90deg);
+    }
+
+    #observationScreenFooter .ready {
+        flex-grow: 1;
+        max-width: 400px;
+    }
+}
+
+@media (max-width: 500px), (min-width: 800px) and (max-width: 950px) {
+    #observationScreenFooter .your-status .full {
+        display: none;
+    }
+
+    #observationScreenFooter .your-status .short {
+        display: initial;
+    }
+}
