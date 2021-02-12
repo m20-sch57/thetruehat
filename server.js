@@ -954,9 +954,15 @@ class Room {
         this.numberOfTurn = 0;
         this.numberOfLap = -1;
 
-        const numberOfPlayers = this.users.length;
-        this.speaker = numberOfPlayers - 1;
-        this.listener = numberOfPlayers - 2;
+        if (this.settings.fixedPairs) {
+            this.speaker = this.pairs[this.pairs.length - 1][1];
+            this.listener = this.pairs[this.pairs.length - 1][0];
+        } else {
+            const numberOfPlayers = this.users.length;
+            this.speaker = numberOfPlayers - 1;
+            this.listener = numberOfPlayers - 2;
+        }
+
         if (this.settings.fixedPairs) {
             this.nextPlayers = Array(this.pairs.length)
             for (let i = 1; i < this.pairs.length; i++) {
