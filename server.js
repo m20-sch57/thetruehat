@@ -1368,7 +1368,7 @@ class CheckConditions {
         }
         const pos2 = rooms[key].users.findIndex(user => user.username === username2)
         if (rooms[key].pairs
-            .map(pair => pair.includes(pos1))
+            .map(pair => pair.includes(pos2))
             .includes(true)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которое уже участвует в паре");
             return false;
@@ -1661,8 +1661,7 @@ class Callbacks {
         const room = rooms[key];
         const roomSettings = room.settings;
 
-        for (let arg in newSettings) {
-            const value = newSettings[arg];
+        for (let [arg, value] of Object.keys(newSettings)) {
             switch (arg) {
                 case "delayTime":
                     switch (false) {
