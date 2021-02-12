@@ -1661,7 +1661,7 @@ class Callbacks {
         const room = rooms[key];
         const roomSettings = room.settings;
 
-        for (let [arg, value] of Object.keys(newSettings)) {
+        for (let [arg, value] of Object.entries(newSettings)) {
             switch (arg) {
                 case "delayTime":
                     switch (false) {
