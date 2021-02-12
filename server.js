@@ -113,7 +113,7 @@ function genFreeKey() {
  * @return list of players
  */
 function getPlayersList(users) {
-    return users.map(el => {return {"username": el.username, "online": el.online};});
+    return users.map(el => ({"username": el.username, "online": el.online}));
 }
 
 /**
@@ -124,7 +124,7 @@ function getPlayersList(users) {
  * @return list of players
  */
 function getPairs(room) {
-    return room.pairs.map(el => {return el.map(pos => room.users[pos].username);});
+    return room.pairs.map(el => el.map(pos => room.users[pos].username));
 }
 
 /**
@@ -802,7 +802,7 @@ app.get("/getDictionaryList", function(req, res) {
     // preparing data
 
     sendResponse(req, res, {"dictionaries":
-            dicts.map(dict => {return {"name": dict.name, "wordsNumber": dict.wordsNumber};})
+            dicts.map(dict => ({"name": dict.name, "wordsNumber": dict.wordsNumber}))
     });
 });
 
@@ -1349,21 +1349,27 @@ class CheckConditions {
         }
 
         // if the `username1` should not make new pair
-        if (!rooms[key].users.map(user => {return user.username}).includes(username1)) {
+        if (!rooms[key].users.map(user => user.username).includes(username1)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которого нет ни у одного игрока в комнате");
             return false;
         }
-        if (rooms[key].pairs.map(pair => {pair.includes(rooms[key].users.findIndex(user => user.username === username1))}).includes(true)) {
+        const pos1 = rooms[key].users.findIndex(user => user.username === username1)
+        if (rooms[key].pairs
+            .map(pair => pair.includes(pos1))
+            .includes(true)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username1` содержит имя, которое уже участвует в паре");
             return false;
         }
 
         // if the `username2` should not make new pair
-        if (!rooms[key].users.map(user => {return user.username}).includes(username2)) {
+        if (!rooms[key].users.map(user => user.username).includes(username2)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которого нет ни у одного игрока в комнате");
             return false;
         }
-        if (rooms[key].pairs.map(pair => {pair.includes(rooms[key].users.findIndex(user => user.username === username2))}).includes(true)) {
+        const pos2 = rooms[key].users.findIndex(user => user.username === username2)
+        if (rooms[key].pairs
+            .map(pair => pair.includes(pos2))
+            .includes(true)) {
             Signals.sFailure(socket.id, "cConstructPair", null, "Поле `username2` содержит имя, которое уже участвует в паре");
             return false;
         }
@@ -1415,9 +1421,11 @@ class CheckConditions {
         }
 
         // if the players are not in the same pair (or any pair either)
-        const pos1 = rooms[key].pairs.findIndex((element) => {return element.includes(username1)})
-        const pos2 = rooms[key].pairs.findIndex((element) => {return element.includes(username2)})
-        if (pos1 !== pos2 || pos1 === -1) {
+        const pos1 = rooms[key].users.findIndex(user => user.username === username1)
+        const pos2 = rooms[key].users.findIndex(user => user.username === username2)
+        const pair1 = rooms[key].pairs.findIndex((element) => element.includes(pos1))
+        const pair2 = rooms[key].pairs.findIndex((element) => element.includes(pos2))
+        if (pair1 !== pair2 || pair1 === -1) {
             Signals.sFailure(socket.id, "cDestroyPair", null, "Нет пары состоящей из `username1` и `username2`");
             return false;
         }
@@ -1653,8 +1661,7 @@ class Callbacks {
         const room = rooms[key];
         const roomSettings = room.settings;
 
-        for (let arg in newSettings) {
-            const value = newSettings[arg];
+        for (let [arg, value] of Object.entries(newSettings)) {
             switch (arg) {
                 case "delayTime":
                     switch (false) {
