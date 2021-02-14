@@ -27,18 +27,28 @@
 import {removeByPredicat} from "src/tools";
 import app from "src/app.js";
 
+import {mapState, mapGetters} from "vuex";
+
 export default {
   name: "pairMatchingPage",
 
   data: function () {
     return {
-      pairs: this.$store.state.room.pairs,
+      localPairs: this.$store.state.room.pairs,
       players: this.$store.state.room.players,
       selectedUsername: null
     };
   },
 
   computed: {
+    ...mapState({
+      serverPairs: state => state.room.pairs
+    }),
+    ...mapGetters(["isHost"]),
+    pairs: function () {
+      if (this.isHost) return this.localPairs;
+      return this.serverPairs;
+    },
     lonePlayers: function () {
       return this.players.map(user => user.username).filter(username =>
         !(this.pairs.map(pair => pair[0]).concat(this.pairs.map(pair => pair[1])))
@@ -48,6 +58,7 @@ export default {
 
   methods: {
     constructPair: function (username1, username2) {
+      if (!this.isHost) return;
       if (!this.lonePlayers.includes(username1)) {
         console.error(`${username1} is already in pair.`);
         return;
@@ -56,12 +67,13 @@ export default {
         console.error(`${username2} is already in pair.`);
         return;
       }
-      this.pairs.push([username1, username2]);
+      this.localPairs.push([username1, username2]);
       app.constructPair(username1, username2);
     },
 
     destroyPair: function (username1, username2) {
-      if (!removeByPredicat(this.pairs, pair => (
+      if (!this.isHost) return;
+      if (!removeByPredicat(this.localPairs, pair => (
         pair[0] === username1 && pair[1] === username2
       ))) {
         console.error(`${username1} and ${username2} aren't a pair`);
@@ -71,6 +83,7 @@ export default {
     },
 
     selectUsername(username) {
+      if (!this.isHost) return;
       if (this.selectedUsername === null) {
         this.selectedUsername = username;
       } else if (this.selectedUsername === username) {

@@ -153,11 +153,11 @@ export class App {
             },
 
             sPairConstructed: data => {
-                //
+                this.store.commit("constructPair", data);
             },
 
             sPairDestroyed: data => {
-                //
+                this.store.commit("destroyPair", data);
             },
 
             sGameStarted: data => {
@@ -199,7 +199,7 @@ export class App {
                 this.store.commit("gameEnded", data);
             },
 
-            sFailure: data => {
+            sFailure: () => {
                 // Vue.notify({
                 // 	msg: data.msg,
                 // 	duration: ERROR_TIMEOUT

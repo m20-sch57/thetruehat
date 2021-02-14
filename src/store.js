@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import {timeSync} from "./tools";
+import {removeByPredicat} from "./tools";
 
 const getTime = () => timeSync.getTime();
 
@@ -95,6 +96,14 @@ const roomModule = {
         pairMatchingStarted(state) {
             state.stage = "prepare_pairMatching";
             state.pairs = [];
+        },
+        constructPair(state, {username1, username2}) {
+            state.pairs.push([username1, username2]);
+        },
+        destroyPair(state, {username1, username2}) {
+            removeByPredicat(state.pairs, pair => (
+                pair[0] === username1 && pair[1] === username2
+            ));
         },
         gameStarted(state, payload) {
             state.stage = "play_wait";
