@@ -164,7 +164,8 @@
       <button
           v-show="editModeOn"
           @click="applySettings()"
-          class="btn btn-blue">
+          class="btn btn-blue"
+          :disabled="!isSettingsChanged">
         <ru>Сохранить</ru>
         <en draft>Save</en>
       </button>
@@ -179,17 +180,20 @@
 <script>
 import app from "src/app.js";
 import store from "src/store.js";
-import {DICTIONARY_MAX_SIZE} from "src/config.js";
+import {DICTIONARY_MAX_SIZE, DEFAULT_GAME_SETTINGS} from "src/config.js";
 
 const room = store.state.room;
 
 export default {
   name: "preparationSettingsSection",
+
   data: function () {
     return {
-      settings: {}
+      settings: {},
+      isSettingsChanged: false
     };
   },
+
   computed: {
     serverSettings: function () {
       return room.settings;
@@ -213,6 +217,7 @@ export default {
       return store.getters.isHost;
     }
   },
+
   methods: {
     applySettings() {
       app.applySettings(this.storeFromLocalSettings());
@@ -263,7 +268,7 @@ export default {
     // Следующие две функции преобразуют настройки
     // из одного представления в другое.
     localFromStoreSettings() {
-      let res = {};
+      let res = DEFAULT_GAME_SETTINGS;
 
       // На сервере время хранится в миллисекундах
       // В форме для пользователя его нужно вводить в секундах
@@ -325,14 +330,28 @@ export default {
         res.wordset = this.settings.wordset;
       }
       return res;
+    },
+    useStoreSettings: function() {
+      this.settings = this.localFromStoreSettings();
+      // Использую здесь Vue.nextTick поскольку иначе watcher, который следит
+      // следит за настройками изменит поле isSettingsChanged обратно на true
+      this.$nextTick(() => {this.isSettingsChanged = false;});
     }
   },
+
   created: function () {
-    this.settings = this.localFromStoreSettings();
+    this.useStoreSettings();
   },
+
   watch: {
     serverSettings: function () {
-      this.settings = this.localFromStoreSettings();
+      this.useStoreSettings();
+    },
+    settings: {
+      handler: function () {
+        this.isSettingsChanged = true;
+      },
+      deep: true
     }
   }
 };
