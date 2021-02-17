@@ -10,7 +10,7 @@
       </button>
     </header>
     <main class="scrollable-wrapper">
-      <div class="scrollable">
+      <div class="scrollable custom-scroll">
         <div class="layer">
           <h4 class="label w-80">
             <ru>Играть</ru>

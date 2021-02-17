@@ -33,7 +33,7 @@
         </button>
       </div>
       <div class="scrollable-wrapper">
-        <div class="scrollable">
+        <div class="scrollable custom-scroll">
           <div
               class="user-layer"
               v-for="username in $store.getters.onlinePlayers"
