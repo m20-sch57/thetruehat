@@ -1,26 +1,3 @@
-export function debounce(func, delay) {
-    let lastCallTime, lastCall;
-    return function (...args) {
-        let now = performance.now();
-        if (lastCallTime && now - lastCallTime < delay) {
-            clearTimeout(lastCall);
-        }
-        lastCallTime = now;
-        lastCall = setTimeout(() => func(...args), delay);
-    };
-}
-
-export function throttle(func, cooldownTime) {
-    let callTime = performance.now() - cooldownTime;
-    return function (...args) {
-        let now = performance.now();
-        if (now - callTime >= cooldownTime) {
-            callTime = now;
-            return func(...args);
-        }
-    };
-}
-
 export function minSec(sec) {
     let min = Math.floor(sec / 60);
     sec -= 60 * min;

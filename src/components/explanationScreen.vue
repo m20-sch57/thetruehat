@@ -41,7 +41,7 @@ import word from "cmp/word.vue";
 
 import {mapState} from "vuex";
 import app from "src/app.js";
-import {throttle} from "src/tools";
+import throttle from "lodash/throttle";
 import {GAME_BUTTON_COOLDOWN_TIME} from "src/config.js";
 
 export default {
@@ -58,9 +58,9 @@ export default {
     })
   },
   methods: {
-    explainedAction: throttle(() => app.explained(), GAME_BUTTON_COOLDOWN_TIME),
-    notExplainedAction: throttle(() => app.notExplained(), GAME_BUTTON_COOLDOWN_TIME),
-    mistakeAction: throttle(() => app.mistake(), GAME_BUTTON_COOLDOWN_TIME),
+    explainedAction: throttle(() => app.explained(), GAME_BUTTON_COOLDOWN_TIME, {trailing: false}),
+    notExplainedAction: throttle(() => app.notExplained(), GAME_BUTTON_COOLDOWN_TIME, {trailing: false}),
+    mistakeAction: throttle(() => app.mistake(), GAME_BUTTON_COOLDOWN_TIME, {trailing: false}),
   },
   mounted: function () {
     const wordContainer = document.getElementById("word-container");

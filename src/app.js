@@ -3,6 +3,8 @@ import {timeSync} from "./tools";
 // import Vue from "vue";
 // import {ERROR_TIMEOUT} from "./config.js";
 
+import cloneDeep from "lodash/clonedeep";
+
 const getTime = () => timeSync.getTime();
 
 export class App {
@@ -40,7 +42,7 @@ export class App {
         }
         this.log({
             data: {event, data},
-            consoleData: [event, msg, data],
+            consoleData: [event, msg+"\n", cloneDeep(data)],
             level
         });
     }

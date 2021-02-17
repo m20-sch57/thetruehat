@@ -154,7 +154,7 @@
 import * as api from "src/api.js";
 import app from "src/app.js";
 import {VALIDATION_TIMEOUT} from "src/config.js";
-import {debounce} from "src/tools";
+import debounce from "lodash/debounce";
 
 export default {
   name: "joinPage",
@@ -173,9 +173,9 @@ export default {
   computed: {
     validated: function () {
       return (
-          this.validationStatus.username === "accepted" &&
-          (this.validationStatus.key === "not-created" ||
-              this.validationStatus.key === "created"));
+        this.validationStatus.username === "accepted" &&
+        (this.validationStatus.key === "not-created" ||
+            this.validationStatus.key === "created"));
     }
   },
   methods: {
