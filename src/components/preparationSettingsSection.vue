@@ -331,11 +331,13 @@ export default {
       }
       return res;
     },
-    useStoreSettings: function() {
+    useStoreSettings: function () {
       this.settings = this.localFromStoreSettings();
       // Использую здесь Vue.nextTick поскольку иначе watcher, который следит
       // следит за настройками изменит поле isSettingsChanged обратно на true
-      this.$nextTick(() => {this.isSettingsChanged = false;});
+      this.$nextTick(() => {
+        this.isSettingsChanged = false;
+      });
     }
   },
 

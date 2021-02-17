@@ -42,7 +42,7 @@ export class App {
         }
         this.log({
             data: {event, data},
-            consoleData: [event, msg+"\n", cloneDeep(data)],
+            consoleData: [event, msg + "\n", cloneDeep(data)],
             level
         });
     }
