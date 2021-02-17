@@ -34,11 +34,11 @@ if (localStorage.readNews === undefined) {
     localStorage.readNews = "[]";
 }
 
-let vh = window.innerHeight * 0.01;
-document.documentElement.style.setProperty("--vh", `${vh}px`);
+let windowHeight = window.innerHeight;
+document.body.style.setProperty("min-height", `${windowHeight}px`);
 window.addEventListener("resize", () => {
-    let vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty("--vh", `${vh}px`);
+    windowHeight = window.innerHeight;
+    document.body.style.setProperty("min-height", `${windowHeight}px`);
 });
 
 let vue = new Vue({
