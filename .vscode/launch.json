@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch server.js",
+            "program": "${workspaceFolder}/server.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "name": "Launch feedbackServer.js",
+            "program": "${workspaceFolder}/feedbackServer.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "name": "Npm build",
+            "request": "launch",
+            "runtimeArgs": [
+                "run",
+                "build"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "name": "Caddy",
+            "request": "launch",
+            "command": "caddy -conf=${workspaceFolder}\\caddy\\Caddyfile -pidfile=${workspaceFolder}\\caddy\\caddy.pid",
+            "type": "node-terminal"
+        }
+    ]
+}
