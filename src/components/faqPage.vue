@@ -4,68 +4,95 @@
       <div class="scrollable">
         <div class="content">
           <h3 class="question">
-            Мой друг создал игру, как мне к ней присоединиться?
+            <ru>Мой друг создал игру, как мне к ней присоединиться?</ru>
+            <en>My friend has created a game, how do I join it?</en>
           </h3>
           <p class="answer">
-            Для этого он должен прислать вам ключ комнаты, который необходимо вставить в соответствующее поле.
+            <ru>Для этого он должен прислать вам ключ комнаты, который необходимо вставить в соответствующее поле.</ru>
+            <en>They should send you the game key, so you can paste it in the corresponding field.</en>
           </p>
 
           <h3 class="question">
-            Что обозначают слова, которые используются как ключи комнат?
+            <ru>Что обозначают слова, которые используются как ключи комнат?</ru>
+            <en>What is the meaning of the words which are used as room keys?</en>
           </h3>
           <p class="answer">
-            Это не слова, а случайные последовательности букв. Нет, они не попадутся в шляпе.
+            <ru>Это не слова, а случайные последовательности букв. Нет, они не попадутся в шляпе.</ru>
+            <en>These "words" are just random letter sequences, they don't mean anything. You won't find any of them in
+              the game.
+            </en>
           </p>
 
           <h3 class="question">
-            Как включить голосовую связь?
+            <ru>Как включить голосовую связь?</ru>
+            <en>How do I enable a voice chat?</en>
           </h3>
           <p class="answer">
-            Пока никак. Предполагается использование сторонних сервисов для видео и голосового общения, таких как Zoom,
-            Skype или Discord.
+            <ru>Пока никак. Предполагается использование сторонних сервисов для видео и голосового общения, таких как
+              Zoom, Skype или Discord.
+            </ru>
+            <en>This feature is not available yet. We assume that you are using some third-party service for audio/video
+              communication, such as Zoom, Skype or Discord.
+            </en>
           </p>
 
           <h3 class="question">
-            Как поменять начальное количество слов в шляпе?
+            <ru>Как поменять начальное количество слов в шляпе?</ru>
+            <en>How do I change the number of words in the hat?</en>
           </h3>
+
           <p class="answer">
-            Владелец комнаты может сделать это в настройках комнаты перед началом игры.
+            <ru>Владелец комнаты может сделать это в настройках комнаты перед началом игры.</ru>
+            <en>The room holder can do this on the game settings page.</en>
           </p>
 
           <h3 class="question">
-            Можно ли играть по парам?
+            <ru>Можно ли играть по парам?</ru>
+            <en>Is it possible to play in pairs?</en>
           </h3>
           <p class="answer">
-            Да, владелец комнаты может указать режим игры в настройках комнаты.
+            <ru>Да, владелец комнаты может указать режим игры в настройках комнаты.</ru>
+            <en>Yes, the room holder can specify the game mode on the game settings page.</en>
           </p>
 
           <h3 class="question">
-            Когда заканчивается игра?
+            <ru>Когда заканчивается игра?</ru>
+            <en>When does the game end?</en>
           </h3>
           <p class="answer">
-            Когда все слова в шляпе будут объяснены или будет сыграно необходимое число кругов. Владелец комнаты также
-            может досрочно закончить игру, нажав на кнопку с флажком.
+            <ru>Когда все слова в шляпе будут объяснены или будет сыграно необходимое число кругов. Владелец комнаты
+              также может досрочно закончить игру, нажав на кнопку с флажком.
+            </ru>
+            <en>When all the words in the hat are explained or adjusted number of round has been played. The room host
+              can also finish the game by pressing the button with a flag.
+            </en>
           </p>
 
           <h3 class="question">
-            Откуда берутся слова в шляпе?
+            <ru>Откуда берутся слова в шляпе?</ru>
+            <en>Where do the words come from?</en>
           </h3>
           <p class="answer">
-            Из словаря Sombrero API.
+            <ru>Из словаря Sombrero API.</ru>
+            <en>Russian words are taken from Sombrero API.</en>
           </p>
 
           <h3 class="question">
-            Я случайно закрыл вкладку с игрой, что мне делать?
+            <ru>Я случайно закрыл вкладку с игрой, что мне делать?</ru>
+            <en>I accidentally closed the game tab. What should I do?</en>
           </h3>
           <p class="answer">
-            Нужно зайти в комнату по её ключу под своим именем.
+            <ru>Нужно зайти в комнату по её ключу под своим именем.</ru>
+            <en>Just enter the game room by typing in its key and your name.</en>
           </p>
 
           <h3 class="question">
-            Мне не нравится звук. Как его отключить?
+            <ru>Мне не нравится звук. Как его отключить?</ru>
+            <en>I don't like the sound. How can I turn it off?</en>
           </h3>
           <p class="answer">
-            Звук можно выключить на странице игры, нажав на кнопку в правом верхем углу.
+            <ru>Звук можно выключить на странице игры, нажав на кнопку в правом верхем углу.</ru>
+            <en>It can be done on the game page by pressing the button in the right corner.</en>
           </p>
         </div>
       </div>

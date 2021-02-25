@@ -1,8 +1,10 @@
 <template>
   <article class="window" id="preparationSettings">
     <header>
-      <ru tag="h1">Параметры игры</ru>
-      <en tag="h1" draft>Game settings</en>
+      <h1>
+        <ru>Параметры игры</ru>
+        <en draft>Game settings</en>
+      </h1>
       <button
           class="btn-icon btn-transparent close"
           @click="$emit('swipe-to', 0)">

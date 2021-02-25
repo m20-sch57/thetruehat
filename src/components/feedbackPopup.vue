@@ -2,8 +2,10 @@
   <div class="popup-wrapper" id="feedback">
     <article class="popup-window">
       <header>
-        <ru tag="h1">Обратная связь</ru>
-        <en tag="h1">Feedback</en>
+        <h1>
+          <ru>Обратная связь</ru>
+          <en>Feedback</en>
+        </h1>
         <button
             class="btn-icon btn-transparent"
             @click="$emit('close')">

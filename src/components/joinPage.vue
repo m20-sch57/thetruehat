@@ -2,8 +2,10 @@
   <div class="page" id="join">
     <article class="window">
       <header>
-        <ru tag="h1">Вход в игру</ru>
-        <en tag="h1" draft>Enter the game</en>
+        <h1>
+          <ru>Вход в игру</ru>
+          <en draft>Enter the game</en>
+        </h1>
       </header>
       <main>
         <section class="game-key">
@@ -44,20 +46,26 @@
                 <div></div>
                 <div></div>
               </div>
-              <ru tag="h5">Проверка</ru>
-              <en tag="h5" draft>Checking</en>
+              <h5>
+                <ru>Проверка</ru>
+                <en draft>Checking</en>
+              </h5>
             </div>
             <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
-              <ru tag="h5">Игра не началась</ru>
-              <en tag="h5" draft>Game not started</en>
+              <h5>
+                <ru>Игра не началась</ru>
+                <en draft>Game not started</en>
+              </h5>
               <button class="select btn-transparent">{{ playersList.length }}
                 <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
                 <en>{{ $p(playersList.length, "player", "players") }}</en>
               </button>
             </div>
             <div class="room-info created" v-show="validationStatus.key === 'created'">
-              <ru tag="h5">Игра уже идёт</ru>
-              <en tag="h5" draft>Game already started</en>
+              <h5>
+                <ru>Игра уже идёт</ru>
+                <en draft>Game already started</en>
+              </h5>
               <button class="select btn-transparent">{{ playersList.length }}
                 <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
                 <en>{{ $p(playersList.length, "player", "players") }}</en>
@@ -88,12 +96,10 @@
             <div
                 class="name-info no-name"
                 v-show="validationStatus.username === 'empty'">
-              <ru tag="h5">
-                Имя нужно, чтобы игроки могли вас опознать
-              </ru>
-              <en tag="h5" draft>
-                The name is necessary so that the players can identify you
-              </en>
+              <h5>
+                <ru>Имя нужно, чтобы игроки могли вас опознать</ru>
+                <en draft>The name is necessary so that the players can identify you</en>
+              </h5>
             </div>
             <div
                 class="name-info checking"
@@ -104,8 +110,10 @@
                 <div></div>
                 <div></div>
               </div>
-              <ru tag="h5">Проверка</ru>
-              <en tag="h5" draft>Checking</en>
+              <h5>
+                <ru>Проверка</ru>
+                <en draft>Checking</en>
+              </h5>
             </div>
             <div
                 class="name-info accepted"
