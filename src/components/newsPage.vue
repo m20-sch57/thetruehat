@@ -3,7 +3,6 @@
     <article class="scrollable-wrapper">
       <div class="scrollable">
         <div class="content">
-          <!-- :date="new Date('2021-02-23')" -->
           <news-post
               :id="2"
               :date="new Date('2020-08-26')"

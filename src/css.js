@@ -19,5 +19,6 @@ import "./css/resultsHistory.css";
 import "./css/resultsTable.css";
 import "./css/resultsStatistics.css";
 import "./css/news.css";
+import "./css/faq.css";
 import "./css/rules.css";
 import "./css/feedback.css";

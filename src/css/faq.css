@@ -1,0 +1,23 @@
+#faq article {
+    font-size: 20px;
+}
+
+#faq .content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 30px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1000px;
+}
+
+#faq .question {
+    margin: 15px 0;
+}
+
+#faq .answer {
+    margin: 0 0 15px 0;
+    text-align: justify;
+}
