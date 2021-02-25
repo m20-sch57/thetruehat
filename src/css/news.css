@@ -17,7 +17,7 @@
     border-bottom: 1px solid lightgrey;
 }
 
-#news .news-post .title {
+#news .news-post h2 {
     margin: 5px 0;
     font-weight: normal;
 }

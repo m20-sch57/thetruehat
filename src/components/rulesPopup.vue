@@ -119,8 +119,10 @@
             <ul>
               <ru tag="li">При объяснении слова нельзя использовать однокоренные слова</ru>
               <en tag="li">You can't use cognate words</en>
+
               <ru tag="li">При объяснении нельзя использовать несуществующие слова</ru>
               <en tag="li">You can't use non-existent words</en>
+
               <ru tag="li">Нельзя объяснять слово по буквам</ru>
               <en tag="li">You can't talk about the letters of the word (however, you can use terms such as "beginning
                 of the word", suffix, prefix)

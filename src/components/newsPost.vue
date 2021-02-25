@@ -1,8 +1,6 @@
 <template>
   <section class="news-post">
-    <h2 class="title">
-      <slot name="title"/>
-    </h2>
+    <slot name="title"/>
     <span class="date">
       {{ dateString }}
     </span>
