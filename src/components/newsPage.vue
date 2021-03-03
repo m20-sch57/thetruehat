@@ -29,11 +29,11 @@
                 </li>
                 <li>
                   <ru>Появились словари разных уровней сложности на русском языке</ru>
-                  <en>We added russian dictionaries of varying complexity</en>
+                  <en>We added Russian dictionaries of varying complexity</en>
                 </li>
                 <li>
                   <ru>Теперь вы можете загрузить собственный словарь и играть со словами из него</ru>
-                  <en>If you have your own dictionary, you can upload it for the game</en>
+                  <en>If you have a dictionary, you can upload it for the game</en>
                 </li>
                 <li>
                   <ru>Появилась возможность ограничить количество кругов в игре</ru>
@@ -51,8 +51,8 @@
                   <ru>По окончании старой игры новая комната создастся автоматически. Нажмите "играть ещё раз", чтобы
                     снова сыграть всем вместе!
                   </ru>
-                  <en>Once your game is over, we will automatically create a room for a new one. Click "play again" in
-                    order to continue playing with your friends!
+                  <en>Once your game is over, we will automatically create a room for a new one. Click "play again" to
+                    continue playing with your friends!
                   </en>
                 </li>
               </ul>
@@ -88,7 +88,7 @@
                 </li>
                 <li>
                   <ru>Строгий режим. Уже нельзя будет так просто продолжать объяснять слова, когда кончилось время</ru>
-                  <en>We've added a “strict” mode. In this case, editing phase starts immediately after time
+                  <en>We've added a “strict” mode. In this case, the editing phase starts immediately after the time
                     expiration
                   </en>
                 </li>

@@ -9,7 +9,7 @@
           </h3>
           <p class="answer">
             <ru>Для этого он должен прислать вам ключ комнаты, который необходимо вставить в соответствующее поле.</ru>
-            <en>They should send you the game key, so you can paste it in the corresponding field.</en>
+            <en>They should send you the game key, so you can paste it into the corresponding field.</en>
           </p>
 
           <h3 class="question">
@@ -32,7 +32,7 @@
               Zoom, Skype или Discord.
             </ru>
             <en>This feature is not available yet. We assume that you are using some third-party service for audio/video
-              communication, such as Zoom, Skype or Discord.
+              communication, such as Zoom, Skype, or Discord.
             </en>
           </p>
 
@@ -63,8 +63,8 @@
             <ru>Когда все слова в шляпе будут объяснены или будет сыграно необходимое число кругов. Владелец комнаты
               также может досрочно закончить игру, нажав на кнопку с флажком.
             </ru>
-            <en>When all the words in the hat are explained or adjusted number of round has been played. The room host
-              can also finish the game by pressing the button with a flag.
+            <en>When all the words in the hat are explained or the adjusted number of rounds has been played. The room
+              host can also finish the game by pressing the button with a flag.
             </en>
           </p>
 
@@ -87,12 +87,16 @@
           </p>
 
           <h3 class="question">
-            <ru>Мне не нравится звук. Как его отключить?</ru>
-            <en>I don't like the sound. How can I turn it off?</en>
+            <ru>Можно ли отрегулировать громкость звука?</ru>
+            <en>How can I adjust the sound volume?</en>
           </h3>
           <p class="answer">
-            <ru>Звук можно выключить на странице игры, нажав на кнопку в правом верхем углу.</ru>
-            <en>It can be done on the game page by pressing the button in the right corner.</en>
+            <ru>Регулировать громкость пока нельзя, но скоро это будет реализовано. Звук можно полностью отключить на
+              странице игры, нажав на кнопку в правом верхем углу.
+            </ru>
+            <en>You can't, but it will be implemented soon. To turn the sound off, press the button in the right corner
+              on the game page.
+            </en>
           </p>
         </div>
       </div>
