@@ -20,9 +20,26 @@
 }
 
 #about .subtitle {
-    margin: 0 0 20px 0;
+    margin: 0 0 10px 0;
     color: grey;
     font-weight: normal;
+}
+
+#about .social-icon {
+    margin-right: 5px;
+    font-size: 150%;
+}
+
+#about .social-icon.vk {
+    color: dodgerblue;
+}
+
+#about .social-icon.facebook {
+    color: royalblue;
+}
+
+#about .social-icon.github {
+    color: black;
 }
 
 #about .label {
@@ -35,5 +52,6 @@
 
 #about .list.no-style {
     padding-left: 0;
+    margin-left: 0;
     list-style-type: none;
 }
