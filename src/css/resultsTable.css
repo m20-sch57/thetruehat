@@ -2,6 +2,42 @@
     text-align: center;
 }
 
+#resultsTable main .results {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 15px;
+    margin: auto 0;
+}
+
+#resultsTable main .results-table {
+    width: 100%;
+    text-align: center;
+}
+
+#resultsTable main .results-table th {
+    padding: 10px;
+}
+
+#resultsTable main .results-table td {
+    padding: 5px;
+}
+
+#resultsTable main .results-table td:first-child {
+    width: 50%;
+    max-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#resultsTable main .results-table td .gold {
+    color: goldenrod;
+}
+
+#resultsTable main .results-table td.max {
+    color: orangered;
+}
+
 #resultsTable footer {
     display: flex;
     flex-direction: row;

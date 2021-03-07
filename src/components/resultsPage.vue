@@ -1,12 +1,12 @@
 <template>
   <swiper class="page" id="results" :options="swiperOptions">
-    <swiper-slide>
+    <swiper-slide class="first-slide">
       <results-history-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
-    <swiper-slide>
+    <swiper-slide class="second-slide">
       <results-table-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
-    <swiper-slide>
+    <swiper-slide class="third-slide">
       <results-statistics-section @swipe-to="swiper().slideTo($event)"/>
     </swiper-slide>
   </swiper>
@@ -32,12 +32,11 @@ export default {
     return {
       swiperOptions: {
         ...SWIPER_OPTIONS,
-        slidesPerView: 1,
+        slidesPerView: "auto",
         initialSlide: 1,
         breakpoints: {
           1250: {
             allowTouchMove: false,
-            slidesPerView: 3,
           }
         }
       }

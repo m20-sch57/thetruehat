@@ -124,8 +124,8 @@
         </div>
         <div class="layer">
           <h4 class="label w-250">
-            <ru>Формат времени (сек)</ru>
-            <en draft>Time format (sec)</en>
+            <ru>Контроль времени (сек)</ru>
+            <en draft>Time control (sec)</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <input

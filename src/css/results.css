@@ -2,6 +2,18 @@
     padding: 10px;
 }
 
+#results .first-slide {
+    flex-basis: 30%;
+}
+
+#results .second-slide {
+    flex-basis: 40%;
+}
+
+#results .third-slide {
+    flex-basis: 30%;
+}
+
 #results article {
     flex-grow: 1;
     margin: 10px;
@@ -31,6 +43,10 @@
 }
 
 @media (max-width: 1250px) {
+    #results .first-slide, #results .second-slide, #results .third-slide {
+        flex-basis: initial;
+    }
+
     #results header .expand, #results header .close {
         visibility: visible;
     }
