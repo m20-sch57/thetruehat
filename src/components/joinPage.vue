@@ -4,7 +4,7 @@
       <header>
         <h1>
           <ru>Вход в игру</ru>
-          <en draft>Enter the game</en>
+          <en>Enter the game</en>
         </h1>
       </header>
       <main>
@@ -18,8 +18,7 @@
                   :placeholder="$t({
                     ru: 'Ключ игры',
                     en: 'Game key'
-                  })"
-              >
+                  })">
             </label>
           </div>
           <div class="game-key-status">
@@ -36,7 +35,7 @@
                   class="btn btn-transparent">
                 <span class="fas fa-dice"></span>
                 <ru>Сгенерировать</ru>
-                <en draft>Generate</en>
+                <en>Generate</en>
               </button>
             </div>
             <div class="room-info checking" v-show="validationStatus.key === 'checking'">
@@ -48,13 +47,13 @@
               </div>
               <h5>
                 <ru>Проверка</ru>
-                <en draft>Checking</en>
+                <en>Checking</en>
               </h5>
             </div>
             <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
               <h5>
                 <ru>Игра не началась</ru>
-                <en draft>Game not started</en>
+                <en>Game not started</en>
               </h5>
               <button class="select btn-transparent">{{ playersList.length }}
                 <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
@@ -64,7 +63,7 @@
             <div class="room-info created" v-show="validationStatus.key === 'created'">
               <h5>
                 <ru>Игра уже идёт</ru>
-                <en draft>Game already started</en>
+                <en>Game started</en>
               </h5>
               <button class="select btn-transparent">{{ playersList.length }}
                 <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
@@ -74,7 +73,7 @@
             <div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
               <h5><span class="fas fa-times"></span>
                 <ru>Некорректный ключ</ru>
-                <en draft>Incorrect key</en>
+                <en>Invalid key</en>
               </h5>
             </div>
           </div>
@@ -88,8 +87,7 @@
                   :placeholder="$t({
                     ru: 'Ваше имя',
                     en: 'Your name'
-                  })"
-              >
+                  })">
             </label>
           </div>
           <div class="your-name-status">
@@ -98,7 +96,7 @@
                 v-show="validationStatus.username === 'empty'">
               <h5>
                 <ru>Имя нужно, чтобы игроки могли вас опознать</ru>
-                <en draft>The name is necessary so that the players can identify you</en>
+                <en>Name is required for you to be identifiable</en>
               </h5>
             </div>
             <div
@@ -112,7 +110,7 @@
               </div>
               <h5>
                 <ru>Проверка</ru>
-                <en draft>Checking</en>
+                <en>Checking</en>
               </h5>
             </div>
             <div
@@ -121,7 +119,7 @@
               <h5>
                 <span class="fas fa-check"></span>
                 <ru>Нормально</ru>
-                <en draft>Good</en>
+                <en>Looks good</en>
               </h5>
             </div>
             <div
@@ -130,7 +128,7 @@
               <h5>
                 <span class="fas fa-times"></span>
                 <ru>Не найдено в списке игроков</ru>
-                <en draft>Not found in players list</en>
+                <en>Not found in the players list</en>
               </h5>
             </div>
             <div
@@ -139,7 +137,7 @@
               <h5>
                 <span class="fas fa-times"></span>
                 <ru>Имя уже занято другим игроком</ru>
-                <en draft>Name is already taken by another player</en>
+                <en>This name is already taken</en>
               </h5>
             </div>
           </div>
@@ -151,7 +149,7 @@
             @click="joinRoom()"
             :disabled="!validated">
           <ru>Поехали!</ru>
-          <en draft>Let's go!</en>
+          <en>Let's go!</en>
         </button>
       </footer>
     </article>

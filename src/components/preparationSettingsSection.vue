@@ -3,7 +3,7 @@
     <header>
       <h1>
         <ru>Параметры игры</ru>
-        <en draft>Game settings</en>
+        <en>Game settings</en>
       </h1>
       <button
           class="btn-icon btn-transparent close"
@@ -16,7 +16,7 @@
         <div class="layer">
           <h4 class="label w-80">
             <ru>Играть</ru>
-            <en draft>Play</en>
+            <en>Play</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <select
@@ -25,11 +25,11 @@
                 v-model="settings.termCondition">
               <option :value="'words'">
                 <ru>Пока не кончатся слова</ru>
-                <en draft>Until the words run out</en>
+                <en>Until the words run out</en>
               </option>
               <option :value="'rounds'">
                 <ru>Заданное число кругов</ru>
-                <en draft>Fixed number of rounds</en>
+                <en>Fixed number of rounds</en>
               </option>
             </select>
           </label>
@@ -37,7 +37,7 @@
         <div class="layer">
           <h4 class="label w-80">
             <ru>Слова</ru>
-            <en draft>Words</en>
+            <en>Words</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <select
@@ -46,31 +46,31 @@
                 v-model="settings.wordsetSource">
               <option :value="['serverDictionary', 0]">
                 <ru>Русские, 14141 слово</ru>
-                <en draft>Russian, 14141 words</en>
+                <en>Russian, 14141 words</en>
               </option>
               <option :value="['serverDictionary', 4]">
                 <ru>Английские, 1525 слов</ru>
-                <en draft>English, 1525 words</en>
+                <en>English, 1525 words</en>
               </option>
               <option :value="['serverDictionary', 1]">
                 <ru>Простые русские, 4627</ru>
-                <en draft>Simple russian, 4627</en>
+                <en>Easy russian, 4627</en>
               </option>
               <option :value="['serverDictionary', 2]">
                 <ru>Средние русские, 4506</ru>
-                <en draft>Middle russian, 4506</en>
+                <en>Intermediate russian, 4506</en>
               </option>
               <option :value="['serverDictionary', 3]">
                 <ru>Сложные русские, 4599</ru>
-                <en draft>Hard russian, 4599</en>
+                <en>Hard russian, 4599</en>
               </option>
               <option :value="['hostDictionary']">
                 <ru>Загрузить</ru>
-                <en draft>Load dictionary</en>
+                <en>Upload</en>
               </option>
               <option :value="['playerWords']">
                 <ru>От каждого игрока</ru>
-                <en draft>From each player</en>
+                <en>From each player</en>
               </option>
             </select>
           </label>
@@ -78,7 +78,7 @@
         <div class="layer" v-show="settings.wordsetSource[0] === 'hostDictionary'">
           <h4 class="label w-250">
             <ru>Загрузить словарь</ru>
-            <en draft>Load dictionary</en>
+            <en>Upload dictionary</en>
           </h4>
           <div class="file field w-300 w-350-desktop">
             <input
@@ -88,7 +88,7 @@
                 @change="event => updateHostDictionary(event.target)">
             <label for="uploadDictionary" class="btn btn-blue">
               <ru>Выбрать</ru>
-              <en draft>Choose</en>
+              <en>Choose</en>
             </label>
             <label for="uploadDictionary">
               {{ dictionaryFilePreview }}
@@ -101,7 +101,7 @@
               settings.wordsetSource[0] !== 'playerWords'">
           <h4 class="label w-250">
             <ru>Число слов в шляпе</ru>
-            <en draft>The number of words</en>
+            <en>The number of words</en>
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
@@ -113,7 +113,7 @@
         <div class="layer" v-show="settings.termCondition === 'rounds'">
           <h4 class="label w-250">
             <ru>Количество кругов</ru>
-            <en draft>The number of laps</en>
+            <en>The number of rounds</en>
           </h4>
           <label class="field w-300 w-350-desktop w-70-mobile">
             <input
@@ -125,7 +125,7 @@
         <div class="layer">
           <h4 class="label w-250">
             <ru>Контроль времени (сек)</ru>
-            <en draft>Time control (sec)</en>
+            <en>Time control (sec)</en>
           </h4>
           <label class="field w-300 w-350-desktop">
             <input
@@ -156,7 +156,7 @@
             </label>
             <label for="strictModeCheckbox">
               <ru>Строгий режим</ru>
-              <en draft>Strict mode</en>
+              <en>Strict mode</en>
             </label>
           </div>
         </div>
@@ -169,11 +169,11 @@
           class="btn btn-blue"
           :disabled="!isSettingsChanged">
         <ru>Сохранить</ru>
-        <en draft>Save</en>
+        <en>Save</en>
       </button>
       <h4 v-show="!editModeOn">
         <ru>Хост может изменять настройки</ru>
-        <en draft>Host can change settings</en>
+        <en>Host can change the settings</en>
       </h4>
     </footer>
   </article>
@@ -204,7 +204,7 @@ export default {
       if (this.settings.dictionaryFileInfo === undefined) {
         return this.$t({
           ru: "Файл не загружен",
-          en: "File isn't loaded"
+          en: "No file uploaded"
         });
       } else {
         const wordsNumber = this.settings.dictionaryFileInfo.wordsNumber;

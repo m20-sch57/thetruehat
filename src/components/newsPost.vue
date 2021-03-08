@@ -8,7 +8,8 @@
       v{{ version }}
     </span>
     <span class="new" v-show="isNew">
-      * Новое
+      <ru>* Новое</ru>
+      <en>* New</en>
     </span>
     <slot name="content"/>
   </section>

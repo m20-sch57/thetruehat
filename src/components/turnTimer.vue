@@ -121,13 +121,13 @@ export default {
   },
   created: function () {
     this.$watch(() => (this.stage === "play_explanation"),
-      function (val) {
-        if (val) {
-          this.playSounds();
-          this.animateTimers();
-        }
-      },
-      {immediate: true}
+        function (val) {
+          if (val) {
+            this.playSounds();
+            this.animateTimers();
+          }
+        },
+        {immediate: true}
     );
   }
 };

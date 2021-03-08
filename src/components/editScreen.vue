@@ -23,19 +23,22 @@
                   @click="setWordState(i, 'explained')"
                   :class="{active: wordState === 'explained'}"
                   class="btn-nav option guessed">
-                Угадал
+                <ru>Угадал</ru>
+                <en>Guessed</en>
               </button>
               <button
                   @click="setWordState(i, 'notExplained')"
                   :class="{active: wordState === 'notExplained'}"
                   class="btn-nav option not-guessed">
-                Не угадал
+                <ru>Не угадал</ru>
+                <en>Not guessed</en>
               </button>
               <button
                   @click="setWordState(i, 'mistake')"
                   :class="{active: wordState === 'mistake'}"
                   class="btn-nav option mistake">
-                Ошибка
+                <ru>Ошибка</ru>
+                <en>Mistake</en>
               </button>
             </div>
           </div>
@@ -46,7 +49,8 @@
       <button
           class="btn btn-green btn-shadow confirm"
           @click="acceptEditedWords">
-        Подтвердить
+        <ru>Подтвердить</ru>
+        <en>Confirm</en>
       </button>
     </footer>
   </article>

@@ -29,7 +29,7 @@
             @click="leaveRoom()">
           <span class="fas fa-sign-out-alt"></span>
           <ru>Выйти</ru>
-          <en>Exit</en>
+          <en>Leave</en>
         </button>
       </div>
       <div class="scrollable-wrapper">
@@ -58,11 +58,11 @@
           @click="startGame()"
           :disabled="!canStart">
         <ru>Начать игру</ru>
-        <en>Start game</en>
+        <en>Start the game</en>
       </button>
       <h4 v-show="!isHost">
         <ru>Хост не начал игру</ru>
-        <en draft>Host did not start the game</en>
+        <en>Host has not started the game</en>
       </h4>
     </footer>
   </article>

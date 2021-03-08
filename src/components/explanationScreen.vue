@@ -18,17 +18,20 @@
         <button
             class="btn btn-blue btn-shadow not-guessed"
             @click="notExplainedAction">
-          Не угадал
+          <ru>Не угадал</ru>
+          <en>Not guessed</en>
         </button>
         <button
             class="btn btn-green btn-shadow guessed"
             @click="explainedAction">
-          Угадал
+          <ru>Угадал</ru>
+          <en>Guessed</en>
         </button>
         <button
             class="btn btn-red btn-shadow mistake"
             @click="mistakeAction">
-          Ошибка
+          <ru>Ошибка</ru>
+          <en>Mistake</en>
         </button>
       </div>
     </footer>

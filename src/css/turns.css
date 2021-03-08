@@ -11,13 +11,13 @@
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.turns .previous-turns {
+.turns .past-turns {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
-.turns .previous-turns h3 {
+.turns .past-turns h3 {
     margin: 5px 10px;
     font-weight: normal;
 }
@@ -26,7 +26,7 @@
     border-radius: 20px;
 }
 
-.turns .previous-turns .turn-layer:hover {
+.turns .past-turns .turn-layer:hover {
     background-color: whitesmoke;
     cursor: pointer;
 }

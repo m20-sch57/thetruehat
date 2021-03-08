@@ -7,7 +7,10 @@
       }"
       id="resultsStatistics">
     <header>
-      <h1>Статистика</h1>
+      <h1>
+        <ru>Статистика</ru>
+        <en>Statistics</en>
+      </h1>
       <button
           class="btn-icon btn-transparent close"
           @click="$emit('swipe-to', 1)">
@@ -21,7 +24,8 @@
           v-scroll-bottom="maxBottomScroll">
         <div class="statistics">
           <h3 class="not-ready">
-            Статистика пока не готова
+            <ru>Статистика пока не готова</ru>
+            <en>Statistics is not ready yet</en>
           </h3>
         </div>
       </div>

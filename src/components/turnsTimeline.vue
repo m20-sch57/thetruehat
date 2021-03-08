@@ -1,22 +1,25 @@
 <template>
   <div class="turns">
-    <div class="next-turn">
-      <h3>Следующий ход</h3>
+    <div class="next-turn" v-if="nextTurn">
+      <h3>
+        <ru>Следующий ход</ru>
+        <en>Next turn</en>
+      </h3>
       <div class="turn-layer">
         <div class="turn-top">
-          <div class="turn-pair" v-if="nextTurn">
+          <div class="turn-pair">
             <h4 class="speaker">{{ nextTurn.speaker }}</h4>
             <img src="img/long-arrow-right.png" alt="right-arrow">
             <h4 class="listener">{{ nextTurn.listener }}</h4>
-          </div>
-          <div v-else>
-            конец игры
           </div>
         </div>
       </div>
     </div>
     <div class="current-turn">
-      <h3>Этот ход</h3>
+      <h3>
+        <ru>Этот ход</ru>
+        <en>Current turn</en>
+      </h3>
       <div class="turn-layer">
         <div class="turn-top">
           <div class="turn-pair">
@@ -27,8 +30,11 @@
         </div>
       </div>
     </div>
-    <div class="previous-turns">
-      <h3>Предыдущие ходы</h3>
+    <div class="past-turns">
+      <h3>
+        <ru>Прошедшие ходы</ru>
+        <en>Past turns</en>
+      </h3>
       <turns-history/>
     </div>
   </div>

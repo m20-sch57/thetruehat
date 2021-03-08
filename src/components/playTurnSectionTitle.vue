@@ -8,18 +8,24 @@
     </button>
     <h1>
       <span v-if="stage === 'play_wait' && myRole === 'observer'">
-        Подготовка
+        <ru>Подготовка</ru>
+        <en>Preparing</en>
       </span>
       <span v-if="stage === 'play_explanation' && myRole === 'observer'">
-        Идёт объяснение</span>
+        <ru>Идёт объяснение</ru>
+        <en>Explaining</en>
+      </span>
       <span v-if="myRole === 'speaker' && stage !== 'play_edit'">
-        Ты объясняешь
+        <ru>Ты объясняешь</ru>
+        <en>You explain</en>
       </span>
       <span v-if="myRole === 'listener' && stage !== 'play_edit'">
-        Ты отгадываешь
+        <ru>Ты отгадываешь</ru>
+        <en>You guess</en>
       </span>
       <span v-if="stage === 'play_edit'">
-        Редактирование
+        <ru>Редактирование</ru>
+        <en>Editing</en>
       </span>
     </h1>
     <button

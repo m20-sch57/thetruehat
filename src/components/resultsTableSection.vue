@@ -12,7 +12,10 @@
           @click="$emit('swipe-to', 0)">
         <span class="fas fa-history"></span>
       </button>
-      <h1>Результаты</h1>
+      <h1>
+        <ru>Результаты</ru>
+        <en>Results</en>
+      </h1>
       <button
           class="btn-icon btn-transparent expand"
           @click="$emit('swipe-to', 2)">
@@ -29,7 +32,8 @@
             <thead>
             <tr>
               <th>
-                Игрок
+                <ru>Игрок</ru>
+                <en>Player</en>
               </th>
               <th>
                 Σ
@@ -79,7 +83,8 @@
     </main>
     <footer>
       <button class="btn btn-green btn-shadow play-again">
-        Играть ещё раз
+        <ru>Играть ещё раз</ru>
+        <en>Play again</en>
       </button>
     </footer>
   </article>

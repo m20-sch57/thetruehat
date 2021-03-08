@@ -7,7 +7,10 @@
       }"
       id="resultsHistory">
     <header>
-      <h1>История игры</h1>
+      <h1>
+        <ru>История игры</ru>
+        <en>Game history</en>
+      </h1>
       <button
           class="btn-icon btn-transparent close"
           @click="$emit('swipe-to', 1)">
@@ -20,7 +23,7 @@
           v-scroll-top="maxTopScroll"
           v-scroll-bottom="maxBottomScroll">
         <div class="turns">
-          <div class="previous-turns">
+          <div class="past-turns">
             <turns-history/>
           </div>
         </div>

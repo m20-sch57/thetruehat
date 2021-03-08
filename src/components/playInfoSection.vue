@@ -27,26 +27,34 @@
           class="remaining"
           v-if="$store.state.room.settings.termCondition === 'words'">
         <h1>{{ $store.state.room.wordsLeft }}</h1>
-        <h4>слов</h4>
+        <h4>
+          <ru>слов</ru>
+          <en>words</en>
+        </h4>
       </div>
       <div
           class="remaining"
           v-if="$store.state.room.settings.termCondition === 'rounds'">
         <h1>{{ $store.state.room.roundsLeft }}</h1>
-        <h4>кругов</h4>
+        <h4>
+          <ru>кругов</ru>
+          <en>rounds</en>
+        </h4>
       </div>
       <button
           v-if="$store.state.room.username === $store.state.room.host"
           class="btn btn-transparent"
           @click="endGame()">
         <span class="fas fa-flag-checkered"></span>
-        Закончить
+        <ru>Закончить</ru>
+        <en>Finish</en>
       </button>
       <button
           class="btn btn-transparent"
           @click="leaveGame()">
         <span class="fas fa-sign-out-alt"></span>
-        Выйти
+        <ru>Выйти</ru>
+        <en>Leave</en>
       </button>
     </footer>
   </article>

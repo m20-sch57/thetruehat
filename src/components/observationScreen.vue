@@ -11,7 +11,10 @@
               </div>
               <div class="player-main">
                 <h2 class="name">{{ speaker }}</h2>
-                <h3 class="action">объясняет</h3>
+                <h3 class="action">
+                  <ru>объясняет</ru>
+                  <en>explains</en>
+                </h3>
               </div>
             </div>
             <div class="middle">
@@ -30,7 +33,10 @@
               </div>
               <div class="player-main">
                 <h2 class="name">{{ listener }}</h2>
-                <h3 class="action">отгадывает</h3>
+                <h3 class="action">
+                  <ru>отгадывает</ru>
+                  <en>guesses</en>
+                </h3>
               </div>
             </div>
           </div>
@@ -45,26 +51,40 @@
           v-show="myRole === 'speaker' && stage ==='play_wait'"
           :disabled="ready"
           @click="getReady">
-        Я готов объяснять
+        <ru>Я готов объяснять</ru>
+        <en>I am ready to explain</en>
       </button>
       <button
           class="btn btn-blue btn-shadow ready"
           v-show="myRole === 'listener' && stage ==='play_wait'"
           :disabled="ready"
           @click="getReady">
-        Я готов отгадывать
+        <ru>Я готов отгадывать</ru>
+        <en>I am ready to guess</en>
       </button>
       <h3
           class="your-status"
           v-show="myRole === 'observer' && timetableInfo.turnsCount > 0">
-        Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} через
-        {{ timetableInfo.turnsCount }} хода
+        <ru>
+          Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} через
+          {{ timetableInfo.turnsCount }} хода
+        </ru>
+        <en>
+          You {{ timetableInfo.myNextRole === "speaker" ? "explain" : "guess" }} in
+          {{ timetableInfo.turnsCount }} turns
+        </en>
       </h3>
       <h3
           class="your-status"
           v-show="myRole === 'observer' && timetableInfo.turnsCount === 0">
-        Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }}
-        на <span class="full">следующем</span><span class="short">след.</span> ходу
+        <ru>
+          Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }}
+          на <span class="full">следующем</span><span class="short">след.</span> ходу
+        </ru>
+        <en>
+          You {{ timetableInfo.myNextRole === "speaker" ? "explain" : "guess" }}
+          on the <span class="full">next</span><span class="short">next</span> turn
+        </en>
       </h3>
     </footer>
   </article>
