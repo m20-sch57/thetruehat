@@ -1,3 +1,18 @@
 #resultsStatistics header {
     background-color: lightgreen;
 }
+
+#resultsStatistics main .statistics {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 15px;
+    margin: auto 0;
+}
+
+#resultsStatistics main .not-ready {
+    margin: 0;
+    color: grey;
+    font-weight: normal;
+    text-align: center;
+}

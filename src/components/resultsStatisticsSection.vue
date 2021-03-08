@@ -1,5 +1,11 @@
 <template>
-  <article class="window" id="resultsStatistics">
+  <article
+      class="window"
+      :class="{
+        topShadow: !maxTopScroll,
+        bottomShadow: !maxBottomScroll
+      }"
+      id="resultsStatistics">
     <header>
       <h1>Статистика</h1>
       <button
@@ -8,14 +14,32 @@
         <span class="fas fa-times"></span>
       </button>
     </header>
-    <main>
-
+    <main class="scrollable-wrapper">
+      <div
+          class="scrollable custom-scroll"
+          v-scroll-top="maxTopScroll"
+          v-scroll-bottom="maxBottomScroll">
+        <div class="statistics">
+          <h3 class="not-ready">
+            Статистика пока не готова
+          </h3>
+        </div>
+      </div>
     </main>
   </article>
 </template>
 
 <script>
+import {scrollTop, scrollBottom} from "src/tools";
+
 export default {
-  name: "resultsStatisticsSection"
+  name: "resultsStatisticsSection",
+  data: function () {
+    return {
+      maxTopScroll: true,
+      maxBottomScroll: true
+    };
+  },
+  directives: {scrollTop, scrollBottom}
 };
 </script>
