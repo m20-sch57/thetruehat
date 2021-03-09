@@ -47,34 +47,22 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
+            <tr
+                v-for="({username, scoreExplained, scoreGuessed}, i) in results"
+                :key="i">
               <td>
-                <span class="fas fa-trophy gold"></span>
-                Someone with a very long spacious name
+                <span v-if="scoreExplained + scoreGuessed === maxScore" class="fas fa-trophy gold"></span>
+                {{username}}
               </td>
-              <td>30</td>
-              <td class="max"><span class="fas fa-fire"></span>14</td>
-              <td>16</td>
-            </tr>
-            <tr>
-              <td>
-                Someonewithalongsinglewordname
+              <td>{{scoreExplained + scoreGuessed}}</td>
+              <td :class="{max: scoreExplained === maxExplainedScore}">
+                <span v-if="scoreExplained === maxExplainedScore" class="fas fa-fire"></span>
+                {{scoreExplained}}
               </td>
-              <td>29</td>
-              <td>12</td>
-              <td class="max"><span class="fas fa-fire"></span>17</td>
-            </tr>
-            <tr>
-              <td>Федро Сливерский</td>
-              <td>17</td>
-              <td>8</td>
-              <td>9</td>
-            </tr>
-            <tr>
-              <td>Бедро №1</td>
-              <td>15</td>
-              <td>9</td>
-              <td>6</td>
+              <td :class="{max: scoreGuessed === maxGuessedScore}">
+                <span v-if="scoreGuessed === maxGuessedScore" class="fas fa-fire"></span>
+                {{scoreGuessed}}
+              </td>
             </tr>
             </tbody>
           </table>
@@ -92,15 +80,27 @@
 
 <script>
 import {scrollTop, scrollBottom} from "src/tools";
+import {mapState} from "vuex";
 
 export default {
   name: "resultsTableSection",
   data: function () {
     return {
       maxTopScroll: true,
-      maxBottomScroll: true
+      maxBottomScroll: true,
+
+      maxScore: Math.max(...this.$store.state.room.results.map(r => r.scoreGuessed + r.scoreExplained)),
+      maxGuessedScore: Math.max(...this.$store.state.room.results.map(r => r.scoreGuessed)),
+      maxExplainedScore: Math.max(...this.$store.state.room.results.map(r => r.scoreExplained)),
     };
   },
+
+  computed: {
+    ...mapState({
+      results: state => state.room.results
+    })
+  },
+
   directives: {scrollTop, scrollBottom}
 };
 </script>
