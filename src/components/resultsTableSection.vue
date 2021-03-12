@@ -52,16 +52,16 @@
                 :key="i">
               <td>
                 <span v-if="scoreExplained + scoreGuessed === maxScore" class="fas fa-trophy gold"></span>
-                {{username}}
+                {{ username }}
               </td>
-              <td>{{scoreExplained + scoreGuessed}}</td>
+              <td>{{ scoreExplained + scoreGuessed }}</td>
               <td :class="{max: scoreExplained === maxExplainedScore}">
                 <span v-if="scoreExplained === maxExplainedScore" class="fas fa-fire"></span>
-                {{scoreExplained}}
+                {{ scoreExplained }}
               </td>
               <td :class="{max: scoreGuessed === maxGuessedScore}">
                 <span v-if="scoreGuessed === maxGuessedScore" class="fas fa-fire"></span>
-                {{scoreGuessed}}
+                {{ scoreGuessed }}
               </td>
             </tr>
             </tbody>
