@@ -29,5 +29,7 @@ export default () => {
             }
         })
     });
-    return () => {wrapper.destroy();};
+    return () => {
+        wrapper.destroy();
+    };
 };
