@@ -181,10 +181,7 @@
 
 <script>
 import app from "src/app.js";
-import store from "src/store.js";
 import {DICTIONARY_MAX_SIZE, DEFAULT_GAME_SETTINGS} from "src/config.js";
-
-const room = store.state.room;
 
 export default {
   name: "preparationSettingsSection",
@@ -192,13 +189,14 @@ export default {
   data: function () {
     return {
       settings: {},
-      isSettingsChanged: false
+      isSettingsChanged: false,
+      room: this.$store.state.room
     };
   },
 
   computed: {
     serverSettings: function () {
-      return room.settings;
+      return this.room.settings;
     },
     dictionaryFilePreview: function () {
       if (this.settings.dictionaryFileInfo === undefined) {
@@ -216,7 +214,7 @@ export default {
       }
     },
     editModeOn: function () {
-      return store.getters.isHost;
+      return this.$store.getters.isHost;
     }
   },
 
@@ -274,12 +272,12 @@ export default {
 
       // На сервере время хранится в миллисекундах
       // В форме для пользователя его нужно вводить в секундах
-      res.delayTime = room.settings.delayTime / 1000;
-      res.explanationTime = room.settings.explanationTime / 1000;
-      res.aftermathTime = room.settings.aftermathTime / 1000;
+      res.delayTime = this.room.settings.delayTime / 1000;
+      res.explanationTime = this.room.settings.explanationTime / 1000;
+      res.aftermathTime = this.room.settings.aftermathTime / 1000;
 
-      res.strictMode = room.settings.strictMode;
-      res.termCondition = room.settings.termCondition;
+      res.strictMode = this.room.settings.strictMode;
+      res.termCondition = this.room.settings.termCondition;
 
       // В данном случае wordsetSource это пара из wordsetType и доп. опций.
       // Если wordset набирается из словаря с сервера, то необходимо
@@ -289,19 +287,19 @@ export default {
       // Это используется для возможности в одном поле выбора <select>
       // указывать как специфичные источники слов, так и конкретные словари
       // с сервера.
-      res.wordsetSource = [room.settings.wordsetType];
-      if (room.settings.wordsetType === "serverDictionary") {
-        res.wordsetSource.push(room.settings.dictionaryId);
+      res.wordsetSource = [this.room.settings.wordsetType];
+      if (this.room.settings.wordsetType === "serverDictionary") {
+        res.wordsetSource.push(this.room.settings.dictionaryId);
       }
-      if (room.settings.termCondition === "words" &&
-          room.settings.wordsetType !== "playerWords") {
-        res.wordsNumber = room.settings.wordsNumber;
+      if (this.room.settings.termCondition === "words" &&
+          this.room.settings.wordsetType !== "playerWords") {
+        res.wordsNumber = this.room.settings.wordsNumber;
       }
-      if (room.settings.termCondition === "rounds") {
-        res.roundsNumber = room.settings.roundsNumber;
+      if (this.room.settings.termCondition === "rounds") {
+        res.roundsNumber = this.room.settings.roundsNumber;
       }
-      if (room.settings.wordsetType === "hostDictionary") {
-        res.dictionaryFileInfo = room.settings.dictionaryFileInfo;
+      if (this.room.settings.wordsetType === "hostDictionary") {
+        res.dictionaryFileInfo = this.room.settings.dictionaryFileInfo;
       }
       return res;
     },

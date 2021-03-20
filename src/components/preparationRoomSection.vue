@@ -70,9 +70,6 @@
 
 <script>
 import app from "src/app.js";
-import store from "src/store.js";
-
-const room = store.state.room;
 
 export default {
   name: "preparationRoomSection",
@@ -81,18 +78,18 @@ export default {
       return this.$store.getters.onlinePlayers.length >= 2;
     },
     isHost: function () {
-      return store.getters.isHost;
+      return this.$store.getters.isHost;
     }
   },
   methods: {
     usernamePreview: function (username) {
-      return username + (username !== room.username ? "" : this.$t({
+      return username + (username !== this.$store.state.room.username ? "" : this.$t({
         ru: " (я)",
         en: " (you)"
       }));
     },
     copyKey: function () {
-      navigator.clipboard.writeText(room.key);
+      navigator.clipboard.writeText(this.$store.state.room.key);
     },
     copyLink: function () {
       navigator.clipboard.writeText(decodeURIComponent(window.location));

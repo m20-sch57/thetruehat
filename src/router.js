@@ -6,7 +6,7 @@ import faqPage from "cmp/faqPage.vue";
 import aboutPage from "cmp/aboutPage.vue";
 import gamePage from "cmp/gamePage.vue";
 
-import testComponent from "cmp/test.vue";
+import shortcutComponent from "cmp/shortcut.vue";
 
 Vue.use(VueRouter);
 
@@ -48,8 +48,8 @@ export default new VueRouter({
             meta: {nav: "game"}
         },
         {
-            path: "/test/:option",
-            component: testComponent
+            path: "/sc/:option",
+            component: shortcutComponent
         }
     ]
 });

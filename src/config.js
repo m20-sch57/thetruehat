@@ -28,3 +28,16 @@ export const DEFAULT_GAME_SETTINGS = {
     wordsNumber: 100,
     roundsNumber: 10
 };
+export const DEFAULT_STORE_GAME_SETTINGS = {
+    delayTime: 3000,
+    explanationTime: 40000,
+    aftermathTime: 3000,
+    strictMode: false,
+    termCondition: "words",
+    wordsetType: "serverDictionary",
+    dictionaryId: 0,
+    wordsNumber: 100,
+    roundsNumber: 10,
+    fixedPairs: false,
+    pairMatching: "random"
+};

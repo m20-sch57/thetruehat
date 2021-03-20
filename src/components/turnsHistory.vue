@@ -29,89 +29,13 @@
 </template>
 
 <script>
-const turnsHistory = [
-  {
-    speaker: "Гений",
-    listener: "Евгений",
-    score: 4,
-    words: [
-      {
-        word: "турок",
-        status: "explained"
-      },
-      {
-        word: "шерсть",
-        status: "explained"
-      },
-      {
-        word: "синхрофазотрон",
-        status: "explained"
-      },
-      {
-        word: "пятилетка",
-        status: "explained"
-      }, {
-        status: "not-explained"
-      }
-    ],
-    collapsed: true
-  },
-  {
-    speaker: "Саня",
-    listener: "Петя",
-    score: 1,
-    words: [
-      {
-        word: "безобразие",
-        status: "explained"
-      },
-      {
-        status: "not-explained"
-      },
-      {
-        word: "синхрофазотрон",
-        status: "mistake"
-      }
-    ],
-    collapsed: true
-  },
-  {
-    speaker: "Гелб",
-    listener: "Федро",
-    score: 2,
-    words: [
-      {
-        word: "фасоль",
-        status: "explained"
-      },
-      {
-        word: "слив",
-        status: "explained"
-      },
-      {
-        word: "синхрофазотрон",
-        status: "mistake"
-      }
-    ],
-    collapsed: true
-  }
-];
-
-for (let i = 0; i < 15; i++) {
-  turnsHistory.push({
-    speaker: "Гелб",
-    listener: "Федро",
-    score: 2,
-    words: [],
-    collapsed: true
-  });
-}
+import {mapState} from "vuex";
 
 export default {
-  data: function () {
-    return {
-      turnsHistory,
-    };
-  },
+  computed: {
+    ...mapState({
+      turnsHistory: state => state.room.turnsHistory
+    })
+  }
 };
 </script>
