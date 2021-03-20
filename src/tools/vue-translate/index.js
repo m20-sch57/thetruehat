@@ -45,7 +45,14 @@ export default function install(Vue, options = {}) {
             error(`${locale} is invalid locale.`);
         } else {
             languageVm.current = locale;
+            localStorage.preferredLang  = locale;
         }
+    }
+
+    if (localStorage.preferredLang) {
+        setLocale(localStorage.preferredLang);
+    } else {
+        localStorage.preferredLang = languageVm.current;
     }
 
     function translate(translateObject) {
