@@ -45,7 +45,7 @@ export default function install(Vue, options = {}) {
             error(`${locale} is invalid locale.`);
         } else {
             languageVm.current = locale;
-            localStorage.preferredLang  = locale;
+            localStorage.preferredLang = locale;
         }
     }
 
@@ -78,7 +78,7 @@ export default function install(Vue, options = {}) {
 
     for (let lang of options.availableLanguages) {
         Vue.component(lang, {
-            render: function(createElement) {
+            render: function (createElement) {
                 if (languageVm.current === lang) {
                     return createElement(
                         this.tag,
