@@ -18,7 +18,7 @@ const argv = require("yargs")
     .argv;
 
 const PORT = config.port;
-const WRITE_LOGS = (config.env === config.DEVEL) ? false : true;
+const WRITE_LOGS = (config.env === config.DEVEL) ? true : true;
 const TRANSFER_TIME = config.transferTime; // delay for transfer
 
 const dictsConf = config.dicts;

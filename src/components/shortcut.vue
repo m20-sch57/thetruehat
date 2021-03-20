@@ -3,12 +3,14 @@
 </template>
 
 <script>
-import preparationPageTest from "cmp/shortcuts/preparationPage.js";
-import resultsPageTest from "cmp/shortcuts/resultsPage.js";
+import preparationPage from "cmp/shortcuts/preparationPage.js";
+import resultsPage from "cmp/shortcuts/resultsPage.js";
+import wordCollectionPage from "cmp/shortcuts/wordCollectionPage.js";
 
 const comps = {
-  preparationPage: preparationPageTest,
-  resultsPage: resultsPageTest
+  preparationPage,
+  resultsPage,
+  wordCollectionPage
 };
 
 export default {

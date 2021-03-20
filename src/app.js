@@ -71,7 +71,15 @@ export class App {
     }
 
     startGame() {
-        this.emit("cStartGame");
+        if (store.state.room.settings.wordsetType === "playerWords") {
+            this.emit("cStartWordCollection");
+        } else {
+            this.emit("cStartGame");
+        }
+    }
+
+    wordsReady(words) {
+        this.emit("cWordsReady", {words});
     }
 
     getReady() {
@@ -180,12 +188,12 @@ export class App {
                 this.store.commit("gameEnded", data);
             },
 
-            // sFailure: data => {
-            //     Vue.notify({
-            //     	msg: data.msg,
-            //     	duration: ERROR_TIMEOUT
-            //     });
-            // }
+            sFailure: data => {
+                // Vue.notify({
+                // 	msg: data.msg,
+                // 	duration: ERROR_TIMEOUT
+                // });
+            }
         };
 
         for (let event of Object.keys(handlers)) {
