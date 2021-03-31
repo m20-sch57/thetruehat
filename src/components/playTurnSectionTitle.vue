@@ -15,7 +15,11 @@
         <ru>Идёт объяснение</ru>
         <en>Explaining</en>
       </span>
-      <span v-if="myRole === 'speaker' && stage !== 'play_edit'">
+      <span v-if="myRole === 'speaker' && stage === 'play_wait'">
+        <ru>Ты объясняешь</ru>
+        <en>You explain</en>
+      </span>
+      <span v-if="myRole === 'speaker' && stage === 'play_explanation'">
         <ru>Угадывает</ru>
         <en draft>Guesses</en>
         {{ listener }}
