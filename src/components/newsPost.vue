@@ -44,15 +44,15 @@ export default {
     dateString: function () {
       if (this.$language.current === "ru") {
         return `${
-            ("0" + this.date.getDate()).slice(-2)}.${
-            ("0" + (this.date.getMonth() + 1)).slice(-2)}.${
-            this.date.getFullYear()}`;
+          ("0" + this.date.getDate()).slice(-2)}.${
+          ("0" + (this.date.getMonth() + 1)).slice(-2)}.${
+          this.date.getFullYear()}`;
       }
       if (this.$language.current === "en") {
         return `${
-            ("0" + this.date.getDate()).slice(-2)}/${
-            ("0" + (this.date.getMonth() + 1)).slice(-2)}/${
-            this.date.getFullYear()}`;
+          ("0" + (this.date.getMonth() + 1)).slice(-2)}/${
+          ("0" + this.date.getDate()).slice(-2)}/${
+          this.date.getFullYear()}`;
       }
       return "";
     }
