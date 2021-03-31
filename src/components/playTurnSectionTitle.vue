@@ -16,8 +16,9 @@
         <en>Explaining</en>
       </span>
       <span v-if="myRole === 'speaker' && stage !== 'play_edit'">
-        <ru>Ты объясняешь</ru>
-        <en>You explain</en>
+        <ru>Угадывает</ru>
+        <en draft>Guesses</en>
+        {{ listener }}
       </span>
       <span v-if="myRole === 'listener' && stage !== 'play_edit'">
         <ru>Ты отгадываешь</ru>
@@ -59,7 +60,8 @@ export default {
   },
   computed: {
     ...mapState({
-      stage: state => state.room.stage
+      stage: state => state.room.stage,
+      listener: state => state.room.listener
     }),
     ...mapGetters(["myRole",])
   },

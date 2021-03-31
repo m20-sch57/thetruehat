@@ -70,7 +70,9 @@
       </div>
     </main>
     <footer>
-      <button class="btn btn-green btn-shadow play-again">
+      <button
+          @click="playAgain"
+          class="btn btn-green btn-shadow play-again">
         <ru>Играть ещё раз</ru>
         <en>Play again</en>
       </button>
@@ -79,11 +81,13 @@
 </template>
 
 <script>
+import app from "src/app.js";
 import {scrollTop, scrollBottom} from "src/tools";
 import {mapState} from "vuex";
 
 export default {
   name: "resultsTableSection",
+
   data: function () {
     return {
       maxTopScroll: true,
@@ -99,6 +103,15 @@ export default {
     ...mapState({
       results: state => state.room.results
     })
+  },
+
+  methods: {
+    playAgain: function () {
+      app.joinRoom({
+        username: this.$store.state.room.username,
+        key: this.$store.state.room.nextKey
+      });
+    }
   },
 
   directives: {scrollTop, scrollBottom}

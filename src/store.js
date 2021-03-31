@@ -35,6 +35,7 @@ const roomModule = {
         startTime: null,
         results: null,
         settings: null,
+        nextKey: null,
         roundId: 0
     },
     mutations: {
@@ -121,9 +122,10 @@ const roomModule = {
             state.editWords = null;
             state.explanationTimer = null;
         },
-        gameEnded(state, {results}) {
+        gameEnded(state, {results, nextKey}) {
             state.stage = "end";
             state.results = results;
+            state.nextKey = nextKey;
         },
         setPlayers: set("players"),
         setHost: set("host"),
