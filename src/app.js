@@ -53,7 +53,7 @@ export class App {
     }
 
     joinRoom({username, key}) {
-        this.store.commit("connectRoom", {username, key});
+        this.store.commit("connectRoom", {username, key: key.toUpperCase()});
         this.emit("cJoinRoom", {
             username, key,
             timeZoneOffset: (new Date()).getTimezoneOffset() * (-60000)
