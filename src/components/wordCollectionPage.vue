@@ -1,35 +1,40 @@
 <template>
-  <article>
-    <header>
-      <h1>
-        <ru>Набор слов</ru>
-        <en draft>Word collection</en>
-      </h1>
-    </header>
-    <main>
-      <p>
-        <ru>
-          Введите слова в поле ниже. Одно слово - одна строчка. Если одно и тоже слово введут несколько человек, в шляпе оно встретится ровно один раз.
-        </ru>
-        <en draft> Please, put your words here.</en>
-      </p>
-      <textarea v-model="wordsSourceText"></textarea>
-    </main>
-    <footer>
-      <button
-          v-show="!ready"
-          @click="wordsReady">
-        <ru>Готово</ru>
-        <en draft>Ready</en>
-      </button>
-      <button
-          disabled
-          v-show="ready">
-        <ru>Ждём остальных</ru>
-        <en draft>Waiting</en>
-      </button>
-    </footer>
-  </article>
+  <div class="page" id="wordCollection">
+    <article class="window">
+      <header>
+        <h1>
+          <ru>Набор слов</ru>
+          <en>Word collection</en>
+        </h1>
+      </header>
+      <main>
+        <label>
+          <textarea
+              class="textarea"
+              :placeholder="$t({
+                  ru: 'Введите слова в это поле, одно слово - одна строчка',
+                  en: 'Put your words here, one per line'
+              })"
+              v-model="wordsSourceText"
+              :disabled="ready">
+          </textarea>
+        </label>
+      </main>
+      <footer>
+        <button
+            class="btn btn-shadow btn-green"
+            @click="wordsReady"
+            v-show="!ready">
+          <ru>Готово</ru>
+          <en>Ready</en>
+        </button>
+        <h4 v-show="ready">
+          <ru>Ждём остальных</ru>
+          <en>Waiting for others</en>
+        </h4>
+      </footer>
+    </article>
+  </div>
 </template>
 
 <script>

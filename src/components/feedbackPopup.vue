@@ -32,8 +32,8 @@
             <span class="fas fa-check"></span>
           </label>
           <label for="feedbackCheckbox">
-            <ru>Отправить полную информацию</ru>
-            <en>Send additional information</en>
+            <ru>Отправить информацию о браузере</ru>
+            <en>Send browser information</en>
           </label>
         </div>
       </main>
