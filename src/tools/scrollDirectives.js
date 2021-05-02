@@ -4,11 +4,11 @@ export let scrollTop = {
             // Можно использовать eval для более честого получения реактивного поля
             // Без eval можно обращаться только к корневым полям vue.
             // eval("vnode.context."+binding.expression+"= el.scrollTop == 0");
-            vnode.context[binding.expression] = el.scrollTop === 0;
+            vnode.context[binding.expression] = el.scrollTop <= 0;
         });
     },
     inserted: function(el, binding, vnode) {
-        vnode.context[binding.expression] = el.scrollTop === 0;
+        vnode.context[binding.expression] = el.scrollTop <= 0;
     }
 };
 export let scrollBottom = {
