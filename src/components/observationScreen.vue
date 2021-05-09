@@ -67,11 +67,11 @@
           v-show="myRole === 'observer' && timetableInfo.turnsCount > 0">
         <ru>
           Ты {{ timetableInfo.myNextRole === "speaker" ? "объясняешь" : "отгадываешь" }} через
-          {{ timetableInfo.turnsCount }} хода
+          {{ timetableInfo.turnsCount }} {{ $p(timetableInfo.turnsCount, "ход", "хода", "ходов") }}
         </ru>
         <en>
           You {{ timetableInfo.myNextRole === "speaker" ? "explain" : "guess" }} in
-          {{ timetableInfo.turnsCount }} turns
+          {{ timetableInfo.turnsCount }} {{ $p(timetableInfo.turnsCount, "turn", "turns") }}
         </en>
       </h3>
       <h3

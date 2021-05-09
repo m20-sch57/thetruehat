@@ -28,8 +28,8 @@
           v-if="$store.state.room.settings.termCondition === 'words'">
         <h1>{{ $store.state.room.wordsLeft }}</h1>
         <h4>
-          <ru>слов</ru>
-          <en>words</en>
+          <ru>{{ $p($store.state.room.wordsLeft, "слово", "слова", "слов") }}</ru>
+          <en>{{ $p($store.state.room.wordsLeft, "word", "words") }}</en>
         </h4>
       </div>
       <div
@@ -37,8 +37,8 @@
           v-if="$store.state.room.settings.termCondition === 'rounds'">
         <h1>{{ $store.state.room.roundsLeft }}</h1>
         <h4>
-          <ru>кругов</ru>
-          <en>rounds</en>
+          <ru>{{ $p($store.state.room.roundsLeft, "круг", "круга", "кругов") }}</ru>
+          <en>{{ $p($store.state.room.wordsLeft, "round", "rounds") }}</en>
         </h4>
       </div>
       <button
