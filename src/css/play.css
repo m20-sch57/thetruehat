@@ -83,27 +83,11 @@
     }
 
     #play .swiper-wrapper {
-        transform: none!important;
+        justify-content: flex-end;
     }
 
     #play.hide-menu .second-slide {
         flex-basis: 100%;
-    }
-
-    #play.hide-menu .swiper-wrapper {
-        transform: translate3d(-33.33%, 0, 0)!important;
-    }
-
-    @media (max-width: 1100px) {
-        #play.hide-menu .swiper-wrapper {
-            transform: translate3d(-40%, 0, 0)!important;
-        }
-    }
-
-    @media (max-width: 950px) {
-        #play.hide-menu .swiper-wrapper {
-            transform: translate3d(-50%, 0, 0)!important;
-        }
     }
 
     #play .second-slide {
