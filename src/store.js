@@ -66,7 +66,7 @@ const roomModule = {
             state.connection = "online";
 
             let query = {};
-            query[payload.key] = null;
+            query[payload.key.toUpperCase()] = null;
             router.replace({query});
 
             set(["stage", "players", "host", "settings"])(state, payload);
