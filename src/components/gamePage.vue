@@ -9,27 +9,23 @@ import wordCollectionPage from "cmp/wordCollectionPage.vue";
 import playPage from "cmp/playPage.vue";
 import resultsPage from "cmp/resultsPage.vue";
 
-import store from "src/store.js";
-
-const room = store.state.room;
-
 export default {
   name: "gamePage",
   components: {preparationPage, joinPage, playPage, resultsPage, wordCollectionPage},
   computed: {
     currentPageComponent: function () {
-      if (room.connection === "offline") {
+      if (this.$store.state.room.connection === "offline") {
         return "joinPage";
-      } else if (room.connection === "connection") {
+      } else if (this.$store.state.room.connection === "connection") {
         return "joinPage";
-      } else if (room.connection === "online") {
-        if (room.stage.startsWith("prepare")) {
+      } else if (this.$store.state.room.connection === "online") {
+        if (this.$store.state.room.stage.startsWith("prepare")) {
           return "wordCollectionPage";
-        } else if (room.stage.startsWith("wait")) {
+        } else if (this.$store.state.room.stage.startsWith("wait")) {
           return "preparationPage";
-        } else if (room.stage.startsWith("play")) {
+        } else if (this.$store.state.room.stage.startsWith("play")) {
           return "playPage";
-        } else if (room.stage.startsWith("end")) {
+        } else if (this.$store.state.room.stage.startsWith("end")) {
           return "resultsPage";
         }
       }
