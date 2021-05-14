@@ -15,8 +15,8 @@
         <ru>Идёт объяснение</ru>
         <en>Explaining</en>
       </span>
-      <span v-if="myRole === 'speaker' && ((stage === 'play_explanation' && explanationTimer === 'delay') ||
-          stage === 'play_wait' || playersCount == 2)">
+      <span v-if="myRole === 'speaker' && ((stage === 'play_explanation' &&
+          (explanationTimer === 'delay' || playersCount === 2)) || stage === 'play_wait')">
         <ru>Ты объясняешь</ru>
         <en>You explain</en>
       </span>
