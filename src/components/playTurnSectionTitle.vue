@@ -15,11 +15,13 @@
         <ru>Идёт объяснение</ru>
         <en>Explaining</en>
       </span>
-      <span v-if="myRole === 'speaker' && (stage === 'play_wait' || playersCount == 2)">
+      <span v-if="myRole === 'speaker' && (stage === 'play_wait' ||
+          explanationTimer === 'delay' || playersCount == 2)">
         <ru>Ты объясняешь</ru>
         <en>You explain</en>
       </span>
-      <span v-if="myRole === 'speaker' && stage === 'play_explanation' && playersCount > 2">
+      <span v-if="myRole === 'speaker' && stage === 'play_explanation' &&
+          explanationTimer !== 'delay' && playersCount > 2">
         <ru>Угадывает</ru>
         <en draft>Guesses</en>
         {{ listener }}
@@ -65,7 +67,8 @@ export default {
   computed: {
     ...mapState({
       stage: state => state.room.stage,
-      listener: state => state.room.listener
+      listener: state => state.room.listener,
+      explanationTimer: state => state.room.explanationTimer
     }),
     ...mapGetters(["myRole",]),
     playersCount: function() {
