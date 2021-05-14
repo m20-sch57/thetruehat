@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "./router";
 
 import {timeSync} from "./tools";
 
@@ -63,6 +64,11 @@ const roomModule = {
         },
         joinRoom(state, payload) {
             state.connection = "online";
+
+            let query = {};
+            query[payload.key] = null;
+            router.replace({query});
+
             set(["stage", "players", "host", "settings"])(state, payload);
 
             if (payload.stage.startsWith("play")) {

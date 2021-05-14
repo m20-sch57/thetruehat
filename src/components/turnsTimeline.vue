@@ -41,23 +41,19 @@
 </template>
 
 <script>
-import store from "src/store.js";
-
 import turnsHistory from "cmp/turnsHistory.vue";
-
-const room = store.state.room;
 
 export default {
   name: "turnsTimeline",
   components: {turnsHistory},
   computed: {
     nextTurn: function () {
-      return room.timetable[1];
+      return this.$store.state.room.timetable[1];
     },
     currentTurn: function () {
       return {
-        speaker: room.speaker,
-        listener: room.listener
+        speaker: this.$store.state.room.speaker,
+        listener: this.$store.state.room.listener
       };
     }
   },
