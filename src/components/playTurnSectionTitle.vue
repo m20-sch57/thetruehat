@@ -71,7 +71,7 @@ export default {
       explanationTimer: state => state.room.explanationTimer
     }),
     ...mapGetters(["myRole",]),
-    playersCount: function() {
+    playersCount: function () {
       return this.$store.state.room.players.length;
     }
   },
