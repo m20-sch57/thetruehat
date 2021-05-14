@@ -82,6 +82,7 @@
           <div class="your-name-input">
             <label>
               <input
+                  @keyup.enter="joinRoom()"
                   v-model.trim="username"
                   class="input"
                   :placeholder="$t({
@@ -179,9 +180,9 @@ export default {
   computed: {
     validated: function () {
       return (
-          this.validationStatus.username === "accepted" &&
-          (this.validationStatus.key === "not-created" ||
-              this.validationStatus.key === "created"));
+        this.validationStatus.username === "accepted" &&
+        (this.validationStatus.key === "not-created" ||
+            this.validationStatus.key === "created"));
     }
   },
   methods: {

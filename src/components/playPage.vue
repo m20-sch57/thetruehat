@@ -66,7 +66,6 @@ export default {
       return document.getElementById("play").swiper;
     },
     showMenu: function () {
-      console.log("here");
       this.swiper().slideTo(0);
       this.isMenuHidden = false;
       localStorage.isMenuHidden = "false";
