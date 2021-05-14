@@ -180,7 +180,7 @@ export default {
   computed: {
     validated: function () {
       return (
-          this.validationStatus.username === "accepted" &&
+        this.validationStatus.username === "accepted" &&
           (this.validationStatus.key === "not-created" ||
               this.validationStatus.key === "created"));
     }

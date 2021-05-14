@@ -33,9 +33,9 @@ export default {
       if (this.stage === "play_explanation" && this.explanationTimer === "delay") {
         return "observation-screen";
       }
-      if (this.stage === "play_explanation" && !this.explanationTimer !== "delay") {
-        return "explanation-screen";
-      }
+      // if (this.stage === "play_explanation" && !this.explanationTimer !== "delay") {
+      //   return "explanation-screen";
+      // }
       if (this.stage === "play_edit") {
         return "edit-screen";
       }
