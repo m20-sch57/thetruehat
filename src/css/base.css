@@ -310,15 +310,14 @@ input, textarea {
     border: none;
     border-radius: 10px;
     font-size: 1em;
-    cursor: pointer;
     transition: all 100ms linear;
 }
 
-.menu-item:hover {
+.menu-item:hover:not([disabled]) {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-.menu-item:active {
+.menu-item:active:not([disabled]) {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
