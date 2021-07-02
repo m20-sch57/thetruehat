@@ -67,7 +67,7 @@
                 <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
                 <en>{{ $p(playersList.length, "player", "players") }}</en>
               </button>
-              <div class="menu players-menu">
+              <div class="menu">
                 <button
                     class="menu-item"
                     v-for="player in playersList"
