@@ -97,9 +97,10 @@
 
     #navbar .nav-collapsible {
         position: absolute;
-        top: calc(100% + 5px);
-        right: 5px;
+        top: 100%;
+        right: 0;
         width: 220px;
+        margin: 5px;
         flex-direction: column;
         background-color: white;
         border-radius: 10px;

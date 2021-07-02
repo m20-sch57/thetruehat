@@ -47,22 +47,41 @@
 }
 
 #join main .room-info {
+    position: relative;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
 }
 
-#join main .room-info.no-key button {
-    padding: 0.25em 0.5em;
+#join main .room-info h5 {
+    margin: 0 auto 0 0;
+    font-weight: normal;
+}
+
+#join main .room-info .narrow {
     margin: 0;
     font-size: 0.75em;
     line-height: 0.75em;
 }
 
-#join main .room-info h5 {
-    margin: 0;
-    font-weight: normal;
+#join main .room-info.no-key .narrow {
+    padding: 0.25em 0.5em;
+}
+
+#join main .room-info .players-menu {
+    margin: 5px 0;
+    font-size: 0.8em;
+}
+
+#join main .room-info .menu-item {
+    text-align: left;
+}
+
+#join main .room-info .menu-item img {
+    height: 20px;
+    width: auto;
+    margin-right: 5px;
 }
 
 #join main .room-info.checking h5 {
@@ -70,26 +89,12 @@
     color: dimgrey;
 }
 
-#join main .room-info.not-created h5 {
-    margin-right: auto;
+#join main .room-info.not-started h5 {
     color: grey;
 }
 
-#join main .room-info.not-created button {
-    margin: 0;
-    font-size: 0.75em;
-    line-height: 0.75em;
-}
-
-#join main .room-info.created h5 {
-    margin-right: auto;
+#join main .room-info.started h5 {
     color: goldenrod;
-}
-
-#join main .room-info.created button {
-    margin: 0;
-    font-size: 0.75em;
-    line-height: 0.75em;
 }
 
 #join main .room-info.invalid h5 {

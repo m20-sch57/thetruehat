@@ -25,14 +25,14 @@
             <div class="room-info no-key" v-show="validationStatus.key === 'empty'">
               <button
                   @click="pasteKey()"
-                  class="btn btn-transparent">
+                  class="btn btn-transparent narrow">
                 <span class="fas fa-clipboard"></span>
                 <ru>Вставить</ru>
                 <en>Paste</en>
               </button>
               <button
                   @click="generateKey()"
-                  class="btn btn-transparent">
+                  class="btn btn-transparent narrow">
                 <span class="fas fa-dice"></span>
                 <ru>Сгенерировать</ru>
                 <en>Generate</en>
@@ -50,25 +50,34 @@
                 <en>Checking</en>
               </h5>
             </div>
-            <div class="room-info not-created" v-show="validationStatus.key === 'not-created'">
-              <h5>
+            <div
+                class="room-info"
+                :class="validationStatus.key"
+                v-show="validationStatus.key === 'not-started' || validationStatus.key === 'started'">
+              <h5 v-show="validationStatus.key === 'not-started'">
                 <ru>Игра не началась</ru>
                 <en>Game not started</en>
               </h5>
-              <button class="select btn-transparent">{{ playersList.length }}
-                <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
-                <en>{{ $p(playersList.length, "player", "players") }}</en>
-              </button>
-            </div>
-            <div class="room-info created" v-show="validationStatus.key === 'created'">
-              <h5>
+              <h5 v-show="validationStatus.key === 'started'">
                 <ru>Игра уже идёт</ru>
                 <en>Game started</en>
               </h5>
-              <button class="select btn-transparent">{{ playersList.length }}
+              <button class="select btn-transparent narrow">
+                {{ playersList.length }}
                 <ru>{{ $p(playersList.length, "игрок", "игрока", "игроков") }}</ru>
                 <en>{{ $p(playersList.length, "player", "players") }}</en>
               </button>
+              <div class="menu players-menu">
+                <button
+                    class="menu-item"
+                    v-for="player in playersList"
+                    :key="player">
+                  <img
+                      src="img/user.png"
+                      alt="user-icon">
+                  {{ player['username'] }}
+                </button>
+              </div>
             </div>
             <div class="room-info invalid" v-show="validationStatus.key === 'invalid'">
               <h5><span class="fas fa-times"></span>
@@ -181,8 +190,8 @@ export default {
     validated: function () {
       return (
         this.validationStatus.username === "accepted" &&
-          (this.validationStatus.key === "not-created" ||
-              this.validationStatus.key === "created"));
+          (this.validationStatus.key === "not-started" ||
+              this.validationStatus.key === "started"));
     }
   },
   methods: {
@@ -216,9 +225,9 @@ export default {
       } else if (!this.roomInfo.success) {
         this.validationStatus.key = "invalid";
       } else if (this.roomInfo.stage === "wait") {
-        this.validationStatus.key = "not-created";
+        this.validationStatus.key = "not-started";
       } else {
-        this.validationStatus.key = "created";
+        this.validationStatus.key = "started";
       }
       this.validateUsername(this.username);
     };
