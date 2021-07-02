@@ -111,30 +111,22 @@
         display: none;
     }
 
-    #navbar .nav-collapsible::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        right: 30px;
-        height: 15px;
-        width: 15px;
-        transform: translate(50%, -50%) rotate(45deg);
-        background-color: inherit;
-    }
-
     #navbar .nav-links-center {
         flex-direction: column;
-        align-items: flex-start;
-        padding: 10px;
     }
 
     #navbar .nav-links-right {
+        justify-content: space-around;
         padding: 10px;
         border-top: 1px solid whitesmoke;
     }
 
     #navbar .nav-link {
-        padding: 10px;
-        background-color: transparent !important;
+        padding: 20px;
+        text-align: left;
+    }
+
+    #navbar .nav-link::after {
+        display: none;
     }
 }

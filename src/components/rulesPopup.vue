@@ -65,7 +65,7 @@
               <en>The main part of the game round is an explanation stage.</en>
               <br>
               <ru>Два игрока будут выбраны в качестве <b>текущей пары</b>, о чём все узнают заранее. Когда игроки будут
-                готовы, один из них сможет увидеть <b>слово</b>, которое ему необходимо<b>объяснить</b> второму игроку в
+                готовы, один из них сможет увидеть <b>слово</b>, которое ему необходимо <b>объяснить</b> второму игроку в
                 паре.
               </ru>
               <en>At this stage, two players are chosen as the <b>current pair</b> (speaker and listener) and everyone
