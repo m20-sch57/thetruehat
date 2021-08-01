@@ -12,13 +12,16 @@ class TimeSync {
         console.log("%c[Time Sync]", "color: green", ...msg);
     }
 
+    parseTimestamp(dateStr) {
+        return Date.parse(dateStr.split(" ", 3).join(" "));
+    }
+
     async getDelta() {
-        let response = await fetch("getTime", {
-            "headers": {"X-Client-Timestamp": performance.now().toString()}
-        });
-        let now = performance.now();
-        this.delta = response.headers.get("X-Server-Timestamp") / 1.0 +
-            (now - response.headers.get("X-Client-Timestamp")) / 2 - now;
+        let clientTimestampBefore = performance.now();
+        let response = await fetch("getTime");
+        let clientTimestampAfter = performance.now();
+        let serverTimestamp = this.parseTimestamp(response.headers.get("X-Server-Timestamp"));
+        this.delta = serverTimestamp - (clientTimestampAfter + clientTimestampBefore) / 2.0;
     }
 
     async maintainDelta(syncInterval) {

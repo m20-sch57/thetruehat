@@ -1,31 +1,30 @@
-http://localhost:<port> {
-    root    <project_dir>/static
-    log     <log_dir>/access.log
-    errors  <error_dir>/errors.log
+http://localhost:<port>
 
-    header / Cache-Control "private,max-age=3600,must-revalidate"
+root * <project_dir>/static
+file_server
 
-    header /api Cache-Control no-store
-    header /socket.io Cache-Control no-store
-
-    header /getTime {
-        Cache-Control no-store
-        X-Server-Timestamp {when_unix_ms}
-        X-Client-Timestamp {>X-Client-Timestamp}
-    }
-    status 200 /getTime
-
-    proxy /socket.io localhost:<socket_port> {
-        websocket
-        transparent
-    }
-
-    proxy /api localhost:<socket_port> {
-        transparent
-        without /api
-    }
-
-    redir /api /api/
-
-    gzip
+log {
+	output file <log_dir>/access.log
+	format single_field common_log
 }
+
+header / Cache-Control private,max-age=3600,must-revalidate
+header /api Cache-Control no-store
+header /socket.io Cache-Control no-store
+header /getTime {
+	Cache-Control no-store
+	X-Server-Timestamp {time.now}
+}
+
+respond /getTime 200
+
+reverse_proxy /socket.io/* localhost:<socket_server_port>
+
+handle_path /api/* {
+	rewrite * {path}
+	reverse_proxy localhost:<socket_server_port>
+}
+
+redir /api /api/
+
+reverse_proxy /feedback localhost:<feedback_server_port>
