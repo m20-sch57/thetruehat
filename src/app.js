@@ -3,7 +3,7 @@ import {timeSync} from "./tools";
 // import Vue from "vue";
 // import {ERROR_TIMEOUT} from "./config.js";
 
-import cloneDeep from "lodash/clonedeep";
+import cloneDeep from "lodash/cloneDeep";
 
 const getTime = () => timeSync.getTime();
 
