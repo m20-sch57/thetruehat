@@ -71,7 +71,7 @@
                 <button
                     class="menu-item"
                     v-for="player in playersList"
-                    :key="player"
+                    :key="player.id"
                     :disabled="player['online']">
                   <img
                       src="img/user.png"
