@@ -1523,7 +1523,7 @@ class Callbacks {
 
     static cApplySettings(socket, key, newSettings) {
         const room = rooms[key];
-        const roomSettings = room.settings;
+        const roomSettings = room.settings = {};
 
         for (let arg in newSettings) {
             const value = newSettings[arg];
@@ -1678,24 +1678,27 @@ class Callbacks {
             }
         }
 
+        let upperBound;
+        switch (roomSettings["wordsetType"]) {
+            case "serverDictionary":
+                upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
+                break;
+            case "hostDictionary":
+                upperBound = room.hostDictionary.wordNumber;
+                break;
+            default:
+                upperBound = null;
+        }
         if (roomSettings["termCondition"] === "words") {
-            let upperBound;
-            switch (roomSettings["wordsetType"]) {
-                case "serverDictionary":
-                    upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
-                    break;
-                case "hostDictionary":
-                    upperBound = room.hostDictionary.wordNumber;
-                    break;
-                default:
-                    upperBound = null;
-            }
             if (upperBound !== null &&
                 roomSettings["wordNumber"] > upperBound) {
                 roomSettings["wordNumber"] = upperBound;
                 Signals.sFailure(socket.id, "cApplySettings", null,
                     "Значение \"wordNumber\" уменьшено до размера словаря")
             }
+        }
+        else {
+            roomSettings["wordNumber"] = upperBound;
         }
 
         Signals.sNewSettings(key);
