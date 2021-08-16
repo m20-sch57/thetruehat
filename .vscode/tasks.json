@@ -1,6 +1,4 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
@@ -16,7 +14,7 @@
         {
             "label": "caddy",
             "type": "shell",
-            "command": "caddy -conf=${workspaceFolder}/caddy/Caddyfile -pidfile=${workspaceFolder}/caddy/caddy.pid"
+            "command": "caddy run --config=${workspaceFolder}/caddy/Caddyfile --pidfile=${workspaceFolder}/caddy/caddy.pid"
         },
         {
             "label": "npm build",
