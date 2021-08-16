@@ -1937,7 +1937,7 @@ class Callbacks {
 
 io.on("connection", function(socket) {
     if (WRITE_LOGS) {
-        console.log(socket.id, "connection", undefined);
+        console.log(socket.id, "connection", `(${Object.keys(io.sockets.connected).length} online)`);
     }
 
     /**
@@ -2186,7 +2186,7 @@ io.on("connection", function(socket) {
 
     socket.on("disconnect", function() {
         if (WRITE_LOGS) {
-            console.log(socket.id, "disconnect", undefined);
+            console.log(socket.id, "disconnect", `(${Object.keys(io.sockets.connected).length} online)`);
         }
 
         Callbacks.disconnect(socket)
