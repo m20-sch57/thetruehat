@@ -976,7 +976,7 @@ class Room {
         const words = [];
         const used = {};
         const numberOfAllWords = dict.wordNumber;
-        const wordNumber = settings["wordNumber"];
+        const wordNumber = settings["termCondition"] === words ? settings["wordNumber"] : numberOfAllWords;
         while (words.length < wordNumber) {
             const pos = randrange(numberOfAllWords);
             if (!(pos in used)) {
@@ -1758,18 +1758,7 @@ class Callbacks {
         /**
          * kicking off offline users
          */
-        // preparing containers
-        let onlineUsers = [];
-
-        // copying each user in proper container
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                onlineUsers.push(rooms[key].users[i]);
-            }
-        }
-
-        // removing offline users
-        rooms[key].users = onlineUsers;
+        rooms[key].users = rooms[key].users.filter((user) => user.online)
 
         // game preparation
         rooms[key].gamePrepare();
