@@ -976,7 +976,7 @@ class Room {
         const words = [];
         const used = {};
         const numberOfAllWords = dict.wordNumber;
-        const wordNumber = settings["wordNumber"];
+        const wordNumber = settings["termCondition"] === words ? settings["wordNumber"] : numberOfAllWords;
         while (words.length < wordNumber) {
             const pos = randrange(numberOfAllWords);
             if (!(pos in used)) {
@@ -1523,7 +1523,7 @@ class Callbacks {
 
     static cApplySettings(socket, key, newSettings) {
         const room = rooms[key];
-        const roomSettings = room.settings = {};
+        const roomSettings = room.settings;
 
         for (let arg in newSettings) {
             const value = newSettings[arg];
@@ -1678,27 +1678,24 @@ class Callbacks {
             }
         }
 
-        let upperBound;
-        switch (roomSettings["wordsetType"]) {
-            case "serverDictionary":
-                upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
-                break;
-            case "hostDictionary":
-                upperBound = room.hostDictionary.wordNumber;
-                break;
-            default:
-                upperBound = null;
-        }
         if (roomSettings["termCondition"] === "words") {
+            let upperBound;
+            switch (roomSettings["wordsetType"]) {
+                case "serverDictionary":
+                    upperBound = dicts[roomSettings["dictionaryId"]].wordNumber;
+                    break;
+                case "hostDictionary":
+                    upperBound = room.hostDictionary.wordNumber;
+                    break;
+                default:
+                    upperBound = null;
+            }
             if (upperBound !== null &&
                 roomSettings["wordNumber"] > upperBound) {
                 roomSettings["wordNumber"] = upperBound;
                 Signals.sFailure(socket.id, "cApplySettings", null,
                     "Значение \"wordNumber\" уменьшено до размера словаря")
             }
-        }
-        else {
-            roomSettings["wordNumber"] = upperBound;
         }
 
         Signals.sNewSettings(key);
@@ -1761,18 +1758,7 @@ class Callbacks {
         /**
          * kicking off offline users
          */
-        // preparing containers
-        let onlineUsers = [];
-
-        // copying each user in proper container
-        for (let i = 0; i < rooms[key].users.length; ++i) {
-            if (rooms[key].users[i].online) {
-                onlineUsers.push(rooms[key].users[i]);
-            }
-        }
-
-        // removing offline users
-        rooms[key].users = onlineUsers;
+        rooms[key].users = rooms[key].users.filter((user) => user.online)
 
         // game preparation
         rooms[key].gamePrepare();
