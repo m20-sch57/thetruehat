@@ -4,7 +4,7 @@
         {
             "label": "server",
             "type": "shell",
-            "command": "node ${workspaceFolder}/server.js",
+            "command": "node ${workspaceFolder}/server.js"
         },
         {
             "label": "feedback server",
