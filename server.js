@@ -976,7 +976,7 @@ class Room {
         const words = [];
         const used = {};
         const numberOfAllWords = dict.wordNumber;
-        const wordNumber = settings["termCondition"] === words ? settings["wordNumber"] : numberOfAllWords;
+        const wordNumber = settings["termCondition"] === "words" ? settings["wordNumber"] : numberOfAllWords;
         while (words.length < wordNumber) {
             const pos = randrange(numberOfAllWords);
             if (!(pos in used)) {
