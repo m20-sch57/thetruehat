@@ -2,6 +2,7 @@ import store from "./store";
 import {timeSync} from "./tools";
 // import Vue from "vue";
 // import {ERROR_TIMEOUT} from "./config.js";
+import {io} from "./mockSockets/socket"
 
 import cloneDeep from "lodash/cloneDeep";
 
