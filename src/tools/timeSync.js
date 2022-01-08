@@ -14,7 +14,7 @@ class TimeSync {
 
     parseTimestamp(dateStr) {
         let components = dateStr.split(" ");
-        return Date.parse(`${components[0]} ${components[1]}${components[2]}`);
+        return new Date(`${components[0]}T${components[1]}${components[2]}`).getTime();
     }
 
     async getDelta() {
