@@ -19,6 +19,12 @@ Warning. Don't use this instruction on production. See our [documentation](docs/
 1. Install [Node.js](https://nodejs.org/en/download/)
 1. Install [Caddy v.1](https://caddyserver.com/v1/download)
 1. Download the repository.
+1. Add `post-checkout` git hook (**executable** file `.git/hooks/post-checkout`) with the following content (see also [this readme](version/Readme.md)):
+    ```shell script
+    #!/bin/bash
+    exec version/post-checkout.hook
+    ```
+    This script runs upon checkout, so checkout is required for generation of versioning files.
 1. Run in a console in the project directory:
     ```shell script
     npm install --only=prod --no-fund
